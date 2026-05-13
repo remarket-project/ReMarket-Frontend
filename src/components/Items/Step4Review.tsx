@@ -1,7 +1,7 @@
 import { UseFormReturn } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Package, FileText } from "lucide-react";
+import { MapPin, DollarSign, FileText } from "lucide-react";
 
 interface Step4Props {
   form: UseFormReturn<any>;

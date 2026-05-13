@@ -18,6 +18,7 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutWalletRouteImport } from './routes/_layout/wallet'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as LayoutSearchRouteImport } from './routes/_layout/search'
 import { Route as LayoutOrdersRouteImport } from './routes/_layout/orders'
 import { Route as LayoutOffersRouteImport } from './routes/_layout/offers'
 import { Route as LayoutNotificationsRouteImport } from './routes/_layout/notifications'
@@ -72,6 +73,11 @@ const LayoutWalletRoute = LayoutWalletRouteImport.update({
 const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutSearchRoute = LayoutSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutOrdersRoute = LayoutOrdersRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof LayoutNotificationsRoute
   '/offers': typeof LayoutOffersRoute
   '/orders': typeof LayoutOrdersRouteWithChildren
+  '/search': typeof LayoutSearchRoute
   '/settings': typeof LayoutSettingsRoute
   '/wallet': typeof LayoutWalletRoute
   '/admin/moderation': typeof LayoutAdminModerationRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof LayoutNotificationsRoute
   '/offers': typeof LayoutOffersRoute
   '/orders': typeof LayoutOrdersRouteWithChildren
+  '/search': typeof LayoutSearchRoute
   '/settings': typeof LayoutSettingsRoute
   '/wallet': typeof LayoutWalletRoute
   '/': typeof LayoutIndexRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/_layout/notifications': typeof LayoutNotificationsRoute
   '/_layout/offers': typeof LayoutOffersRoute
   '/_layout/orders': typeof LayoutOrdersRouteWithChildren
+  '/_layout/search': typeof LayoutSearchRoute
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/wallet': typeof LayoutWalletRoute
   '/_layout/': typeof LayoutIndexRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offers'
     | '/orders'
+    | '/search'
     | '/settings'
     | '/wallet'
     | '/admin/moderation'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offers'
     | '/orders'
+    | '/search'
     | '/settings'
     | '/wallet'
     | '/'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/_layout/notifications'
     | '/_layout/offers'
     | '/_layout/orders'
+    | '/_layout/search'
     | '/_layout/settings'
     | '/_layout/wallet'
     | '/_layout/'
@@ -334,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof LayoutSettingsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/search': {
+      id: '/_layout/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof LayoutSearchRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/orders': {
@@ -460,6 +479,7 @@ interface LayoutRouteChildren {
   LayoutNotificationsRoute: typeof LayoutNotificationsRoute
   LayoutOffersRoute: typeof LayoutOffersRoute
   LayoutOrdersRoute: typeof LayoutOrdersRouteWithChildren
+  LayoutSearchRoute: typeof LayoutSearchRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutWalletRoute: typeof LayoutWalletRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
@@ -473,6 +493,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutNotificationsRoute: LayoutNotificationsRoute,
   LayoutOffersRoute: LayoutOffersRoute,
   LayoutOrdersRoute: LayoutOrdersRouteWithChildren,
+  LayoutSearchRoute: LayoutSearchRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutWalletRoute: LayoutWalletRoute,
   LayoutIndexRoute: LayoutIndexRoute,

@@ -1,12 +1,8 @@
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { useState } from "react";
 import {
-  FormControl,
   FormDescription,
-  FormField,
-  FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Upload, Trash2, Star } from "lucide-react";
@@ -125,7 +121,7 @@ function CreateListingStep3({ form }: Step3Props) {
         <div>
           <FormLabel className="block mb-3">Your Images</FormLabel>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {fields.map((field, index) => (
+            {fields.map((field: any, index) => (
               <div
                 key={field.id}
                 className="relative group rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 aspect-square"

@@ -23,7 +23,7 @@ const listingFormSchema = z.object({
   categoryId: z.string().uuid(),
   conditionGrade: z.enum(["MINT", "LIKE_NEW", "GOOD", "FAIR", "POOR"]),
   price: z.number().positive(),
-  isNegotiable: z.boolean().default(false),
+  isNegotiable: z.boolean(),
   description: z.string().min(20).max(2000),
   province: z.string().min(1),
   district: z.string().min(1),
@@ -32,7 +32,7 @@ const listingFormSchema = z.object({
   images: z.array(z.object({
     file: z.instanceof(File).optional(),
     url: z.string().optional(),
-    isPrimary: z.boolean().default(false),
+    isPrimary: z.boolean(),
   })).min(1, "At least 1 image required"),
 });
 
@@ -157,7 +157,7 @@ function CreateListingPage() {
         <Progress value={progress} className="mb-8 h-2" />
 
         {/* Form Container */}
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <form onSubmit={form.handleSubmit(onSubmit as any)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form Area */}
           <div className="lg:col-span-2">
             <Card className="shadow-lg">

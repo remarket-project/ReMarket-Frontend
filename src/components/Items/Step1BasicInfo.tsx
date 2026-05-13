@@ -45,7 +45,7 @@ function CreateListingStep1({ form }: Step1Props) {
     },
   });
 
-  const categories = categoriesData?.items ?? [];
+  const categories = categoriesData?.data ?? [];
   const title = form.watch("title") || "";
 
   return (
@@ -87,7 +87,7 @@ function CreateListingStep1({ form }: Step1Props) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {categories.map((cat) => (
+                {categories.map((cat: any) => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
                   </SelectItem>

@@ -892,7 +892,7 @@ export class ListingsService {
     
     /**
      * Upload Listing Image
-     * Tải ảnh lên cho bài đăng
+     * Tải ảnh lên cho bài đăng (hỗ trợ MinIO hoặc local filesystem)
      * @param data The data for the request.
      * @param data.listingId
      * @param data.formData
