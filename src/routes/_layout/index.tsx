@@ -59,6 +59,9 @@ export const Route = createFileRoute("/_layout/")({
 
 function Dashboard() {
   const { user: currentUser } = useAuth();
+  const { language } = useLanguage();
+  const isVi = language === "vi";
+
   if (!currentUser) {
     return (
       <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-8 text-blue-900">
@@ -68,8 +71,6 @@ function Dashboard() {
   }
 
   const profile = currentUser;
-  const { language } = useLanguage();
-  const isVi = language === "vi";
 
   const kpis = [
     {

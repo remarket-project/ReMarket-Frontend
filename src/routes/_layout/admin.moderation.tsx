@@ -52,7 +52,7 @@ function getPendingListingsQueryOptions() {
     queryFn: async () => {
       return AdminService.getPendingListingsRouteApiV1AdminListingsPendingGet({
         skip: 0,
-        limit: 200,
+        limit: 100,
       });
     },
     queryKey: ["admin-pending-listings"],

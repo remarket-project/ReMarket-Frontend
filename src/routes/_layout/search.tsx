@@ -111,7 +111,7 @@ function SearchResultsPage() {
     queryFn: () =>
       CategoriesService.listCategoriesApiV1CategoriesGet({
         skip: 0,
-        limit: 200,
+        limit: 100,
       }),
   });
 
