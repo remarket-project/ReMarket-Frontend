@@ -1,22 +1,33 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Lock, Sparkles } from "lucide-react";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
+import { createFileRoute, Link } from "@tanstack/react-router"
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpRight,
+  CheckCircle2,
+  Download,
+  Lock,
+  PlusCircle,
+  RotateCcw,
+  Sparkles,
+  Unlock,
+  Wallet,
+} from "lucide-react"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
 
-import { WalletService } from "@/client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { WalletService } from "@/client"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import WalletTopupDialog from "@/components/Wallet/WalletTopupDialog"
 
-export const Route = createFileRoute("/_layout/wallet")({
-  component: WalletPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Wallet - ReMarket",
-      },
-    ],
-  }),
-});
+type TxFilter = "all" | "in" | "out"
 
 function getWalletQueryOptions() {
   return {
@@ -24,52 +35,106 @@ function getWalletQueryOptions() {
       const [wallet, txResponse] = await Promise.all([
         WalletService.getMyWalletApiV1WalletMeGet(),
         WalletService.getTransactionsApiV1WalletTransactionsGet({
-          limit: 20,
+          limit: 50,
           skip: 0,
         }),
-      ]);
+      ])
       return {
         wallet,
         transactions: txResponse.transactions ?? [],
-      };
+      }
     },
     queryKey: ["wallet-dashboard"],
-  };
+  }
 }
 
-function money(value: string) {
-  const amount = Number(value);
-  if (Number.isNaN(amount)) return `$${value}`;
+function money(value: string | number) {
+  const amount = Number(value)
+  if (Number.isNaN(amount)) return `$${value}`
   return new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(amount)
 }
 
 function when(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Unknown";
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return "Unknown"
   return date.toLocaleString(undefined, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
-  });
+  })
 }
 
+function iconForType(type: string, positive: boolean) {
+  if (type.includes("topup")) return PlusCircle
+  if (type.includes("escrow_fund")) return Lock
+  if (type.includes("escrow_release")) return Unlock
+  if (type.includes("refund")) return RotateCcw
+  return positive ? ArrowDown : ArrowUp
+}
+
+export const Route = createFileRoute("/_layout/wallet")({
+  component: WalletPage,
+  head: () => ({
+    meta: [{ title: "Wallet - ReMarket" }],
+  }),
+})
+
 function WalletPage() {
-  const { data } = useSuspenseQuery(getWalletQueryOptions());
-  const available = Number(data.wallet.balance) || 0;
-  const locked = Number(data.wallet.locked_balance) || 0;
-  const total = available + locked;
+  const queryClient = useQueryClient()
+  const { data } = useSuspenseQuery(getWalletQueryOptions())
+  const [topupOpen, setTopupOpen] = useState(false)
+  const [txFilter, setTxFilter] = useState<TxFilter>("all")
+  const [txQuery, setTxQuery] = useState("")
+
+  const available = Number(data.wallet.balance) || 0
+  const locked = Number(data.wallet.locked_balance) || 0
+  const total = available + locked
+
+  const topupMutation = useMutation({
+    mutationFn: (amount: number) =>
+      WalletService.demoTopupApiV1WalletDemoTopupPost({
+        requestBody: { amount },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
+      setTopupOpen(false)
+      toast.success("Funds added to wallet.")
+    },
+    onError: (error: any) => {
+      toast.error(error?.body?.detail || "Unable to add funds.")
+    },
+  })
+
+  const filteredTx = useMemo(() => {
+    const normalized = txQuery.trim().toLowerCase()
+    return data.transactions.filter((tx) => {
+      const amount = Number(tx.amount)
+      const isIn = amount > 0
+      const matchesFilter =
+        txFilter === "all" || (txFilter === "in" ? isIn : !isIn)
+      const description = (tx.description || "").toLowerCase()
+      const orderId = (tx.order_id || "").toLowerCase()
+      const matchesQuery =
+        normalized.length === 0 ||
+        description.includes(normalized) ||
+        orderId.includes(normalized) ||
+        tx.type.toLowerCase().includes(normalized)
+      return matchesFilter && matchesQuery
+    })
+  }, [data.transactions, txFilter, txQuery])
+
   const escrowOrderIds = Array.from(
     new Set(
       data.transactions
         .map((tx) => tx.order_id)
         .filter((id): id is string => Boolean(id)),
     ),
-  ).slice(0, 8);
+  ).slice(0, 8)
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -80,87 +145,179 @@ function WalletPage() {
       </div>
 
       <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <div className="space-y-2">
-          <Badge
-            className="border-blue-200 bg-blue-50 text-blue-700"
-            variant="outline"
-          >
-            <Sparkles className="mr-1.5 size-3" />
-            Funds and Settlement
-          </Badge>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-            Wallet and Cashflow
-          </h1>
-          <p className="max-w-2xl text-sm text-blue-900/75 md:text-base">
-            Monitor available balance, locked escrow funds, and transaction
-            history in a transparent command view.
-          </p>
-        </div>
+        <Badge
+          className="border-blue-200 bg-blue-50 text-blue-700"
+          variant="outline"
+        >
+          <Sparkles className="mr-1.5 size-3" />
+          Funds and Settlement
+        </Badge>
+        <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
+          Wallet and Cashflow
+        </h1>
+        <p className="text-sm text-blue-900/75 md:text-base">
+          Monitor balance, escrow locks, and transaction history.
+        </p>
       </section>
 
       <section className="mt-6 grid gap-3 md:grid-cols-3">
         <Card className="border-blue-200/80 bg-white/92">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-blue-900/70">
-              Total value
+            <CardTitle className="flex items-center gap-2 text-sm text-blue-900/70">
+              <Wallet className="size-4 text-blue-700" />
+              Total Value
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-bold text-blue-950">
-            {money(String(total))}
+          <CardContent>
+            <p className="text-3xl font-bold text-blue-950">{money(total)}</p>
+            <p className="text-xs text-blue-900/60">Available + Locked</p>
           </CardContent>
         </Card>
-        <Card className="border-emerald-200/80 bg-emerald-50/70">
+        <Card className="border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-green-50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-emerald-800/80">
+            <CardTitle className="flex items-center gap-2 text-sm text-emerald-800/80">
+              <CheckCircle2 className="size-4 text-emerald-600" />
               Available
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-bold text-emerald-900">
-            {money(data.wallet.balance)}
+          <CardContent>
+            <p className="text-3xl font-bold text-emerald-900">
+              {money(available)}
+            </p>
+            <p className="text-xs text-emerald-700/70">Ready to withdraw</p>
           </CardContent>
         </Card>
-        <Card className="border-amber-200/80 bg-amber-50/70">
+        <Card className="border-amber-200/80 bg-gradient-to-br from-amber-50 to-yellow-50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-amber-800/80">
-              Locked in escrow
+            <CardTitle className="flex items-center gap-2 text-sm text-amber-800/80">
+              <Lock className="size-4 text-amber-600" />
+              Locked in Escrow
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-3xl font-bold text-amber-900">
-            {money(data.wallet.locked_balance)}
+          <CardContent>
+            <p className="text-3xl font-bold text-amber-900">{money(locked)}</p>
+            <p className="text-xs text-amber-700/70">
+              Held until delivery confirmed
+            </p>
           </CardContent>
         </Card>
+      </section>
+
+      <section className="mt-4 flex flex-wrap gap-3">
+        <Button className="rmk-glow-button" onClick={() => setTopupOpen(true)}>
+          <PlusCircle className="mr-2 size-4" />
+          Add Funds
+        </Button>
+        <Button
+          variant="outline"
+          className="border-blue-200 bg-white/90"
+          disabled
+        >
+          <ArrowUpRight className="mr-2 size-4" />
+          Withdraw
+          <Badge className="ml-2 text-[10px]">Soon</Badge>
+        </Button>
+        <Button
+          variant="outline"
+          className="border-blue-200 bg-white/90"
+          disabled
+        >
+          <Download className="mr-2 size-4" />
+          Statement
+        </Button>
       </section>
 
       <section className="mt-6 grid gap-4 xl:grid-cols-[1.25fr_1fr]">
         <Card className="border-blue-200/80 bg-white/92">
           <CardHeader>
-            <CardTitle className="text-blue-950">Recent Transactions</CardTitle>
+            <CardTitle className="text-blue-950">Transactions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {data.transactions.map((tx) => {
-              const positive = Number(tx.amount) > 0;
+            <div className="flex flex-wrap items-center gap-2">
+              {(["all", "in", "out"] as TxFilter[]).map((filter) => (
+                <Badge
+                  key={filter}
+                  variant="outline"
+                  className={`cursor-pointer ${
+                    txFilter === filter
+                      ? "border-blue-300 bg-blue-100 text-blue-800"
+                      : "border-blue-200 bg-white text-blue-700"
+                  }`}
+                  onClick={() => setTxFilter(filter)}
+                >
+                  {filter === "all"
+                    ? "All"
+                    : filter === "in"
+                      ? "Money In"
+                      : "Money Out"}
+                </Badge>
+              ))}
+              <Input
+                value={txQuery}
+                onChange={(event) => setTxQuery(event.target.value)}
+                placeholder="Search description or order id..."
+                className="ml-auto max-w-xs border-blue-200 bg-white"
+              />
+            </div>
+
+            {filteredTx.map((tx) => {
+              const amount = Number(tx.amount)
+              const positive = amount > 0
+              const Icon = iconForType(tx.type, positive)
               return (
                 <div
                   key={tx.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-200/70 bg-white/90 p-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-200/70 bg-white/90 p-3 transition hover:border-blue-300"
                 >
-                  <div>
+                  <div
+                    className={`flex size-10 items-center justify-center rounded-xl ${
+                      positive
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-rose-100 text-rose-700"
+                    }`}
+                  >
+                    <Icon className="size-5" />
+                  </div>
+                  <div className="flex-1">
                     <p className="text-sm font-semibold text-blue-950">
-                      {tx.description || "Wallet transaction"}
+                      {tx.description || tx.type}
                     </p>
-                    <p className="mt-1 text-xs text-blue-900/70">
+                    <p className="text-xs text-blue-900/60">
                       {when(tx.created_at)}
                     </p>
+                    {tx.order_id ? (
+                      <Link
+                        to="/orders/$orderId"
+                        params={{ orderId: tx.order_id }}
+                      >
+                        <p className="text-xs text-blue-600 hover:underline">
+                          Order #{tx.order_id.slice(0, 8)}
+                        </p>
+                      </Link>
+                    ) : null}
                   </div>
-                  <p
-                    className={`text-sm font-bold ${positive ? "text-emerald-700" : "text-rose-700"}`}
-                  >
-                    {positive ? "+" : ""}
-                    {money(tx.amount)}
-                  </p>
+                  <div className="text-right">
+                    <p
+                      className={`text-base font-bold ${
+                        positive ? "text-emerald-700" : "text-rose-700"
+                      }`}
+                    >
+                      {positive ? "+" : ""}
+                      {money(tx.amount)}
+                    </p>
+                    <p className="text-xs text-blue-900/50">
+                      Balance: {money(tx.balance_after)}
+                    </p>
+                  </div>
                 </div>
-              );
+              )
             })}
+
+            {filteredTx.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-blue-200 bg-white/90 p-6 text-sm text-blue-900/75">
+                No transactions match this view.
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -175,23 +332,23 @@ function WalletPage() {
                 className="rounded-xl border border-blue-200/70 bg-white/90 p-3"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-blue-950">
-                    #{orderId.slice(0, 8)}
-                  </p>
-                  <Badge className="border-blue-200 bg-blue-50 text-blue-700 capitalize">
-                    Linked order
+                  <div>
+                    <p className="text-sm font-semibold text-blue-950">
+                      Order #{orderId.slice(0, 8)}
+                    </p>
+                    <p className="text-xs text-blue-900/60">Escrow protected</p>
+                  </div>
+                  <Badge className="border-amber-200 bg-amber-50 text-amber-700">
+                    Locked
                   </Badge>
                 </div>
-                <p className="mt-2 text-xs text-blue-900/75">
-                  Open escrow detail from order record
-                </p>
                 <Button
                   variant="outline"
                   className="mt-3 w-full border-blue-200 bg-white/90"
                   asChild
                 >
                   <Link to="/escrow/$orderId" params={{ orderId }}>
-                    Open escrow detail
+                    View escrow detail
                     <ArrowUpRight className="ml-1.5 size-4" />
                   </Link>
                 </Button>
@@ -206,13 +363,13 @@ function WalletPage() {
         </Card>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-blue-200/75 bg-blue-50/70 p-4 text-sm text-blue-900/80">
-        <p className="flex items-center gap-2">
-          <Lock className="size-4 text-blue-700" />
-          Locked balance represents escrow-protected funds pending release
-          logic.
-        </p>
-      </section>
+      <WalletTopupDialog
+        open={topupOpen}
+        onOpenChange={setTopupOpen}
+        currentBalance={available}
+        isPending={topupMutation.isPending}
+        onConfirm={(amount) => topupMutation.mutate(amount)}
+      />
     </div>
-  );
+  )
 }

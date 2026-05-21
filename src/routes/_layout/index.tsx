@@ -2,7 +2,7 @@ import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router";
+} from "@tanstack/react-router"
 import {
   ArrowRight,
   ArrowUpRight,
@@ -21,31 +21,32 @@ import {
   Target,
   TrendingUp,
   Wallet,
-} from "lucide-react";
-import { ApiError, UsersService } from "@/client";
-import { useLanguage } from "@/components/Common/LanguageProvider";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import useAuth from "@/hooks/useAuth";
+} from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { ApiError, UsersService, ListingsService, OrdersService, OffersService, WalletService } from "@/client"
+import { useLanguage } from "@/components/Common/LanguageProvider"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import useAuth from "@/hooks/useAuth"
 
 export const Route = createFileRoute("/_layout/")({
   component: Dashboard,
   beforeLoad: async () => {
     try {
-      const user = await UsersService.readUserMe();
+      const user = await UsersService.readUserMe()
       if (user.role !== "admin") {
-        throw redirect({ to: "/items" });
+        throw redirect({ to: "/items" })
       }
     } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        localStorage.removeItem("access_token");
-        throw redirect({ to: "/login" });
+        localStorage.removeItem("access_token")
+        throw redirect({ to: "/login" })
       }
-      return;
+      return
     }
   },
   head: () => ({
@@ -55,53 +56,90 @@ export const Route = createFileRoute("/_layout/")({
       },
     ],
   }),
-});
+})
 
 function Dashboard() {
-  const { user: currentUser } = useAuth();
-  const { language } = useLanguage();
-  const isVi = language === "vi";
+  const { user: currentUser } = useAuth()
+  const { language } = useLanguage()
+  const isVi = language === "vi"
 
   if (!currentUser) {
     return (
       <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-8 text-blue-900">
         Loading dashboard profile...
       </div>
-    );
+    )
   }
 
-  const profile = currentUser;
+  const profile = currentUser
+
+  const { data: listingsResponse } = useQuery({
+    queryKey: ["my-active-listings"],
+    queryFn: () =>
+      ListingsService.listListingsApiV1ListingsGet({
+        skip: 0,
+        limit: 100,
+      }),
+  })
+
+  const { data: ordersResponse } = useQuery({
+    queryKey: ["my-orders-summary"],
+    queryFn: () => OrdersService.getMyOrdersApiV1OrdersMeGet(),
+  })
+
+  const { data: offersResponse } = useQuery({
+    queryKey: ["my-pending-offers"],
+    queryFn: () =>
+      OffersService.getMyReceivedOffersApiV1OffersMeReceivedGet({
+        limit: 100,
+      }),
+  })
+
+  const { data: walletResponse } = useQuery({
+    queryKey: ["wallet-balance"],
+    queryFn: () => WalletService.getMyWalletApiV1WalletMeGet(),
+  })
+
+  const activeListingsCount = listingsResponse?.total ?? 0
+  const pendingOffersCount = offersResponse?.length ?? 0
+  const pendingEscrowsCount =
+    ordersResponse?.filter(
+      (o) => o.status === "pending" || o.status === "shipping",
+    ).length ?? 0
+  const balanceVal = walletResponse?.balance
+    ? `$${Number(walletResponse.balance).toLocaleString()}`
+    : "$0"
 
   const kpis = [
     {
       title: isVi ? "Tin dang hoat dong" : "Active Listings",
-      value: "14",
-      hint: isVi ? "+3 tuan nay" : "+3 this week",
-      delta: "+18%",
+      value: String(activeListingsCount),
+      hint: isVi ? "Tong so tin tren cho" : "Total items in marketplace",
+      delta: "+12%",
       icon: Box,
     },
     {
       title: isVi ? "De xuat dang den" : "Incoming Offers",
-      value: "9",
-      hint: isVi ? "2 de xuat can phan hoi hom nay" : "2 need response today",
-      delta: "+11%",
+      value: String(pendingOffersCount),
+      hint: isVi ? "Yeu cau can phan hoi" : "Requires response",
+      delta: "+8%",
       icon: Handshake,
     },
     {
       title: isVi ? "Escrow cho xu ly" : "Escrow Pending",
-      value: "4",
-      hint: isVi ? "1 don cho van chuyen" : "1 awaiting shipment",
+      value: String(pendingEscrowsCount),
+      hint: isVi ? "Dang giao dich qua Escrow" : "Active escrow locks",
       delta: "99.8%",
       icon: ShieldCheck,
     },
     {
       title: isVi ? "So du vi" : "Wallet Balance",
-      value: "$2,480",
-      hint: isVi ? "$640 kha dung ngay" : "$640 available now",
-      delta: "+$120",
+      value: balanceVal,
+      hint: isVi ? "Kha dung ngay" : "Available now",
+      delta: "+$500",
       icon: Wallet,
     },
-  ] as const;
+  ]
 
   const recentActivity = [
     {
@@ -132,19 +170,19 @@ function Dashboard() {
       type: "Wallet",
       priority: "low",
     },
-  ] as const;
+  ] as const
 
   const attentionItems = [
     "1 order needs shipping label upload",
     "2 offers expire in under 12 hours",
     "KYC reminder: add payout verification document",
-  ] as const;
+  ] as const
 
   const topListings = [
     { title: "iPhone 13 Pro 256GB", views: 420, saves: 32, conv: "6.4%" },
     { title: "Mid-Century Armchair", views: 318, saves: 27, conv: "5.8%" },
     { title: "Patagonia Jacket", views: 264, saves: 19, conv: "4.9%" },
-  ] as const;
+  ] as const
 
   const trustSignals = [
     {
@@ -162,13 +200,13 @@ function Dashboard() {
       value: "74%",
       icon: TrendingUp,
     },
-  ] as const;
+  ] as const
 
   const escrowStages = [
     { label: isVi ? "Tien da khoa" : "Funds Locked", value: "$1,240" },
     { label: isVi ? "Dang giao" : "In Delivery", value: "3" },
     { label: isVi ? "Can xac nhan" : "Need Confirmation", value: "1" },
-  ] as const;
+  ] as const
 
   const quickActions = [
     {
@@ -195,13 +233,13 @@ function Dashboard() {
         : "Review listings, disputes, and platform health",
       icon: Gavel,
     },
-  ] as const;
+  ] as const
 
   const priorityBadgeClass = {
     high: "bg-rose-100 text-rose-700 border-rose-200",
     medium: "bg-amber-100 text-amber-700 border-amber-200",
     low: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  } as const;
+  } as const
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -538,5 +576,5 @@ function Dashboard() {
         </span>
       </section>
     </div>
-  );
+  )
 }

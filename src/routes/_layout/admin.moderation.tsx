@@ -2,40 +2,40 @@ import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
-} from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { CheckCircle2, ListChecks, ShieldCheck, XCircle } from "lucide-react";
-import { useMemo, useState } from "react";
+} from "@tanstack/react-query"
+import { createFileRoute, redirect } from "@tanstack/react-router"
+import { CheckCircle2, ListChecks, ShieldCheck, XCircle } from "lucide-react"
+import { useMemo, useState } from "react"
 
 import {
   AdminService,
   ApiError,
   type ListingRead,
   UsersService,
-} from "@/client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+} from "@/client"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 
 export const Route = createFileRoute("/_layout/admin/moderation")({
   component: AdminModerationPage,
   beforeLoad: async () => {
     try {
-      const user = await UsersService.readUserMe();
+      const user = await UsersService.readUserMe()
       if (user.role !== "admin") {
-        throw redirect({ to: "/" });
+        throw redirect({ to: "/" })
       }
     } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        localStorage.removeItem("access_token");
-        throw redirect({ to: "/login" });
+        localStorage.removeItem("access_token")
+        throw redirect({ to: "/login" })
       }
-      return;
+      return
     }
   },
   head: () => ({
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_layout/admin/moderation")({
       },
     ],
   }),
-});
+})
 
 function getPendingListingsQueryOptions() {
   return {
@@ -53,47 +53,47 @@ function getPendingListingsQueryOptions() {
       return AdminService.getPendingListingsRouteApiV1AdminListingsPendingGet({
         skip: 0,
         limit: 100,
-      });
+      })
     },
     queryKey: ["admin-pending-listings"],
-  };
+  }
 }
 
 function formatDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Unknown";
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return "Unknown"
   return date.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  });
+  })
 }
 
 function AdminModerationPage() {
-  const queryClient = useQueryClient();
-  const { data } = useSuspenseQuery(getPendingListingsQueryOptions());
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [rejectReason, setRejectReason] = useState("");
+  const queryClient = useQueryClient()
+  const { data } = useSuspenseQuery(getPendingListingsQueryOptions())
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [rejectReason, setRejectReason] = useState("")
 
-  const allSelected = data.length > 0 && selectedIds.length === data.length;
+  const allSelected = data.length > 0 && selectedIds.length === data.length
 
-  const selectedCount = selectedIds.length;
+  const selectedCount = selectedIds.length
 
   const toggleListing = (listingId: string) => {
     setSelectedIds((prev) =>
       prev.includes(listingId)
         ? prev.filter((id) => id !== listingId)
         : [...prev, listingId],
-    );
-  };
+    )
+  }
 
   const toggleSelectAll = () => {
     if (allSelected) {
-      setSelectedIds([]);
-      return;
+      setSelectedIds([])
+      return
     }
-    setSelectedIds(data.map((item) => item.id));
-  };
+    setSelectedIds(data.map((item) => item.id))
+  }
 
   const bulkApproveMutation = useMutation({
     mutationFn: async (ids: string[]) => {
@@ -103,14 +103,14 @@ function AdminModerationPage() {
             listingId,
           }),
         ),
-      );
+      )
     },
     onSuccess: () => {
-      setSelectedIds([]);
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] });
-      queryClient.invalidateQueries({ queryKey: ["items"] });
+      setSelectedIds([])
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["items"] })
     },
-  });
+  })
 
   const bulkRejectMutation = useMutation({
     mutationFn: async ({ ids, reason }: { ids: string[]; reason?: string }) => {
@@ -121,17 +121,17 @@ function AdminModerationPage() {
             requestBody: reason ? { reason } : undefined,
           }),
         ),
-      );
+      )
     },
     onSuccess: () => {
-      setSelectedIds([]);
-      setRejectReason("");
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] });
-      queryClient.invalidateQueries({ queryKey: ["items"] });
+      setSelectedIds([])
+      setRejectReason("")
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["items"] })
     },
-  });
+  })
 
-  const pendingCards = useMemo(() => data, [data]);
+  const pendingCards = useMemo(() => data, [data])
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -279,5 +279,5 @@ function AdminModerationPage() {
         ) : null}
       </section>
     </div>
-  );
+  )
 }

@@ -1,6 +1,4 @@
-import { createFileRoute, Link as RouterLink } from "@tanstack/react-router";
-import { useRef } from "react";
-import type { MouseEvent } from "react";
+import { createFileRoute, Link as RouterLink } from "@tanstack/react-router"
 import {
   ArrowRight,
   BadgeCheck,
@@ -15,12 +13,13 @@ import {
   Truck,
   Users,
   Wallet,
-} from "lucide-react";
-
-import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher";
-import { useLanguage } from "@/components/Common/LanguageProvider";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from "lucide-react"
+import type { MouseEvent } from "react"
+import { useRef } from "react"
+import { useLanguage } from "@/components/Common/LanguageProvider"
+import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const Route = createFileRoute("/landing")({
   component: Landing,
@@ -31,13 +30,13 @@ export const Route = createFileRoute("/landing")({
       },
     ],
   }),
-});
+})
 
 const trustMetrics = [
   { label: "Successful transactions", value: "128K+", trend: "+18% MoM" },
   { label: "Dispute resolution rate", value: "99.8%", trend: "Avg 14h" },
   { label: "Verified users", value: "242K+", trend: "KYC protected" },
-] as const;
+] as const
 
 const featuredListings = [
   {
@@ -100,7 +99,7 @@ const featuredListings = [
     image:
       "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80",
   },
-] as const;
+] as const
 
 const topCategories = [
   { name: "Tech", count: "4,322" },
@@ -109,14 +108,14 @@ const topCategories = [
   { name: "Cameras", count: "1,298" },
   { name: "Gaming", count: "2,121" },
   { name: "Lifestyle", count: "1,682" },
-] as const;
+] as const
 
 const liveActivities = [
   "Escrow #RM-20481 released for Fujifilm X-T4",
   "New verified seller joined in District 1",
   "Offer accepted: Herman Miller Sayl - $430",
   "Delivery confirmed for iPhone 13 Pro",
-] as const;
+] as const
 
 const testimonials = [
   {
@@ -131,53 +130,53 @@ const testimonials = [
     name: "Bao Nguyen",
     role: "Buyer",
   },
-] as const;
+] as const
 
 function Landing() {
-  const { language } = useLanguage();
-  const isVi = language === "vi";
+  const { language } = useLanguage()
+  const isVi = language === "vi"
 
-  const featuredRailRef = useRef<HTMLDivElement | null>(null);
+  const featuredRailRef = useRef<HTMLDivElement | null>(null)
   const dragStateRef = useRef({
     isDragging: false,
     startX: 0,
     startScrollLeft: 0,
-  });
+  })
 
   const scrollToSection = (sectionId: string) => {
-    const el = document.getElementById(sectionId);
-    if (!el) return;
+    const el = document.getElementById(sectionId)
+    if (!el) return
 
-    const top = el.getBoundingClientRect().top + window.scrollY - 108;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
+    const top = el.getBoundingClientRect().top + window.scrollY - 108
+    window.scrollTo({ top, behavior: "smooth" })
+  }
 
   const stopDragging = () => {
-    dragStateRef.current.isDragging = false;
-    document.body.classList.remove("rmk-dragging");
-  };
+    dragStateRef.current.isDragging = false
+    document.body.classList.remove("rmk-dragging")
+  }
 
   const onFeaturedMouseDown = (event: MouseEvent<HTMLDivElement>) => {
     // Only drag with left mouse button.
-    if (event.button !== 0) return;
+    if (event.button !== 0) return
 
-    const container = featuredRailRef.current;
-    if (!container) return;
+    const container = featuredRailRef.current
+    if (!container) return
 
-    dragStateRef.current.isDragging = true;
-    dragStateRef.current.startX = event.clientX;
-    dragStateRef.current.startScrollLeft = container.scrollLeft;
-    document.body.classList.add("rmk-dragging");
-  };
+    dragStateRef.current.isDragging = true
+    dragStateRef.current.startX = event.clientX
+    dragStateRef.current.startScrollLeft = container.scrollLeft
+    document.body.classList.add("rmk-dragging")
+  }
 
   const onFeaturedMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    const container = featuredRailRef.current;
-    if (!container || !dragStateRef.current.isDragging) return;
+    const container = featuredRailRef.current
+    if (!container || !dragStateRef.current.isDragging) return
 
-    const deltaX = event.clientX - dragStateRef.current.startX;
-    container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX * 1.15;
-    event.preventDefault();
-  };
+    const deltaX = event.clientX - dragStateRef.current.startX
+    container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX * 1.15
+    event.preventDefault()
+  }
 
   return (
     <div className="rmk-landing relative min-h-screen overflow-x-hidden bg-[#eff6ff] text-zinc-900">
@@ -597,5 +596,5 @@ function Landing() {
         </section>
       </div>
     </div>
-  );
+  )
 }

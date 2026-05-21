@@ -1,37 +1,37 @@
-import { useState, useEffect, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
-import type { ListingImageRead } from "@/client";
+import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
+import type { ListingImageRead } from "@/client"
 
 interface ImageGalleryProps {
-  images: ListingImageRead[];
-  title: string;
+  images: ListingImageRead[]
+  title: string
 }
 
 export function ImageGallery({ images, title }: ImageGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
-  const hasPrev = selectedIndex > 0;
-  const hasNext = selectedIndex < images.length - 1;
+  const hasPrev = selectedIndex > 0
+  const hasNext = selectedIndex < images.length - 1
 
   const goPrev = useCallback(() => {
-    if (hasPrev) setSelectedIndex((i) => i - 1);
-  }, [hasPrev]);
+    if (hasPrev) setSelectedIndex((i) => i - 1)
+  }, [hasPrev])
 
   const goNext = useCallback(() => {
-    if (hasNext) setSelectedIndex((i) => i + 1);
-  }, [hasNext]);
+    if (hasNext) setSelectedIndex((i) => i + 1)
+  }, [hasNext])
 
   useEffect(() => {
-    if (!lightboxOpen) return;
+    if (!lightboxOpen) return
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") goPrev();
-      else if (e.key === "ArrowRight") goNext();
-      else if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowLeft") goPrev()
+      else if (e.key === "ArrowRight") goNext()
+      else if (e.key === "Escape") setLightboxOpen(false)
     }
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [lightboxOpen, goPrev, goNext]);
+    window.addEventListener("keydown", handleKey)
+    return () => window.removeEventListener("keydown", handleKey)
+  }, [lightboxOpen, goPrev, goNext])
 
   if (!images || images.length === 0) {
     return (
@@ -41,10 +41,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           <p className="text-sm">No images available</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const mainImage = images[selectedIndex];
+  const mainImage = images[selectedIndex]
 
   return (
     <>
@@ -81,7 +81,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               {hasPrev && (
                 <button
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goPrev()
+                  }}
                   className="absolute left-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition hover:bg-white"
                 >
                   <ChevronLeft className="size-5 text-blue-700" />
@@ -90,7 +93,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               {hasNext && (
                 <button
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); goNext(); }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goNext()
+                  }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition hover:bg-white"
                 >
                   <ChevronRight className="size-5 text-blue-700" />
@@ -148,7 +154,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             <button
               type="button"
               className="absolute left-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              onClick={(e) => {
+                e.stopPropagation()
+                goPrev()
+              }}
             >
               <ChevronLeft className="size-6" />
             </button>
@@ -174,7 +183,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             <button
               type="button"
               className="absolute right-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              onClick={(e) => {
+                e.stopPropagation()
+                goNext()
+              }}
             >
               <ChevronRight className="size-6" />
             </button>
@@ -182,5 +194,5 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         </div>
       )}
     </>
-  );
+  )
 }

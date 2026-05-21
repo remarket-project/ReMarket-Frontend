@@ -4,15 +4,15 @@ import {
   Outlet,
   redirect,
   useLocation,
-} from "@tanstack/react-router";
-import { Bell, ChevronDown, LogOut, Settings, Sparkles } from "lucide-react";
+} from "@tanstack/react-router"
+import { Bell, ChevronDown, LogOut, Settings, Sparkles } from "lucide-react"
 
-import { Appearance } from "@/components/Common/Appearance";
-import { Footer } from "@/components/Common/Footer";
-import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Appearance } from "@/components/Common/Appearance"
+import { Footer } from "@/components/Common/Footer"
+import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
-import { getInitials } from "@/utils";
+} from "@/components/ui/dropdown-menu"
+import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+import { getInitials } from "@/utils"
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
@@ -30,15 +30,15 @@ export const Route = createFileRoute("/_layout")({
     if (!isLoggedIn()) {
       throw redirect({
         to: "/login",
-      });
+      })
     }
   },
-});
+})
 
 function Layout() {
-  const { user: currentUser, logout } = useAuth();
-  const location = useLocation();
-  const isAdmin = currentUser?.role === "admin";
+  const { user: currentUser, logout } = useAuth()
+  const location = useLocation()
+  const isAdmin = currentUser?.role === "admin"
 
   const tabs = [
     ...(isAdmin ? [{ to: "/" as const, label: "Dashboard" }] : []),
@@ -52,12 +52,12 @@ function Layout() {
     ...(isAdmin
       ? [{ to: "/admin/moderation" as const, label: "Moderation" }]
       : []),
-  ];
+  ]
 
   const isActiveTab = (to: string) => {
-    if (to === "/") return location.pathname === "/";
-    return location.pathname.startsWith(to);
-  };
+    if (to === "/") return location.pathname === "/"
+    return location.pathname.startsWith(to)
+  }
 
   return (
     <div className="min-h-screen bg-[#eff6ff] text-zinc-900">
@@ -166,5 +166,5 @@ function Layout() {
 
       <Footer />
     </div>
-  );
+  )
 }

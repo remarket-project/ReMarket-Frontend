@@ -1,13 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { AuthLayout } from "@/components/Common/AuthLayout";
-import { useLanguage } from "@/components/Common/LanguageProvider";
+} from "@tanstack/react-router"
+import { Mail, Phone, UserRound } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { PasswordStrength } from "@/components/Auth/PasswordStrength"
+import { AuthLayout } from "@/components/Common/AuthLayout"
+import { useLanguage } from "@/components/Common/LanguageProvider"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -15,16 +18,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { LoadingButton } from "@/components/ui/loading-button"
+import { PasswordInput } from "@/components/ui/password-input"
+import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 
 const formSchema = z
   .object({
     email: z.email(),
     full_name: z.string().min(1, { message: "Full Name is required" }),
+    phone: z.string().optional(),
     password: z
       .string()
       .min(1, { message: "Password is required" })
@@ -32,13 +36,16 @@ const formSchema = z
     confirm_password: z
       .string()
       .min(1, { message: "Password confirmation is required" }),
+    agree_terms: z.boolean().refine((v) => v, {
+      message: "You must agree to the Terms",
+    }),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "The passwords don't match",
     path: ["confirm_password"],
-  });
+  })
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute("/signup")({
   component: SignUp,
@@ -46,7 +53,7 @@ export const Route = createFileRoute("/signup")({
     if (isLoggedIn()) {
       throw redirect({
         to: "/",
-      });
+      })
     }
   },
   head: () => ({
@@ -56,13 +63,13 @@ export const Route = createFileRoute("/signup")({
       },
     ],
   }),
-});
+})
 
 function SignUp() {
-  const { language } = useLanguage();
-  const isVi = language === "vi";
+  const { language } = useLanguage()
+  const isVi = language === "vi"
 
-  const { signUpMutation } = useAuth();
+  const { signUpMutation } = useAuth()
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -70,18 +77,25 @@ function SignUp() {
     defaultValues: {
       email: "",
       full_name: "",
+      phone: "",
       password: "",
       confirm_password: "",
+      agree_terms: false,
     },
-  });
+  })
 
   const onSubmit = (data: FormData) => {
-    if (signUpMutation.isPending) return;
+    if (signUpMutation.isPending) return
 
-    // exclude confirm_password from submission data
-    const { confirm_password: _confirm_password, ...submitData } = data;
-    signUpMutation.mutate(submitData);
-  };
+    const {
+      confirm_password: _confirm_password,
+      agree_terms: _agree_terms,
+      ...submitData
+    } = data
+    signUpMutation.mutate(submitData)
+  }
+
+  const password = form.watch("password")
 
   return (
     <AuthLayout>
@@ -91,6 +105,9 @@ function SignUp() {
           className="flex flex-col gap-6"
         >
           <div className="space-y-1 text-center">
+            <p className="rmk-auth-kicker">
+              {isVi ? "TAO TAI KHOAN" : "CREATE YOUR ACCOUNT"}
+            </p>
             <h1 className="rmk-auth-form-title">
               {isVi ? "Tạo tài khoản" : "Create an account"}
             </h1>
@@ -104,14 +121,17 @@ function SignUp() {
                 <FormItem>
                   <FormLabel>{isVi ? "Họ và tên" : "Full Name"}</FormLabel>
                   <FormControl>
-                    <Input
-                      data-testid="full-name-input"
-                      placeholder="Full name"
-                      autoComplete="name"
-                      type="text"
-                      className="rmk-auth-input"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <UserRound className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-400" />
+                      <Input
+                        data-testid="full-name-input"
+                        placeholder="Full name"
+                        autoComplete="name"
+                        type="text"
+                        className="rmk-auth-input pl-10"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,14 +145,42 @@ function SignUp() {
                 <FormItem>
                   <FormLabel>{isVi ? "Email" : "Email"}</FormLabel>
                   <FormControl>
-                    <Input
-                      data-testid="email-input"
-                      placeholder="you@example.com"
-                      type="email"
-                      autoComplete="email"
-                      className="rmk-auth-input"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-400" />
+                      <Input
+                        data-testid="email-input"
+                        placeholder="you@example.com"
+                        type="email"
+                        autoComplete="email"
+                        className="rmk-auth-input pl-10"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {isVi ? "So dien thoai (tuy chon)" : "Phone (optional)"}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-400" />
+                      <Input
+                        placeholder="+84..."
+                        type="tel"
+                        autoComplete="tel"
+                        className="rmk-auth-input pl-10"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -155,6 +203,7 @@ function SignUp() {
                     />
                   </FormControl>
                   <FormMessage />
+                  <PasswordStrength password={password} />
                 </FormItem>
               )}
             />
@@ -176,6 +225,33 @@ function SignUp() {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="agree_terms"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-start gap-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(v) => field.onChange(Boolean(v))}
+                      />
+                    </FormControl>
+                    <FormLabel className="text-sm leading-5 font-normal">
+                      {isVi ? "Toi dong y voi" : "I agree to the"}{" "}
+                      <RouterLink
+                        to="/landing"
+                        className="rmk-auth-link font-medium"
+                      >
+                        {isVi ? "Dieu khoan" : "Terms"}
+                      </RouterLink>
+                    </FormLabel>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -205,5 +281,5 @@ function SignUp() {
         </form>
       </Form>
     </AuthLayout>
-  );
+  )
 }

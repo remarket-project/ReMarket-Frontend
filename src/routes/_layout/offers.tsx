@@ -1,38 +1,35 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
 import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
+import {
+  ArrowLeftRight,
   CheckCircle2,
   Clock3,
   Handshake,
   Search,
   Sparkles,
   XCircle,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+} from "lucide-react"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
 
-import { type OfferRead, OffersService } from "@/client";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type OfferRead, OffersService } from "@/client"
+import CounterOfferDialog from "@/components/Offers/CounterOfferDialog"
+import { OfferCard } from "@/components/Offers/OfferCard"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export const Route = createFileRoute("/_layout/offers")({
-  component: OffersPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Offers - ReMarket",
-      },
-    ],
-  }),
-});
-
-type OfferView = "all" | "pending" | "accepted" | "rejected" | "countered";
+type OfferView = "all" | "pending" | "accepted" | "rejected" | "countered"
 
 type OffersData = {
-  sent: OfferRead[];
-  received: OfferRead[];
-};
+  sent: OfferRead[]
+  received: OfferRead[]
+}
 
 function getOffersQueryOptions() {
   return {
@@ -46,89 +43,84 @@ function getOffersQueryOptions() {
           skip: 0,
           limit: 80,
         }),
-      ]);
+      ])
 
-      return {
-        sent,
-        received,
-      };
+      return { sent, received }
     },
     queryKey: ["offers-dashboard"],
-  };
+  }
 }
 
-function statusTone(status: OfferRead["status"]) {
-  if (status === "accepted")
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
-  if (status === "rejected") return "border-rose-200 bg-rose-50 text-rose-700";
-  if (status === "countered")
-    return "border-amber-200 bg-amber-50 text-amber-700";
-  if (status === "expired") return "border-zinc-200 bg-zinc-100 text-zinc-700";
-  return "border-blue-200 bg-blue-50 text-blue-700";
-}
-
-function formatCurrency(price: string) {
-  const numeric = Number(price);
-  if (Number.isNaN(numeric)) return `$${price}`;
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(numeric);
-}
-
-function formatDate(value?: string) {
-  if (!value) return "Unknown";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "Unknown";
-  return parsed.toLocaleString(undefined, {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function listingTitleById(id: string) {
-  return `Listing ${id.slice(0, 8)}`;
-}
+export const Route = createFileRoute("/_layout/offers")({
+  component: OffersPage,
+  head: () => ({
+    meta: [{ title: "Offers - ReMarket" }],
+  }),
+})
 
 function OffersPage() {
-  const { data } = useSuspenseQuery(getOffersQueryOptions());
-  const [activeTab, setActiveTab] = useState<"received" | "sent">("received");
-  const [statusView, setStatusView] = useState<OfferView>("all");
-  const [query, setQuery] = useState("");
+  const queryClient = useQueryClient()
+  const { data } = useSuspenseQuery(getOffersQueryOptions())
+  const [activeTab, setActiveTab] = useState<"received" | "sent">("received")
+  const [statusView, setStatusView] = useState<OfferView>("all")
+  const [query, setQuery] = useState("")
+  const [counterTarget, setCounterTarget] = useState<OfferRead | null>(null)
 
-  const pool = activeTab === "received" ? data.received : data.sent;
+  const pool = activeTab === "received" ? data.received : data.sent
+
+  const mutation = useMutation({
+    mutationFn: ({
+      offerId,
+      status,
+      offerPrice,
+    }: {
+      offerId: string
+      status: OfferRead["status"]
+      offerPrice?: number
+    }) =>
+      OffersService.updateOfferStatusApiV1OffersOfferIdStatusPatch({
+        offerId,
+        requestBody: {
+          status,
+          offer_price: offerPrice,
+        },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
+      toast.success("Offer updated successfully.")
+      setCounterTarget(null)
+    },
+    onError: (error: any) => {
+      toast.error(error?.body?.detail || "Unable to update offer.")
+    },
+  })
 
   const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
+    const normalized = query.trim().toLowerCase()
     return pool.filter((offer) => {
-      const title = listingTitleById(offer.listing_id).toLowerCase();
-      const id = offer.id.toLowerCase();
-      const matchesStatus = statusView === "all" || offer.status === statusView;
+      const id = offer.id.toLowerCase()
+      const matchesStatus = statusView === "all" || offer.status === statusView
       const matchesQuery =
         normalized.length === 0 ||
-        title.includes(normalized) ||
         id.includes(normalized) ||
-        offer.status.includes(normalized);
-      return matchesStatus && matchesQuery;
-    });
-  }, [pool, query, statusView]);
+        offer.status.includes(normalized)
+      return matchesStatus && matchesQuery
+    })
+  }, [pool, query, statusView])
 
   const stats = useMemo(() => {
-    const all = data.sent.length + data.received.length;
-    const pending = [...data.sent, ...data.received].filter(
-      (item) => item.status === "pending",
-    ).length;
-    const accepted = [...data.sent, ...data.received].filter(
-      (item) => item.status === "accepted",
-    ).length;
-    const countered = [...data.sent, ...data.received].filter(
-      (item) => item.status === "countered",
-    ).length;
-    return { all, pending, accepted, countered };
-  }, [data.received, data.sent]);
+    const allRows = [...data.sent, ...data.received]
+    return {
+      all: allRows.length,
+      pending: allRows.filter((item) => item.status === "pending").length,
+      accepted: allRows.filter((item) => item.status === "accepted").length,
+      countered: allRows.filter((item) => item.status === "countered").length,
+    }
+  }, [data.received, data.sent])
+
+  const updateStatus = (offer: OfferRead, status: OfferRead["status"]) => {
+    mutation.mutate({ offerId: offer.id, status })
+  }
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -139,51 +131,45 @@ function OffersPage() {
       </div>
 
       <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
-            <Badge
-              className="border-blue-200 bg-blue-50 text-blue-700"
-              variant="outline"
-            >
-              <Sparkles className="mr-1.5 size-3" />
-              Negotiation Center
-            </Badge>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-              Offers Dashboard
-            </h1>
-            <p className="max-w-2xl text-sm text-blue-900/75 md:text-base">
-              Manage incoming and outgoing offers in one place, with quick
-              visibility on status and pricing progress.
-            </p>
-          </div>
-        </div>
+        <Badge
+          className="border-blue-200 bg-blue-50 text-blue-700"
+          variant="outline"
+        >
+          <Sparkles className="mr-1.5 size-3" />
+          Negotiation Center
+        </Badge>
+        <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
+          Offers Dashboard
+        </h1>
+        <p className="text-sm text-blue-900/75 md:text-base">
+          Manage incoming and outgoing offers in one place.
+        </p>
       </section>
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Card className="border-blue-200/80 bg-white/90">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-900/70">
+            <CardTitle className="text-sm text-blue-900/70">
               Total offers
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-bold text-blue-950">
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-blue-950">
+            <Handshake className="size-4 text-blue-700" />
             {stats.all}
           </CardContent>
         </Card>
-        <Card className="border-blue-200/80 bg-white/90">
+        <Card className="border-amber-200/80 bg-amber-50/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-900/70">
-              Pending
-            </CardTitle>
+            <CardTitle className="text-sm text-amber-800/80">Pending</CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center gap-2 text-2xl font-bold text-blue-950">
-            <Clock3 className="size-4 text-blue-700" />
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-amber-900">
+            <Clock3 className="size-4" />
             {stats.pending}
           </CardContent>
         </Card>
         <Card className="border-emerald-200/80 bg-emerald-50/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-emerald-800/80">
+            <CardTitle className="text-sm text-emerald-800/80">
               Accepted
             </CardTitle>
           </CardHeader>
@@ -192,14 +178,14 @@ function OffersPage() {
             {stats.accepted}
           </CardContent>
         </Card>
-        <Card className="border-amber-200/80 bg-amber-50/60">
+        <Card className="border-violet-200/80 bg-violet-50/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-amber-800/80">
+            <CardTitle className="text-sm text-violet-800/80">
               Countered
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center gap-2 text-2xl font-bold text-amber-900">
-            <Handshake className="size-4" />
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-violet-900">
+            <ArrowLeftRight className="size-4" />
             {stats.countered}
           </CardContent>
         </Card>
@@ -214,40 +200,34 @@ function OffersPage() {
             }
           >
             <TabsList className="border border-blue-200/70 bg-white/90 p-1">
-              <TabsTrigger value="received">Received offers</TabsTrigger>
-              <TabsTrigger value="sent">Sent offers</TabsTrigger>
+              <TabsTrigger value="received">Received</TabsTrigger>
+              <TabsTrigger value="sent">Sent</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            <Badge
-              onClick={() => setStatusView("all")}
-              className={`cursor-pointer ${statusView === "all" ? "border-blue-300 bg-blue-100 text-blue-800" : "border-blue-200 bg-blue-50 text-blue-700"}`}
-              variant="outline"
-            >
-              All
-            </Badge>
-            <Badge
-              onClick={() => setStatusView("pending")}
-              className={`cursor-pointer ${statusView === "pending" ? "border-blue-300 bg-blue-100 text-blue-800" : "border-blue-200 bg-blue-50 text-blue-700"}`}
-              variant="outline"
-            >
-              Pending
-            </Badge>
-            <Badge
-              onClick={() => setStatusView("accepted")}
-              className={`cursor-pointer ${statusView === "accepted" ? "border-emerald-300 bg-emerald-100 text-emerald-800" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}
-              variant="outline"
-            >
-              Accepted
-            </Badge>
-            <Badge
-              onClick={() => setStatusView("rejected")}
-              className={`cursor-pointer ${statusView === "rejected" ? "border-rose-300 bg-rose-100 text-rose-800" : "border-rose-200 bg-rose-50 text-rose-700"}`}
-              variant="outline"
-            >
-              Rejected
-            </Badge>
+            {(
+              [
+                "all",
+                "pending",
+                "accepted",
+                "countered",
+                "rejected",
+              ] as OfferView[]
+            ).map((status) => (
+              <Badge
+                key={status}
+                variant="outline"
+                className={`cursor-pointer ${
+                  statusView === status
+                    ? "border-blue-300 bg-blue-100 text-blue-800"
+                    : "border-blue-200 bg-white text-blue-700"
+                }`}
+                onClick={() => setStatusView(status)}
+              >
+                {status}
+              </Badge>
+            ))}
           </div>
         </div>
 
@@ -255,7 +235,7 @@ function OffersPage() {
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-blue-700/70" />
           <Input
             className="border-blue-200 bg-white pl-9"
-            placeholder="Search offer id, listing title, status..."
+            placeholder="Search offer ID, status..."
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -267,39 +247,41 @@ function OffersPage() {
           <Card className="border-dashed border-blue-200 bg-white/85">
             <CardContent className="flex items-center gap-2 p-6 text-sm text-blue-900/70">
               <XCircle className="size-4 text-blue-700" />
-              No offers match the current filters.
+              No offers match current filters.
             </CardContent>
           </Card>
         ) : (
           filtered.map((offer) => (
-            <Card
+            <OfferCard
               key={offer.id}
-              className="border-blue-200/80 bg-white/92 shadow-sm"
-            >
-              <CardContent className="grid gap-3 p-4 md:grid-cols-[1.4fr_auto_auto_auto] md:items-center">
-                <div>
-                  <p className="text-sm font-semibold text-blue-950">
-                    {listingTitleById(offer.listing_id)}
-                  </p>
-                  <p className="mt-1 text-xs text-blue-900/70">
-                    Offer #{offer.id.slice(0, 8)} • Updated{" "}
-                    {formatDate(offer.updated_at)}
-                  </p>
-                </div>
-                <p className="text-lg font-bold text-blue-950">
-                  {formatCurrency(offer.offer_price)}
-                </p>
-                <Badge className={statusTone(offer.status)}>
-                  {offer.status}
-                </Badge>
-                <div className="text-right text-xs text-blue-900/70">
-                  {activeTab === "received" ? "From buyer" : "To seller"}
-                </div>
-              </CardContent>
-            </Card>
+              offer={offer}
+              role={activeTab}
+              onAccept={(o) => updateStatus(o, "accepted")}
+              onReject={(o) => updateStatus(o, "rejected")}
+              onCounter={(o) => setCounterTarget(o)}
+              isPending={mutation.isPending}
+            />
           ))
         )}
       </section>
+
+      <CounterOfferDialog
+        open={Boolean(counterTarget)}
+        onOpenChange={(open) => {
+          if (!open) setCounterTarget(null)
+        }}
+        listedPrice={Number(counterTarget?.offer_price || 0) * 1.2}
+        buyerOffer={Number(counterTarget?.offer_price || 0)}
+        isPending={mutation.isPending}
+        onSubmit={(value) => {
+          if (!counterTarget) return
+          mutation.mutate({
+            offerId: counterTarget.id,
+            status: "countered",
+            offerPrice: value,
+          })
+        }}
+      />
     </div>
-  );
+  )
 }

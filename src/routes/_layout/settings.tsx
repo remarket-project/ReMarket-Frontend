@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router"
 import {
   BadgeCheck,
   Mail,
@@ -7,21 +7,21 @@ import {
   Sparkles,
   Star,
   Wallet,
-} from "lucide-react";
+} from "lucide-react"
 
-import ChangePassword from "@/components/UserSettings/ChangePassword";
-import DeleteAccount from "@/components/UserSettings/DeleteAccount";
-import UserInformation from "@/components/UserSettings/UserInformation";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useAuth from "@/hooks/useAuth";
+import ChangePassword from "@/components/UserSettings/ChangePassword"
+import DeleteAccount from "@/components/UserSettings/DeleteAccount"
+import UserInformation from "@/components/UserSettings/UserInformation"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import useAuth from "@/hooks/useAuth"
 
 const tabsConfig = [
   { value: "my-profile", title: "My profile", component: UserInformation },
   { value: "password", title: "Password", component: ChangePassword },
   { value: "danger-zone", title: "Danger zone", component: DeleteAccount },
-];
+]
 
 export const Route = createFileRoute("/_layout/settings")({
   component: UserSettings,
@@ -32,21 +32,21 @@ export const Route = createFileRoute("/_layout/settings")({
       },
     ],
   }),
-});
+})
 
 function UserSettings() {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser } = useAuth()
   if (!currentUser) {
     return (
       <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-8 text-blue-900">
         Loading account profile...
       </div>
-    );
+    )
   }
 
-  const profile = currentUser;
+  const profile = currentUser
   const finalTabs =
-    profile.role === "admin" ? tabsConfig.slice(0, 3) : tabsConfig;
+    profile.role === "admin" ? tabsConfig.slice(0, 3) : tabsConfig
 
   const trustRows = [
     {
@@ -73,7 +73,7 @@ function UserSettings() {
       value: "99.1%",
       tone: "border-sky-200 bg-sky-50 text-sky-700",
     },
-  ] as const;
+  ] as const
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -190,5 +190,5 @@ function UserSettings() {
         ))}
       </Tabs>
     </div>
-  );
+  )
 }

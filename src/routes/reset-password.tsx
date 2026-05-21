@@ -1,19 +1,19 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
   useNavigate,
-} from "@tanstack/react-router";
-import { BadgeCheck, KeyRound, ShieldCheck } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from "@tanstack/react-router"
+import { BadgeCheck, KeyRound, ShieldCheck } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import { LoginService } from "@/client";
-import { AuthLayout } from "@/components/Common/AuthLayout";
-import { useLanguage } from "@/components/Common/LanguageProvider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoginService } from "@/client"
+import { AuthLayout } from "@/components/Common/AuthLayout"
+import { useLanguage } from "@/components/Common/LanguageProvider"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Form,
   FormControl,
@@ -21,16 +21,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
-import { isLoggedIn } from "@/hooks/useAuth";
-import useCustomToast from "@/hooks/useCustomToast";
-import { handleError } from "@/utils";
+} from "@/components/ui/form"
+import { LoadingButton } from "@/components/ui/loading-button"
+import { PasswordInput } from "@/components/ui/password-input"
+import { isLoggedIn } from "@/hooks/useAuth"
+import useCustomToast from "@/hooks/useCustomToast"
+import { handleError } from "@/utils"
 
 const searchSchema = z.object({
   token: z.string().catch(""),
-});
+})
 
 const formSchema = z
   .object({
@@ -45,19 +45,19 @@ const formSchema = z
   .refine((data) => data.new_password === data.confirm_password, {
     message: "The passwords don't match",
     path: ["confirm_password"],
-  });
+  })
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
   validateSearch: searchSchema,
   beforeLoad: async ({ search }) => {
     if (isLoggedIn()) {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/" })
     }
     if (!search.token) {
-      throw redirect({ to: "/login" });
+      throw redirect({ to: "/login" })
     }
   },
   head: () => ({
@@ -67,14 +67,14 @@ export const Route = createFileRoute("/reset-password")({
       },
     ],
   }),
-});
+})
 
 function ResetPassword() {
-  const { token } = Route.useSearch();
-  const { language } = useLanguage();
-  const isVi = language === "vi";
-  const { showSuccessToast, showErrorToast } = useCustomToast();
-  const navigate = useNavigate();
+  const { token } = Route.useSearch()
+  const { language } = useLanguage()
+  const isVi = language === "vi"
+  const { showSuccessToast, showErrorToast } = useCustomToast()
+  const navigate = useNavigate()
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -84,25 +84,25 @@ function ResetPassword() {
       new_password: "",
       confirm_password: "",
     },
-  });
+  })
 
   const mutation = useMutation({
     mutationFn: (data: { new_password: string; token: string }) =>
       LoginService.resetPassword({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Password updated successfully");
-      form.reset();
-      navigate({ to: "/login" });
+      showSuccessToast("Password updated successfully")
+      form.reset()
+      navigate({ to: "/login" })
     },
     onError: handleError.bind(showErrorToast),
-  });
+  })
 
   const onSubmit = (data: FormData) => {
-    mutation.mutate({ new_password: data.new_password, token });
-  };
+    mutation.mutate({ new_password: data.new_password, token })
+  }
 
-  const nextPassword = form.watch("new_password");
-  const confirmPassword = form.watch("confirm_password");
+  const nextPassword = form.watch("new_password")
+  const confirmPassword = form.watch("confirm_password")
   const passwordRules = [
     {
       ok: nextPassword.length >= 8,
@@ -121,7 +121,7 @@ function ResetPassword() {
         nextPassword === confirmPassword,
       label: isVi ? "Mat khau xac nhan khop" : "Confirmation password matches",
     },
-  ];
+  ]
 
   return (
     <AuthLayout>
@@ -256,5 +256,5 @@ function ResetPassword() {
         </form>
       </Form>
     </AuthLayout>
-  );
+  )
 }

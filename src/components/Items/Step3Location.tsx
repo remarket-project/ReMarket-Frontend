@@ -1,11 +1,6 @@
-import { UseFormReturn } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query"
+import { MapPin } from "lucide-react"
+import type { UseFormReturn } from "react-hook-form"
 import {
   FormControl,
   FormDescription,
@@ -13,75 +8,67 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { MapPin } from "lucide-react";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-// Vietnamese provinces, districts, wards data
-// For simplicity, using a basic structure
-const vietnamLocations = {
-  provinces: [
-    { id: "HN", name: "Hà Nội" },
-    { id: "HCM", name: "TP. Hồ Chí Minh" },
-    { id: "DN", name: "Đà Nẵng" },
-    { id: "HP", name: "Hải Phòng" },
-    { id: "CT", name: "Cần Thơ" },
-  ],
-  districts: {
-    HN: [
-      { id: "HN-BA", name: "Quận Ba Đình" },
-      { id: "HN-HBT", name: "Quận Hoàn Bà Trìu" },
-      { id: "HN-HA", name: "Quận Hai Bà Trưng" },
-    ],
-    HCM: [
-      { id: "HCM-1", name: "Quận 1" },
-      { id: "HCM-3", name: "Quận 3" },
-      { id: "HCM-BT", name: "Quận Bình Thạnh" },
-    ],
-    DN: [
-      { id: "DN-HD", name: "Quận Hải Châu" },
-      { id: "DN-TK", name: "Quận Thanh Khê" },
-    ],
-    HP: [
-      { id: "HP-NG", name: "Quận Ngô Quyền" },
-      { id: "HP-LCH", name: "Quận Lê Chân" },
-    ],
-    CT: [
-      { id: "CT-NK", name: "Quận Ninh Kiều" },
-      { id: "CT-TK", name: "Quận Thốt Nốt" },
-    ],
-  },
-  wards: {
-    "HN-BA": [
-      { id: "HN-BA-P1", name: "Phường Phúc Tân" },
-      { id: "HN-BA-P2", name: "Phường Trúc Bạch" },
-    ],
-    "HN-HBT": [
-      { id: "HN-HBT-P1", name: "Phường Hoàn Kiếm" },
-      { id: "HN-HBT-P2", name: "Phường Thanh Nên" },
-    ],
-    "HCM-1": [
-      { id: "HCM-1-B", name: "Phường Bến Nghé" },
-      { id: "HCM-1-DN", name: "Phường Đa Kao" },
-    ],
-  },
-};
+interface VnLocation {
+  code: number
+  name: string
+}
 
 interface Step3LocationProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<any>
 }
 
 function CreateListingStep3Location({ form }: Step3LocationProps) {
-  const province = form.watch("province");
-  const district = form.watch("district");
+  const province = form.watch("province")
+  const district = form.watch("district")
 
-  const availableDistricts =
-    vietnamLocations.districts[
-      province as keyof typeof vietnamLocations.districts
-    ] || [];
-  const availableWards =
-    vietnamLocations.wards[district as keyof typeof vietnamLocations.wards] ||
-    [];
+  const { data: provinces = [] } = useQuery({
+    queryKey: ["vn-provinces"],
+    queryFn: async (): Promise<VnLocation[]> => {
+      const response = await fetch("https://provinces.open-api.vn/api/p/")
+      if (!response.ok) {
+        throw new Error("Failed to load provinces")
+      }
+      return response.json()
+    },
+  })
+
+  const { data: districts = [] } = useQuery({
+    queryKey: ["vn-districts", province],
+    queryFn: async (): Promise<VnLocation[]> => {
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/d/?p=${province}`,
+      )
+      if (!response.ok) {
+        throw new Error("Failed to load districts")
+      }
+      return response.json()
+    },
+    enabled: Boolean(province),
+  })
+
+  const { data: wards = [] } = useQuery({
+    queryKey: ["vn-wards", district],
+    queryFn: async (): Promise<VnLocation[]> => {
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/w/?d=${district}`,
+      )
+      if (!response.ok) {
+        throw new Error("Failed to load wards")
+      }
+      return response.json()
+    },
+    enabled: Boolean(district),
+  })
 
   return (
     <div className="space-y-6">
@@ -108,15 +95,22 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Province/City *</FormLabel>
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select
+              value={field.value}
+              onValueChange={(value) => {
+                field.onChange(value)
+                form.setValue("district", "", { shouldValidate: true })
+                form.setValue("ward", "", { shouldValidate: true })
+              }}
+            >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your province" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {vietnamLocations.provinces.map((prov) => (
-                  <SelectItem key={prov.id} value={prov.id}>
+                {provinces.map((prov) => (
+                  <SelectItem key={prov.code} value={String(prov.code)}>
                     {prov.name}
                   </SelectItem>
                 ))}
@@ -136,7 +130,10 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
             <FormLabel>District *</FormLabel>
             <Select
               value={field.value}
-              onValueChange={field.onChange}
+              onValueChange={(value) => {
+                field.onChange(value)
+                form.setValue("ward", "", { shouldValidate: true })
+              }}
               disabled={!province}
             >
               <FormControl>
@@ -149,8 +146,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {availableDistricts.map((dist) => (
-                  <SelectItem key={dist.id} value={dist.id}>
+                {districts.map((dist) => (
+                  <SelectItem key={dist.code} value={String(dist.code)}>
                     {dist.name}
                   </SelectItem>
                 ))}
@@ -183,8 +180,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {availableWards.map((ward) => (
-                  <SelectItem key={ward.id} value={ward.id}>
+                {wards.map((ward) => (
+                  <SelectItem key={ward.code} value={String(ward.code)}>
                     {ward.name}
                   </SelectItem>
                 ))}
@@ -218,7 +215,7 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
         )}
       />
     </div>
-  );
+  )
 }
 
-export default CreateListingStep3Location;
+export default CreateListingStep3Location

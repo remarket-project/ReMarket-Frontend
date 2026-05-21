@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState, type PointerEventHandler } from "react";
-import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher";
-import { useLanguage } from "@/components/Common/LanguageProvider";
 import {
   BellRing,
   Handshake,
   ShieldCheck,
   Sparkles,
   Wallet,
-} from "lucide-react";
+} from "lucide-react"
+import { type PointerEventHandler, useEffect, useRef, useState } from "react"
+import { useLanguage } from "@/components/Common/LanguageProvider"
+import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher"
 
 interface AuthLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 const authSlides = [
@@ -63,134 +63,134 @@ const authSlides = [
       "Xác thực danh tính và lịch sử đánh giá giúp bạn chọn đúng người giao dịch.",
     descEn: "Choose safer trades with verified identities and public ratings.",
   },
-] as const;
+] as const
 
 export function AuthLayout({ children }: AuthLayoutProps) {
-  const { language } = useLanguage();
-  const isVi = language === "vi";
-  const [visualIndex, setVisualIndex] = useState(1);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [allowTransition, setAllowTransition] = useState(true);
-  const [sliderWidth, setSliderWidth] = useState(0);
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const { language } = useLanguage()
+  const isVi = language === "vi"
+  const [visualIndex, setVisualIndex] = useState(1)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const [allowTransition, setAllowTransition] = useState(true)
+  const [sliderWidth, setSliderWidth] = useState(0)
+  const sliderRef = useRef<HTMLDivElement | null>(null)
   const dragStateRef = useRef({
     dragging: false,
     startX: 0,
     pointerId: -1,
-  });
+  })
 
-  const slideCount = authSlides.length;
-  const loopSlides = [authSlides[slideCount - 1], ...authSlides, authSlides[0]];
-  const activeSlide = (visualIndex - 1 + slideCount) % slideCount;
-  const resolvedWidth = sliderWidth > 0 ? Math.round(sliderWidth) : 0;
+  const slideCount = authSlides.length
+  const loopSlides = [authSlides[slideCount - 1], ...authSlides, authSlides[0]]
+  const activeSlide = (visualIndex - 1 + slideCount) % slideCount
+  const resolvedWidth = sliderWidth > 0 ? Math.round(sliderWidth) : 0
 
   const goToPreviousSlide = () => {
-    setAllowTransition(true);
-    setVisualIndex((prev) => (prev <= 0 ? 0 : prev - 1));
-  };
+    setAllowTransition(true)
+    setVisualIndex((prev) => (prev <= 0 ? 0 : prev - 1))
+  }
 
   const goToNextSlide = () => {
-    setAllowTransition(true);
+    setAllowTransition(true)
     setVisualIndex((prev) =>
       prev >= slideCount + 1 ? slideCount + 1 : prev + 1,
-    );
-  };
+    )
+  }
 
   useEffect(() => {
-    const element = sliderRef.current;
-    if (!element) return;
+    const element = sliderRef.current
+    if (!element) return
 
     const updateWidth = () => {
-      setSliderWidth(element.clientWidth);
-    };
+      setSliderWidth(element.clientWidth)
+    }
 
-    updateWidth();
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(element);
+    updateWidth()
+    const observer = new ResizeObserver(updateWidth)
+    observer.observe(element)
 
-    return () => observer.disconnect();
-  }, []);
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
-    if (allowTransition) return;
+    if (allowTransition) return
 
     const raf = window.requestAnimationFrame(() => {
-      setAllowTransition(true);
-    });
+      setAllowTransition(true)
+    })
 
-    return () => window.cancelAnimationFrame(raf);
-  }, [allowTransition]);
+    return () => window.cancelAnimationFrame(raf)
+  }, [allowTransition])
 
   useEffect(() => {
-    if (isDragging) return;
+    if (isDragging) return
 
     const timer = window.setInterval(() => {
-      goToNextSlide();
-    }, 4600);
+      goToNextSlide()
+    }, 4600)
 
-    return () => window.clearInterval(timer);
-  }, [isDragging]);
+    return () => window.clearInterval(timer)
+  }, [isDragging, goToNextSlide])
 
   const handleTrackTransitionEnd = () => {
     if (visualIndex <= 0) {
-      setAllowTransition(false);
-      setVisualIndex(slideCount);
-      return;
+      setAllowTransition(false)
+      setVisualIndex(slideCount)
+      return
     }
 
     if (visualIndex >= slideCount + 1) {
-      setAllowTransition(false);
-      setVisualIndex(1);
+      setAllowTransition(false)
+      setVisualIndex(1)
     }
-  };
+  }
 
   const onSliderPointerDown: PointerEventHandler<HTMLDivElement> = (event) => {
-    dragStateRef.current.dragging = true;
-    dragStateRef.current.startX = event.clientX;
-    dragStateRef.current.pointerId = event.pointerId;
-    setIsDragging(true);
-    setDragOffset(0);
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
+    dragStateRef.current.dragging = true
+    dragStateRef.current.startX = event.clientX
+    dragStateRef.current.pointerId = event.pointerId
+    setIsDragging(true)
+    setDragOffset(0)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
 
   const onSliderPointerMove: PointerEventHandler<HTMLDivElement> = (event) => {
-    if (!dragStateRef.current.dragging) return;
-    setDragOffset(event.clientX - dragStateRef.current.startX);
-  };
+    if (!dragStateRef.current.dragging) return
+    setDragOffset(event.clientX - dragStateRef.current.startX)
+  }
 
   const finishDrag = (deltaX: number) => {
-    const threshold = 70;
+    const threshold = 70
 
     if (deltaX <= -threshold) {
-      goToNextSlide();
+      goToNextSlide()
     } else if (deltaX >= threshold) {
-      goToPreviousSlide();
+      goToPreviousSlide()
     }
 
-    setDragOffset(0);
-    setIsDragging(false);
-    dragStateRef.current.dragging = false;
-    dragStateRef.current.pointerId = -1;
-  };
+    setDragOffset(0)
+    setIsDragging(false)
+    dragStateRef.current.dragging = false
+    dragStateRef.current.pointerId = -1
+  }
 
   const onSliderPointerUp: PointerEventHandler<HTMLDivElement> = (event) => {
-    if (!dragStateRef.current.dragging) return;
-    const deltaX = event.clientX - dragStateRef.current.startX;
-    finishDrag(deltaX);
-    event.currentTarget.releasePointerCapture(event.pointerId);
-  };
+    if (!dragStateRef.current.dragging) return
+    const deltaX = event.clientX - dragStateRef.current.startX
+    finishDrag(deltaX)
+    event.currentTarget.releasePointerCapture(event.pointerId)
+  }
 
   const onSliderPointerCancel: PointerEventHandler<HTMLDivElement> = () => {
-    if (!dragStateRef.current.dragging) return;
-    finishDrag(0);
-  };
+    if (!dragStateRef.current.dragging) return
+    finishDrag(0)
+  }
 
   const onSliderPointerLeave: PointerEventHandler<HTMLDivElement> = (event) => {
-    if (!dragStateRef.current.dragging) return;
-    if (dragStateRef.current.pointerId !== event.pointerId) return;
-    finishDrag(event.clientX - dragStateRef.current.startX);
-  };
+    if (!dragStateRef.current.dragging) return
+    if (dragStateRef.current.pointerId !== event.pointerId) return
+    finishDrag(event.clientX - dragStateRef.current.startX)
+  }
 
   return (
     <div className="rmk-auth-shell relative isolate grid h-svh w-screen overflow-hidden lg:grid-cols-2">
@@ -259,8 +259,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 }}
               >
                 {loopSlides.map((slide, index) => {
-                  const Icon = slide.icon;
-                  const active = index === visualIndex;
+                  const Icon = slide.icon
+                  const active = index === visualIndex
 
                   return (
                     <div
@@ -289,7 +289,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                         </div>
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -301,9 +301,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                   key={`${slide.titleEn}-dot`}
                   aria-label={slide.titleEn}
                   onClick={() => {
-                    setAllowTransition(true);
-                    setVisualIndex(index + 1);
-                    setDragOffset(0);
+                    setAllowTransition(true)
+                    setVisualIndex(index + 1)
+                    setDragOffset(0)
                   }}
                   className={`rmk-auth-slide-dot ${index === activeSlide ? "is-active" : ""}`}
                 />
@@ -324,5 +324,5 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

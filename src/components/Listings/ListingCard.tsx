@@ -1,17 +1,13 @@
-import { Link } from "@tanstack/react-router";
-import { Heart, MapPin, ShieldCheck, Star } from "lucide-react";
-import { Package } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ListingRead, ListingWithImages } from "@/client";
+import { Link } from "@tanstack/react-router"
+import { Heart, MapPin, Package, ShieldCheck, Star } from "lucide-react"
+import type { ListingRead, ListingWithImages } from "@/client"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export type ListingCardItem = ListingRead | ListingWithImages;
+export type ListingCardItem = ListingRead | ListingWithImages
 
-const conditionConfig: Record<
-  string,
-  { label: string; className: string }
-> = {
+const conditionConfig: Record<string, { label: string; className: string }> = {
   brand_new: {
     label: "Brand New",
     className: "bg-purple-50 text-purple-700 border-purple-200",
@@ -32,44 +28,43 @@ const conditionConfig: Record<
     label: "Poor",
     className: "bg-rose-50 text-rose-700 border-rose-200",
   },
-};
+}
 
 function formatTimeAgo(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = Date.now();
-  const diffMs = now - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  return `${Math.floor(diffDays / 30)} months ago`;
+  const date = new Date(dateStr)
+  const now = Date.now()
+  const diffMs = now - date.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  if (diffDays === 0) return "Today"
+  if (diffDays === 1) return "Yesterday"
+  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+  return `${Math.floor(diffDays / 30)} months ago`
 }
 
 function formatPrice(price: string): string {
-  const num = Number(price);
-  if (Number.isNaN(num)) return `$${price}`;
+  const num = Number(price)
+  if (Number.isNaN(num)) return `$${price}`
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(num);
+  }).format(num)
 }
 
 interface ListingCardProps {
-  item: ListingCardItem;
-  animationDelay?: number;
+  item: ListingCardItem
+  animationDelay?: number
 }
 
 export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
   const condition = conditionConfig[item.condition_grade] ?? {
     label: item.condition_grade,
     className: "bg-gray-50 text-gray-700 border-gray-200",
-  };
+  }
 
-  const images = "images" in item && item.images ? item.images : [];
-  const primaryImage =
-    images.find((img) => img.is_primary) ?? images[0] ?? null;
+  const images = "images" in item && item.images ? item.images : []
+  const primaryImage = images.find((img) => img.is_primary) ?? images[0] ?? null
 
   return (
     <Card
@@ -150,5 +145,5 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
         </Button>
       </CardContent>
     </Card>
-  );
+  )
 }

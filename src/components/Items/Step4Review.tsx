@@ -1,22 +1,89 @@
-import { UseFormReturn } from "react-hook-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, FileText } from "lucide-react";
+import { useQuery } from "@tanstack/react-query"
+import { DollarSign, FileText, MapPin } from "lucide-react"
+import type { UseFormReturn } from "react-hook-form"
+import { CategoriesService } from "@/client"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
 
 interface Step4Props {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<any>
 }
 
 function CreateListingStep4({ form }: Step4Props) {
-  const data = form.getValues();
+  const data = form.getValues()
 
   const conditionLabels: Record<string, string> = {
-    MINT: "Mint",
-    LIKE_NEW: "Like New",
-    GOOD: "Good",
-    FAIR: "Fair",
-    POOR: "Poor",
-  };
+    brand_new: "Brand New",
+    like_new: "Like New",
+    good: "Good",
+    fair: "Fair",
+    poor: "Poor",
+  }
+
+  // Fetch categories to show human-readable name
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () =>
+      CategoriesService.listCategoriesApiV1CategoriesGet({
+        skip: 0,
+        limit: 100,
+      }),
+  })
+
+  const categories = categoriesData?.data ?? []
+  const categoryName =
+    categories.find((cat: any) => cat.id === data.categoryId)?.name || "—"
+
+  // Fetch human readable location names from codes
+  const { data: provinceObj } = useQuery({
+    queryKey: ["vn-province-detail", data.province],
+    queryFn: async () => {
+      if (!data.province) return null
+      const res = await fetch(
+        `https://provinces.open-api.vn/api/p/${data.province}`,
+      )
+      if (!res.ok) return null
+      return res.json()
+    },
+    enabled: Boolean(data.province),
+  })
+
+  const { data: districtObj } = useQuery({
+    queryKey: ["vn-district-detail", data.district],
+    queryFn: async () => {
+      if (!data.district) return null
+      const res = await fetch(
+        `https://provinces.open-api.vn/api/d/${data.district}`,
+      )
+      if (!res.ok) return null
+      return res.json()
+    },
+    enabled: Boolean(data.district),
+  })
+
+  const { data: wardObj } = useQuery({
+    queryKey: ["vn-ward-detail", data.ward],
+    queryFn: async () => {
+      if (!data.ward) return null
+      const res = await fetch(
+        `https://provinces.open-api.vn/api/w/${data.ward}`,
+      )
+      if (!res.ok) return null
+      return res.json()
+    },
+    enabled: Boolean(data.ward),
+  })
+
+  const provinceName = provinceObj?.name || "—"
+  const districtName = districtObj?.name || "—"
+  const wardName = wardObj?.name || "—"
 
   return (
     <div className="space-y-6">
@@ -32,7 +99,10 @@ function CreateListingStep4({ form }: Step4Props) {
         {data.images && data.images.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-0 max-h-96 overflow-hidden">
             {data.images.map((img: any, idx: number) => (
-              <div key={idx} className="aspect-square relative overflow-hidden bg-gray-200 dark:bg-gray-700">
+              <div
+                key={idx}
+                className="aspect-square relative overflow-hidden bg-gray-200 dark:bg-gray-700"
+              >
                 {img.url && (
                   <img
                     src={img.url}
@@ -89,8 +159,10 @@ function CreateListingStep4({ form }: Step4Props) {
                   <MapPin className="w-3 h-3" /> Location
                 </p>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {data.province}
-                  {data.district && `, ${data.district}`}
+                  {provinceName}
+                  {districtName !== "—" && `, ${districtName}`}
+                  {wardName !== "—" && `, ${wardName}`}
+                  {data.addressDetail && `, ${data.addressDetail}`}
                 </p>
               </div>
             )}
@@ -132,7 +204,7 @@ function CreateListingStep4({ form }: Step4Props) {
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-              {data.categoryId ? data.categoryId.substring(0, 8) : "—"}
+              {categoryName}
             </p>
           </CardContent>
         </Card>
@@ -148,14 +220,55 @@ function CreateListingStep4({ form }: Step4Props) {
       </div>
 
       {/* Final Confirmation */}
-      <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          <span className="font-semibold">Ready to go live?</span> Your listing
-          will be reviewed and published within 24 hours.
-        </p>
+      <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3">
+        <FormField
+          control={form.control}
+          name="confirmAccuracy"
+          render={({ field }) => (
+            <FormItem>
+              <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) =>
+                      field.onChange(Boolean(checked))
+                    }
+                  />
+                </FormControl>
+                <span>
+                  I confirm this item is accurately described and I legally own
+                  it.
+                </span>
+              </label>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="agreeTerms"
+          render={({ field }) => (
+            <FormItem>
+              <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) =>
+                      field.onChange(Boolean(checked))
+                    }
+                  />
+                </FormControl>
+                <span>
+                  I agree to ReMarket's seller terms and marketplace policy.
+                </span>
+              </label>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
-  );
+  )
 }
 
-export default CreateListingStep4;
+export default CreateListingStep4

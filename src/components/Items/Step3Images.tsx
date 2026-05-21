@@ -1,81 +1,122 @@
-import { UseFormReturn, useFieldArray } from "react-hook-form";
-import { useState } from "react";
-import {
-  FormDescription,
-  FormLabel,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Upload, Trash2, Star } from "lucide-react";
+import { Star, Trash2, Upload } from "lucide-react"
+import { useState } from "react"
+import { type UseFormReturn, useFieldArray } from "react-hook-form"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { FormDescription, FormLabel } from "@/components/ui/form"
 
 interface Step3Props {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<any>
 }
 
 function CreateListingStep3({ form }: Step3Props) {
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "images",
-  });
+  })
 
-  const [dragActive, setDragActive] = useState(false);
+  const [dragActive, setDragActive] = useState(false)
 
   const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
+      setDragActive(true)
     } else if (e.type === "dragleave") {
-      setDragActive(false);
+      setDragActive(false)
     }
-  };
+  }
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
 
-    const files = e.dataTransfer.files;
+    const files = e.dataTransfer.files
     if (files && files.length > 0) {
-      handleFiles(files);
+      handleFiles(files)
     }
-  };
+  }
 
   const handleFiles = (files: FileList) => {
-    const currentCount = fields.length;
-    const maxImages = 10;
-    const remainingSlots = maxImages - currentCount;
+    const currentCount = fields.length
+    const maxImages = 10
+    const remainingSlots = maxImages - currentCount
+    const acceptedTypes = ["image/jpeg", "image/png", "image/webp"]
 
-    const validFiles = Array.from(files).slice(0, remainingSlots);
+    if (remainingSlots <= 0) {
+      toast.error("You can upload up to 10 images only.")
+      return
+    }
+
+    const selected = Array.from(files)
+    const validFiles = selected.slice(0, remainingSlots)
+
+    const invalidTypeCount = selected.filter(
+      (file) => !acceptedTypes.includes(file.type),
+    ).length
+    const invalidSizeCount = selected.filter(
+      (file) => file.size > 5 * 1024 * 1024,
+    ).length
+
+    if (selected.length > remainingSlots) {
+      toast.warning(`Only ${remainingSlots} image slot(s) remaining.`)
+    }
+    if (invalidTypeCount > 0) {
+      toast.error("Only JPG, PNG, and WebP files are supported.")
+    }
+    if (invalidSizeCount > 0) {
+      toast.error("Each image must be 5MB or smaller.")
+    }
 
     validFiles.forEach((file) => {
-      if (
-        ["image/jpeg", "image/png", "image/webp"].includes(file.type) &&
-        file.size <= 5 * 1024 * 1024
-      ) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          append({
-            file,
-            url: e.target?.result as string,
-            isPrimary: currentCount + validFiles.indexOf(file) === 0,
-          });
-        };
-        reader.readAsDataURL(file);
+      if (!acceptedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+        return
       }
-    });
-  };
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        append({
+          file,
+          url: e.target?.result as string,
+          isPrimary: currentCount + validFiles.indexOf(file) === 0,
+        })
+      }
+      reader.readAsDataURL(file)
+    })
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files);
+      handleFiles(e.target.files)
     }
-  };
+  }
 
   const setPrimary = (index: number) => {
     fields.forEach((_, idx) => {
-      update(idx, { ...fields[idx], isPrimary: idx === index });
-    });
-  };
+      update(idx, { ...fields[idx], isPrimary: idx === index })
+    })
+  }
+
+  const handleRemove = (index: number) => {
+    const isPrimary = (fields[index] as any)?.isPrimary
+    remove(index)
+
+    if (isPrimary && fields.length > 1) {
+      setTimeout(() => {
+        const next = form.getValues("images")
+        if (next?.length > 0 && !next.some((img: any) => img.isPrimary)) {
+          form.setValue(
+            "images",
+            next.map((img: any, idx: number) => ({
+              ...img,
+              isPrimary: idx === 0,
+            })),
+            { shouldValidate: true },
+          )
+        }
+      }, 0)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -159,7 +200,7 @@ function CreateListingStep3({ form }: Step3Props) {
                     type="button"
                     size="sm"
                     variant="destructive"
-                    onClick={() => remove(index)}
+                    onClick={() => handleRemove(index)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -183,7 +224,7 @@ function CreateListingStep3({ form }: Step3Props) {
         </ul>
       </div>
     </div>
-  );
+  )
 }
 
-export default CreateListingStep3;
+export default CreateListingStep3

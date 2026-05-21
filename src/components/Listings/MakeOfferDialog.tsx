@@ -1,12 +1,12 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Handshake, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Handshake, Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import * as z from "zod"
 
-import { OffersService } from "@/client";
-import { Button } from "@/components/ui/button";
+import { OffersService } from "@/client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -22,25 +22,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 const offerSchema = z.object({
   offer_price: z
     .number({ message: "Please enter a valid price" })
     .positive("Offer must be greater than 0"),
   message: z.string().optional(),
-});
+})
 
-type OfferFormData = z.infer<typeof offerSchema>;
+type OfferFormData = z.infer<typeof offerSchema>
 
 interface MakeOfferDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  listingId: string;
-  listingTitle: string;
-  listedPrice: string;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  listingId: string
+  listingTitle: string
+  listedPrice: string
 }
 
 export function MakeOfferDialog({
@@ -50,8 +50,8 @@ export function MakeOfferDialog({
   listingTitle,
   listedPrice,
 }: MakeOfferDialogProps) {
-  const queryClient = useQueryClient();
-  const listedNum = Number(listedPrice);
+  const queryClient = useQueryClient()
+  const listedNum = Number(listedPrice)
 
   const form = useForm<OfferFormData>({
     resolver: zodResolver(offerSchema),
@@ -59,7 +59,7 @@ export function MakeOfferDialog({
       offer_price: undefined,
       message: "",
     },
-  });
+  })
 
   const mutation = useMutation({
     mutationFn: (data: OfferFormData) =>
@@ -70,37 +70,39 @@ export function MakeOfferDialog({
         },
       }),
     onSuccess: () => {
-      toast.success("Offer submitted successfully! The seller will be notified.");
-      queryClient.invalidateQueries({ queryKey: ["listing-offers", listingId] });
-      form.reset();
-      onOpenChange(false);
+      toast.success(
+        "Offer submitted successfully! The seller will be notified.",
+      )
+      queryClient.invalidateQueries({ queryKey: ["listing-offers", listingId] })
+      form.reset()
+      onOpenChange(false)
     },
     onError: (err: any) => {
       const msg =
-        err?.body?.detail || "Failed to submit offer. Please try again.";
-      toast.error(msg);
+        err?.body?.detail || "Failed to submit offer. Please try again."
+      toast.error(msg)
     },
-  });
+  })
 
-  const offerPrice = form.watch("offer_price");
+  const offerPrice = form.watch("offer_price")
   const pctOfListed =
     listedNum > 0 && offerPrice > 0
       ? Math.round((offerPrice / listedNum) * 100)
-      : null;
+      : null
 
   function onSubmit(data: OfferFormData) {
-    mutation.mutate(data);
+    mutation.mutate(data)
   }
 
   const formatUSD = (v: string) => {
-    const n = Number(v);
-    if (Number.isNaN(n)) return v;
+    const n = Number(v)
+    if (Number.isNaN(n)) return v
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       maximumFractionDigits: 0,
-    }).format(n);
-  };
+    }).format(n)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -120,7 +122,9 @@ export function MakeOfferDialog({
         <div className="rounded-xl border border-blue-200/70 bg-blue-50/60 p-3 text-sm">
           <div className="flex items-center justify-between">
             <span className="text-blue-900/70">Listed price</span>
-            <span className="font-bold text-blue-950">{formatUSD(listedPrice)}</span>
+            <span className="font-bold text-blue-950">
+              {formatUSD(listedPrice)}
+            </span>
           </div>
           {pctOfListed !== null && (
             <div className="mt-1 flex items-center justify-between">
@@ -130,8 +134,8 @@ export function MakeOfferDialog({
                   pctOfListed >= 90
                     ? "text-emerald-700"
                     : pctOfListed >= 70
-                    ? "text-amber-700"
-                    : "text-rose-700"
+                      ? "text-amber-700"
+                      : "text-rose-700"
                 }`}
               >
                 {pctOfListed}% of listed price
@@ -164,7 +168,9 @@ export function MakeOfferDialog({
                         className="border-blue-200 bg-white pl-7"
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value === "" ? undefined : Number(e.target.value)
+                            e.target.value === ""
+                              ? undefined
+                              : Number(e.target.value),
                           )
                         }
                       />
@@ -233,5 +239,5 @@ export function MakeOfferDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

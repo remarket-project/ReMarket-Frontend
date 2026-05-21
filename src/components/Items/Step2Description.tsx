@@ -1,4 +1,4 @@
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form"
 import {
   FormControl,
   FormDescription,
@@ -6,17 +6,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
 
 interface Step2Props {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<any>
 }
 
 function CreateListingStep2({ form }: Step2Props) {
-  const description = form.watch("description") || "";
-  const minChars = 20;
-  const maxChars = 2000;
+  const description = form.watch("description") || ""
+  const minChars = 20
+  const maxChars = 2000
 
   return (
     <div className="space-y-6">
@@ -77,7 +77,7 @@ function CreateListingStep2({ form }: Step2Props) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default CreateListingStep2;
+export default CreateListingStep2

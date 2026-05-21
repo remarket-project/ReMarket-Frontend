@@ -1,56 +1,56 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import {
   AlertTriangle,
   Search,
   ShieldCheck,
   UserCheck,
   Users,
-} from "lucide-react";
-import { Suspense, useMemo, useState } from "react";
+} from "lucide-react"
+import { Suspense, useMemo, useState } from "react"
 
-import { ApiError, UsersService } from "@/client";
-import AddUser from "@/components/Admin/AddUser";
-import { columns, type UserTableData } from "@/components/Admin/columns";
-import { DataTable } from "@/components/Common/DataTable";
-import PendingUsers from "@/components/Pending/PendingUsers";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import useAuth from "@/hooks/useAuth";
+import { ApiError, UsersService } from "@/client"
+import AddUser from "@/components/Admin/AddUser"
+import { columns, type UserTableData } from "@/components/Admin/columns"
+import { DataTable } from "@/components/Common/DataTable"
+import PendingUsers from "@/components/Pending/PendingUsers"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import useAuth from "@/hooks/useAuth"
 
 function getUsersQueryOptions() {
   return {
     queryFn: async () => {
-      const response = await UsersService.readUsers({ skip: 0, limit: 100 });
+      const response = await UsersService.readUsers({ skip: 0, limit: 100 })
       return {
         data: response.data ?? [],
-      };
+      }
     },
     queryKey: ["users"],
-  };
+  }
 }
 
 export const Route = createFileRoute("/_layout/admin" as any)({
   component: Admin,
   beforeLoad: async () => {
     try {
-      const user = await UsersService.readUserMe();
-      const isAdmin = user.role === "admin";
+      const user = await UsersService.readUserMe()
+      const isAdmin = user.role === "admin"
       if (!isAdmin) {
         throw redirect({
           to: "/",
-        });
+        })
       }
     } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        localStorage.removeItem("access_token");
-        throw redirect({ to: "/login" });
+        localStorage.removeItem("access_token")
+        throw redirect({ to: "/login" })
       }
-      return;
+      return
     }
   },
   head: () => ({
@@ -60,43 +60,43 @@ export const Route = createFileRoute("/_layout/admin" as any)({
       },
     ],
   }),
-});
+})
 
 function UsersTableContent() {
-  const { user: currentUser } = useAuth();
-  const { data: users } = useSuspenseQuery(getUsersQueryOptions());
-  const [query, setQuery] = useState("");
+  const { user: currentUser } = useAuth()
+  const { data: users } = useSuspenseQuery(getUsersQueryOptions())
+  const [query, setQuery] = useState("")
 
   const tableData: UserTableData[] = users.data.map((user: any) => ({
     ...user,
     isCurrentUser: currentUser?.id === user.id,
-  }));
+  }))
 
   const filteredUsers = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return tableData;
+    const normalizedQuery = query.trim().toLowerCase()
+    if (!normalizedQuery) return tableData
 
     return tableData.filter((user) => {
-      const fullName = (user.full_name || "").toLowerCase();
-      const email = (user.email || "").toLowerCase();
-      const status = user.is_active ? "active" : "inactive";
+      const fullName = (user.full_name || "").toLowerCase()
+      const email = (user.email || "").toLowerCase()
+      const status = user.is_active ? "active" : "inactive"
       return (
         fullName.includes(normalizedQuery) ||
         email.includes(normalizedQuery) ||
         status.includes(normalizedQuery)
-      );
-    });
-  }, [query, tableData]);
+      )
+    })
+  }, [query, tableData])
 
   const stats = useMemo(() => {
-    const total = tableData.length;
-    const active = tableData.filter((user) => user.is_active).length;
-    const inactive = total - active;
+    const total = tableData.length
+    const active = tableData.filter((user) => user.is_active).length
+    const inactive = total - active
     const adminAccounts = tableData.filter(
       (user) => user.role === "admin",
-    ).length;
-    return { total, active, inactive, adminAccounts };
-  }, [tableData]);
+    ).length
+    return { total, active, inactive, adminAccounts }
+  }, [tableData])
 
   return (
     <div className="flex flex-col gap-4">
@@ -173,7 +173,7 @@ function UsersTableContent() {
         <DataTable columns={columns} data={filteredUsers} />
       </div>
     </div>
-  );
+  )
 }
 
 function UsersTable() {
@@ -181,7 +181,7 @@ function UsersTable() {
     <Suspense fallback={<PendingUsers />}>
       <UsersTableContent />
     </Suspense>
-  );
+  )
 }
 
 function Admin() {
@@ -220,5 +220,5 @@ function Admin() {
         <UsersTable />
       </div>
     </div>
-  );
+  )
 }

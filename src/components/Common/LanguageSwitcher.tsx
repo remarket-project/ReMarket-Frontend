@@ -1,12 +1,12 @@
-import { useLanguage } from "@/components/Common/LanguageProvider";
-import { cn } from "@/lib/utils";
+import { useLanguage } from "@/components/Common/LanguageProvider"
+import { cn } from "@/lib/utils"
 
 interface LanguageSwitcherProps {
-  className?: string;
+  className?: string
 }
 
 export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage()
 
   return (
     <div
@@ -42,5 +42,5 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
         VI
       </button>
     </div>
-  );
+  )
 }

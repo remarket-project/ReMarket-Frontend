@@ -626,11 +626,7 @@
     border-radius: 1.5rem;
     padding: 0;
     background:
-      radial-gradient(
-        circle at 12% 15%,
-        rgb(56 189 248 / 0.3),
-        transparent 42%
-      ),
+      radial-gradient(circle at 12% 15%, rgb(56 189 248 / 0.3), transparent 42%),
       radial-gradient(
         circle at 84% 20%,
         rgb(59 130 246 / 0.26),
@@ -1353,7 +1349,7 @@
   .rmk-auth-stage-ring,
   .rmk-auth-stage-beam,
   .rmk-auth-stage-glow {
-    animation: none !important;
+    animation: none;
     opacity: 1;
     transform: none;
   }
