@@ -1,23 +1,22 @@
-import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
-import { LayoutGrid, List, Search, SlidersHorizontal, X } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
-import { z } from "zod"
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { LayoutGrid, List, Search, SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 
-import { CategoriesService, type ListingRead, ListingsService } from "@/client"
-import { ListingCard } from "@/components/Listings/ListingCard"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { CategoriesService, type ListingRead, ListingsService } from "@/client";
+import { ListingCard } from "@/components/Listings/ListingCard";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-
+} from "@/components/ui/select";
 
 const searchSchema = z.object({
   q: z.string().catch(""),
@@ -26,9 +25,9 @@ const searchSchema = z.object({
   maxPrice: z.string().catch(""),
   view: z.enum(["grid", "list"]).catch("grid"),
   page: z.string().catch("1"),
-})
+});
 
-const PAGE_SIZE = 24
+const PAGE_SIZE = 24;
 
 export const Route = createFileRoute("/_layout/search")({
   component: SearchResultsPage,
@@ -36,53 +35,61 @@ export const Route = createFileRoute("/_layout/search")({
   head: () => ({
     meta: [
       {
-        title: "Search Results - ReMarket",
+        title: "Kết quả tìm kiếm - ReMarket",
       },
     ],
   }),
-})
+});
 
 function formatCurrency(value: string) {
-  const amount = Number(value)
-  if (Number.isNaN(amount)) return value
+  const amount = Number(value);
+  if (Number.isNaN(amount)) return value;
   return new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(amount)
+  }).format(amount);
 }
 
 function formatDate(value: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return "Unknown date"
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Unknown date";
   return date.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  })
+  });
 }
 
 function conditionLabel(condition: string) {
-  return condition.split("_").join(" ")
+  const labels: Record<string, string> = {
+    brand_new: "Mới nguyên",
+    like_new: "Như mới",
+    good: "Tốt",
+    fair: "Khá",
+    poor: "Kém",
+  };
+
+  return labels[condition] ?? condition.split("_").join(" ");
 }
 
 function parsePrice(value: string) {
-  if (!value) return undefined
-  const num = Number(value)
-  if (Number.isNaN(num) || num < 0) return undefined
-  return num
+  if (!value) return undefined;
+  const num = Number(value);
+  if (Number.isNaN(num) || num < 0) return undefined;
+  return num;
 }
 
 function SearchResultsPage() {
-  const search = Route.useSearch()
-  const navigate = useNavigate()
+  const search = Route.useSearch();
+  const navigate = useNavigate();
 
   const [draft, setDraft] = useState({
     q: search.q,
     categoryId: search.categoryId,
     minPrice: search.minPrice,
     maxPrice: search.maxPrice,
-  })
+  });
 
   useEffect(() => {
     setDraft({
@@ -90,13 +97,13 @@ function SearchResultsPage() {
       categoryId: search.categoryId,
       minPrice: search.minPrice,
       maxPrice: search.maxPrice,
-    })
-  }, [search.q, search.categoryId, search.minPrice, search.maxPrice])
+    });
+  }, [search.q, search.categoryId, search.minPrice, search.maxPrice]);
 
-  const page = Math.max(1, Number(search.page) || 1)
-  const minPrice = parsePrice(search.minPrice)
-  const maxPrice = parsePrice(search.maxPrice)
-  const skip = (page - 1) * PAGE_SIZE
+  const page = Math.max(1, Number(search.page) || 1);
+  const minPrice = parsePrice(search.minPrice);
+  const maxPrice = parsePrice(search.maxPrice);
+  const skip = (page - 1) * PAGE_SIZE;
 
   const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
@@ -105,7 +112,7 @@ function SearchResultsPage() {
         skip: 0,
         limit: 100,
       }),
-  })
+  });
 
   const {
     data: listingsData,
@@ -129,17 +136,17 @@ function SearchResultsPage() {
         skip,
         limit: PAGE_SIZE,
       }),
-  })
+  });
 
-  const listings = listingsData?.items ?? []
-  const total = listingsData?.total ?? 0
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const listings = listingsData?.items ?? [];
+  const total = listingsData?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const categories = categoriesData?.data ?? []
+  const categories = categoriesData?.data ?? [];
   const categoryMap = useMemo(
     () => new Map(categories.map((cat: any) => [cat.id, cat.name])),
     [categories],
-  )
+  );
 
   const activeFilters = [
     search.q ? { label: `Keyword: ${search.q}`, key: "q" as const } : null,
@@ -155,7 +162,7 @@ function SearchResultsPage() {
     search.maxPrice
       ? { label: `Max: $${search.maxPrice}`, key: "maxPrice" as const }
       : null,
-  ].filter(Boolean) as Array<{ label: string; key: keyof typeof search }>
+  ].filter(Boolean) as Array<{ label: string; key: keyof typeof search }>;
 
   const applyFilters = () => {
     navigate({
@@ -168,8 +175,8 @@ function SearchResultsPage() {
         maxPrice: draft.maxPrice,
         page: "1",
       },
-    })
-  }
+    });
+  };
 
   const clearFilters = () => {
     navigate({
@@ -182,8 +189,8 @@ function SearchResultsPage() {
         view: search.view,
         page: "1",
       },
-    })
-  }
+    });
+  };
 
   const setView = (view: "grid" | "list") => {
     navigate({
@@ -192,19 +199,19 @@ function SearchResultsPage() {
         ...search,
         view,
       },
-    })
-  }
+    });
+  };
 
   const goToPage = (nextPage: number) => {
-    const safePage = Math.min(Math.max(nextPage, 1), totalPages)
+    const safePage = Math.min(Math.max(nextPage, 1), totalPages);
     navigate({
       to: "/search",
       search: {
         ...search,
         page: String(safePage),
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -221,13 +228,13 @@ function SearchResultsPage() {
               className="border-blue-200 bg-blue-50 text-blue-700"
               variant="outline"
             >
-              Marketplace Search
+              Tìm kiếm marketplace
             </Badge>
             <h2 className="mt-2 font-display text-2xl text-blue-950 md:text-3xl">
-              Find listings that match your criteria
+              Tìm tin khớp với tiêu chí của bạn
             </h2>
             <p className="mt-1 text-sm text-blue-900/75">
-              Use real-time filters based on live listing data.
+              Lọc theo dữ liệu thực tế và chỉnh điều kiện ngay trên kết quả.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -242,7 +249,7 @@ function SearchResultsPage() {
               onClick={() => setView("grid")}
             >
               <LayoutGrid className="h-4 w-4" />
-              <span className="sr-only">Grid view</span>
+              <span className="sr-only">Chế độ lưới</span>
             </Button>
             <Button
               size="icon"
@@ -255,7 +262,7 @@ function SearchResultsPage() {
               onClick={() => setView("list")}
             >
               <List className="h-4 w-4" />
-              <span className="sr-only">List view</span>
+              <span className="sr-only">Chế độ danh sách</span>
             </Button>
           </div>
         </div>
@@ -266,7 +273,7 @@ function SearchResultsPage() {
           <div className="flex items-center gap-2 text-blue-950">
             <SlidersHorizontal className="size-4 text-blue-700" />
             <h3 className="text-sm font-semibold uppercase tracking-wide">
-              Filters
+              Bộ lọc
             </h3>
           </div>
 
@@ -278,14 +285,14 @@ function SearchResultsPage() {
                 onChange={(event) =>
                   setDraft((prev) => ({ ...prev, q: event.target.value }))
                 }
-                placeholder="Search listings"
+                placeholder="Tìm tin đăng"
                 className="border-blue-200 bg-white pl-9"
               />
             </div>
 
             <div>
               <label className="text-xs font-medium text-blue-900/70 uppercase">
-                Category
+                Danh mục
               </label>
               <Select
                 value={draft.categoryId}
@@ -295,10 +302,10 @@ function SearchResultsPage() {
                 disabled={isLoadingCategories}
               >
                 <SelectTrigger className="mt-1 border-blue-200 bg-white">
-                  <SelectValue placeholder="All categories" />
+                  <SelectValue placeholder="Tất cả danh mục" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
+                  <SelectItem value="">Tất cả danh mục</SelectItem>
                   {categories.map((category: any) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
@@ -310,13 +317,13 @@ function SearchResultsPage() {
 
             <div className="grid gap-2">
               <label className="text-xs font-medium text-blue-900/70 uppercase">
-                Price range
+                Khoảng giá
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <Input
                   type="number"
                   min="0"
-                  placeholder="Min"
+                  placeholder="Thấp nhất"
                   value={draft.minPrice}
                   onChange={(event) =>
                     setDraft((prev) => ({
@@ -329,7 +336,7 @@ function SearchResultsPage() {
                 <Input
                   type="number"
                   min="0"
-                  placeholder="Max"
+                  placeholder="Cao nhất"
                   value={draft.maxPrice}
                   onChange={(event) =>
                     setDraft((prev) => ({
@@ -344,14 +351,14 @@ function SearchResultsPage() {
 
             <div className="grid gap-2">
               <Button className="rmk-glow-button" onClick={applyFilters}>
-                Apply filters
+                Áp dụng bộ lọc
               </Button>
               <Button
                 variant="outline"
                 className="border-blue-200 bg-white/90"
                 onClick={clearFilters}
               >
-                Clear all
+                Xóa tất cả
               </Button>
             </div>
           </div>
@@ -361,10 +368,10 @@ function SearchResultsPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-blue-200/70 bg-white/85 px-4 py-3 shadow-sm shadow-blue-100/60">
             <div>
               <p className="text-sm font-semibold text-blue-950">
-                {total} result{total === 1 ? "" : "s"} found
+                {total} kết quả tìm được
               </p>
               <p className="text-xs text-blue-900/65">
-                Showing {listings.length} listings on page {page}
+                Hiển thị {listings.length} tin ở trang {page}
               </p>
             </div>
 
@@ -399,22 +406,22 @@ function SearchResultsPage() {
 
           {isLoading ? (
             <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-6 text-sm text-blue-900/80">
-              Loading results...
+              Đang tải kết quả...
             </div>
           ) : isError ? (
             <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-6 text-sm text-rose-700">
-              Unable to load search results. Please try again.
+              Không tải được kết quả tìm kiếm. Vui lòng thử lại.
             </div>
           ) : listings.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-blue-200 bg-white/85 p-8 text-center">
               <h3 className="text-lg font-semibold text-blue-950">
-                No listings match your filters
+                Không có tin phù hợp với bộ lọc
               </h3>
               <p className="mt-1 text-sm text-blue-900/70">
-                Try removing filters or adjusting the keyword.
+                Hãy thử bỏ bớt bộ lọc hoặc điều chỉnh từ khóa.
               </p>
               <Button className="mt-4 rmk-glow-button" onClick={clearFilters}>
-                Clear filters
+                Xóa bộ lọc
               </Button>
             </div>
           ) : (
@@ -433,13 +440,19 @@ function SearchResultsPage() {
                       item={listing}
                       animationDelay={index * 50}
                     />
-                  )
+                  );
                 }
 
                 // List View
-                const categoryName = categoryMap.get(listing.category_id)
-                const images = "images" in listing && listing.images ? (listing.images as any) : []
-                const primaryImage = images.find((img: any) => img.is_primary) ?? images[0] ?? null
+                const categoryName = categoryMap.get(listing.category_id);
+                const images =
+                  "images" in listing && listing.images
+                    ? (listing.images as any)
+                    : [];
+                const primaryImage =
+                  images.find((img: any) => img.is_primary) ??
+                  images[0] ??
+                  null;
 
                 return (
                   <Card
@@ -490,12 +503,16 @@ function SearchResultsPage() {
                             {listing.title}
                           </Link>
                           {categoryName && (
-                            <p className="text-xs text-blue-900/60">{categoryName}</p>
+                            <p className="text-xs text-blue-900/60">
+                              {categoryName}
+                            </p>
                           )}
                         </div>
 
                         {listing.description && (
-                          <p className="text-xs text-blue-900/70 line-clamp-2">{listing.description}</p>
+                          <p className="text-xs text-blue-900/70 line-clamp-2">
+                            {listing.description}
+                          </p>
                         )}
 
                         <div className="flex items-center justify-between gap-4 pt-1">
@@ -509,7 +526,7 @@ function SearchResultsPage() {
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           )}
@@ -522,10 +539,10 @@ function SearchResultsPage() {
                 disabled={page <= 1}
                 onClick={() => goToPage(page - 1)}
               >
-                Previous
+                Trước
               </Button>
               <span>
-                Page {page} of {totalPages}
+                Trang {page} / {totalPages}
               </span>
               <Button
                 variant="outline"
@@ -533,12 +550,12 @@ function SearchResultsPage() {
                 disabled={page >= totalPages}
                 onClick={() => goToPage(page + 1)}
               >
-                Next
+                Sau
               </Button>
             </div>
           ) : null}
         </div>
       </section>
     </div>
-  )
+  );
 }

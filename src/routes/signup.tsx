@@ -1,16 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router"
-import { Mail, Phone, UserRound } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { PasswordStrength } from "@/components/Auth/PasswordStrength"
-import { AuthLayout } from "@/components/Common/AuthLayout"
-import { useLanguage } from "@/components/Common/LanguageProvider"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@tanstack/react-router";
+import { Mail, Phone, UserRound } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { PasswordStrength } from "@/components/Auth/PasswordStrength";
+import { AuthLayout } from "@/components/Common/AuthLayout";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -18,58 +17,53 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { LoadingButton } from "@/components/ui/loading-button"
-import { PasswordInput } from "@/components/ui/password-input"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/ui/loading-button";
+import { PasswordInput } from "@/components/ui/password-input";
+import useAuth, { isLoggedIn } from "@/hooks/useAuth";
 
 const formSchema = z
   .object({
     email: z.email(),
-    full_name: z.string().min(1, { message: "Full Name is required" }),
+    full_name: z.string().min(1, { message: "Vui lòng nhập họ và tên" }),
     phone: z.string().optional(),
     password: z
       .string()
-      .min(1, { message: "Password is required" })
-      .min(8, { message: "Password must be at least 8 characters" }),
+      .min(1, { message: "Vui lòng nhập mật khẩu" })
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
     confirm_password: z
       .string()
-      .min(1, { message: "Password confirmation is required" }),
-    agree_terms: z.boolean().refine((v) => v, {
-      message: "You must agree to the Terms",
+      .min(1, { message: "Vui lòng xác nhận mật khẩu" }),
+    agree_terms: z.boolean().refine((value) => value, {
+      message: "Bạn phải đồng ý với điều khoản sử dụng",
     }),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "The passwords don't match",
+    message: "Mật khẩu nhập lại không khớp",
     path: ["confirm_password"],
-  })
+  });
 
-type FormData = z.infer<typeof formSchema>
+type FormData = z.infer<typeof formSchema>;
 
 export const Route = createFileRoute("/signup")({
   component: SignUp,
   beforeLoad: async () => {
     if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      })
+      throw redirect({ to: "/" });
     }
   },
   head: () => ({
     meta: [
       {
-        title: "Create Account - ReMarket",
+        title: "Tạo tài khoản - ReMarket",
       },
     ],
   }),
-})
+});
 
 function SignUp() {
-  const { language } = useLanguage()
-  const isVi = language === "vi"
-
-  const { signUpMutation } = useAuth()
+  const { signUpMutation } = useAuth();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -82,20 +76,20 @@ function SignUp() {
       confirm_password: "",
       agree_terms: false,
     },
-  })
+  });
 
   const onSubmit = (data: FormData) => {
-    if (signUpMutation.isPending) return
+    if (signUpMutation.isPending) return;
 
     const {
-      confirm_password: _confirm_password,
-      agree_terms: _agree_terms,
+      confirm_password: _confirmPassword,
+      agree_terms: _agreeTerms,
       ...submitData
-    } = data
-    signUpMutation.mutate(submitData)
-  }
+    } = data;
+    signUpMutation.mutate(submitData);
+  };
 
-  const password = form.watch("password")
+  const password = form.watch("password");
 
   return (
     <AuthLayout>
@@ -105,12 +99,8 @@ function SignUp() {
           className="flex flex-col gap-6"
         >
           <div className="space-y-1 text-center">
-            <p className="rmk-auth-kicker">
-              {isVi ? "TAO TAI KHOAN" : "CREATE YOUR ACCOUNT"}
-            </p>
-            <h1 className="rmk-auth-form-title">
-              {isVi ? "Tạo tài khoản" : "Create an account"}
-            </h1>
+            <p className="rmk-auth-kicker">TẠO TÀI KHOẢN</p>
+            <h1 className="rmk-auth-form-title">Tạo tài khoản</h1>
           </div>
 
           <div className="grid gap-4">
@@ -119,13 +109,13 @@ function SignUp() {
               name="full_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isVi ? "Họ và tên" : "Full Name"}</FormLabel>
+                  <FormLabel>Họ và tên</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <UserRound className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-400" />
                       <Input
                         data-testid="full-name-input"
-                        placeholder="Full name"
+                        placeholder="Nhập họ và tên"
                         autoComplete="name"
                         type="text"
                         className="rmk-auth-input pl-10"
@@ -143,13 +133,13 @@ function SignUp() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isVi ? "Email" : "Email"}</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-400" />
                       <Input
                         data-testid="email-input"
-                        placeholder="you@example.com"
+                        placeholder="ban@vidu.com"
                         type="email"
                         autoComplete="email"
                         className="rmk-auth-input pl-10"
@@ -167,9 +157,7 @@ function SignUp() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {isVi ? "So dien thoai (tuy chon)" : "Phone (optional)"}
-                  </FormLabel>
+                  <FormLabel>Số điện thoại (tùy chọn)</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Phone className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-400" />
@@ -192,11 +180,11 @@ function SignUp() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isVi ? "Mật khẩu" : "Password"}</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
                     <PasswordInput
                       data-testid="password-input"
-                      placeholder="Password"
+                      placeholder="Nhập mật khẩu"
                       autoComplete="new-password"
                       className="rmk-auth-input"
                       {...field}
@@ -213,13 +201,11 @@ function SignUp() {
               name="confirm_password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {isVi ? "Xác nhận mật khẩu" : "Confirm Password"}
-                  </FormLabel>
+                  <FormLabel>Xác nhận mật khẩu</FormLabel>
                   <FormControl>
                     <PasswordInput
                       data-testid="confirm-password-input"
-                      placeholder="Confirm Password"
+                      placeholder="Nhập lại mật khẩu"
                       autoComplete="new-password"
                       className="rmk-auth-input"
                       {...field}
@@ -239,16 +225,18 @@ function SignUp() {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={(v) => field.onChange(Boolean(v))}
+                        onCheckedChange={(value) =>
+                          field.onChange(Boolean(value))
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-sm leading-5 font-normal">
-                      {isVi ? "Toi dong y voi" : "I agree to the"}{" "}
+                      Tôi đồng ý với{" "}
                       <RouterLink
                         to="/landing"
                         className="rmk-auth-link font-medium"
                       >
-                        {isVi ? "Dieu khoan" : "Terms"}
+                        điều khoản
                       </RouterLink>
                     </FormLabel>
                   </div>
@@ -262,24 +250,23 @@ function SignUp() {
               className="rmk-auth-submit w-full"
               loading={signUpMutation.isPending}
             >
-              {isVi ? "Đăng ký" : "Sign Up"}
+              Đăng ký
             </LoadingButton>
 
             <p className="rmk-auth-note rounded-md px-3 py-2 text-xs">
-              {isVi
-                ? "Khi tạo tài khoản, bạn đồng ý sử dụng ReMarket có trách nhiệm và cung cấp thông tin chính xác."
-                : "By creating an account, you agree to use ReMarket responsibly and keep your profile details accurate."}
+              Khi tạo tài khoản, bạn đồng ý sử dụng ReMarket có trách nhiệm và
+              cung cấp thông tin chính xác.
             </p>
           </div>
 
           <div className="text-center text-sm">
-            {isVi ? "Đã có tài khoản?" : "Already have an account?"}{" "}
+            Đã có tài khoản?{" "}
             <RouterLink to="/login" className="rmk-auth-link font-medium">
-              {isVi ? "Đăng nhập" : "Log in"}
+              Đăng nhập
             </RouterLink>
           </div>
         </form>
       </Form>
     </AuthLayout>
-  )
+  );
 }

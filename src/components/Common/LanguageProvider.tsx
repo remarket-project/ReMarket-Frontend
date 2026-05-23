@@ -1,54 +1,54 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-export type AppLanguage = "en" | "vi"
+export type AppLanguage = "en" | "vi";
 
 interface LanguageContextValue {
-  language: AppLanguage
-  setLanguage: (language: AppLanguage) => void
-  toggleLanguage: () => void
+  language: AppLanguage;
+  setLanguage: (language: AppLanguage) => void;
+  toggleLanguage: () => void;
 }
 
-const STORAGE_KEY = "rmk_language"
+const STORAGE_KEY = "rmk_language";
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(
   undefined,
-)
+);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<AppLanguage>("en")
+  const [language, setLanguage] = useState<AppLanguage>("vi");
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved === "en" || saved === "vi") {
-      setLanguage(saved)
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "vi") {
+      setLanguage(saved);
     }
-  }, [])
+  }, []);
 
   const updateLanguage = (next: AppLanguage) => {
-    setLanguage(next)
-    localStorage.setItem(STORAGE_KEY, next)
-  }
+    setLanguage(next);
+    localStorage.setItem(STORAGE_KEY, next);
+  };
 
   const value = useMemo(
     () => ({
       language,
       setLanguage: updateLanguage,
-      toggleLanguage: () => updateLanguage(language === "en" ? "vi" : "en"),
+      toggleLanguage: () => updateLanguage("vi"),
     }),
     [language, updateLanguage],
-  )
+  );
 
   return (
     <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
-  )
+  );
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext)
+  const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error("useLanguage must be used within LanguageProvider")
+    throw new Error("useLanguage must be used within LanguageProvider");
   }
-  return context
+  return context;
 }

@@ -1,70 +1,71 @@
-import { Link } from "@tanstack/react-router"
-import { Heart, MapPin, Package, ShieldCheck, Star } from "lucide-react"
-import type { ListingRead, ListingWithImages } from "@/client"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Link } from "@tanstack/react-router";
+import { Heart, MapPin, Package, ShieldCheck, Star } from "lucide-react";
+import type { ListingRead, ListingWithImages } from "@/client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export type ListingCardItem = ListingRead | ListingWithImages
+export type ListingCardItem = ListingRead | ListingWithImages;
 
 const conditionConfig: Record<string, { label: string; className: string }> = {
   brand_new: {
-    label: "Brand New",
+    label: "Mới nguyên",
     className: "bg-purple-50 text-purple-700 border-purple-200",
   },
   like_new: {
-    label: "Like New",
+    label: "Như mới",
     className: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   good: {
-    label: "Good",
+    label: "Tốt",
     className: "bg-blue-50 text-blue-700 border-blue-200",
   },
   fair: {
-    label: "Fair",
+    label: "Khá",
     className: "bg-amber-50 text-amber-700 border-amber-200",
   },
   poor: {
-    label: "Poor",
+    label: "Kém",
     className: "bg-rose-50 text-rose-700 border-rose-200",
   },
-}
+};
 
 function formatTimeAgo(dateStr: string): string {
-  const date = new Date(dateStr)
-  const now = Date.now()
-  const diffMs = now - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return "Today"
-  if (diffDays === 1) return "Yesterday"
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
-  return `${Math.floor(diffDays / 30)} months ago`
+  const date = new Date(dateStr);
+  const now = Date.now();
+  const diffMs = now - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "Hôm nay";
+  if (diffDays === 1) return "Hôm qua";
+  if (diffDays < 7) return `${diffDays} ngày trước`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} tuần trước`;
+  return `${Math.floor(diffDays / 30)} tháng trước`;
 }
 
 function formatPrice(price: string): string {
-  const num = Number(price)
-  if (Number.isNaN(num)) return `$${price}`
+  const num = Number(price);
+  if (Number.isNaN(num)) return `$${price}`;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(num)
+  }).format(num);
 }
 
 interface ListingCardProps {
-  item: ListingCardItem
-  animationDelay?: number
+  item: ListingCardItem;
+  animationDelay?: number;
 }
 
 export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
   const condition = conditionConfig[item.condition_grade] ?? {
     label: item.condition_grade,
     className: "bg-gray-50 text-gray-700 border-gray-200",
-  }
+  };
 
-  const images = "images" in item && item.images ? item.images : []
-  const primaryImage = images.find((img) => img.is_primary) ?? images[0] ?? null
+  const images = "images" in item && item.images ? item.images : [];
+  const primaryImage =
+    images.find((img) => img.is_primary) ?? images[0] ?? null;
 
   return (
     <Card
@@ -91,7 +92,7 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
           <button
             type="button"
             className="flex size-8 items-center justify-center rounded-full bg-white/90 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white"
-            aria-label="Save listing"
+            aria-label="Lưu tin"
           >
             <Heart className="size-4 text-blue-700" />
           </button>
@@ -129,21 +130,21 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
         <div className="space-y-1 text-xs text-blue-900/60">
           <p className="flex items-center gap-1">
             <Star className="size-3 fill-amber-400 text-amber-400" />
-            <span>Seller #{item.seller_id.slice(0, 8)}</span>
+            <span>Người bán #{item.seller_id.slice(0, 8)}</span>
           </p>
           <p className="flex items-center gap-1">
             <MapPin className="size-3" />
-            <span>Listed {formatTimeAgo(item.created_at)}</span>
+            <span>Đăng {formatTimeAgo(item.created_at)}</span>
           </p>
         </div>
 
         {/* CTA */}
         <Button className="rmk-glow-button w-full text-xs" size="sm" asChild>
           <Link to="/items/$listingId" params={{ listingId: item.id }}>
-            View details
+            Xem chi tiết
           </Link>
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }

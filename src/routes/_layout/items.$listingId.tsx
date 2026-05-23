@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -18,9 +18,9 @@ import {
   Star,
   Truck,
   Wallet,
-} from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import {
   ListingsService,
@@ -28,100 +28,100 @@ import {
   OffersService,
   OrdersService,
   UsersService,
-} from "@/client"
-import { ImageGallery } from "@/components/Listings/ImageGallery"
-import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import useAuth from "@/hooks/useAuth"
+} from "@/client";
+import { ImageGallery } from "@/components/Listings/ImageGallery";
+import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import useAuth from "@/hooks/useAuth";
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 export const Route = createFileRoute("/_layout/items/$listingId")({
   component: ListingDetailPage,
   head: () => ({
-    meta: [{ title: "Listing Detail – ReMarket" }],
+    meta: [{ title: "Chi tiết tin đăng - ReMarket" }],
   }),
-})
+});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function currency(value: string) {
-  const n = Number(value)
-  if (Number.isNaN(n)) return `$${value}`
+  const n = Number(value);
+  if (Number.isNaN(n)) return `$${value}`;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(n)
+  }).format(n);
 }
 
 function prettyDate(value: string) {
-  const d = new Date(value)
-  if (Number.isNaN(d.getTime())) return "Unknown"
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "Không rõ";
   return d.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  })
+  });
 }
 
 function timeAgo(value: string) {
-  const ms = Date.now() - new Date(value).getTime()
-  const days = Math.floor(ms / (1000 * 60 * 60 * 24))
-  if (days === 0) return "Today"
-  if (days === 1) return "Yesterday"
-  if (days < 7) return `${days} days ago`
-  if (days < 30) return `${Math.floor(days / 7)} weeks ago`
-  return `${Math.floor(days / 30)} months ago`
+  const ms = Date.now() - new Date(value).getTime();
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+  if (days === 0) return "Hôm nay";
+  if (days === 1) return "Hôm qua";
+  if (days < 7) return `${days} ngày trước`;
+  if (days < 30) return `${Math.floor(days / 7)} tuần trước`;
+  return `${Math.floor(days / 30)} tháng trước`;
 }
 
 const conditionConfig: Record<string, { label: string; className: string }> = {
   brand_new: {
-    label: "Brand New",
+    label: "Mới nguyên",
     className: "bg-purple-50 text-purple-700 border-purple-200",
   },
   like_new: {
-    label: "Like New",
+    label: "Như mới",
     className: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   good: {
-    label: "Good",
+    label: "Tốt",
     className: "bg-blue-50 text-blue-700 border-blue-200",
   },
   fair: {
-    label: "Fair",
+    label: "Khá",
     className: "bg-amber-50 text-amber-700 border-amber-200",
   },
   poor: {
-    label: "Poor",
+    label: "Kém",
     className: "bg-rose-50 text-rose-700 border-rose-200",
   },
-}
+};
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   active: {
-    label: "Active",
+    label: "Đang hiển thị",
     className: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   pending: {
-    label: "Pending",
+    label: "Đang chờ",
     className: "bg-amber-50 text-amber-700 border-amber-200",
   },
   sold: {
-    label: "Sold",
+    label: "Đã bán",
     className: "bg-zinc-100 text-zinc-600 border-zinc-200",
   },
   hidden: {
-    label: "Hidden",
+    label: "Đã ẩn",
     className: "bg-zinc-100 text-zinc-600 border-zinc-200",
   },
   rejected: {
-    label: "Rejected",
+    label: "Bị từ chối",
     className: "bg-rose-50 text-rose-700 border-rose-200",
   },
-}
+};
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function DetailSkeleton() {
@@ -144,7 +144,7 @@ function DetailSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Similar Listings ─────────────────────────────────────────────────────────
@@ -152,31 +152,31 @@ function SimilarListings({
   categoryId,
   excludeId,
 }: {
-  categoryId: string
-  excludeId: string
+  categoryId: string;
+  excludeId: string;
 }) {
   const { data } = useQuery({
     queryKey: ["similar-listings", categoryId],
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 8 }),
     enabled: Boolean(categoryId),
-  })
+  });
 
   const similar = (data?.items ?? [])
     .filter((l) => l.id !== excludeId)
-    .slice(0, 4)
+    .slice(0, 4);
 
-  if (similar.length === 0) return null
+  if (similar.length === 0) return null;
 
   return (
     <div className="mt-6">
-      <h3 className="mb-3 font-semibold text-blue-950">You might also like</h3>
+      <h3 className="mb-3 font-semibold text-blue-950">Bạn có thể thích</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         {similar.map((l) => {
           const cond = conditionConfig[l.condition_grade] ?? {
             label: l.condition_grade,
             className: "",
-          }
+          };
           return (
             <Link
               key={l.id}
@@ -204,11 +204,11 @@ function SimilarListings({
                 </div>
               </div>
             </Link>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Seller Card ─────────────────────────────────────────────────────────────
@@ -220,7 +220,7 @@ function SellerCard({ sellerId }: { sellerId: string }) {
   } = useQuery({
     queryKey: ["user-public", sellerId],
     queryFn: () => UsersService.readUserPublicProfile({ userId: sellerId }),
-  })
+  });
 
   if (isLoading) {
     return (
@@ -235,28 +235,28 @@ function SellerCard({ sellerId }: { sellerId: string }) {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (isError || !seller) {
     return (
       <Card className="border-blue-200/80 bg-white/92">
         <CardContent className="p-5 text-sm text-blue-900/70">
-          Seller profile is currently unavailable.
+          Hồ sơ người bán hiện chưa khả dụng.
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const initials = seller.full_name.slice(0, 2).toUpperCase()
-  const trustScore = Number(seller.trust_score || 0)
-  const ratingAvg = Number(seller.rating_avg || 0)
+  const initials = seller.full_name.slice(0, 2).toUpperCase();
+  const trustScore = Number(seller.trust_score || 0);
+  const ratingAvg = Number(seller.rating_avg || 0);
 
   return (
     <Card className="border-blue-200/80 bg-white/92">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base text-blue-950">
-          <Star className="size-4 text-amber-500" /> Seller Profile
+          <Star className="size-4 text-amber-500" /> Hồ sơ người bán
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -277,7 +277,7 @@ function SellerCard({ sellerId }: { sellerId: string }) {
                 />
               ))}
               <span className="ml-1 text-xs text-blue-900/70">
-                {ratingAvg.toFixed(1)} · {seller.rating_count} reviews
+                {ratingAvg.toFixed(1)} · {seller.rating_count} đánh giá
               </span>
             </div>
           </div>
@@ -287,16 +287,16 @@ function SellerCard({ sellerId }: { sellerId: string }) {
           {trustScore >= 80 && (
             <p className="flex items-center gap-2">
               <BadgeCheck className="size-3.5 text-emerald-600" />
-              Trust score: {trustScore}/100
+              Điểm tin cậy: {trustScore}/100
             </p>
           )}
           <p className="flex items-center gap-2">
             <Truck className="size-3.5 text-blue-600" />
-            {seller.completed_orders} completed orders
+            {seller.completed_orders} đơn đã hoàn tất
           </p>
           <p className="flex items-center gap-2">
             <CalendarDays className="size-3.5 text-blue-600" />
-            Member since {prettyDate(seller.created_at)}
+            Tham gia từ {prettyDate(seller.created_at)}
           </p>
         </div>
 
@@ -311,20 +311,20 @@ function SellerCard({ sellerId }: { sellerId: string }) {
           asChild
         >
           <Link to="/u/$userId" params={{ userId: sellerId }}>
-            View full profile
+            Xem hồ sơ đầy đủ
           </Link>
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 function ListingDetailPage() {
-  const { listingId } = Route.useParams()
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
-  const [offerDialogOpen, setOfferDialogOpen] = useState(false)
+  const { listingId } = Route.useParams();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
@@ -333,13 +333,13 @@ function ListingDetailPage() {
         const listing =
           await ListingsService.getListingApiV1ListingsListingIdGet({
             listingId,
-          })
-        return { listing }
+          });
+        return { listing };
       } catch {
-        return { listing: null as ListingWithImages | null }
+        return { listing: null as ListingWithImages | null };
       }
     },
-  })
+  });
 
   const { data: offersData } = useQuery({
     queryKey: ["listing-offers", listingId],
@@ -350,7 +350,7 @@ function ListingDetailPage() {
         limit: 50,
       }),
     enabled: Boolean(data?.listing),
-  })
+  });
 
   const buyNowMutation = useMutation({
     mutationFn: () =>
@@ -358,57 +358,57 @@ function ListingDetailPage() {
         requestBody: { listing_id: listingId },
       }),
     onSuccess: (_order) => {
-      toast.success("Order created! Proceed to fund escrow.")
-      queryClient.invalidateQueries({ queryKey: ["my-orders"] })
+      toast.success("Order created! Proceed to fund escrow.");
+      queryClient.invalidateQueries({ queryKey: ["my-orders"] });
     },
     onError: (err: any) => {
       const msg =
-        err?.body?.detail || "Failed to create order. Please try again."
-      toast.error(msg)
+        err?.body?.detail || "Failed to create order. Please try again.";
+      toast.error(msg);
     },
-  })
+  });
 
-  if (isLoading) return <DetailSkeleton />
+  if (isLoading) return <DetailSkeleton />;
 
   if (!data?.listing) {
     return (
       <div className="rounded-3xl border border-dashed border-blue-300 bg-white/85 p-12 text-center">
         <Package className="mx-auto mb-4 size-12 text-blue-200" />
         <h2 className="text-xl font-semibold text-blue-950">
-          Listing not found
+          Không tìm thấy tin đăng
         </h2>
         <p className="mt-1 text-sm text-blue-900/75">
-          The listing may have been hidden or removed.
+          Tin đăng có thể đã bị ẩn hoặc gỡ bỏ.
         </p>
         <Button className="mt-5 rmk-glow-button" asChild>
-          <Link to="/items">Back to Browse</Link>
+          <Link to="/items">Quay lại danh sách</Link>
         </Button>
       </div>
-    )
+    );
   }
 
-  const listing = data.listing
-  const images = listing.images ?? []
-  const isSeller = user?.id === listing.seller_id
-  const isSold = listing.status === "sold"
-  const canMakeOffer = !isSeller && !isSold && listing.is_negotiable
-  const canBuyNow = !isSeller && !isSold
+  const listing = data.listing;
+  const images = listing.images ?? [];
+  const isSeller = user?.id === listing.seller_id;
+  const isSold = listing.status === "sold";
+  const canMakeOffer = !isSeller && !isSold && listing.is_negotiable;
+  const canBuyNow = !isSeller && !isSold;
 
-  const offersArr = offersData ?? []
-  const offerCount = offersArr.length
+  const offersArr = offersData ?? [];
+  const offerCount = offersArr.length;
   const bestOffer = offersArr.reduce<number>((best, o) => {
-    const p = Number(o.offer_price)
-    return Number.isNaN(p) ? best : Math.max(best, p)
-  }, 0)
+    const p = Number(o.offer_price);
+    return Number.isNaN(p) ? best : Math.max(best, p);
+  }, 0);
 
   const condition = conditionConfig[listing.condition_grade] ?? {
     label: listing.condition_grade,
     className: "",
-  }
+  };
   const status = statusConfig[listing.status] ?? {
     label: listing.status,
     className: "",
-  }
+  };
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -428,7 +428,7 @@ function ListingDetailPage() {
           asChild
         >
           <Link to="/items">
-            <ArrowLeft className="mr-1.5 size-4" /> Back to browse
+            <ArrowLeft className="mr-1.5 size-4" /> Quay lại danh sách
           </Link>
         </Button>
         <Badge variant="outline" className={`text-xs ${condition.className}`}>
@@ -456,7 +456,7 @@ function ListingDetailPage() {
                 variant="outline"
                 className="w-fit border-blue-200 bg-blue-50 text-blue-700"
               >
-                <Sparkles className="mr-1.5 size-3" /> Listing Details
+                <Sparkles className="mr-1.5 size-3" /> Chi tiết tin đăng
               </Badge>
               <CardTitle className="font-display text-xl text-blue-950 mt-1">
                 {listing.title}
@@ -466,26 +466,26 @@ function ListingDetailPage() {
               <p className="text-sm leading-relaxed">
                 {listing.description || (
                   <span className="text-blue-900/50 italic">
-                    No description provided for this listing.
+                    Chưa có mô tả cho tin đăng này.
                   </span>
                 )}
               </p>
               <div className="grid gap-2 text-sm sm:grid-cols-2">
                 <p className="flex items-center gap-2">
                   <CalendarDays className="size-4 text-blue-700" />
-                  Listed {timeAgo(listing.created_at)}
+                  Đăng {timeAgo(listing.created_at)}
                 </p>
                 <p className="flex items-center gap-2">
                   <Eye className="size-4 text-blue-700" />
-                  Updated {prettyDate(listing.updated_at)}
+                  Cập nhật {prettyDate(listing.updated_at)}
                 </p>
                 <p className="flex items-center gap-2">
                   <BadgeCheck className="size-4 text-blue-700" />
-                  Seller #{listing.seller_id.slice(0, 8)}
+                  Người bán #{listing.seller_id.slice(0, 8)}
                 </p>
                 <p className="flex items-center gap-2">
                   <MapPin className="size-4 text-blue-700" />
-                  Location on request
+                  Vị trí trao đổi sau
                 </p>
               </div>
 
@@ -497,7 +497,7 @@ function ListingDetailPage() {
                   asChild
                 >
                   <Link to="/items/$listingId" params={{ listingId }}>
-                    <Pencil className="mr-1.5 size-4" /> Edit listing
+                    <Pencil className="mr-1.5 size-4" /> Chỉnh sửa tin
                   </Link>
                 </Button>
               )}
@@ -523,15 +523,15 @@ function ListingDetailPage() {
                 variant="outline"
                 className="w-fit border-blue-200 bg-blue-50 text-blue-700"
               >
-                <Sparkles className="mr-1.5 size-3" /> Price & Negotiation
+                <Sparkles className="mr-1.5 size-3" /> Giá và thương lượng
               </Badge>
               <CardTitle className="text-4xl font-bold text-blue-950">
                 {currency(listing.price)}
               </CardTitle>
               <p className="text-xs text-blue-900/60">
                 {listing.is_negotiable
-                  ? "✓ Open to negotiation"
-                  : "Fixed price listing"}
+                  ? "✓ Có thể thương lượng"
+                  : "Giá cố định"}
               </p>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -545,11 +545,11 @@ function ListingDetailPage() {
               {/* Seller actions */}
               {isSeller && !isSold && (
                 <div className="rounded-xl border border-blue-200/70 bg-blue-50/60 p-3 text-sm text-blue-800">
-                  <p className="font-semibold">You own this listing</p>
+                  <p className="font-semibold">Bạn đang sở hữu tin này</p>
                   <p className="text-xs mt-0.5 text-blue-700">
                     {offerCount > 0
-                      ? `${offerCount} incoming offer${offerCount > 1 ? "s" : ""}`
-                      : "No offers yet"}
+                      ? `${offerCount} đề nghị nhận được`
+                      : "Chưa có đề nghị nào"}
                   </p>
                 </div>
               )}
@@ -560,7 +560,7 @@ function ListingDetailPage() {
                   className="rmk-glow-button w-full"
                   onClick={() => setOfferDialogOpen(true)}
                 >
-                  <Handshake className="mr-2 size-4" /> Make an Offer
+                  <Handshake className="mr-2 size-4" /> Đưa giá
                 </Button>
               )}
 
@@ -574,13 +574,13 @@ function ListingDetailPage() {
                 >
                   {buyNowMutation.isPending ? (
                     <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />{" "}
-                      Processing...
+                      <Loader2 className="mr-2 size-4 animate-spin" /> Đang xử
+                      lý...
                     </>
                   ) : (
                     <>
-                      <ShieldCheck className="mr-2 size-4" /> Buy Now with
-                      Escrow
+                      <ShieldCheck className="mr-2 size-4" /> Mua ngay qua
+                      escrow
                     </>
                   )}
                 </Button>
@@ -588,9 +588,11 @@ function ListingDetailPage() {
 
               {/* Escrow info */}
               <div className="rounded-xl border border-blue-200/70 bg-blue-50/60 p-3 text-xs text-blue-900/75 leading-relaxed">
-                🛡️ <span className="font-semibold">Escrow-protected.</span>{" "}
-                Payment is held securely until you confirm delivery. Both sides
-                are protected.
+                🛡️{" "}
+                <span className="font-semibold">
+                  Được bảo chứng bởi escrow.
+                </span>{" "}
+                Thanh toán được giữ an toàn cho đến khi bạn xác nhận nhận hàng.
               </div>
 
               {/* Save button */}
@@ -600,7 +602,7 @@ function ListingDetailPage() {
                   className="w-full text-blue-700"
                   size="sm"
                 >
-                  <Heart className="mr-2 size-4" /> Save to watchlist
+                  <Heart className="mr-2 size-4" /> Lưu tin
                 </Button>
               )}
             </CardContent>
@@ -610,13 +612,13 @@ function ListingDetailPage() {
           <Card className="border-blue-200/80 bg-white/92">
             <CardHeader className="pb-3">
               <CardTitle className="text-base text-blue-950">
-                Market Pulse
+                Nhịp thị trường
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-2 text-sm">
               <div className="flex items-center justify-between rounded-xl border border-blue-200/70 bg-white/85 p-3">
                 <span className="flex items-center gap-2 text-blue-900/75">
-                  <Handshake className="size-4 text-blue-700" /> Active offers
+                  <Handshake className="size-4 text-blue-700" /> Đề nghị đang có
                 </span>
                 <span className="font-semibold text-blue-950">
                   {offerCount}
@@ -624,7 +626,7 @@ function ListingDetailPage() {
               </div>
               <div className="flex items-center justify-between rounded-xl border border-emerald-200/70 bg-emerald-50/75 p-3">
                 <span className="flex items-center gap-2 text-emerald-800">
-                  <Wallet className="size-4" /> Best offer
+                  <Wallet className="size-4" /> Giá đề nghị tốt nhất
                 </span>
                 <span className="font-semibold text-emerald-900">
                   {bestOffer > 0 ? currency(String(bestOffer)) : "–"}
@@ -632,7 +634,7 @@ function ListingDetailPage() {
               </div>
               <div className="flex items-center justify-between rounded-xl border border-amber-200/70 bg-amber-50/70 p-3">
                 <span className="flex items-center gap-2 text-amber-800">
-                  <Clock3 className="size-4" /> Last updated
+                  <Clock3 className="size-4" /> Cập nhật gần nhất
                 </span>
                 <span className="font-semibold text-amber-900">
                   {prettyDate(listing.updated_at)}
@@ -645,21 +647,21 @@ function ListingDetailPage() {
           <Card className="border-blue-200/80 bg-white/92">
             <CardHeader className="pb-3">
               <CardTitle className="text-base text-blue-950">
-                Trust Signals
+                Tín hiệu tin cậy
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5 text-sm text-blue-900/80">
               <p className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-blue-700 flex-shrink-0" />
-                Escrow-backed checkout – funds protected until delivery
+                Thanh toán qua escrow - tiền được bảo vệ đến khi giao hàng xong
               </p>
               <p className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-emerald-600 flex-shrink-0" />
-                Platform-verified transaction process
+                Quy trình giao dịch đã được nền tảng xác minh
               </p>
               <p className="flex items-center gap-2">
                 <BadgeCheck className="size-4 text-blue-700 flex-shrink-0" />
-                Dispute resolution available if needed
+                Có hỗ trợ xử lý tranh chấp khi cần
               </p>
             </CardContent>
           </Card>
@@ -675,5 +677,5 @@ function ListingDetailPage() {
         listedPrice={listing.price}
       />
     </div>
-  )
+  );
 }

@@ -1,12 +1,12 @@
-import { useLanguage } from "@/components/Common/LanguageProvider"
-import { cn } from "@/lib/utils"
+import { useLanguage } from "@/components/Common/LanguageProvider";
+import { cn } from "@/lib/utils";
 
 interface LanguageSwitcherProps {
-  className?: string
+  className?: string;
 }
 
 export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
-  const { language, setLanguage } = useLanguage()
+  const { setLanguage } = useLanguage();
 
   return (
     <div
@@ -15,32 +15,18 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
         className,
       )}
       role="group"
-      aria-label="Language switcher"
+      aria-label="Chuyển ngôn ngữ"
     >
       <button
         type="button"
-        onClick={() => setLanguage("en")}
-        className={cn(
-          "rounded-full px-3 py-1 text-xs font-semibold transition",
-          language === "en"
-            ? "bg-blue-600 text-white"
-            : "text-blue-800 hover:bg-blue-100",
-        )}
-      >
-        EN
-      </button>
-      <button
-        type="button"
         onClick={() => setLanguage("vi")}
-        className={cn(
-          "rounded-full px-3 py-1 text-xs font-semibold transition",
-          language === "vi"
-            ? "bg-blue-600 text-white"
-            : "text-blue-800 hover:bg-blue-100",
-        )}
+        className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white transition"
       >
+        Tiếng Việt
+      </button>
+      <button type="button" aria-hidden="true" tabIndex={-1} className="hidden">
         VI
       </button>
     </div>
-  )
+  );
 }

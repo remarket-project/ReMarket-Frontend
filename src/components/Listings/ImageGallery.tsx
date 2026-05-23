@@ -1,50 +1,50 @@
-import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
-import type { ListingImageRead } from "@/client"
+import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import type { ListingImageRead } from "@/client";
 
 interface ImageGalleryProps {
-  images: ListingImageRead[]
-  title: string
+  images: ListingImageRead[];
+  title: string;
 }
 
 export function ImageGallery({ images, title }: ImageGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  const hasPrev = selectedIndex > 0
-  const hasNext = selectedIndex < images.length - 1
+  const hasPrev = selectedIndex > 0;
+  const hasNext = selectedIndex < images.length - 1;
 
   const goPrev = useCallback(() => {
-    if (hasPrev) setSelectedIndex((i) => i - 1)
-  }, [hasPrev])
+    if (hasPrev) setSelectedIndex((i) => i - 1);
+  }, [hasPrev]);
 
   const goNext = useCallback(() => {
-    if (hasNext) setSelectedIndex((i) => i + 1)
-  }, [hasNext])
+    if (hasNext) setSelectedIndex((i) => i + 1);
+  }, [hasNext]);
 
   useEffect(() => {
-    if (!lightboxOpen) return
+    if (!lightboxOpen) return;
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") goPrev()
-      else if (e.key === "ArrowRight") goNext()
-      else if (e.key === "Escape") setLightboxOpen(false)
+      if (e.key === "ArrowLeft") goPrev();
+      else if (e.key === "ArrowRight") goNext();
+      else if (e.key === "Escape") setLightboxOpen(false);
     }
-    window.addEventListener("keydown", handleKey)
-    return () => window.removeEventListener("keydown", handleKey)
-  }, [lightboxOpen, goPrev, goNext])
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [lightboxOpen, goPrev, goNext]);
 
   if (!images || images.length === 0) {
     return (
       <div className="flex h-80 items-center justify-center rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-sky-50">
         <div className="text-center text-blue-300">
           <div className="mx-auto mb-2 size-12 text-blue-200">📦</div>
-          <p className="text-sm">No images available</p>
+          <p className="text-sm">Chưa có ảnh</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const mainImage = images[selectedIndex]
+  const mainImage = images[selectedIndex];
 
   return (
     <>
@@ -82,8 +82,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    goPrev()
+                    e.stopPropagation();
+                    goPrev();
                   }}
                   className="absolute left-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition hover:bg-white"
                 >
@@ -94,8 +94,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    goNext()
+                    e.stopPropagation();
+                    goNext();
                   }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition hover:bg-white"
                 >
@@ -155,8 +155,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               type="button"
               className="absolute left-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
               onClick={(e) => {
-                e.stopPropagation()
-                goPrev()
+                e.stopPropagation();
+                goPrev();
               }}
             >
               <ChevronLeft className="size-6" />
@@ -174,7 +174,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain shadow-2xl"
             />
             <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/60">
-              {selectedIndex + 1} of {images.length}
+              {selectedIndex + 1} / {images.length}
             </div>
           </div>
 
@@ -184,8 +184,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               type="button"
               className="absolute right-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
               onClick={(e) => {
-                e.stopPropagation()
-                goNext()
+                e.stopPropagation();
+                goNext();
               }}
             >
               <ChevronRight className="size-6" />
@@ -194,5 +194,5 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         </div>
       )}
     </>
-  )
+  );
 }

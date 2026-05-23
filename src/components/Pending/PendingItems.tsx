@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -6,17 +6,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 const PendingItems = () => (
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead>ID</TableHead>
-        <TableHead>Title</TableHead>
-        <TableHead>Description</TableHead>
+        <TableHead>Mã</TableHead>
+        <TableHead>Tiêu đề</TableHead>
+        <TableHead>Mô tả</TableHead>
         <TableHead>
-          <span className="sr-only">Actions</span>
+          <span className="sr-only">Hành động</span>
         </TableHead>
       </TableRow>
     </TableHeader>
@@ -41,6 +41,6 @@ const PendingItems = () => (
       ))}
     </TableBody>
   </Table>
-)
+);
 
-export default PendingItems
+export default PendingItems;

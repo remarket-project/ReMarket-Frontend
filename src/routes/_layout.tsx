@@ -4,15 +4,15 @@ import {
   Outlet,
   redirect,
   useLocation,
-} from "@tanstack/react-router"
-import { Bell, ChevronDown, LogOut, Settings, Sparkles } from "lucide-react"
+} from "@tanstack/react-router";
+import { Bell, ChevronDown, LogOut, Settings, Sparkles } from "lucide-react";
 
-import { Appearance } from "@/components/Common/Appearance"
-import { Footer } from "@/components/Common/Footer"
-import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Appearance } from "@/components/Common/Appearance";
+import { Footer } from "@/components/Common/Footer";
+import { LanguageSwitcher } from "@/components/Common/LanguageSwitcher";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
-import { getInitials } from "@/utils"
+} from "@/components/ui/dropdown-menu";
+import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+import { getInitials } from "@/utils";
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
@@ -30,34 +30,34 @@ export const Route = createFileRoute("/_layout")({
     if (!isLoggedIn()) {
       throw redirect({
         to: "/login",
-      })
+      });
     }
   },
-})
+});
 
 function Layout() {
-  const { user: currentUser, logout } = useAuth()
-  const location = useLocation()
-  const isAdmin = currentUser?.role === "admin"
+  const { user: currentUser, logout } = useAuth();
+  const location = useLocation();
+  const isAdmin = currentUser?.role === "admin";
 
   const tabs = [
-    ...(isAdmin ? [{ to: "/" as const, label: "Dashboard" }] : []),
-    { to: "/items" as const, label: "Browse" },
-    { to: "/offers" as const, label: "Offers" },
-    { to: "/orders" as const, label: "Orders" },
-    { to: "/wallet" as const, label: "Wallet" },
-    { to: "/notifications" as const, label: "Notifications" },
-    { to: "/settings" as const, label: "Settings" },
-    ...(isAdmin ? [{ to: "/admin" as const, label: "Admin" }] : []),
+    ...(isAdmin ? [{ to: "/" as const, label: "Bảng điều khiển" }] : []),
+    { to: "/items" as const, label: "Khám phá" },
+    { to: "/offers" as const, label: "Đề nghị" },
+    { to: "/orders" as const, label: "Đơn hàng" },
+    { to: "/wallet" as const, label: "Ví" },
+    { to: "/notifications" as const, label: "Thông báo" },
+    { to: "/settings" as const, label: "Cài đặt" },
+    ...(isAdmin ? [{ to: "/admin" as const, label: "Quản trị" }] : []),
     ...(isAdmin
-      ? [{ to: "/admin/moderation" as const, label: "Moderation" }]
+      ? [{ to: "/admin/moderation" as const, label: "Kiểm duyệt" }]
       : []),
-  ]
+  ];
 
   const isActiveTab = (to: string) => {
-    if (to === "/") return location.pathname === "/"
-    return location.pathname.startsWith(to)
-  }
+    if (to === "/") return location.pathname === "/";
+    return location.pathname.startsWith(to);
+  };
 
   return (
     <div className="min-h-screen bg-[#eff6ff] text-zinc-900">
@@ -82,7 +82,7 @@ function Layout() {
               variant="outline"
             >
               <Sparkles className="mr-1 size-3" />
-              Trust-first Workspace
+              Không gian làm việc ưu tiên tin cậy
             </Badge>
           </div>
 
@@ -98,7 +98,7 @@ function Layout() {
             >
               <Link to="/notifications">
                 <Bell className="size-4" />
-                <span className="sr-only">Notifications</span>
+                <span className="sr-only">Thông báo</span>
               </Link>
             </Button>
 
@@ -122,18 +122,18 @@ function Layout() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-56">
                   <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    Signed in as {currentUser.email}
+                    Đang đăng nhập bằng {currentUser.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <Link to="/settings">
                     <DropdownMenuItem>
                       <Settings className="mr-2 size-4" />
-                      Settings
+                      Cài đặt
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem onClick={() => logout()}>
                     <LogOut className="mr-2 size-4" />
-                    Log out
+                    Đăng xuất
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -166,5 +166,5 @@ function Layout() {
 
       <Footer />
     </div>
-  )
+  );
 }

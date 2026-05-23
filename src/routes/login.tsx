@@ -1,16 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+} from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import type { Body_login_login_access_token as AccessToken } from "@/client"
-import { AuthLayout } from "@/components/Common/AuthLayout"
-import { useLanguage } from "@/components/Common/LanguageProvider"
-import { Checkbox } from "@/components/ui/checkbox"
+import type { Body_login_login_access_token as AccessToken } from "@/client";
+import { AuthLayout } from "@/components/Common/AuthLayout";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -18,21 +17,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { LoadingButton } from "@/components/ui/loading-button"
-import { PasswordInput } from "@/components/ui/password-input"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/ui/loading-button";
+import { PasswordInput } from "@/components/ui/password-input";
+import useAuth, { isLoggedIn } from "@/hooks/useAuth";
 
 const formSchema = z.object({
   username: z.email(),
   password: z
     .string()
-    .min(1, { message: "Password is required" })
-    .min(8, { message: "Password must be at least 8 characters" }),
-}) satisfies z.ZodType<AccessToken>
+    .min(1, { message: "Vui lòng nhập mật khẩu" })
+    .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
+}) satisfies z.ZodType<AccessToken>;
 
-type FormData = z.infer<typeof formSchema>
+type FormData = z.infer<typeof formSchema>;
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -40,23 +39,20 @@ export const Route = createFileRoute("/login")({
     if (isLoggedIn()) {
       throw redirect({
         to: "/",
-      })
+      });
     }
   },
   head: () => ({
     meta: [
       {
-        title: "Log In - ReMarket",
+        title: "Đăng nhập - ReMarket",
       },
     ],
   }),
-})
+});
 
 function Login() {
-  const { language } = useLanguage()
-  const isVi = language === "vi"
-
-  const { loginMutation } = useAuth()
+  const { loginMutation } = useAuth();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -65,12 +61,12 @@ function Login() {
       username: "",
       password: "",
     },
-  })
+  });
 
   const onSubmit = (data: FormData) => {
-    if (loginMutation.isPending) return
-    loginMutation.mutate(data)
-  }
+    if (loginMutation.isPending) return;
+    loginMutation.mutate(data);
+  };
 
   return (
     <AuthLayout>
@@ -80,9 +76,7 @@ function Login() {
           className="flex flex-col gap-6"
         >
           <div className="space-y-1 text-center">
-            <h1 className="rmk-auth-form-title">
-              {isVi ? "Đăng nhập ReMarket" : "Sign in to ReMarket"}
-            </h1>
+            <h1 className="rmk-auth-form-title">Đăng nhập ReMarket</h1>
           </div>
 
           <div className="grid gap-4">
@@ -91,11 +85,11 @@ function Login() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isVi ? "Email" : "Email"}</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       data-testid="email-input"
-                      placeholder="you@example.com"
+                      placeholder="ban@vidu.com"
                       type="email"
                       autoComplete="email"
                       className="rmk-auth-input"
@@ -113,18 +107,18 @@ function Login() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center">
-                    <FormLabel>{isVi ? "Mật khẩu" : "Password"}</FormLabel>
+                    <FormLabel>Mật khẩu</FormLabel>
                     <RouterLink
                       to="/recover-password"
                       className="rmk-auth-link ml-auto text-sm"
                     >
-                      {isVi ? "Quên mật khẩu?" : "Forgot your password?"}
+                      Quên mật khẩu?
                     </RouterLink>
                   </div>
                   <FormControl>
                     <PasswordInput
                       data-testid="password-input"
-                      placeholder="Password"
+                      placeholder="Nhập mật khẩu"
                       autoComplete="current-password"
                       className="rmk-auth-input"
                       {...field}
@@ -140,11 +134,11 @@ function Login() {
                 htmlFor="remember-me"
                 className="flex items-center gap-2 text-sm"
               >
-                <Checkbox id="remember-me" aria-label="Remember me" />
-                <span>{isVi ? "Ghi nhớ đăng nhập" : "Remember me"}</span>
+                <Checkbox id="remember-me" aria-label="Ghi nhớ đăng nhập" />
+                <span>Ghi nhớ đăng nhập</span>
               </label>
               <span className="text-muted-foreground text-xs">
-                {isVi ? "Phiên đăng nhập an toàn" : "Secure session"}
+                Phiên đăng nhập an toàn
               </span>
             </div>
 
@@ -153,24 +147,22 @@ function Login() {
               className="rmk-auth-submit"
               loading={loginMutation.isPending}
             >
-              {isVi ? "Đăng nhập" : "Log In"}
+              Đăng nhập
             </LoadingButton>
 
             <p className="rmk-auth-note rounded-md px-3 py-2 text-xs">
-              {isVi
-                ? "Nếu email chưa xác minh, vui lòng hoàn tất xác minh trước khi đăng nhập lại."
-                : "If your email is not verified yet, complete verification first, then log in again."}
+              Nếu email chưa xác minh, vui lòng hoàn tất xác minh trước khi đăng
+              nhập lại.
             </p>
           </div>
 
           <div className="text-center text-sm">
-            {isVi ? "Chưa có tài khoản?" : "Don't have an account yet?"}{" "}
             <RouterLink to="/signup" className="rmk-auth-link font-medium">
-              {isVi ? "Đăng ký" : "Sign up"}
+              Đăng ký
             </RouterLink>
           </div>
         </form>
       </Form>
     </AuthLayout>
-  )
+  );
 }
