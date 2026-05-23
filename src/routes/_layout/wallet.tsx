@@ -13,7 +13,6 @@ import {
   Lock,
   PlusCircle,
   RotateCcw,
-  Sparkles,
   Unlock,
   Wallet,
 } from "lucide-react"
@@ -137,100 +136,87 @@ function WalletPage() {
   ).slice(0, 8)
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <Badge
-          className="border-blue-200 bg-blue-50 text-blue-700"
-          variant="outline"
-        >
-          <Sparkles className="mr-1.5 size-3" />
-          Funds and Settlement
-        </Badge>
-        <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-          Wallet and Cashflow
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
+        <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
+          Ví và dòng tiền
         </h1>
-        <p className="text-sm text-blue-900/75 md:text-base">
-          Monitor balance, escrow locks, and transaction history.
+        <p className="mt-1 text-sm text-[#5B7083] md:text-base">
+          Theo dõi số dư, escrow khóa và lịch sử giao dịch.
         </p>
       </section>
 
       <section className="mt-6 grid gap-3 md:grid-cols-3">
-        <Card className="border-blue-200/80 bg-white/92">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-blue-900/70">
-              <Wallet className="size-4 text-blue-700" />
-              Total Value
+            <CardTitle className="flex items-center gap-2 text-sm text-[#5B7083]">
+              <Wallet className="size-4 text-[#2563EB]" />
+              Tổng tài sản
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-blue-950">{money(total)}</p>
-            <p className="text-xs text-blue-900/60">Available + Locked</p>
+            <p className="text-3xl font-bold text-[#102A43]">{money(total)}</p>
+            <p className="text-xs text-[#5B7083]">Khả dụng + Đang khóa</p>
           </CardContent>
         </Card>
-        <Card className="border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-green-50">
+        <Card className="border-[#A7F3D0]/80 bg-[#ECFDF5]">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-emerald-800/80">
-              <CheckCircle2 className="size-4 text-emerald-600" />
-              Available
+            <CardTitle className="flex items-center gap-2 text-sm text-[#059669]/80">
+              <CheckCircle2 className="size-4 text-[#16A34A]" />
+              Khả dụng
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-emerald-900">
+            <p className="text-3xl font-bold text-[#047857]">
               {money(available)}
             </p>
-            <p className="text-xs text-emerald-700/70">Ready to withdraw</p>
+            <p className="text-xs text-[#059669]/70">Sẵn sàng rút</p>
           </CardContent>
         </Card>
-        <Card className="border-amber-200/80 bg-gradient-to-br from-amber-50 to-yellow-50">
+        <Card className="border-[#FDE68A]/80 bg-[#FFFBEB]">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-amber-800/80">
-              <Lock className="size-4 text-amber-600" />
-              Locked in Escrow
+            <CardTitle className="flex items-center gap-2 text-sm text-[#D97706]/80">
+              <Lock className="size-4 text-[#D97706]" />
+              Đang khóa Escrow
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-amber-900">{money(locked)}</p>
-            <p className="text-xs text-amber-700/70">
-              Held until delivery confirmed
+            <p className="text-3xl font-bold text-[#B45309]">{money(locked)}</p>
+            <p className="text-xs text-[#D97706]/70">
+              Giữ đến khi giao hàng xác nhận
             </p>
           </CardContent>
         </Card>
       </section>
 
       <section className="mt-4 flex flex-wrap gap-3">
-        <Button className="rmk-glow-button" onClick={() => setTopupOpen(true)}>
+        <Button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white" onClick={() => setTopupOpen(true)}>
           <PlusCircle className="mr-2 size-4" />
-          Add Funds
+          Nạp tiền
         </Button>
         <Button
           variant="outline"
-          className="border-blue-200 bg-white/90"
+          className="border-[#D8E2EF] bg-white text-[#5B7083]"
           disabled
         >
           <ArrowUpRight className="mr-2 size-4" />
-          Withdraw
-          <Badge className="ml-2 text-[10px]">Soon</Badge>
+          Rút tiền
+          <Badge className="ml-2 text-[10px]">Sớm</Badge>
         </Button>
         <Button
           variant="outline"
-          className="border-blue-200 bg-white/90"
+          className="border-[#D8E2EF] bg-white text-[#5B7083]"
           disabled
         >
           <Download className="mr-2 size-4" />
-          Statement
+          Sao kê
         </Button>
       </section>
 
       <section className="mt-6 grid gap-4 xl:grid-cols-[1.25fr_1fr]">
-        <Card className="border-blue-200/80 bg-white/92">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-blue-950">Transactions</CardTitle>
+            <CardTitle className="text-[#102A43]">Giao dịch</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -240,125 +226,125 @@ function WalletPage() {
                   variant="outline"
                   className={`cursor-pointer ${
                     txFilter === filter
-                      ? "border-blue-300 bg-blue-100 text-blue-800"
-                      : "border-blue-200 bg-white text-blue-700"
+                      ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
+                      : "border-[#D8E2EF] bg-white text-[#2563EB]"
                   }`}
                   onClick={() => setTxFilter(filter)}
                 >
                   {filter === "all"
-                    ? "All"
+                    ? "Tất cả"
                     : filter === "in"
-                      ? "Money In"
-                      : "Money Out"}
+                      ? "Tiền vào"
+                      : "Tiền ra"}
                 </Badge>
               ))}
               <Input
                 value={txQuery}
                 onChange={(event) => setTxQuery(event.target.value)}
-                placeholder="Search description or order id..."
-                className="ml-auto max-w-xs border-blue-200 bg-white"
+                placeholder="Tìm mô tả hoặc mã đơn..."
+                className="ml-auto max-w-xs border-[#D8E2EF] bg-white"
               />
             </div>
 
-            {filteredTx.map((tx) => {
-              const amount = Number(tx.amount)
-              const positive = amount > 0
-              const Icon = iconForType(tx.type, positive)
-              return (
-                <div
-                  key={tx.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-200/70 bg-white/90 p-3 transition hover:border-blue-300"
-                >
+            {filteredTx.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-[#D8E2EF] bg-white p-6 text-sm text-[#5B7083]">
+                Không có giao dịch nào.
+              </div>
+            ) : (
+              filteredTx.map((tx) => {
+                const amount = Number(tx.amount)
+                const positive = amount > 0
+                const Icon = iconForType(tx.type, positive)
+                return (
                   <div
-                    className={`flex size-10 items-center justify-center rounded-xl ${
-                      positive
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-rose-100 text-rose-700"
-                    }`}
+                    key={tx.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#D8E2EF] bg-white p-3 transition hover:border-[#2563EB]/30"
                   >
-                    <Icon className="size-5" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-blue-950">
-                      {tx.description || tx.type}
-                    </p>
-                    <p className="text-xs text-blue-900/60">
-                      {when(tx.created_at)}
-                    </p>
-                    {tx.order_id ? (
-                      <Link
-                        to="/orders/$orderId"
-                        params={{ orderId: tx.order_id }}
-                      >
-                        <p className="text-xs text-blue-600 hover:underline">
-                          Order #{tx.order_id.slice(0, 8)}
-                        </p>
-                      </Link>
-                    ) : null}
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-base font-bold ${
-                        positive ? "text-emerald-700" : "text-rose-700"
+                    <div
+                      className={`flex size-10 items-center justify-center rounded-xl ${
+                        positive
+                          ? "bg-[#ECFDF5] text-[#059669]"
+                          : "bg-[#FEF2F2] text-[#DC2626]"
                       }`}
                     >
-                      {positive ? "+" : ""}
-                      {money(tx.amount)}
-                    </p>
-                    <p className="text-xs text-blue-900/50">
-                      Balance: {money(tx.balance_after)}
-                    </p>
+                      <Icon className="size-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-[#102A43]">
+                        {tx.description || tx.type}
+                      </p>
+                      <p className="text-xs text-[#5B7083]">
+                        {when(tx.created_at)}
+                      </p>
+                      {tx.order_id ? (
+                        <Link
+                          to="/orders/$orderId"
+                          params={{ orderId: tx.order_id }}
+                        >
+                          <p className="text-xs text-[#2563EB] hover:underline">
+                            Đơn #{tx.order_id.slice(0, 8)}
+                          </p>
+                        </Link>
+                      ) : null}
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={`text-base font-bold ${
+                          positive ? "text-[#059669]" : "text-[#DC2626]"
+                        }`}
+                      >
+                        {positive ? "+" : ""}
+                        {money(tx.amount)}
+                      </p>
+                      <p className="text-xs text-[#8A99A8]">
+                        Số dư: {money(tx.balance_after)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-
-            {filteredTx.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-blue-200 bg-white/90 p-6 text-sm text-blue-900/75">
-                No transactions match this view.
-              </div>
-            ) : null}
+                )
+              })
+            )}
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200/80 bg-white/92">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-blue-950">Active Escrows</CardTitle>
+            <CardTitle className="text-[#102A43]">Escrow đang hoạt động</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            {escrowOrderIds.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-[#D8E2EF] bg-white p-6 text-sm text-[#5B7083]">
+                Không có giao dịch escrow nào.
+              </div>
+            ) : null}
             {escrowOrderIds.map((orderId) => (
               <div
                 key={orderId}
-                className="rounded-xl border border-blue-200/70 bg-white/90 p-3"
+                className="rounded-xl border border-[#D8E2EF] bg-white p-3"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p className="text-sm font-semibold text-blue-950">
-                      Order #{orderId.slice(0, 8)}
+                    <p className="text-sm font-semibold text-[#102A43]">
+                      Đơn #{orderId.slice(0, 8)}
                     </p>
-                    <p className="text-xs text-blue-900/60">Escrow protected</p>
+                    <p className="text-xs text-[#5B7083]">Escrow bảo chứng</p>
                   </div>
-                  <Badge className="border-amber-200 bg-amber-50 text-amber-700">
-                    Locked
+                  <Badge className="border-[#FDE68A] bg-[#FFFBEB] text-[#D97706]">
+                    Đã khóa
                   </Badge>
                 </div>
                 <Button
                   variant="outline"
-                  className="mt-3 w-full border-blue-200 bg-white/90"
+                  className="mt-3 w-full border-[#D8E2EF] bg-white text-[#2563EB]"
                   asChild
                 >
                   <Link to="/escrow/$orderId" params={{ orderId }}>
-                    View escrow detail
+                    Xem chi tiết escrow
                     <ArrowUpRight className="ml-1.5 size-4" />
                   </Link>
                 </Button>
               </div>
             ))}
-            {escrowOrderIds.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-blue-200 bg-white/90 p-6 text-sm text-blue-900/75">
-                No escrow-linked transactions found.
-              </div>
-            ) : null}
           </CardContent>
         </Card>
       </section>

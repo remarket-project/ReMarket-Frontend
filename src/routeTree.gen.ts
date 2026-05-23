@@ -15,6 +15,7 @@ import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LandingRouteImport } from './routes/landing'
 import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutWalletRouteImport } from './routes/_layout/wallet'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
@@ -23,12 +24,22 @@ import { Route as LayoutOrdersRouteImport } from './routes/_layout/orders'
 import { Route as LayoutOffersRouteImport } from './routes/_layout/offers'
 import { Route as LayoutNotificationsRouteImport } from './routes/_layout/notifications'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
+import { Route as LayoutHelpRouteImport } from './routes/_layout/help'
+import { Route as LayoutCategoriesRouteImport } from './routes/_layout/categories'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
 import { Route as LayoutUUserIdRouteImport } from './routes/_layout/u.$userId'
 import { Route as LayoutOrdersOrderIdRouteImport } from './routes/_layout/orders.$orderId'
+import { Route as LayoutLegalTermsRouteImport } from './routes/_layout/legal.terms'
+import { Route as LayoutLegalRegulationRouteImport } from './routes/_layout/legal.regulation'
+import { Route as LayoutLegalPrivacyRouteImport } from './routes/_layout/legal.privacy'
+import { Route as LayoutLegalAboutRouteImport } from './routes/_layout/legal.about'
 import { Route as LayoutItemsCreateRouteImport } from './routes/_layout/items.create'
 import { Route as LayoutItemsListingIdRouteImport } from './routes/_layout/items.$listingId'
+import { Route as LayoutHelpSafetyRouteImport } from './routes/_layout/help.safety'
+import { Route as LayoutHelpFaqRouteImport } from './routes/_layout/help.faq'
+import { Route as LayoutHelpContactRouteImport } from './routes/_layout/help.contact'
 import { Route as LayoutEscrowOrderIdRouteImport } from './routes/_layout/escrow.$orderId'
+import { Route as LayoutCategoriesSlugRouteImport } from './routes/_layout/categories.$slug'
 import { Route as LayoutAdminModerationRouteImport } from './routes/_layout/admin.moderation'
 
 const SignupRoute = SignupRouteImport.update({
@@ -58,6 +69,11 @@ const LandingRoute = LandingRouteImport.update({
 } as any)
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LayoutIndexRoute = LayoutIndexRouteImport.update({
@@ -100,6 +116,16 @@ const LayoutItemsRoute = LayoutItemsRouteImport.update({
   path: '/items',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutHelpRoute = LayoutHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutCategoriesRoute = LayoutCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutAdminRoute = LayoutAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -115,6 +141,26 @@ const LayoutOrdersOrderIdRoute = LayoutOrdersOrderIdRouteImport.update({
   path: '/$orderId',
   getParentRoute: () => LayoutOrdersRoute,
 } as any)
+const LayoutLegalTermsRoute = LayoutLegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutLegalRegulationRoute = LayoutLegalRegulationRouteImport.update({
+  id: '/legal/regulation',
+  path: '/legal/regulation',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutLegalPrivacyRoute = LayoutLegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutLegalAboutRoute = LayoutLegalAboutRouteImport.update({
+  id: '/legal/about',
+  path: '/legal/about',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutItemsCreateRoute = LayoutItemsCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -125,10 +171,30 @@ const LayoutItemsListingIdRoute = LayoutItemsListingIdRouteImport.update({
   path: '/$listingId',
   getParentRoute: () => LayoutItemsRoute,
 } as any)
+const LayoutHelpSafetyRoute = LayoutHelpSafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
+  getParentRoute: () => LayoutHelpRoute,
+} as any)
+const LayoutHelpFaqRoute = LayoutHelpFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => LayoutHelpRoute,
+} as any)
+const LayoutHelpContactRoute = LayoutHelpContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => LayoutHelpRoute,
+} as any)
 const LayoutEscrowOrderIdRoute = LayoutEscrowOrderIdRouteImport.update({
   id: '/escrow/$orderId',
   path: '/escrow/$orderId',
   getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutCategoriesSlugRoute = LayoutCategoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LayoutCategoriesRoute,
 } as any)
 const LayoutAdminModerationRoute = LayoutAdminModerationRouteImport.update({
   id: '/moderation',
@@ -144,6 +210,8 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRouteWithChildren
+  '/categories': typeof LayoutCategoriesRouteWithChildren
+  '/help': typeof LayoutHelpRouteWithChildren
   '/items': typeof LayoutItemsRouteWithChildren
   '/notifications': typeof LayoutNotificationsRoute
   '/offers': typeof LayoutOffersRoute
@@ -151,10 +219,19 @@ export interface FileRoutesByFullPath {
   '/search': typeof LayoutSearchRoute
   '/settings': typeof LayoutSettingsRoute
   '/wallet': typeof LayoutWalletRoute
+  '/search/': typeof SearchIndexRoute
   '/admin/moderation': typeof LayoutAdminModerationRoute
+  '/categories/$slug': typeof LayoutCategoriesSlugRoute
   '/escrow/$orderId': typeof LayoutEscrowOrderIdRoute
+  '/help/contact': typeof LayoutHelpContactRoute
+  '/help/faq': typeof LayoutHelpFaqRoute
+  '/help/safety': typeof LayoutHelpSafetyRoute
   '/items/$listingId': typeof LayoutItemsListingIdRoute
   '/items/create': typeof LayoutItemsCreateRoute
+  '/legal/about': typeof LayoutLegalAboutRoute
+  '/legal/privacy': typeof LayoutLegalPrivacyRoute
+  '/legal/regulation': typeof LayoutLegalRegulationRoute
+  '/legal/terms': typeof LayoutLegalTermsRoute
   '/orders/$orderId': typeof LayoutOrdersOrderIdRoute
   '/u/$userId': typeof LayoutUUserIdRoute
 }
@@ -165,18 +242,28 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRouteWithChildren
+  '/categories': typeof LayoutCategoriesRouteWithChildren
+  '/help': typeof LayoutHelpRouteWithChildren
   '/items': typeof LayoutItemsRouteWithChildren
   '/notifications': typeof LayoutNotificationsRoute
   '/offers': typeof LayoutOffersRoute
   '/orders': typeof LayoutOrdersRouteWithChildren
-  '/search': typeof LayoutSearchRoute
+  '/search': typeof SearchIndexRoute
   '/settings': typeof LayoutSettingsRoute
   '/wallet': typeof LayoutWalletRoute
   '/': typeof LayoutIndexRoute
   '/admin/moderation': typeof LayoutAdminModerationRoute
+  '/categories/$slug': typeof LayoutCategoriesSlugRoute
   '/escrow/$orderId': typeof LayoutEscrowOrderIdRoute
+  '/help/contact': typeof LayoutHelpContactRoute
+  '/help/faq': typeof LayoutHelpFaqRoute
+  '/help/safety': typeof LayoutHelpSafetyRoute
   '/items/$listingId': typeof LayoutItemsListingIdRoute
   '/items/create': typeof LayoutItemsCreateRoute
+  '/legal/about': typeof LayoutLegalAboutRoute
+  '/legal/privacy': typeof LayoutLegalPrivacyRoute
+  '/legal/regulation': typeof LayoutLegalRegulationRoute
+  '/legal/terms': typeof LayoutLegalTermsRoute
   '/orders/$orderId': typeof LayoutOrdersOrderIdRoute
   '/u/$userId': typeof LayoutUUserIdRoute
 }
@@ -189,6 +276,8 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_layout/admin': typeof LayoutAdminRouteWithChildren
+  '/_layout/categories': typeof LayoutCategoriesRouteWithChildren
+  '/_layout/help': typeof LayoutHelpRouteWithChildren
   '/_layout/items': typeof LayoutItemsRouteWithChildren
   '/_layout/notifications': typeof LayoutNotificationsRoute
   '/_layout/offers': typeof LayoutOffersRoute
@@ -197,10 +286,19 @@ export interface FileRoutesById {
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/wallet': typeof LayoutWalletRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/search/': typeof SearchIndexRoute
   '/_layout/admin/moderation': typeof LayoutAdminModerationRoute
+  '/_layout/categories/$slug': typeof LayoutCategoriesSlugRoute
   '/_layout/escrow/$orderId': typeof LayoutEscrowOrderIdRoute
+  '/_layout/help/contact': typeof LayoutHelpContactRoute
+  '/_layout/help/faq': typeof LayoutHelpFaqRoute
+  '/_layout/help/safety': typeof LayoutHelpSafetyRoute
   '/_layout/items/$listingId': typeof LayoutItemsListingIdRoute
   '/_layout/items/create': typeof LayoutItemsCreateRoute
+  '/_layout/legal/about': typeof LayoutLegalAboutRoute
+  '/_layout/legal/privacy': typeof LayoutLegalPrivacyRoute
+  '/_layout/legal/regulation': typeof LayoutLegalRegulationRoute
+  '/_layout/legal/terms': typeof LayoutLegalTermsRoute
   '/_layout/orders/$orderId': typeof LayoutOrdersOrderIdRoute
   '/_layout/u/$userId': typeof LayoutUUserIdRoute
 }
@@ -214,6 +312,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
+    | '/categories'
+    | '/help'
     | '/items'
     | '/notifications'
     | '/offers'
@@ -221,10 +321,19 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/wallet'
+    | '/search/'
     | '/admin/moderation'
+    | '/categories/$slug'
     | '/escrow/$orderId'
+    | '/help/contact'
+    | '/help/faq'
+    | '/help/safety'
     | '/items/$listingId'
     | '/items/create'
+    | '/legal/about'
+    | '/legal/privacy'
+    | '/legal/regulation'
+    | '/legal/terms'
     | '/orders/$orderId'
     | '/u/$userId'
   fileRoutesByTo: FileRoutesByTo
@@ -235,6 +344,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
+    | '/categories'
+    | '/help'
     | '/items'
     | '/notifications'
     | '/offers'
@@ -244,9 +355,17 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/'
     | '/admin/moderation'
+    | '/categories/$slug'
     | '/escrow/$orderId'
+    | '/help/contact'
+    | '/help/faq'
+    | '/help/safety'
     | '/items/$listingId'
     | '/items/create'
+    | '/legal/about'
+    | '/legal/privacy'
+    | '/legal/regulation'
+    | '/legal/terms'
     | '/orders/$orderId'
     | '/u/$userId'
   id:
@@ -258,6 +377,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_layout/admin'
+    | '/_layout/categories'
+    | '/_layout/help'
     | '/_layout/items'
     | '/_layout/notifications'
     | '/_layout/offers'
@@ -266,10 +387,19 @@ export interface FileRouteTypes {
     | '/_layout/settings'
     | '/_layout/wallet'
     | '/_layout/'
+    | '/search/'
     | '/_layout/admin/moderation'
+    | '/_layout/categories/$slug'
     | '/_layout/escrow/$orderId'
+    | '/_layout/help/contact'
+    | '/_layout/help/faq'
+    | '/_layout/help/safety'
     | '/_layout/items/$listingId'
     | '/_layout/items/create'
+    | '/_layout/legal/about'
+    | '/_layout/legal/privacy'
+    | '/_layout/legal/regulation'
+    | '/_layout/legal/terms'
     | '/_layout/orders/$orderId'
     | '/_layout/u/$userId'
   fileRoutesById: FileRoutesById
@@ -281,6 +411,7 @@ export interface RootRouteChildren {
   RecoverPasswordRoute: typeof RecoverPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SearchIndexRoute: typeof SearchIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -325,6 +456,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof LayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof SearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_layout/': {
@@ -383,6 +521,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutItemsRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/help': {
+      id: '/_layout/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof LayoutHelpRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/categories': {
+      id: '/_layout/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof LayoutCategoriesRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/admin': {
       id: '/_layout/admin'
       path: '/admin'
@@ -404,6 +556,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutOrdersOrderIdRouteImport
       parentRoute: typeof LayoutOrdersRoute
     }
+    '/_layout/legal/terms': {
+      id: '/_layout/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LayoutLegalTermsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/legal/regulation': {
+      id: '/_layout/legal/regulation'
+      path: '/legal/regulation'
+      fullPath: '/legal/regulation'
+      preLoaderRoute: typeof LayoutLegalRegulationRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/legal/privacy': {
+      id: '/_layout/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LayoutLegalPrivacyRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/legal/about': {
+      id: '/_layout/legal/about'
+      path: '/legal/about'
+      fullPath: '/legal/about'
+      preLoaderRoute: typeof LayoutLegalAboutRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/items/create': {
       id: '/_layout/items/create'
       path: '/create'
@@ -418,12 +598,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutItemsListingIdRouteImport
       parentRoute: typeof LayoutItemsRoute
     }
+    '/_layout/help/safety': {
+      id: '/_layout/help/safety'
+      path: '/safety'
+      fullPath: '/help/safety'
+      preLoaderRoute: typeof LayoutHelpSafetyRouteImport
+      parentRoute: typeof LayoutHelpRoute
+    }
+    '/_layout/help/faq': {
+      id: '/_layout/help/faq'
+      path: '/faq'
+      fullPath: '/help/faq'
+      preLoaderRoute: typeof LayoutHelpFaqRouteImport
+      parentRoute: typeof LayoutHelpRoute
+    }
+    '/_layout/help/contact': {
+      id: '/_layout/help/contact'
+      path: '/contact'
+      fullPath: '/help/contact'
+      preLoaderRoute: typeof LayoutHelpContactRouteImport
+      parentRoute: typeof LayoutHelpRoute
+    }
     '/_layout/escrow/$orderId': {
       id: '/_layout/escrow/$orderId'
       path: '/escrow/$orderId'
       fullPath: '/escrow/$orderId'
       preLoaderRoute: typeof LayoutEscrowOrderIdRouteImport
       parentRoute: typeof LayoutRoute
+    }
+    '/_layout/categories/$slug': {
+      id: '/_layout/categories/$slug'
+      path: '/$slug'
+      fullPath: '/categories/$slug'
+      preLoaderRoute: typeof LayoutCategoriesSlugRouteImport
+      parentRoute: typeof LayoutCategoriesRoute
     }
     '/_layout/admin/moderation': {
       id: '/_layout/admin/moderation'
@@ -445,6 +653,33 @@ const LayoutAdminRouteChildren: LayoutAdminRouteChildren = {
 
 const LayoutAdminRouteWithChildren = LayoutAdminRoute._addFileChildren(
   LayoutAdminRouteChildren,
+)
+
+interface LayoutCategoriesRouteChildren {
+  LayoutCategoriesSlugRoute: typeof LayoutCategoriesSlugRoute
+}
+
+const LayoutCategoriesRouteChildren: LayoutCategoriesRouteChildren = {
+  LayoutCategoriesSlugRoute: LayoutCategoriesSlugRoute,
+}
+
+const LayoutCategoriesRouteWithChildren =
+  LayoutCategoriesRoute._addFileChildren(LayoutCategoriesRouteChildren)
+
+interface LayoutHelpRouteChildren {
+  LayoutHelpContactRoute: typeof LayoutHelpContactRoute
+  LayoutHelpFaqRoute: typeof LayoutHelpFaqRoute
+  LayoutHelpSafetyRoute: typeof LayoutHelpSafetyRoute
+}
+
+const LayoutHelpRouteChildren: LayoutHelpRouteChildren = {
+  LayoutHelpContactRoute: LayoutHelpContactRoute,
+  LayoutHelpFaqRoute: LayoutHelpFaqRoute,
+  LayoutHelpSafetyRoute: LayoutHelpSafetyRoute,
+}
+
+const LayoutHelpRouteWithChildren = LayoutHelpRoute._addFileChildren(
+  LayoutHelpRouteChildren,
 )
 
 interface LayoutItemsRouteChildren {
@@ -475,6 +710,8 @@ const LayoutOrdersRouteWithChildren = LayoutOrdersRoute._addFileChildren(
 
 interface LayoutRouteChildren {
   LayoutAdminRoute: typeof LayoutAdminRouteWithChildren
+  LayoutCategoriesRoute: typeof LayoutCategoriesRouteWithChildren
+  LayoutHelpRoute: typeof LayoutHelpRouteWithChildren
   LayoutItemsRoute: typeof LayoutItemsRouteWithChildren
   LayoutNotificationsRoute: typeof LayoutNotificationsRoute
   LayoutOffersRoute: typeof LayoutOffersRoute
@@ -484,11 +721,17 @@ interface LayoutRouteChildren {
   LayoutWalletRoute: typeof LayoutWalletRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutEscrowOrderIdRoute: typeof LayoutEscrowOrderIdRoute
+  LayoutLegalAboutRoute: typeof LayoutLegalAboutRoute
+  LayoutLegalPrivacyRoute: typeof LayoutLegalPrivacyRoute
+  LayoutLegalRegulationRoute: typeof LayoutLegalRegulationRoute
+  LayoutLegalTermsRoute: typeof LayoutLegalTermsRoute
   LayoutUUserIdRoute: typeof LayoutUUserIdRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAdminRoute: LayoutAdminRouteWithChildren,
+  LayoutCategoriesRoute: LayoutCategoriesRouteWithChildren,
+  LayoutHelpRoute: LayoutHelpRouteWithChildren,
   LayoutItemsRoute: LayoutItemsRouteWithChildren,
   LayoutNotificationsRoute: LayoutNotificationsRoute,
   LayoutOffersRoute: LayoutOffersRoute,
@@ -498,6 +741,10 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutWalletRoute: LayoutWalletRoute,
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutEscrowOrderIdRoute: LayoutEscrowOrderIdRoute,
+  LayoutLegalAboutRoute: LayoutLegalAboutRoute,
+  LayoutLegalPrivacyRoute: LayoutLegalPrivacyRoute,
+  LayoutLegalRegulationRoute: LayoutLegalRegulationRoute,
+  LayoutLegalTermsRoute: LayoutLegalTermsRoute,
   LayoutUUserIdRoute: LayoutUUserIdRoute,
 }
 
@@ -511,6 +758,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecoverPasswordRoute: RecoverPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SearchIndexRoute: SearchIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

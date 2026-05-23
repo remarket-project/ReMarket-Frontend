@@ -10,7 +10,6 @@ import {
   Clock3,
   Handshake,
   Search,
-  Sparkles,
   XCircle,
 } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -123,38 +122,25 @@ function OffersPage() {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <Badge
-          className="border-blue-200 bg-blue-50 text-blue-700"
-          variant="outline"
-        >
-          <Sparkles className="mr-1.5 size-3" />
-          Negotiation Center
-        </Badge>
-        <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-          Offers Dashboard
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
+        <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
+          Trung tâm thương lượng
         </h1>
-        <p className="text-sm text-blue-900/75 md:text-base">
-          Manage incoming and outgoing offers in one place.
+        <p className="mt-1 text-sm text-[#5B7083] md:text-base">
+          Quản lý đề nghị gửi và nhận tại một nơi.
         </p>
       </section>
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-blue-200/80 bg-white/90">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-blue-900/70">
-              Total offers
+            <CardTitle className="text-sm text-[#5B7083]">
+              Tổng đề nghị
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center gap-2 text-2xl font-bold text-blue-950">
-            <Handshake className="size-4 text-blue-700" />
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-[#102A43]">
+            <Handshake className="size-4 text-[#2563EB]" />
             {stats.all}
           </CardContent>
         </Card>
@@ -191,7 +177,7 @@ function OffersPage() {
         </Card>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-blue-200/75 bg-white/90 p-4">
+      <section className="mt-6 rounded-2xl border border-[#D8E2EF] bg-white p-4">
         <div className="flex flex-wrap items-center gap-2">
           <Tabs
             value={activeTab}
@@ -199,9 +185,9 @@ function OffersPage() {
               setActiveTab(value as "received" | "sent")
             }
           >
-            <TabsList className="border border-blue-200/70 bg-white/90 p-1">
-              <TabsTrigger value="received">Received</TabsTrigger>
-              <TabsTrigger value="sent">Sent</TabsTrigger>
+            <TabsList className="border border-[#D8E2EF] bg-white p-1">
+              <TabsTrigger value="received">Đã nhận</TabsTrigger>
+              <TabsTrigger value="sent">Đã gửi</TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -220,8 +206,8 @@ function OffersPage() {
                 variant="outline"
                 className={`cursor-pointer ${
                   statusView === status
-                    ? "border-blue-300 bg-blue-100 text-blue-800"
-                    : "border-blue-200 bg-white text-blue-700"
+                    ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
+                    : "border-[#D8E2EF] bg-white text-[#2563EB]"
                 }`}
                 onClick={() => setStatusView(status)}
               >
@@ -232,10 +218,10 @@ function OffersPage() {
         </div>
 
         <div className="relative mt-3 max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-blue-700/70" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#2563EB]/70" />
           <Input
-            className="border-blue-200 bg-white pl-9"
-            placeholder="Search offer ID, status..."
+            className="border-[#D8E2EF] bg-white pl-9"
+            placeholder="Tìm theo ID, trạng thái..."
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -244,10 +230,10 @@ function OffersPage() {
 
       <section className="mt-4 grid gap-3">
         {filtered.length === 0 ? (
-          <Card className="border-dashed border-blue-200 bg-white/85">
-            <CardContent className="flex items-center gap-2 p-6 text-sm text-blue-900/70">
-              <XCircle className="size-4 text-blue-700" />
-              No offers match current filters.
+          <Card className="border-dashed border-[#D8E2EF] bg-white">
+            <CardContent className="flex items-center gap-2 p-6 text-sm text-[#5B7083]">
+              <XCircle className="size-4 text-[#2563EB]" />
+              Không có đề nghị phù hợp.
             </CardContent>
           </Card>
         ) : (

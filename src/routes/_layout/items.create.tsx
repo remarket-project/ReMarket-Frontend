@@ -11,7 +11,6 @@ import {
   PlusCircle,
   Rocket,
   ShoppingBag,
-  Sparkles,
 } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -72,19 +71,19 @@ const listingFormSchema = z.object({
 type ListingFormData = z.infer<typeof listingFormSchema>
 
 const steps = [
-  { id: 1, label: "Basic Info" },
-  { id: 2, label: "Description" },
-  { id: 3, label: "Images" },
-  { id: 4, label: "Location" },
-  { id: 5, label: "Review" },
+  { id: 1, label: "Thông tin cơ bản" },
+  { id: 2, label: "Mô tả" },
+  { id: 3, label: "Ảnh" },
+  { id: 4, label: "Địa điểm" },
+  { id: 5, label: "Xem lại" },
 ]
 
 const conditionLabel: Record<ListingFormData["conditionGrade"], string> = {
-  brand_new: "Brand New",
-  like_new: "Like New",
-  good: "Good",
-  fair: "Fair",
-  poor: "Poor",
+  brand_new: "Mới nguyên hộp",
+  like_new: "Như mới",
+  good: "Tốt",
+  fair: "Khá",
+  poor: "Kém",
 }
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
@@ -95,19 +94,19 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
           <div
             className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
               currentStep > step.id
-                ? "bg-emerald-500 text-white"
+                ? "bg-[#059669] text-white"
                 : currentStep === step.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-500"
+                  ? "bg-[#2563EB] text-white"
+                  : "bg-[#E2E8F0] text-[#5B7083]"
             }`}
           >
             {currentStep > step.id ? <Check className="size-4" /> : step.id}
           </div>
-          <span className="hidden whitespace-nowrap text-xs text-blue-900/75 sm:block">
+          <span className="hidden whitespace-nowrap text-xs text-[#5B7083] sm:block">
             {step.label}
           </span>
           {idx < steps.length - 1 && (
-            <div className="h-px w-5 bg-gray-200 sm:w-8" />
+            <div className="h-px w-5 bg-[#D8E2EF] sm:w-8" />
           )}
         </div>
       ))}
@@ -183,7 +182,7 @@ function CreateListingPage() {
       if (form.formState.isDirty && !showSuccessModal) {
         e.preventDefault()
         e.returnValue =
-          "You have unsaved changes. Are you sure you want to leave?"
+          "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời trang?"
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
@@ -266,13 +265,13 @@ function CreateListingPage() {
         ).length
         if (failedUploads > 0) {
           toast.warning(
-            `Listing published, but ${failedUploads} image(s) failed to upload.`,
+            `Tin đã được đăng, nhưng ${failedUploads} ảnh tải lên thất bại.`,
           )
         }
       }
 
       localStorage.removeItem(DRAFT_KEY)
-      toast.success("Listing published successfully.")
+      toast.success("Đăng tin thành công.")
 
       // Fire confetti
       confetti({
@@ -285,7 +284,7 @@ function CreateListingPage() {
       setShowSuccessModal(true)
     } catch (error: any) {
       toast.error(
-        error?.body?.detail || "Failed to publish listing. Please try again.",
+        error?.body?.detail || "Đăng tin thất bại. Vui lòng thử lại.",
       )
     } finally {
       setIsSubmitting(false)
@@ -300,40 +299,34 @@ function CreateListingPage() {
   const isNegotiable = form.watch("isNegotiable")
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="mb-6 rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
+      <section className="mb-6 rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
         <Button
           variant="outline"
           size="sm"
-          className="mb-4 border-blue-200 bg-white/90"
+          className="mb-4 border-[#D8E2EF] bg-white"
           onClick={() => navigate({ to: "/items" })}
         >
           <ArrowLeft className="mr-2 size-4" />
-          Back to Items
+          Quay lại
         </Button>
         <Badge
           variant="outline"
-          className="border-blue-200 bg-blue-50 text-blue-700"
+          className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
         >
-          <Sparkles className="mr-1.5 size-3" />
-          Seller Wizard
+          {/* <Sparkles className="mr-1.5 size-3" /> */}
+          Đăng tin mới
         </Badge>
-        <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-          List New Item
+        <h1 className="mt-2 text-2xl font-bold text-[#102A43] md:text-3xl">
+          Đăng tin mới
         </h1>
-        <p className="mt-1 text-sm text-blue-900/75 md:text-base">
-          Step {currentStep} of {totalSteps}: {steps[currentStep - 1].label}
+        <p className="mt-1 text-sm text-[#5B7083] md:text-base">
+          Bước {currentStep}/{totalSteps}: {steps[currentStep - 1].label}
         </p>
         <div className="mt-4">
           <StepIndicator currentStep={currentStep} />
         </div>
-        <Progress value={progress} className="rmk-progress mt-4 h-2" />
+        <Progress value={progress} className="mt-4 h-2" />
       </section>
 
       <form
@@ -353,9 +346,9 @@ function CreateListingPage() {
           }
         }}
       >
-        <Card className="border-blue-200/80 bg-white/95 shadow-lg shadow-blue-100/70">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-blue-950">
+            <CardTitle className="text-[#102A43]">
               {steps[currentStep - 1].label}
             </CardTitle>
           </CardHeader>
@@ -366,40 +359,40 @@ function CreateListingPage() {
             {currentStep === 4 && <CreateListingStep3Location form={form} />}
             {currentStep === 5 && <CreateListingStep4 form={form} />}
 
-            <div className="mt-8 flex justify-between border-t border-blue-100 pt-6">
+            <div className="mt-8 flex justify-between border-t border-[#D8E2EF] pt-6">
               <Button
                 variant="outline"
-                className="border-blue-200 bg-white/90"
+                className="border-[#D8E2EF] bg-white"
                 onClick={handlePreviousStep}
                 disabled={currentStep === 1}
                 type="button"
               >
-                ← Previous
+                ← Quay lại
               </Button>
 
               {currentStep < totalSteps ? (
                 <Button
-                  className="rmk-glow-button"
+                  className="bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
                   onClick={handleNextStep}
                   type="button"
                 >
-                  Next <ChevronRight className="ml-2 size-4" />
+                  Tiếp theo <ChevronRight className="ml-2 size-4" />
                 </Button>
               ) : (
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                  className="bg-[#059669] text-white hover:bg-[#047857] font-semibold"
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 size-4 animate-spin" />
-                      Publishing...
+                      Đang đăng...
                     </>
                   ) : (
                     <>
                       <Rocket className="mr-2 size-4" />
-                      Publish Listing
+                      Đăng tin
                     </>
                   )}
                 </Button>
@@ -408,48 +401,52 @@ function CreateListingPage() {
           </CardContent>
         </Card>
 
-        <Card className="sticky top-4 h-fit border-blue-200/80 bg-white/95 shadow-lg shadow-blue-100/70">
+        <Card className="sticky top-4 h-fit border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-lg text-blue-950">Preview</CardTitle>
+            <CardTitle className="text-lg text-[#102A43]">Xem trước</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {images[0]?.url ? (
               <img
                 src={images[0].url}
                 className="h-48 w-full rounded-lg object-cover"
-                alt="Primary preview"
+                alt="Ảnh chính"
               />
             ) : (
-              <div className="flex h-48 w-full items-center justify-center rounded-lg bg-blue-50">
-                <Package className="size-10 text-blue-300" />
+              <div className="flex h-48 w-full items-center justify-center rounded-lg bg-[#EFF6FF]">
+                <Package className="size-10 text-[#2563EB]" />
               </div>
             )}
 
-            {title && <p className="font-semibold text-blue-950">{title}</p>}
+            {title && <p className="font-semibold text-[#102A43]">{title}</p>}
             {price > 0 && (
-              <p className="text-lg font-bold text-emerald-700">
-                ${price.toFixed(2)} {isNegotiable ? "(Negotiable)" : ""}
+              <p className="text-lg font-bold text-[#059669]">
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(price)}{" "}
+                {isNegotiable ? "(Có thể thương lượng)" : ""}
               </p>
             )}
             {condition && (
               <Badge
                 variant="outline"
-                className="border-blue-200 bg-blue-50 text-blue-700"
+                className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
               >
                 {conditionLabel[condition]}
               </Badge>
             )}
             {province && (
-              <p className="text-xs text-blue-900/60">📍 Location selected</p>
+              <p className="text-xs text-[#5B7083]">📍 Đã chọn địa điểm</p>
             )}
 
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-blue-900/70">
-                Listing completeness
+              <p className="text-xs font-semibold text-[#5B7083]">
+                Mức độ hoàn thiện
               </p>
               <Progress value={completeness} className="h-1.5" />
-              <p className="text-xs text-blue-900/60">
-                {completeness}% complete
+              <p className="text-xs text-[#5B7083]">
+                {completeness}% hoàn thiện
               </p>
             </div>
           </CardContent>
@@ -465,23 +462,23 @@ function CreateListingPage() {
           }
         }}
       >
-        <DialogContent className="max-w-md border-emerald-100 bg-white p-6 dark:bg-zinc-950 text-center rounded-2xl shadow-2xl">
+        <DialogContent className="max-w-md border-[#A7F3D0] bg-white p-6 text-center rounded-2xl shadow-2xl">
           <DialogHeader className="flex flex-col items-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/50 mb-4 animate-bounce">
-              <CheckCircle2 className="h-10 w-10 text-emerald-600 dark:text-emerald-500" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#ECFDF5] mb-4 animate-bounce">
+              <CheckCircle2 className="h-10 w-10 text-[#059669]" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-zinc-900 dark:text-white">
-              Listing Published!
+            <DialogTitle className="text-2xl font-bold text-[#102A43]">
+              Đăng tin thành công!
             </DialogTitle>
-            <DialogDescription className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              Congratulations! Your item is now live on ReMarket's escrow-backed
-              marketplace.
+            <DialogDescription className="mt-2 text-sm text-[#5B7083]">
+              Tin của bạn đã được đăng lên ReMarket. Chúng tôi sẽ thông báo khi
+              có người quan tâm.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="my-6 border-t border-b border-zinc-100 dark:border-zinc-800 py-4 flex flex-col gap-3">
+          <div className="my-6 border-t border-[#D8E2EF] py-4 flex flex-col gap-3">
             <Button
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center justify-center gap-2 rounded-xl py-5"
+              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold flex items-center justify-center gap-2 rounded-xl py-5"
               onClick={() => {
                 if (createdListingId) {
                   navigate({
@@ -492,12 +489,12 @@ function CreateListingPage() {
               }}
             >
               <ShoppingBag className="w-4 h-4" />
-              View Your Listing
+              Xem tin đã đăng
             </Button>
 
             <Button
               variant="outline"
-              className="w-full border-zinc-200 text-zinc-700 dark:text-zinc-300 font-semibold flex items-center justify-center gap-2 rounded-xl py-5 bg-white hover:bg-zinc-50"
+              className="w-full border-[#D8E2EF] text-[#5B7083] font-semibold flex items-center justify-center gap-2 rounded-xl py-5 bg-white hover:bg-[#F5F8FC]"
               onClick={() => {
                 setShowSuccessModal(false)
                 setCreatedListingId(null)
@@ -521,12 +518,12 @@ function CreateListingPage() {
               }}
             >
               <PlusCircle className="w-4 h-4" />
-              Create Another Listing
+              Đăng tin khác
             </Button>
           </div>
 
-          <div className="text-xs text-zinc-400">
-            Or click outside to return to the marketplace.
+          <div className="text-xs text-[#5B7083]">
+            Nhấn ra ngoài để quay lại chợ.
           </div>
         </DialogContent>
       </Dialog>
@@ -539,11 +536,11 @@ export const Route = createFileRoute("/_layout/items/create")({
   head: () => ({
     meta: [
       {
-        title: "Create Listing - ReMarket",
+        title: "Đăng tin - ReMarket",
       },
       {
         name: "description",
-        content: "List a new item for sale on ReMarket",
+        content: "Đăng tin bán hàng trên ReMarket",
       },
     ],
   }),

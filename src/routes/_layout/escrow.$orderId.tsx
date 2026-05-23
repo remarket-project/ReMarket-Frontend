@@ -8,7 +8,6 @@ import {
   ExternalLink,
   Package,
   ShieldCheck,
-  Sparkles,
   Star,
 } from "lucide-react"
 import { useState } from "react"
@@ -29,10 +28,10 @@ import useAuth from "@/hooks/useAuth"
 
 const statusTone: Record<string, string> = {
   pending: "bg-zinc-100 text-zinc-600 border-zinc-200",
-  funded: "bg-amber-50 text-amber-700 border-amber-200",
-  released: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  refunded: "bg-blue-50 text-blue-700 border-blue-200",
-  disputed: "bg-rose-50 text-rose-700 border-rose-200",
+  funded: "bg-[#FFFBEB] text-[#D97706] border-[#FDE68A]",
+  released: "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]",
+  refunded: "bg-[#EFF6FF] text-[#2563EB] border-[#D8E2EF]",
+  disputed: "bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]",
 }
 
 function getEscrowDetailQueryOptions(orderId: string) {
@@ -146,20 +145,20 @@ function EscrowDetailPage() {
 
   if (isLoading || isListingLoading) {
     return (
-      <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-8 text-blue-900">
-        Loading escrow details...
+      <div className="rounded-2xl border border-[#D8E2EF] bg-white p-8 text-[#5B7083]">
+        Đang tải chi tiết escrow...
       </div>
     )
   }
 
   if (!data?.escrow) {
     return (
-      <div className="rounded-3xl border border-dashed border-blue-300 bg-white/85 p-10 text-center">
-        <h2 className="text-xl font-semibold text-blue-950">
-          Escrow not found
+      <div className="rounded-2xl border border-dashed border-[#D8E2EF] bg-white p-10 text-center">
+        <h2 className="text-xl font-semibold text-[#102A43]">
+          Không tìm thấy escrow
         </h2>
-        <Button className="mt-4" asChild>
-          <Link to="/orders">Back to orders</Link>
+        <Button className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" asChild>
+          <Link to="/orders">Quay lại đơn hàng</Link>
         </Button>
       </div>
     )
@@ -175,35 +174,28 @@ function EscrowDetailPage() {
     null
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
       <section className="mb-5 flex flex-wrap items-center gap-3">
         <Button
           variant="outline"
-          className="border-blue-200 bg-white/90"
+          className="border-[#D8E2EF] bg-white text-[#5B7083]"
           asChild
         >
           <Link to="/orders/$orderId" params={{ orderId }}>
             <ArrowLeft className="mr-1.5 size-4" />
-            Back to order
+            Quay lại đơn hàng
           </Link>
         </Button>
         <Badge
           variant="outline"
-          className="border-blue-200 bg-blue-50 text-blue-700"
+          className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
         >
-          <Sparkles className="mr-1.5 size-3" />
           Escrow #{escrow.order_id.slice(0, 8)}
         </Badge>
         <Badge
           className={
             statusTone[escrow.status] ||
-            "bg-blue-50 text-blue-700 border-blue-200 font-semibold"
+            "bg-[#EFF6FF] text-[#2563EB] border-[#D8E2EF] font-semibold"
           }
         >
           {escrow.status}
@@ -212,16 +204,15 @@ function EscrowDetailPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <div className="space-y-4">
-          <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-950 text-lg">
-                Escrow Overview
+              <CardTitle className="text-[#102A43] text-lg">
+                Tổng quan Escrow
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Listing Row */}
-              <div className="flex items-center gap-3 border-b border-zinc-100 pb-3">
-                <div className="relative flex size-14 flex-shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 overflow-hidden">
+              <div className="flex items-center gap-3 border-b border-[#D8E2EF] pb-3">
+                <div className="relative flex size-14 flex-shrink-0 items-center justify-center rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] overflow-hidden">
                   {primaryImage ? (
                     <img
                       src={primaryImage.image_url}
@@ -229,134 +220,125 @@ function EscrowDetailPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Package className="size-6 text-blue-300" />
+                    <Package className="size-6 text-[#93C5FD]" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <Link
                     to="/items/$listingId"
                     params={{ listingId: order.listing_id }}
-                    className="font-bold text-sm text-blue-950 hover:text-blue-700 flex items-center gap-1 leading-snug"
+                    className="font-bold text-sm text-[#102A43] hover:text-[#2563EB] flex items-center gap-1 leading-snug"
                   >
-                    {listing?.title || `Item #${order.listing_id.slice(0, 8)}`}
-                    <ExternalLink className="w-3.5 h-3.5 text-blue-500/80" />
+                    {listing?.title || `Mục #${order.listing_id.slice(0, 8)}`}
+                    <ExternalLink className="w-3.5 h-3.5 text-[#2563EB]/80" />
                   </Link>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    Order ID: #{escrow.order_id.slice(0, 8)}
+                  <p className="text-xs text-[#8A99A8] mt-0.5">
+                    Mã đơn: #{escrow.order_id.slice(0, 8)}
                   </p>
                 </div>
               </div>
 
-              {/* Price Details */}
               <div className="grid grid-cols-2 gap-3 pt-1">
-                <div className="rounded-xl border border-blue-100 bg-white p-3">
-                  <p className="text-xs text-zinc-500">Escrow Locked</p>
-                  <p className="text-lg font-bold text-blue-950 mt-0.5">
+                <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+                  <p className="text-xs text-[#5B7083]">Escrow khóa</p>
+                  <p className="text-lg font-bold text-[#102A43] mt-0.5">
                     {money(escrow.amount)}
                   </p>
                 </div>
-                <div className="rounded-xl border border-blue-100 bg-white p-3">
-                  <p className="text-xs text-zinc-500">Current Status</p>
-                  <p className="text-sm font-bold text-emerald-700 capitalize mt-1">
+                <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+                  <p className="text-xs text-[#5B7083]">Trạng thái</p>
+                  <p className="text-sm font-bold text-[#059669] capitalize mt-1">
                     {escrow.status}
                   </p>
                 </div>
               </div>
 
-              {/* Escrow Timeline */}
-              <div className="rounded-xl border border-blue-100 bg-white p-3.5 mt-2">
-                <p className="text-xs font-semibold text-blue-950 uppercase tracking-wider mb-4">
-                  Escrow Milestones
+              <div className="rounded-xl border border-[#D8E2EF] bg-white p-3.5 mt-2">
+                <p className="text-xs font-semibold text-[#102A43] uppercase tracking-wider mb-4">
+                  Các mốc Escrow
                 </p>
                 <EscrowTimeline escrow={escrow} />
               </div>
 
               {escrow.dispute_reason && (
-                <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-rose-800">
-                  <p className="text-xs font-semibold">Dispute Details</p>
+                <div className="rounded-xl border border-[#FECACA] bg-[#FEF2F2] p-3 text-[#DC2626]">
+                  <p className="text-xs font-semibold">Chi tiết tranh chấp</p>
                   <p className="mt-1 text-sm">{escrow.dispute_reason}</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Participants Card */}
-          <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-950 text-lg">
-                Transaction Parties
+              <CardTitle className="text-[#102A43] text-lg">
+                Bên tham gia
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* Buyer Profile */}
               {buyerProfile && (
-                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                <div className="flex items-center justify-between border-b border-[#D8E2EF] pb-3">
                   <div className="flex items-center gap-2">
-                    <Avatar className="size-9 rounded-lg border border-blue-200">
+                    <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
                       <AvatarImage src={buyerProfile.avatar_url ?? undefined} />
-                      <AvatarFallback className="rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
-                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() ||
-                          "B"}
+                      <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
+                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() || "B"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
-                      <p className="text-zinc-500 font-medium">Buyer</p>
+                      <p className="text-[#5B7083] font-medium">Người mua</p>
                       <Link
                         to="/u/$userId"
                         params={{ userId: buyerProfile.id }}
-                        className="font-bold text-blue-950 hover:underline mt-0.5 block"
+                        className="font-bold text-[#102A43] hover:underline mt-0.5 block"
                       >
                         @{buyerProfile.full_name}
                       </Link>
                     </div>
                   </div>
                   <div className="text-right text-xs">
-                    <div className="flex items-center gap-1 text-amber-500 justify-end">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-zinc-700">
+                    <div className="flex items-center gap-1 text-[#F59E0B] justify-end">
+                      <Star className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                      <span className="font-semibold text-[#102A43]">
                         {Number(buyerProfile.rating_avg || 0).toFixed(1)}
                       </span>
                     </div>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">
-                      {buyerProfile.completed_orders || 0} completed orders
+                    <p className="text-[10px] text-[#8A99A8] mt-0.5">
+                      {buyerProfile.completed_orders || 0} đơn đã hoàn tất
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Seller Profile */}
               {sellerProfile && (
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex items-center gap-2">
-                    <Avatar className="size-9 rounded-lg border border-blue-200">
-                      <AvatarImage
-                        src={sellerProfile.avatar_url ?? undefined}
-                      />
-                      <AvatarFallback className="rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
-                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() ||
-                          "S"}
+                    <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
+                      <AvatarImage src={sellerProfile.avatar_url ?? undefined} />
+                      <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
+                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() || "S"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
-                      <p className="text-zinc-500 font-medium">Seller</p>
+                      <p className="text-[#5B7083] font-medium">Người bán</p>
                       <Link
                         to="/u/$userId"
                         params={{ userId: sellerProfile.id }}
-                        className="font-bold text-blue-950 hover:underline mt-0.5 block"
+                        className="font-bold text-[#102A43] hover:underline mt-0.5 block"
                       >
                         @{sellerProfile.full_name}
                       </Link>
                     </div>
                   </div>
                   <div className="text-right text-xs">
-                    <div className="flex items-center gap-1 text-amber-500 justify-end">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-zinc-700">
+                    <div className="flex items-center gap-1 text-[#F59E0B] justify-end">
+                      <Star className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                      <span className="font-semibold text-[#102A43]">
                         {Number(sellerProfile.rating_avg || 0).toFixed(1)}
                       </span>
                     </div>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">
-                      {sellerProfile.completed_orders || 0} completed orders
+                    <p className="text-[10px] text-[#8A99A8] mt-0.5">
+                      {sellerProfile.completed_orders || 0} đơn đã hoàn tất
                     </p>
                   </div>
                 </div>
@@ -365,30 +347,30 @@ function EscrowDetailPage() {
           </Card>
         </div>
 
-        <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-blue-950 text-lg">Actions</CardTitle>
+            <CardTitle className="text-[#102A43] text-lg">Thao tác</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {isBuyer && escrow.status === "funded" ? (
               <Button
-                className="rmk-glow-button w-full"
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
                 onClick={() => buyerReleaseMutation.mutate()}
                 disabled={buyerReleaseMutation.isPending}
               >
                 <CheckCircle2 className="mr-2 size-4" />
-                Confirm Receipt & Request Release
+                Xác nhận nhận hàng & yêu cầu giải ngân
               </Button>
             ) : null}
 
             {isSeller && escrow.status === "funded" ? (
               <Button
-                className="rmk-glow-button w-full"
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
                 onClick={() => sellerConfirmMutation.mutate()}
                 disabled={sellerConfirmMutation.isPending}
               >
                 <ArrowUpRight className="mr-2 size-4" />
-                Confirm Release
+                Xác nhận giải ngân
               </Button>
             ) : null}
 
@@ -401,29 +383,29 @@ function EscrowDetailPage() {
                 onClick={() => setOpenDispute(true)}
               >
                 <AlertTriangle className="mr-2 size-4" />
-                Open Dispute
+                Mở tranh chấp
               </Button>
             ) : null}
 
             <Button
               variant="outline"
-              className="w-full border-blue-200 bg-white/90"
+              className="w-full border-[#D8E2EF] bg-white text-[#2563EB]"
               asChild
             >
               <Link to="/orders/$orderId" params={{ orderId }}>
-                View Order details
+                Xem chi tiết đơn hàng
               </Link>
             </Button>
 
-            <div className="rounded-xl border border-blue-200/70 bg-blue-50/60 p-3.5 text-xs text-blue-900/70 space-y-1">
-              <p className="flex items-center gap-2 font-bold text-blue-950">
-                <ShieldCheck className="size-4 text-blue-700" />
-                How Escrow Protection Works
+            <div className="rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] p-3.5 text-xs text-[#5B7083] space-y-1">
+              <p className="flex items-center gap-2 font-bold text-[#102A43]">
+                <ShieldCheck className="size-4 text-[#2563EB]" />
+                Cách bảo chứng Escrow hoạt động
               </p>
               <p className="leading-relaxed">
-                Funds are held in a secure third-party account by ReMarket. Once
-                delivery is completed and confirmed by the buyer, funds are
-                released straight to the seller's wallet.
+                Tiền được giữ trong tài khoản bảo chứng của bên thứ ba bởi ReMarket.
+                Khi giao hàng hoàn tất và người mua xác nhận, tiền sẽ được giải ngân
+                vào ví người bán.
               </p>
             </div>
           </CardContent>

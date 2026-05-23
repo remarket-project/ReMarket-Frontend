@@ -56,7 +56,7 @@ export const Route = createFileRoute("/_layout/admin" as any)({
   head: () => ({
     meta: [
       {
-        title: "Admin - ReMarket",
+        title: "Quản trị - ReMarket",
       },
     ],
   }),
@@ -101,75 +101,74 @@ function UsersTableContent() {
   return (
     <div className="flex flex-col gap-4">
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-blue-200/80 bg-white/90">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="text-xs text-blue-900/70">Total users</p>
-              <p className="text-2xl font-bold text-blue-950">{stats.total}</p>
+              <p className="text-xs text-[#5B7083]">Tổng người dùng</p>
+              <p className="text-2xl font-bold text-[#102A43]">{stats.total}</p>
             </div>
-            <Users className="size-4 text-blue-700" />
+            <Users className="size-5 text-[#2563EB]" />
           </CardContent>
         </Card>
-        <Card className="border-emerald-200/80 bg-emerald-50/55">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="text-xs text-emerald-800/70">Active</p>
-              <p className="text-2xl font-bold text-emerald-900">
+              <p className="text-xs text-[#5B7083]">Đang hoạt động</p>
+              <p className="text-2xl font-bold text-[#059669]">
                 {stats.active}
               </p>
             </div>
-            <UserCheck className="size-4 text-emerald-700" />
+            <UserCheck className="size-5 text-[#059669]" />
           </CardContent>
         </Card>
-        <Card className="border-amber-200/80 bg-amber-50/60">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="text-xs text-amber-800/70">Inactive</p>
-              <p className="text-2xl font-bold text-amber-900">
+              <p className="text-xs text-[#5B7083]">Không hoạt động</p>
+              <p className="text-2xl font-bold text-[#D97706]">
                 {stats.inactive}
               </p>
             </div>
-            <AlertTriangle className="size-4 text-amber-700" />
+            <AlertTriangle className="size-5 text-[#D97706]" />
           </CardContent>
         </Card>
-        <Card className="border-blue-200/80 bg-blue-50/55">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="text-xs text-blue-900/70">Admin accounts</p>
-              <p className="text-2xl font-bold text-blue-950">
+              <p className="text-xs text-[#5B7083]">Quản trị viên</p>
+              <p className="text-2xl font-bold text-[#102A43]">
                 {stats.adminAccounts}
               </p>
             </div>
-            <ShieldCheck className="size-4 text-blue-700" />
+            <ShieldCheck className="size-5 text-[#2563EB]" />
           </CardContent>
         </Card>
       </section>
 
-      <section className="rounded-2xl border border-blue-200/75 bg-white/90 p-4">
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-4">
         <div className="relative max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-blue-700/70" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#5B7083]" />
           <Input
-            className="border-blue-200 bg-white pl-9"
-            placeholder="Search by full name, email, or status"
+            className="border-[#D8E2EF] bg-white pl-9"
+            placeholder="Tìm theo tên, email hoặc trạng thái"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-blue-900/75">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#5B7083]">
           <Badge
             variant="outline"
-            className="border-blue-200 bg-blue-50 text-blue-700"
+            className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
           >
-            Operational view
+            Vận hành
           </Badge>
           <span>
-            Intentional account actions only: every status change requires
-            explicit admin action.
+            Mọi thay đổi trạng thái yêu cầu thao tác thủ công của quản trị viên.
           </span>
         </div>
       </section>
 
-      <div className="rounded-2xl border border-blue-200/75 bg-white/90 p-2">
+      <div className="rounded-2xl border border-[#D8E2EF] bg-white p-2">
         <DataTable columns={columns} data={filteredUsers} />
       </div>
     </div>
@@ -186,33 +185,24 @@ function UsersTable() {
 
 function Admin() {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-              Admin Users
-            </h1>
-            <p className="text-blue-900/70">
-              Manage account access and trust posture with an operations-first
-              command view.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <AddUser />
-            <Link
-              to="/admin/moderation"
-              className="inline-flex h-9 items-center rounded-md border border-blue-200 bg-white px-3 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
-            >
-              Listing moderation
-            </Link>
-          </div>
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
+      <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
+        <div>
+          <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
+            Quản trị người dùng
+          </h1>
+          <p className="text-[#5B7083]">
+            Quản lý tài khoản và quyền truy cập hệ thống.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <AddUser />
+          <Link
+            to="/admin/moderation"
+            className="inline-flex h-9 items-center rounded-md border border-[#D8E2EF] bg-white px-3 text-sm font-medium text-[#2563EB] transition hover:bg-[#EFF6FF]"
+          >
+            Kiểm duyệt tin
+          </Link>
         </div>
       </section>
 

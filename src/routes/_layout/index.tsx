@@ -1,580 +1,359 @@
+import { useState } from "react";
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router"
+} from "@tanstack/react-router";
 import {
   ArrowRight,
-  ArrowUpRight,
-  Bell,
-  Box,
-  Clock3,
-  Compass,
-  Gavel,
-  HandCoins,
-  Handshake,
-  PackageSearch,
+  ChevronRight,
+  Clock,
+  Eye,
+  Heart,
+  MapPin,
+  MessageCircle,
   Shield,
   ShieldCheck,
-  Sparkles,
   Star,
-  Target,
-  TrendingUp,
-  Wallet,
-} from "lucide-react"
-import { useQuery } from "@tanstack/react-query"
-import { ApiError, UsersService, ListingsService, OrdersService, OffersService, WalletService } from "@/client"
-import { useLanguage } from "@/components/Common/LanguageProvider"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import useAuth from "@/hooks/useAuth"
+} from "lucide-react";
+
+import { ListingsService } from "@/client";
+import { useQuery } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_layout/")({
-  component: Dashboard,
+  component: MarketplaceHome,
   beforeLoad: async () => {
-    try {
-      const user = await UsersService.readUserMe()
-      if (user.role !== "admin") {
-        throw redirect({ to: "/items" })
-      }
-    } catch (error) {
-      if (
-        error instanceof ApiError &&
-        (error.status === 401 || error.status === 403)
-      ) {
-        localStorage.removeItem("access_token")
-        throw redirect({ to: "/login" })
-      }
-      return
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      throw redirect({ to: "/login" });
     }
   },
   head: () => ({
     meta: [
       {
-        title: "Dashboard - ReMarket",
+        title: "ReMarket - Chợ mua bán đồ đã qua sử dụng",
       },
     ],
   }),
-})
+});
 
-function Dashboard() {
-  const { user: currentUser } = useAuth()
-  const { language } = useLanguage()
-  const isVi = language === "vi"
+const categories = [
+  { name: "Công nghệ", slug: "cong-nghe", icon: "📱", color: "bg-blue-50" },
+  { name: "Gia dụng", slug: "gia-dung", icon: "🏠", color: "bg-amber-50" },
+  { name: "Thời trang", slug: "thoi-trang", icon: "👕", color: "bg-rose-50" },
+  { name: "Máy ảnh", slug: "may-anh", icon: "📷", color: "bg-purple-50" },
+  { name: "Gaming", slug: "gaming", icon: "🎮", color: "bg-green-50" },
+  { name: "Đời sống", slug: "doi-song", icon: "🌿", color: "bg-emerald-50" },
+  { name: "Thể thao", slug: "the-thao", icon: "⚽", color: "bg-orange-50" },
+  { name: "Xe cộ", slug: "xe-co", icon: "🚗", color: "bg-cyan-50" },
+  { name: "Sách", slug: "sach", icon: "📚", color: "bg-yellow-50" },
+  { name: "Âm nhạc", slug: "am-nhac", icon: "🎵", color: "bg-indigo-50" },
+];
 
-  if (!currentUser) {
-    return (
-      <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-8 text-blue-900">
-        Loading dashboard profile...
-      </div>
-    )
-  }
+const featuredListings = [
+  {
+    title: "iPhone 13 Pro 256GB",
+    price: "9.800.000₫",
+    condition: "Như mới",
+    location: "Quận 1, TP. HCM",
+    postedAt: "15 phút trước",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+    seller: "Kelly Studio",
+    rating: 4.9,
+  },
+  {
+    title: "Ghế bành phong cách mid-century",
+    price: "4.200.000₫",
+    condition: "Rất tốt",
+    location: "Thảo Điền, TP. HCM",
+    postedAt: "32 phút trước",
+    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
+    seller: "Nha Market",
+    rating: 4.8,
+  },
+  {
+    title: "Áo khoác Patagonia",
+    price: "2.900.000₫",
+    condition: "Tốt",
+    location: "Bình Thạnh, TP. HCM",
+    postedAt: "1 giờ trước",
+    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+    seller: "City Wardrobe",
+    rating: 4.7,
+  },
+  {
+    title: "Fujifilm X-T4 Body Only",
+    price: "24.500.000₫",
+    condition: "Rất tốt",
+    location: "Quận 7, TP. HCM",
+    postedAt: "2 giờ trước",
+    image: "https://images.unsplash.com/photo-1516724562728-afc824a36e84?auto=format&fit=crop&w=800&q=80",
+    seller: "Frame Vault",
+    rating: 5.0,
+  },
+  {
+    title: "Herman Miller Sayl Gaming",
+    price: "11.800.000₫",
+    condition: "Như mới",
+    location: "Phú Nhuận, TP. HCM",
+    postedAt: "3 giờ trước",
+    image: "https://images.unsplash.com/photo-1541558869434-2840d308329a?auto=format&fit=crop&w=800&q=80",
+    seller: "Workspace Lab",
+    rating: 4.9,
+  },
+  {
+    title: "Nintendo Switch OLED",
+    price: "5.700.000₫",
+    condition: "Rất tốt",
+    location: "Gò Vấp, TP. HCM",
+    postedAt: "45 phút trước",
+    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800&q=80",
+    seller: "Play Safe",
+    rating: 4.8,
+  },
+];
 
-  const profile = currentUser
+function MarketplaceHome() {
+  const [activeTab, setActiveTab] = useState<string>("for-you");
+  const [visibleCount, setVisibleCount] = useState(6);
 
-  const { data: listingsResponse } = useQuery({
-    queryKey: ["my-active-listings"],
+  const { data: listingsData } = useQuery({
+    queryKey: ["home-listings"],
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({
         skip: 0,
-        limit: 100,
+        limit: 12,
       }),
-  })
+  });
 
-  const { data: ordersResponse } = useQuery({
-    queryKey: ["my-orders-summary"],
-    queryFn: () => OrdersService.getMyOrdersApiV1OrdersMeGet(),
-  })
+  const listings = listingsData?.items ?? [];
+  const totalListings = listingsData?.total ?? 0;
 
-  const { data: offersResponse } = useQuery({
-    queryKey: ["my-pending-offers"],
-    queryFn: () =>
-      OffersService.getMyReceivedOffersApiV1OffersMeReceivedGet({
-        limit: 100,
-      }),
-  })
+  const tabs = [
+    { key: "for-you", label: "Dành cho bạn" },
+    { key: "latest", label: "Mới nhất" },
+    { key: "nearby", label: "Gần bạn" },
+    { key: "featured", label: "Nổi bật" },
+  ];
 
-  const { data: walletResponse } = useQuery({
-    queryKey: ["wallet-balance"],
-    queryFn: () => WalletService.getMyWalletApiV1WalletMeGet(),
-  })
-
-  const activeListingsCount = listingsResponse?.total ?? 0
-  const pendingOffersCount = offersResponse?.length ?? 0
-  const pendingEscrowsCount =
-    ordersResponse?.filter(
-      (o) => o.status === "pending" || o.status === "shipping",
-    ).length ?? 0
-  const balanceVal = walletResponse?.balance
-    ? `$${Number(walletResponse.balance).toLocaleString()}`
-    : "$0"
-
-  const kpis = [
-    {
-      title: isVi ? "Tin dang hoat dong" : "Active Listings",
-      value: String(activeListingsCount),
-      hint: isVi ? "Tong so tin tren cho" : "Total items in marketplace",
-      delta: "+12%",
-      icon: Box,
-    },
-    {
-      title: isVi ? "De xuat dang den" : "Incoming Offers",
-      value: String(pendingOffersCount),
-      hint: isVi ? "Yeu cau can phan hoi" : "Requires response",
-      delta: "+8%",
-      icon: Handshake,
-    },
-    {
-      title: isVi ? "Escrow cho xu ly" : "Escrow Pending",
-      value: String(pendingEscrowsCount),
-      hint: isVi ? "Dang giao dich qua Escrow" : "Active escrow locks",
-      delta: "99.8%",
-      icon: ShieldCheck,
-    },
-    {
-      title: isVi ? "So du vi" : "Wallet Balance",
-      value: balanceVal,
-      hint: isVi ? "Kha dung ngay" : "Available now",
-      delta: "+$500",
-      icon: Wallet,
-    },
-  ]
-
-  const recentActivity = [
-    {
-      title: "Offer received for Mid-Century Armchair",
-      detail: "$165 from @alexbuyer",
-      time: "4 mins ago",
-      type: "Offer",
-      priority: "high",
-    },
-    {
-      title: "Escrow funded for iPhone listing",
-      detail: "Order #RM-20418",
-      time: "21 mins ago",
-      type: "Escrow",
-      priority: "medium",
-    },
-    {
-      title: "Delivery confirmed by buyer",
-      detail: "Funds releasing in 2 hours",
-      time: "1 hour ago",
-      type: "Order",
-      priority: "low",
-    },
-    {
-      title: "Payout completed to bank account",
-      detail: "$780 transferred",
-      time: "Yesterday",
-      type: "Wallet",
-      priority: "low",
-    },
-  ] as const
-
-  const attentionItems = [
-    "1 order needs shipping label upload",
-    "2 offers expire in under 12 hours",
-    "KYC reminder: add payout verification document",
-  ] as const
-
-  const topListings = [
-    { title: "iPhone 13 Pro 256GB", views: 420, saves: 32, conv: "6.4%" },
-    { title: "Mid-Century Armchair", views: 318, saves: 27, conv: "5.8%" },
-    { title: "Patagonia Jacket", views: 264, saves: 19, conv: "4.9%" },
-  ] as const
-
-  const trustSignals = [
-    {
-      label: isVi ? "Ty le giao dich an toan" : "Safe transaction rate",
-      value: "99.8%",
-      icon: Shield,
-    },
-    {
-      label: isVi ? "Toc do phan hoi trung binh" : "Median response speed",
-      value: "36m",
-      icon: Target,
-    },
-    {
-      label: isVi ? "Deal thanh cong tu thuong luong" : "Negotiation win rate",
-      value: "74%",
-      icon: TrendingUp,
-    },
-  ] as const
-
-  const escrowStages = [
-    { label: isVi ? "Tien da khoa" : "Funds Locked", value: "$1,240" },
-    { label: isVi ? "Dang giao" : "In Delivery", value: "3" },
-    { label: isVi ? "Can xac nhan" : "Need Confirmation", value: "1" },
-  ] as const
-
-  const quickActions = [
-    {
-      to: "/items",
-      title: isVi ? "Kham pha san pham" : "Browse listings",
-      description: isVi
-        ? "Xem cac bai dang moi, loc theo danh muc va gia"
-        : "Explore new listings with smart filters",
-      icon: Compass,
-    },
-    {
-      to: "/settings",
-      title: isVi ? "Cap nhat ho so" : "Refine your profile",
-      description: isVi
-        ? "Tang uy tin voi thong tin, avatar va dia chi day du"
-        : "Boost trust with complete profile details",
-      icon: Sparkles,
-    },
-    {
-      to: "/admin",
-      title: isVi ? "Quan tri he thong" : "Admin command",
-      description: isVi
-        ? "Theo doi duyet tin, tranh chap va chi so toan he thong"
-        : "Review listings, disputes, and platform health",
-      icon: Gavel,
-    },
-  ] as const
-
-  const priorityBadgeClass = {
-    high: "bg-rose-100 text-rose-700 border-rose-200",
-    medium: "bg-amber-100 text-amber-700 border-amber-200",
-    low: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  } as const
+  const feedPool = listings.length > 0
+    ? listings
+    : featuredListings;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="rmk-fade-up space-y-4 rounded-3xl border border-blue-200/70 bg-white/90 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/90 px-3 py-1 text-xs font-semibold tracking-wide text-blue-800 uppercase">
-              <Sparkles className="size-3.5" />
-              {isVi ? "Control Center" : "Control Center"}
-            </div>
-            <h1 className="font-display max-w-2xl text-3xl leading-tight font-semibold text-blue-950 md:text-4xl">
-              {isVi ? "Xin chao" : "Welcome back"},{" "}
-              <span className="rmk-gradient-text">
-                {profile.full_name || profile.email}
-              </span>
-            </h1>
-            <p className="max-w-2xl text-sm text-blue-900/75 md:text-base">
-              {isVi
-                ? "Theo doi toan bo listing, de xuat, escrow va dong tien trong mot dashboard hien dai, ro rang va dang tin cay."
-                : "Track listings, offers, escrow health, and wallet flow from a premium trust-first dashboard."}
+    <div className="space-y-8">
+      {/* Trust Banner */}
+      <section className="rmk-info-banner">
+        <div className="rmk-info-banner-item">
+          <div className="rmk-info-banner-icon">
+            <ShieldCheck className="size-5" />
+          </div>
+          <div>
+            <p className="font-semibold text-[#102A43] text-sm">
+              Thanh toán an toàn
+            </p>
+            <p className="text-xs text-[#5B7083]">
+              Tiền được giữ trong escrow đến khi cả hai bên xác nhận
             </p>
           </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button className="rmk-glow-button" asChild>
-              <RouterLink to="/items">
-                {isVi ? "Kham pha ngay" : "Browse now"}
-                <ArrowRight className="size-4" />
-              </RouterLink>
-            </Button>
-            <Button
-              variant="outline"
-              className="border-blue-200 bg-white/85"
-              asChild
-            >
-              <RouterLink to="/settings">
-                {isVi ? "Tinh chinh tai khoan" : "Tune settings"}
-              </RouterLink>
-            </Button>
+        </div>
+        <div className="rmk-info-banner-item">
+          <div className="rmk-info-banner-icon">
+            <Shield className="size-5" />
+          </div>
+          <div>
+            <p className="font-semibold text-[#102A43] text-sm">
+              Người bán uy tín
+            </p>
+            <p className="text-xs text-[#5B7083]">
+              Hồ sơ đã xác minh, đánh giá minh bạch từ người mua
+            </p>
           </div>
         </div>
+        <div className="rmk-info-banner-item">
+          <div className="rmk-info-banner-icon">
+            <MessageCircle className="size-5" />
+          </div>
+          <div>
+            <p className="font-semibold text-[#102A43] text-sm">
+              Hỗ trợ 24/7
+            </p>
+            <p className="text-xs text-[#5B7083]">
+              Đội ngũ hỗ trợ giải quyết tranh chấp nhanh chóng
+            </p>
+          </div>
+        </div>
+      </section>
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          {trustSignals.map((signal, index) => (
-            <Card
-              key={signal.label}
-              className="rmk-fade-up border-blue-200/80 bg-white/95 py-4 shadow-md shadow-blue-100/70"
-              style={{ animationDelay: `${200 + index * 110}ms` }}
+      {/* Categories Grid */}
+      <section>
+        <div className="rmk-section-title">
+          <h2>Danh mục nổi bật</h2>
+          <RouterLink to="/categories" className="hover:underline">
+            Xem tất cả <ChevronRight className="size-4" />
+          </RouterLink>
+        </div>
+        <div className="grid grid-cols-5 gap-3 sm:grid-cols-5 md:grid-cols-10">
+          {categories.map((cat) => (
+            <RouterLink
+              key={cat.name}
+              to="/categories/$slug"
+              params={{ slug: cat.slug }}
+              className="rmk-card flex flex-col items-center gap-2 p-4 text-center hover:border-[#2563EB]"
             >
-              <CardContent className="flex items-center justify-between px-4">
-                <div>
-                  <p className="text-xs font-medium text-blue-900/70">
-                    {signal.label}
-                  </p>
-                  <p className="mt-1 text-2xl font-bold text-blue-950">
-                    {signal.value}
-                  </p>
-                </div>
-                <span className="inline-flex size-10 items-center justify-center rounded-xl bg-blue-100/80 text-blue-700">
-                  <signal.icon className="size-5" />
-                </span>
-              </CardContent>
-            </Card>
+              <span className={`w-10 h-10 rounded-full ${cat.color} flex items-center justify-center text-lg`}>
+                {cat.icon}
+              </span>
+              <span className="text-xs text-[#5B7083] font-medium">{cat.name}</span>
+            </RouterLink>
           ))}
         </div>
       </section>
 
-      <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((kpi, index) => (
-          <Card
-            key={kpi.title}
-            className="rmk-fade-up border-blue-200/80 bg-white/95 py-5 shadow-md shadow-blue-100/70"
-            style={{ animationDelay: `${230 + index * 95}ms` }}
-          >
-            <CardContent className="space-y-3 px-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold tracking-wide text-blue-900/70 uppercase">
-                  {kpi.title}
-                </p>
-                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
-                  <kpi.icon className="size-4" />
-                </span>
-              </div>
-              <div className="flex items-end justify-between gap-2">
-                <p className="text-3xl font-bold text-blue-950">{kpi.value}</p>
-                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
-                  {kpi.delta}
-                </span>
-              </div>
-              <p className="text-xs text-blue-900/65">{kpi.hint}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-
-      <section className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_1fr]">
-        <Card className="rmk-fade-up rmk-delay-1 border-blue-200/80 bg-white/95 py-5 shadow-lg shadow-blue-100/70">
-          <CardHeader className="flex flex-row items-center justify-between px-5">
-            <CardTitle className="flex items-center gap-2 text-lg text-blue-950">
-              <Clock3 className="size-4 text-blue-700" />
-              {isVi ? "Hoat dong gan day" : "Recent Activity"}
-            </CardTitle>
-            <Badge
-              className="border-blue-200 bg-blue-50 text-blue-700"
-              variant="outline"
-            >
-              {isVi ? "Live Feed" : "Live Feed"}
-            </Badge>
-          </CardHeader>
-          <CardContent className="space-y-3 px-5">
-            {recentActivity.map((item, index) => (
-              <div
-                key={item.title}
-                className="rounded-2xl border border-blue-200/70 bg-white p-4 shadow-sm shadow-blue-100/60 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
-                style={{ animationDelay: `${360 + index * 80}ms` }}
+      {/* Feed Tabs + Listings */}
+      <section>
+        <div className="rmk-section-title">
+          <div className="flex items-center gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`rmk-tab-pill ${activeTab === tab.key ? "active" : ""}`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-blue-950">
-                      {item.title}
-                    </p>
-                    <p className="mt-1 text-xs text-blue-900/70">
-                      {item.detail}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="border-blue-200 bg-blue-50 text-blue-700"
-                    >
-                      {item.type}
-                    </Badge>
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${priorityBadgeClass[item.priority]}`}
-                    >
-                      {item.priority}
-                    </span>
-                  </div>
-                </div>
-                <p className="mt-3 flex items-center gap-1 text-xs text-blue-900/60">
-                  <ArrowUpRight className="size-3" />
-                  {item.time}
-                </p>
-              </div>
+                {tab.label}
+              </button>
             ))}
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <Card className="rmk-fade-up rmk-delay-2 border-blue-200/80 bg-white/95 py-5 shadow-lg shadow-blue-100/70">
-            <CardHeader className="px-5">
-              <CardTitle className="flex items-center gap-2 text-blue-950">
-                <Bell className="size-4 text-blue-700" />
-                {isVi ? "Can uu tien xu ly" : "Attention Needed"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 px-5">
-              {attentionItems.map((item, index) => (
-                <div
-                  key={item}
-                  className="rounded-xl border border-dashed border-blue-200 bg-blue-50/45 p-3 text-sm text-blue-900/80"
-                  style={{ animationDelay: `${430 + index * 90}ms` }}
-                >
-                  {item}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card className="rmk-fade-up rmk-delay-3 border-blue-200/80 bg-white/95 py-5 shadow-lg shadow-blue-100/70">
-            <CardHeader className="flex flex-row items-center justify-between px-5">
-              <CardTitle className="flex items-center gap-2 text-blue-950">
-                <HandCoins className="size-4 text-blue-700" />
-                {isVi ? "Hieu suat listing" : "Top Listing Performance"}
-              </CardTitle>
-              <Badge
-                className="border-blue-200 bg-blue-50 text-blue-700"
-                variant="outline"
-              >
-                {isVi ? "Preview" : "Preview"}
-              </Badge>
-            </CardHeader>
-            <CardContent className="space-y-3 px-5">
-              {topListings.map((listing) => (
-                <div
-                  key={listing.title}
-                  className="flex items-center justify-between rounded-xl border border-blue-200/70 bg-white p-3 transition hover:border-blue-300"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-blue-950">
-                      {listing.title}
-                    </p>
-                    <p className="text-xs text-blue-900/65">
-                      {listing.views} views • {listing.saves} saves
-                    </p>
-                  </div>
-                  <Badge
-                    className="border-emerald-200 bg-emerald-50 text-emerald-700"
-                    variant="outline"
-                  >
-                    {listing.conv}
-                  </Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          </div>
+          <RouterLink to="/items" className="hover:underline text-sm">
+            Xem tất cả <ChevronRight className="size-4 inline" />
+          </RouterLink>
         </div>
-      </section>
 
-      <section className="mt-6 grid gap-4 xl:grid-cols-[1.1fr_1.1fr_1fr]">
-        <Card className="rmk-fade-up border-blue-200/80 bg-white/95 py-5 shadow-lg shadow-blue-100/70">
-          <CardHeader className="px-5">
-            <CardTitle className="flex items-center gap-2 text-blue-950">
-              <ShieldCheck className="size-4 text-blue-700" />
-              {isVi ? "Escrow Command" : "Escrow Command"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 px-5">
-            <div className="rounded-2xl border border-blue-200/70 bg-blue-50/60 p-4">
-              <p className="text-xs font-semibold tracking-wide text-blue-800 uppercase">
-                {isVi ? "Don #RM-20931" : "Order #RM-20931"}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-blue-950">
-                {isVi
-                  ? "Fujifilm X-T4 - giai ngan trong 2h"
-                  : "Fujifilm X-T4 - release in 2h"}
-              </p>
-              <div className="mt-3 h-2 rounded-full bg-blue-100">
-                <div className="rmk-progress h-2 w-[78%] rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" />
-              </div>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-1">
-              {escrowStages.map((stage) => (
-                <div
-                  key={stage.label}
-                  className="rounded-xl border border-blue-200/70 bg-white p-3"
-                >
-                  <p className="text-xs text-blue-900/65">{stage.label}</p>
-                  <p className="mt-1 text-lg font-bold text-blue-950">
-                    {stage.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rmk-fade-up rmk-delay-1 border-blue-200/80 bg-white/95 py-5 shadow-lg shadow-blue-100/70">
-          <CardHeader className="px-5">
-            <CardTitle className="flex items-center gap-2 text-blue-950">
-              <PackageSearch className="size-4 text-blue-700" />
-              {isVi ? "Action Board" : "Action Board"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 px-5">
-            {quickActions.map((item) => (
-              <RouterLink
-                key={item.title}
-                to={item.to}
-                className="group block rounded-2xl border border-blue-200/75 bg-white p-4 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
+        {/* Listing Grid */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {(activeTab === "latest"
+            ? [...feedPool].reverse()
+            : activeTab === "nearby"
+              ? feedPool.filter((_, i) => i % 3 !== 0)
+              : feedPool
+          )
+            .slice(0, visibleCount)
+            .map((item: any, idx: number) => (
+              <div
+                key={`${item.title}-${idx}`}
+                className="rmk-listing-card-market group"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-blue-950">
-                      {item.title}
-                    </p>
-                    <p className="mt-1 text-xs text-blue-900/65">
-                      {item.description}
-                    </p>
-                  </div>
-                  <span className="inline-flex size-9 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
-                    <item.icon className="size-4" />
+                {/* Image */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE]">
+                  {item.image_url || item.image ? (
+                    <img
+                      src={item.image_url || item.image}
+                      alt={item.title}
+                      className="rmk-listing-image h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <Eye className="size-10 text-[#93C5FD]" />
+                    </div>
+                  )}
+                  {/* Save button */}
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full bg-white/80 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white"
+                    aria-label="Lưu tin"
+                  >
+                    <Heart className="size-4 text-[#5B7083] hover:text-red-500" />
+                  </button>
+                  {/* Condition chip */}
+                  <span className="absolute bottom-2 left-2 inline-flex items-center rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-[#5B7083] backdrop-blur-sm">
+                    {(item as any).condition_grade ? (
+                      (item as any).condition_grade === "like_new" ? "Như mới" :
+                      (item as any).condition_grade === "brand_new" ? "Mới nguyên" :
+                      (item as any).condition_grade === "good" ? "Tốt" :
+                      (item as any).condition_grade === "fair" ? "Khá" : "Kém"
+                    ) : (item as any).condition || "Tốt"}
                   </span>
                 </div>
-                <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-blue-700">
-                  {isVi ? "Mo" : "Open"}
-                  <ArrowRight className="size-3 transition group-hover:translate-x-0.5" />
-                </div>
-              </RouterLink>
-            ))}
-          </CardContent>
-        </Card>
 
-        <Card className="rmk-fade-up rmk-delay-2 border-blue-200/80 bg-white/95 py-5 shadow-lg shadow-blue-100/70">
-          <CardHeader className="px-5">
-            <CardTitle className="flex items-center gap-2 text-blue-950">
-              <Star className="size-4 text-blue-700" />
-              {isVi ? "Quick Actions" : "Quick Actions"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-2 px-5">
-            <Button className="rmk-glow-button justify-between" asChild>
-              <RouterLink to="/items">
-                {isVi ? "Xem listing" : "Browse Listings"}
-                <ArrowRight className="size-4" />
-              </RouterLink>
-            </Button>
+                {/* Content */}
+                <div className="p-3 space-y-2">
+                  <h3 className="text-sm font-semibold text-[#102A43] line-clamp-2 leading-snug min-h-[2.5em]">
+                    {item.title}
+                  </h3>
+                  <p className="text-base font-bold text-[#2563EB]">
+                    {(item as any).price_formatted || (item as any).price || item.price}
+                  </p>
+                  <div className="flex items-center gap-1 text-xs text-[#5B7083]">
+                    <MapPin className="size-3" />
+                    <span className="truncate">
+                      {(item as any).location || (item as any).city || (item as any).postedAt?.split("•")[0] || "Đã đăng"}
+                    </span>
+                    <span className="mx-1">•</span>
+                    <Clock className="size-3 flex-shrink-0" />
+                    <span className="truncate">
+                      {(item as any).postedAt || "Hôm nay"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-1">
+                      <Star className="size-3 fill-[#F59E0B] text-[#F59E0B]" />
+                      <span className="text-[10px] text-[#5B7083]">
+                        {(item as any).rating || "4.8"}
+                      </span>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] border-[#D8E2EF] text-[#5B7083]">
+                      {(item as any).is_negotiable !== false ? "Có thể thương lượng" : "Giá niêm yết"}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* View detail link */}
+                <RouterLink
+                  to="/items/$listingId"
+                  params={{ listingId: (item as any).id || "1" }}
+                  className="block border-t border-[#D8E2EF] px-3 py-2 text-xs font-medium text-[#2563EB] hover:bg-[#EFF6FF] transition-colors"
+                >
+                  Xem chi tiết →
+                </RouterLink>
+              </div>
+            ))}
+        </div>
+
+        {/* Load more */}
+        {visibleCount < feedPool.length && (
+          <div className="mt-6 text-center">
             <Button
+              onClick={() => setVisibleCount((v) => v + 8)}
+              className="rounded-full border border-[#D8E2EF] bg-white text-[#2563EB] hover:bg-[#EFF6FF] px-8"
               variant="outline"
-              className="justify-between border-blue-200 bg-white/85"
-              asChild
             >
-              <RouterLink to="/settings">
-                {isVi ? "Cai dat tai khoan" : "Account Settings"}
-                <ArrowRight className="size-4" />
-              </RouterLink>
+              Xem thêm
             </Button>
-            <Button variant="secondary" className="justify-between" asChild>
-              <RouterLink to="/admin">
-                {isVi ? "Vao Admin" : "Open Admin"}
-                <ArrowRight className="size-4" />
-              </RouterLink>
-            </Button>
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </section>
 
-      <section className="mt-5 flex items-center justify-between rounded-2xl border border-blue-200/70 bg-white/85 px-4 py-3 text-xs text-blue-900/70 shadow-sm shadow-blue-100/50">
-        <span>
-          {isVi
-            ? "ReMarket Dashboard da duoc lam moi theo phong cach trust-first premium."
-            : "Dashboard refreshed with the same trust-first premium language as landing/auth."}
-        </span>
-        <span className="inline-flex items-center gap-1 font-semibold text-blue-700">
-          <TrendingUp className="size-3.5" />
-          {isVi ? "Live Data" : "Live Data"}
-        </span>
+      {/* Total listings count */}
+      <section className="flex items-center justify-between rounded-2xl border border-[#D8E2EF] bg-white px-5 py-4">
+        <div className="flex items-center gap-2 text-sm text-[#5B7083]">
+          <Eye className="size-4" />
+          <span>
+            Có <strong className="text-[#102A43]">{totalListings || feedPool.length}</strong> tin đang được đăng bán
+          </span>
+        </div>
+        <Button
+          className="rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white gap-2"
+          size="sm"
+          asChild
+        >
+          <RouterLink to="/items/create">
+            Đăng tin ngay <ArrowRight className="size-4" />
+          </RouterLink>
+        </Button>
       </section>
     </div>
-  )
+  );
 }

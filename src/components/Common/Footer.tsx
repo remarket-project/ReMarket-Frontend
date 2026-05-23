@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -5,33 +6,33 @@ const footerColumns = [
   {
     title: "Tải ứng dụng",
     links: [
-      { label: "Dành cho iPhone", href: "/landing" },
-      { label: "Dành cho Android", href: "/landing" },
-      { label: "Quét mã để tải", href: "/landing" },
+      { label: "Dành cho iPhone", to: "/" as const },
+      { label: "Dành cho Android", to: "/" as const },
+      { label: "Quét mã để tải", to: "/" as const },
     ],
   },
   {
     title: "Hỗ trợ",
     links: [
-      { label: "Trung tâm trợ giúp", href: "/landing" },
-      { label: "An toàn mua bán", href: "/landing" },
-      { label: "Liên hệ hỗ trợ", href: "mailto:support@remarket.vn" },
+      { label: "Trung tâm trợ giúp", to: "/help" as const },
+      { label: "An toàn mua bán", to: "/help/safety" as const },
+      { label: "Liên hệ hỗ trợ", to: "/help/contact" as const },
     ],
   },
   {
     title: "Về ReMarket",
     links: [
-      { label: "Giới thiệu", href: "/landing" },
-      { label: "Bắt đầu bán hàng", href: "/signup" },
-      { label: "Đăng nhập", href: "/login" },
+      { label: "Giới thiệu", to: "/legal/about" as const },
+      { label: "Bắt đầu bán hàng", to: "/items/create" as const },
+      { label: "Cơ hội việc làm", to: "/" as const },
     ],
   },
   {
     title: "Pháp lý",
     links: [
-      { label: "Quy chế hoạt động", href: "/landing" },
-      { label: "Điều khoản sử dụng", href: "/landing" },
-      { label: "Chính sách bảo mật", href: "/landing" },
+      { label: "Quy chế hoạt động", to: "/legal/regulation" as const },
+      { label: "Điều khoản sử dụng", to: "/legal/terms" as const },
+      { label: "Chính sách bảo mật", to: "/legal/privacy" as const },
     ],
   },
 ];
@@ -54,14 +55,14 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-blue-200/70 bg-white/85 px-4 py-8 backdrop-blur-sm sm:px-6">
-      <div className="mx-auto flex max-w-screen-xl flex-col gap-8">
+    <footer className="border-t border-[#D8E2EF] bg-white px-6 py-8 mt-8">
+      <div className="mx-auto max-w-[1240px] flex flex-col gap-8">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr] xl:grid-cols-[1.2fr_1fr_1fr_1fr_1fr]">
           <div className="space-y-4">
-            <p className="text-lg font-semibold text-zinc-900">ReMarket</p>
-            <p className="max-w-sm text-sm text-zinc-600">
-              Nền tảng mua bán đồ đã qua sử dụng với nhịp marketplace rõ ràng,
-              tin cậy và minh bạch.
+            <p className="text-lg font-bold text-[#102A43]">ReMarket</p>
+            <p className="max-w-sm text-sm text-[#5B7083]">
+              Nền tảng mua bán đồ đã qua sử dụng với giao dịch minh bạch,
+              thanh toán an toàn qua escrow và cộng đồng tin cậy.
             </p>
             <div className="flex items-center gap-4">
               {socialLinks.map(({ icon: Icon, href, label }) => (
@@ -71,7 +72,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-[#5B7083] transition-colors hover:text-[#2563EB]"
                 >
                   <Icon className="h-5 w-5" />
                 </a>
@@ -81,18 +82,18 @@ export function Footer() {
 
           {footerColumns.map((column) => (
             <div key={column.title} className="space-y-3">
-              <p className="text-sm font-semibold text-zinc-900">
+              <p className="text-sm font-semibold text-[#102A43]">
                 {column.title}
               </p>
-              <ul className="space-y-2 text-sm text-zinc-600">
+              <ul className="space-y-2 text-sm text-[#5B7083]">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="transition-colors hover:text-blue-700"
+                    <Link
+                      to={link.to}
+                      className="transition-colors hover:text-[#2563EB]"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -100,8 +101,8 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-blue-100 pt-4 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>Nền tảng ReMarket - {currentYear}</p>
+        <div className="flex flex-col gap-3 border-t border-[#D8E2EF] pt-4 text-sm text-[#5B7083] sm:flex-row sm:items-center sm:justify-between">
+          <p>ReMarket Platform - {currentYear}</p>
           <p>Mua bán an toàn hơn, rõ hơn, nhanh hơn.</p>
         </div>
       </div>

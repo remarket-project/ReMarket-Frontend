@@ -1,33 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MapPin, Package, ShieldCheck, Star } from "lucide-react";
+import { Heart, MapPin, Clock, Star } from "lucide-react";
 import type { ListingRead, ListingWithImages } from "@/client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type ListingCardItem = ListingRead | ListingWithImages;
 
 const conditionConfig: Record<string, { label: string; className: string }> = {
-  brand_new: {
-    label: "Mới nguyên",
-    className: "bg-purple-50 text-purple-700 border-purple-200",
-  },
-  like_new: {
-    label: "Như mới",
-    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  },
-  good: {
-    label: "Tốt",
-    className: "bg-blue-50 text-blue-700 border-blue-200",
-  },
-  fair: {
-    label: "Khá",
-    className: "bg-amber-50 text-amber-700 border-amber-200",
-  },
-  poor: {
-    label: "Kém",
-    className: "bg-rose-50 text-rose-700 border-rose-200",
-  },
+  brand_new: { label: "Mới nguyên", className: "bg-[#F3E8FF] text-[#7C3AED]" },
+  like_new: { label: "Như mới", className: "bg-[#ECFDF5] text-[#059669]" },
+  good: { label: "Tốt", className: "bg-[#EFF6FF] text-[#2563EB]" },
+  fair: { label: "Khá", className: "bg-[#FFFBEB] text-[#D97706]" },
+  poor: { label: "Kém", className: "bg-[#FEF2F2] text-[#DC2626]" },
 };
 
 function formatTimeAgo(dateStr: string): string {
@@ -44,10 +26,10 @@ function formatTimeAgo(dateStr: string): string {
 
 function formatPrice(price: string): string {
   const num = Number(price);
-  if (Number.isNaN(num)) return `$${price}`;
-  return new Intl.NumberFormat("en-US", {
+  if (Number.isNaN(num)) return price;
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
   }).format(num);
 }
@@ -60,7 +42,7 @@ interface ListingCardProps {
 export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
   const condition = conditionConfig[item.condition_grade] ?? {
     label: item.condition_grade,
-    className: "bg-gray-50 text-gray-700 border-gray-200",
+    className: "bg-gray-100 text-gray-600",
   };
 
   const images = "images" in item && item.images ? item.images : [];
@@ -68,12 +50,12 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
     images.find((img) => img.is_primary) ?? images[0] ?? null;
 
   return (
-    <Card
-      className="rmk-listing-card group relative h-full overflow-hidden border-blue-200/75 bg-white/95 shadow-md shadow-blue-100/60"
+    <div
+      className="rmk-listing-card-market group"
       style={{ animationDelay: `${animationDelay}ms` }}
     >
-      {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-50 to-sky-50">
+      {/* Image - 4:3 aspect ratio */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE]">
         {primaryImage ? (
           <img
             src={primaryImage.image_url}
@@ -83,68 +65,65 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <Package className="size-12 text-blue-200" />
+            <span className="text-4xl text-[#93C5FD]">📦</span>
           </div>
         )}
 
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 flex items-start justify-end gap-2 bg-black/0 p-2 transition-colors group-hover:bg-black/5">
-          <button
-            type="button"
-            className="flex size-8 items-center justify-center rounded-full bg-white/90 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white"
-            aria-label="Lưu tin"
-          >
-            <Heart className="size-4 text-blue-700" />
-          </button>
+        {/* Favorite icon */}
+        <button
+          type="button"
+          className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full bg-white/80 opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 hover:bg-white"
+          aria-label="Lưu tin"
+        >
+          <Heart className="size-4 text-[#5B7083] hover:text-red-500 transition-colors" />
+        </button>
+
+        {/* Condition chip */}
+        <span
+          className={`absolute bottom-2 left-2 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${condition.className}`}
+        >
+          {condition.label}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="p-3 space-y-2">
+        {/* Title */}
+        <h3 className="text-sm font-semibold text-[#102A43] line-clamp-2 leading-snug min-h-[2.5em]">
+          {item.title}
+        </h3>
+
+        {/* Price - most prominent */}
+        <p className="text-lg font-bold text-[#1D4ED8]">
+          {formatPrice(item.price)}
+        </p>
+
+        {/* Meta line */}
+        <div className="flex items-center gap-1 text-xs text-[#5B7083]">
+          <MapPin className="size-3" />
+          <span className="truncate">Đăng {formatTimeAgo(item.created_at)}</span>
+          <span className="mx-1">•</span>
+          <Clock className="size-3" />
+          <span className="truncate">{formatTimeAgo(item.created_at)}</span>
         </div>
 
-        {/* Escrow badge */}
-        <div className="absolute bottom-2 left-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/80 bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 backdrop-blur-sm">
-            <ShieldCheck className="size-3" /> Escrow
+        {/* Seller + trust */}
+        <div className="flex items-center gap-1 pt-1">
+          <Star className="size-3 fill-[#F59E0B] text-[#F59E0B]" />
+          <span className="text-[11px] text-[#5B7083]">
+            Người bán #{item.seller_id.slice(0, 8)}
           </span>
         </div>
       </div>
 
-      {/* Content */}
-      <CardHeader className="pb-1 pt-3">
-        {/* Condition + Price row */}
-        <div className="flex items-center justify-between gap-2">
-          <Badge
-            variant="outline"
-            className={`text-[10px] font-semibold ${condition.className}`}
-          >
-            {condition.label}
-          </Badge>
-          <span className="rounded-full bg-blue-700 px-2 py-0.5 text-xs font-bold text-white">
-            {formatPrice(item.price)}
-          </span>
-        </div>
-        <CardTitle className="mt-1.5 line-clamp-1 text-sm font-semibold text-blue-950">
-          {item.title}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-3 pb-4">
-        {/* Meta row */}
-        <div className="space-y-1 text-xs text-blue-900/60">
-          <p className="flex items-center gap-1">
-            <Star className="size-3 fill-amber-400 text-amber-400" />
-            <span>Người bán #{item.seller_id.slice(0, 8)}</span>
-          </p>
-          <p className="flex items-center gap-1">
-            <MapPin className="size-3" />
-            <span>Đăng {formatTimeAgo(item.created_at)}</span>
-          </p>
-        </div>
-
-        {/* CTA */}
-        <Button className="rmk-glow-button w-full text-xs" size="sm" asChild>
-          <Link to="/items/$listingId" params={{ listingId: item.id }}>
-            Xem chi tiết
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+      {/* CTA */}
+      <Link
+        to="/items/$listingId"
+        params={{ listingId: item.id }}
+        className="block border-t border-[#D8E2EF] px-3 py-2.5 text-xs font-medium text-[#2563EB] hover:bg-[#EFF6FF] transition-colors text-center"
+      >
+        Xem chi tiết
+      </Link>
+    </div>
   );
 }

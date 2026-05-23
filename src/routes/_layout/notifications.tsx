@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { Bell, CheckCheck, Sparkles } from "lucide-react"
+import { Bell, CheckCheck } from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
@@ -46,24 +46,24 @@ function timeAgo(value: string) {
   const then = new Date(value).getTime()
   if (Number.isNaN(then)) return "Unknown"
   const minutes = Math.floor((now - then) / 60000)
-  if (minutes < 1) return "Just now"
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 1) return "Vừa xong"
+  if (minutes < 60) return `${minutes} phút trước`
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
+  if (hours < 24) return `${hours} giờ trước`
   const days = Math.floor(hours / 24)
-  return `${days}d ago`
+  return `${days} ngày trước`
 }
 
 function groupLabel(value: string) {
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return "Earlier"
+  if (Number.isNaN(date.getTime())) return "Trước đó"
   const today = new Date()
   const isToday = date.toDateString() === today.toDateString()
-  if (isToday) return "Today"
+  if (isToday) return "Hôm nay"
   const yesterday = new Date(today)
   yesterday.setDate(today.getDate() - 1)
-  if (date.toDateString() === yesterday.toDateString()) return "Yesterday"
-  return date.toLocaleDateString(undefined, { day: "2-digit", month: "short" })
+  if (date.toDateString() === yesterday.toDateString()) return "Hôm qua"
+  return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "short" })
 }
 
 function typeGroup(
@@ -77,7 +77,7 @@ function typeGroup(
 export const Route = createFileRoute("/_layout/notifications")({
   component: NotificationsPage,
   head: () => ({
-    meta: [{ title: "Notifications - ReMarket" }],
+    meta: [{ title: "Thông báo - ReMarket" }],
   }),
 })
 
@@ -106,9 +106,9 @@ function NotificationsPage() {
       NotificationsService.markAllNotificationsAsReadApiV1NotificationsReadAllPut(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications-center"] })
-      toast.success("All notifications marked as read.")
+      toast.success("Đã đánh dấu tất cả là đã đọc.")
     },
-    onError: () => toast.error("Unable to mark all as read."),
+    onError: () => toast.error("Không thể đánh dấu tất cả là đã đọc."),
   })
 
   const filtered = useMemo(() => {
@@ -129,35 +129,22 @@ function NotificationsPage() {
   }, [filtered])
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <Badge
-              className="border-blue-200 bg-blue-50 text-blue-700"
-              variant="outline"
-            >
-              <Sparkles className="mr-1.5 size-3" />
-              Signal Feed
-            </Badge>
-            <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-              Notifications
+            <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
+              Thông báo
             </h1>
           </div>
           <Button
             variant="outline"
-            className="border-blue-200 bg-white/90"
+            className="border-[#D8E2EF] bg-white text-[#5B7083]"
             onClick={() => markAllMutation.mutate()}
             disabled={markAllMutation.isPending || unread === 0}
           >
             <CheckCheck className="mr-2 size-4" />
-            Mark all read
+            Đánh dấu đã đọc
           </Button>
         </div>
       </section>
@@ -170,12 +157,12 @@ function NotificationsPage() {
               variant="outline"
               className={`cursor-pointer ${
                 filter === item
-                  ? "border-blue-300 bg-blue-100 text-blue-800"
-                  : "border-blue-200 bg-white text-blue-700"
+                  ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
+                  : "border-[#D8E2EF] bg-white text-[#2563EB]"
               }`}
               onClick={() => setFilter(item)}
             >
-              {item}
+              {item === "all" ? "Tất cả" : item === "unread" ? "Chưa đọc" : item === "offers" ? "Đề nghị" : item === "orders" ? "Đơn hàng" : "Hệ thống"}
             </Badge>
           ),
         )}
@@ -184,17 +171,17 @@ function NotificationsPage() {
       <section className="mt-4 space-y-5">
         {Object.entries(grouped).map(([label, items]) => (
           <div key={label} className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-blue-900/60">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#5B7083]">
               {label}
             </p>
             {items.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                className={`w-full text-left font-normal rounded-xl border p-4 transition hover:border-blue-300 ${
+                className={`w-full text-left font-normal rounded-xl border p-4 transition hover:border-[#2563EB]/30 ${
                   !item.is_read
-                    ? "border-blue-200/80 bg-blue-50/60"
-                    : "border-blue-200/40 bg-white/85"
+                    ? "border-[#D8E2EF] bg-[#EFF6FF]"
+                    : "border-[#D8E2EF]/40 bg-white"
                 }`}
                 onClick={() => {
                   if (!item.is_read) {
@@ -203,24 +190,24 @@ function NotificationsPage() {
                 }}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-100">
+                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF]">
                     <NotificationIcon type={item.type} />
                   </div>
 
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-blue-950">
+                    <p className="text-sm font-semibold text-[#102A43]">
                       {item.title}
                     </p>
-                    <p className="mt-0.5 text-xs text-blue-900/70">
+                    <p className="mt-0.5 text-xs text-[#5B7083]">
                       {item.message}
                     </p>
-                    <p className="mt-1 text-xs text-blue-900/50">
+                    <p className="mt-1 text-xs text-[#8A99A8]">
                       {timeAgo(item.created_at)}
                     </p>
                   </div>
 
                   {!item.is_read ? (
-                    <div className="mt-1 size-2 rounded-full bg-blue-600" />
+                    <div className="mt-1 size-2 rounded-full bg-[#2563EB]" />
                   ) : null}
                 </div>
               </button>
@@ -229,15 +216,15 @@ function NotificationsPage() {
         ))}
 
         {filtered.length === 0 ? (
-          <Card className="border-dashed border-blue-200 bg-white/85">
+          <Card className="border-dashed border-[#D8E2EF] bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-blue-950">
-                <Bell className="size-4 text-blue-700" />
-                No notifications
+              <CardTitle className="flex items-center gap-2 text-[#102A43]">
+                <Bell className="size-4 text-[#2563EB]" />
+                Không có thông báo
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-blue-900/75">
-              This feed is empty for the selected filter.
+            <CardContent className="text-sm text-[#5B7083]">
+              Không có thông báo nào cho bộ lọc này.
             </CardContent>
           </Card>
         ) : null}

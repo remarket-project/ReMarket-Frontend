@@ -5,7 +5,6 @@ import {
   Clock3,
   PackageCheck,
   Search,
-  Sparkles,
   Wallet,
 } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -98,82 +97,69 @@ function OrdersPage() {
   }, [ordersByRole])
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
-      <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <Badge
-          className="border-blue-200 bg-blue-50 text-blue-700"
-          variant="outline"
-        >
-          <Sparkles className="mr-1.5 size-3" />
-          Fulfillment Hub
-        </Badge>
-        <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-          Orders Command Center
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
+        <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
+          Quản lý đơn hàng
         </h1>
-        <p className="text-sm text-blue-900/75 md:text-base">
-          Track every order from creation to completion.
+        <p className="mt-1 text-sm text-[#5B7083] md:text-base">
+          Theo dõi mọi đơn hàng từ tạo đến hoàn tất.
         </p>
       </section>
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-blue-200/80 bg-white/90">
+        <Card className="border-[#D8E2EF] bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-blue-900/70">
-              Total orders
+            <CardTitle className="text-sm text-[#5B7083]">
+              Tổng đơn hàng
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-bold text-blue-950">
+          <CardContent className="text-2xl font-bold text-[#102A43]">
             {stats.total}
           </CardContent>
         </Card>
-        <Card className="border-amber-200/80 bg-amber-50/60">
+        <Card className="border-[#FDE68A]/80 bg-[#FFFBEB]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-amber-800/80">
-              In progress
+            <CardTitle className="text-sm text-[#D97706]/80">
+              Đang tiến hành
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center gap-2 text-2xl font-bold text-amber-900">
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-[#B45309]">
             <Clock3 className="size-4" />
             {stats.open}
           </CardContent>
         </Card>
-        <Card className="border-emerald-200/80 bg-emerald-50/60">
+        <Card className="border-[#A7F3D0]/80 bg-[#ECFDF5]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-emerald-800/80">
-              Completed
+            <CardTitle className="text-sm text-[#059669]/80">
+              Hoàn thành
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center gap-2 text-2xl font-bold text-emerald-900">
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-[#047857]">
             <PackageCheck className="size-4" />
             {stats.completed}
           </CardContent>
         </Card>
-        <Card className="border-blue-200/80 bg-blue-50/60">
+        <Card className="border-[#D8E2EF] bg-[#EFF6FF]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-blue-900/70">
-              Gross volume
+            <CardTitle className="text-sm text-[#5B7083]">
+              Tổng giá trị
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center gap-2 text-2xl font-bold text-blue-950">
-            <Wallet className="size-4 text-blue-700" />
+          <CardContent className="flex items-center gap-2 text-2xl font-bold text-[#102A43]">
+            <Wallet className="size-4 text-[#2563EB]" />
             {currency(String(stats.gross))}
           </CardContent>
         </Card>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-blue-200/75 bg-white/90 p-4">
+      <section className="mt-6 rounded-2xl border border-[#D8E2EF] bg-white p-4">
         <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]">
           <div className="relative max-w-lg">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-blue-700/70" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#2563EB]/70" />
             <Input
-              className="border-blue-200 bg-white pl-9"
-              placeholder="Search by order ID..."
+              className="border-[#D8E2EF] bg-white pl-9"
+              placeholder="Tìm theo mã đơn..."
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -183,30 +169,23 @@ function OrdersPage() {
             value={role}
             onValueChange={(value) => setRole(value as RoleTab)}
           >
-            <TabsList className="border border-blue-200/70 bg-white/90 p-1">
-              <TabsTrigger value="buying">My Purchases</TabsTrigger>
-              <TabsTrigger value="selling">My Sales</TabsTrigger>
+            <TabsList className="border border-[#D8E2EF] bg-white p-1">
+              <TabsTrigger value="buying">Mua</TabsTrigger>
+              <TabsTrigger value="selling">Bán</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <div className="flex flex-wrap items-center gap-2">
             {(
-              [
-                "all",
-                "pending",
-                "shipping",
-                "delivered",
-                "completed",
-                "cancelled",
-              ] as const
+              ["all", "pending", "shipping", "delivered", "completed", "cancelled"] as const
             ).map((status) => (
               <Badge
                 key={status}
                 variant="outline"
                 className={`cursor-pointer ${
                   statusFilter === status
-                    ? "border-blue-300 bg-blue-100 text-blue-800"
-                    : "border-blue-200 bg-white text-blue-700"
+                    ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
+                    : "border-[#D8E2EF] bg-white text-[#2563EB]"
                 }`}
                 onClick={() => setStatusFilter(status)}
               >
@@ -218,22 +197,23 @@ function OrdersPage() {
       </section>
 
       <section className="mt-4 grid gap-3">
-        {filtered.map((order) => (
-          <OrderRow key={order.id} order={order} role={role} />
-        ))}
         {filtered.length === 0 ? (
-          <Card className="border-dashed border-blue-200 bg-white/85">
-            <CardContent className="p-8 text-center text-sm text-blue-900/75">
-              No orders match your filters.
+          <Card className="border-dashed border-[#D8E2EF] bg-white">
+            <CardContent className="p-8 text-center text-sm text-[#5B7083]">
+              Không có đơn hàng phù hợp.
             </CardContent>
           </Card>
-        ) : null}
+        ) : (
+          filtered.map((order) => (
+            <OrderRow key={order.id} order={order} role={role} />
+          ))
+        )}
       </section>
 
-      <section className="mt-6 rounded-2xl border border-blue-200/75 bg-gradient-to-r from-blue-50/80 via-sky-50/70 to-white p-4 text-blue-900/75">
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <BadgeCheck className="size-4 text-blue-700" />
-          Order status is synchronized with escrow protection milestones.
+      <section className="mt-6 rounded-2xl border border-[#D8E2EF] bg-[#EFF6FF] p-4 text-sm text-[#5B7083]">
+        <div className="flex items-center gap-2">
+          <BadgeCheck className="size-4 text-[#2563EB]" />
+          Trạng thái đơn hàng được đồng bộ với các mốc bảo chứng escrow.
         </div>
       </section>
     </div>

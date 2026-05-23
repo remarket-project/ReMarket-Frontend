@@ -51,7 +51,6 @@ const authSlides = [
 ] as const;
 
 export function AuthLayout({ children }: AuthLayoutProps) {
-  const isVi = true;
   const [visualIndex, setVisualIndex] = useState(1);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);

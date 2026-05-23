@@ -7,7 +7,6 @@ import {
   ExternalLink,
   Package,
   ShieldCheck,
-  Sparkles,
   Star,
   Truck,
 } from "lucide-react"
@@ -176,18 +175,18 @@ function OrderDetailPage() {
 
   if (isLoading || isListingLoading) {
     return (
-      <div className="rounded-3xl border border-blue-200/70 bg-white/85 p-8 text-blue-900">
-        Loading order details...
+      <div className="rounded-2xl border border-[#D8E2EF] bg-white p-8 text-[#5B7083]">
+        Đang tải chi tiết đơn hàng...
       </div>
     )
   }
 
   if (!data?.order) {
     return (
-      <div className="rounded-3xl border border-dashed border-blue-300 bg-white/85 p-10 text-center">
-        <h2 className="text-xl font-semibold text-blue-950">Order not found</h2>
-        <Button className="mt-4" asChild>
-          <Link to="/orders">Back to orders</Link>
+      <div className="rounded-2xl border border-dashed border-[#D8E2EF] bg-white p-10 text-center">
+        <h2 className="text-xl font-semibold text-[#102A43]">Không tìm thấy đơn hàng</h2>
+        <Button className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" asChild>
+          <Link to="/orders">Quay lại đơn hàng</Link>
         </Button>
       </div>
     )
@@ -204,42 +203,35 @@ function OrderDetailPage() {
     null
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
-      </div>
-
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
       <section className="mb-4 flex flex-wrap items-center gap-3">
         <Button
           variant="outline"
-          className="border-blue-200 bg-white/90"
+          className="border-[#D8E2EF] bg-white text-[#5B7083]"
           asChild
         >
           <Link to="/orders">
             <ArrowLeft className="mr-1.5 size-4" />
-            Back to orders
+            Quay lại
           </Link>
         </Button>
         <Badge
           variant="outline"
-          className="border-blue-200 bg-blue-50 text-blue-700"
+          className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
         >
-          <Sparkles className="mr-1.5 size-3" />
-          Order #{order.id.slice(0, 8)}
+          Đơn #{order.id.slice(0, 8)}
         </Badge>
-        <Badge className="border-blue-200 bg-white/80 text-blue-700 capitalize">
+        <Badge className="border-[#D8E2EF] bg-white text-[#2563EB] capitalize">
           {order.status}
         </Badge>
       </section>
 
       <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
         <div className="space-y-4">
-          <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardContent className="p-4 sm:p-5 space-y-4">
               <div className="flex items-start gap-4">
-                <div className="relative flex size-20 flex-shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 overflow-hidden">
+                <div className="relative flex size-20 flex-shrink-0 items-center justify-center rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] overflow-hidden">
                   {primaryImage ? (
                     <img
                       src={primaryImage.image_url}
@@ -247,46 +239,46 @@ function OrderDetailPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Package className="size-8 text-blue-300" />
+                    <Package className="size-8 text-[#93C5FD]" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1 space-y-1">
                   <Link
                     to="/items/$listingId"
                     params={{ listingId: order.listing_id }}
-                    className="font-bold text-lg text-blue-950 hover:text-blue-700 flex items-center gap-1.5 leading-snug"
+                    className="font-bold text-lg text-[#102A43] hover:text-[#2563EB] flex items-center gap-1.5 leading-snug"
                   >
-                    {listing?.title || `Item #${order.listing_id.slice(0, 8)}`}
-                    <ExternalLink className="w-4 h-4 text-blue-500/80" />
+                    {listing?.title || `Mục #${order.listing_id.slice(0, 8)}`}
+                    <ExternalLink className="w-4 h-4 text-[#2563EB]/80" />
                   </Link>
-                  <p className="text-xs text-zinc-500">
-                    Created {dateTime(order.created_at)}
+                  <p className="text-xs text-[#8A99A8]">
+                    Tạo {dateTime(order.created_at)}
                   </p>
                   {listing?.condition_grade && (
                     <Badge
                       variant="outline"
-                      className="text-[10px] uppercase font-semibold border-emerald-200 bg-emerald-50 text-emerald-700 mt-1"
+                      className="text-[10px] uppercase font-semibold border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] mt-1"
                     >
-                      Condition: {listing.condition_grade.replace("_", " ")}
+                      Tình trạng: {listing.condition_grade.replace("_", " ")}
                     </Badge>
                   )}
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 pt-2">
-                <div className="rounded-xl border border-blue-200/70 bg-white/90 p-3">
-                  <p className="text-xs text-blue-900/65 font-medium">
-                    Final Price
+                <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+                  <p className="text-xs text-[#5B7083] font-medium">
+                    Giá cuối
                   </p>
-                  <p className="text-xl font-bold text-blue-950 mt-1">
+                  <p className="text-xl font-bold text-[#102A43] mt-1">
                     {currency(order.final_price)}
                   </p>
                 </div>
-                <div className="rounded-xl border border-blue-200/70 bg-white/90 p-3">
-                  <p className="text-xs text-blue-900/65 font-medium">
-                    Last Updated
+                <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+                  <p className="text-xs text-[#5B7083] font-medium">
+                    Cập nhật lần cuối
                   </p>
-                  <p className="text-sm font-semibold text-blue-950 mt-1">
+                  <p className="text-sm font-semibold text-[#102A43] mt-1">
                     {dateTime(order.updated_at)}
                   </p>
                 </div>
@@ -294,10 +286,10 @@ function OrderDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-950 text-lg">
-                Order Timeline
+              <CardTitle className="text-[#102A43] text-lg">
+                Dòng thời gian đơn hàng
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -307,110 +299,104 @@ function OrderDetailPage() {
         </div>
 
         <div className="space-y-4">
-          <Card className="border-blue-200/80 bg-white/95 shadow-lg shadow-blue-100/70">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-950 text-lg">
-                Escrow Status
+              <CardTitle className="text-[#102A43] text-lg">
+                Trạng thái Escrow
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div className="rounded-xl border border-blue-200/70 bg-white/90 px-3 py-2">
-                Amount locked:{" "}
-                <span className="font-semibold text-blue-950">
+              <div className="rounded-xl border border-[#D8E2EF] bg-white px-3 py-2 text-[#5B7083]">
+                Số tiền khóa:{" "}
+                <span className="font-semibold text-[#102A43]">
                   {currency(escrow.amount)}
                 </span>
               </div>
-              <div className="rounded-xl border border-blue-200/70 bg-white/90 px-3 py-2">
-                Escrow status:{" "}
-                <span className="font-semibold capitalize text-blue-950">
+              <div className="rounded-xl border border-[#D8E2EF] bg-white px-3 py-2 text-[#5B7083]">
+                Trạng thái escrow:{" "}
+                <span className="font-semibold capitalize text-[#102A43]">
                   {escrow.status}
                 </span>
               </div>
-              <Button className="w-full" variant="outline" asChild>
+              <Button className="w-full border-[#2563EB] text-[#2563EB]" variant="outline" asChild>
                 <Link to="/escrow/$orderId" params={{ orderId }}>
-                  View Full Escrow
+                  Xem chi tiết Escrow
                 </Link>
               </Button>
             </CardContent>
           </Card>
 
           {/* Participants Card */}
-          <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-950 text-lg">
-                Participants
+              <CardTitle className="text-[#102A43] text-lg">
+                Người tham gia
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* Buyer Profile */}
               {buyerProfile && (
-                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                <div className="flex items-center justify-between border-b border-[#D8E2EF] pb-3">
                   <div className="flex items-center gap-2">
-                    <Avatar className="size-9 rounded-lg border border-blue-200">
+                    <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
                       <AvatarImage src={buyerProfile.avatar_url ?? undefined} />
-                      <AvatarFallback className="rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
-                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() ||
-                          "B"}
+                      <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
+                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() || "B"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
-                      <p className="text-zinc-500 font-medium">Buyer</p>
+                      <p className="text-[#5B7083] font-medium">Người mua</p>
                       <Link
                         to="/u/$userId"
                         params={{ userId: buyerProfile.id }}
-                        className="font-bold text-blue-950 hover:underline mt-0.5 block"
+                        className="font-bold text-[#102A43] hover:underline mt-0.5 block"
                       >
                         @{buyerProfile.full_name}
                       </Link>
                     </div>
                   </div>
                   <div className="text-right text-xs">
-                    <div className="flex items-center gap-1 text-amber-500 justify-end">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-zinc-700">
+                    <div className="flex items-center gap-1 text-[#F59E0B] justify-end">
+                      <Star className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                      <span className="font-semibold text-[#102A43]">
                         {Number(buyerProfile.rating_avg || 0).toFixed(1)}
                       </span>
                     </div>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">
-                      {buyerProfile.completed_orders || 0} completed orders
+                    <p className="text-[10px] text-[#8A99A8] mt-0.5">
+                      {buyerProfile.completed_orders || 0} đơn đã hoàn tất
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Seller Profile */}
               {sellerProfile && (
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex items-center gap-2">
-                    <Avatar className="size-9 rounded-lg border border-blue-200">
-                      <AvatarImage
-                        src={sellerProfile.avatar_url ?? undefined}
-                      />
-                      <AvatarFallback className="rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
-                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() ||
-                          "S"}
+                    <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
+                      <AvatarImage src={sellerProfile.avatar_url ?? undefined} />
+                      <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
+                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() || "S"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
-                      <p className="text-zinc-500 font-medium">Seller</p>
+                      <p className="text-[#5B7083] font-medium">Người bán</p>
                       <Link
                         to="/u/$userId"
                         params={{ userId: sellerProfile.id }}
-                        className="font-bold text-blue-950 hover:underline mt-0.5 block"
+                        className="font-bold text-[#102A43] hover:underline mt-0.5 block"
                       >
                         @{sellerProfile.full_name}
                       </Link>
                     </div>
                   </div>
                   <div className="text-right text-xs">
-                    <div className="flex items-center gap-1 text-amber-500 justify-end">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-zinc-700">
+                    <div className="flex items-center gap-1 text-[#F59E0B] justify-end">
+                      <Star className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                      <span className="font-semibold text-[#102A43]">
                         {Number(sellerProfile.rating_avg || 0).toFixed(1)}
                       </span>
                     </div>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">
-                      {sellerProfile.completed_orders || 0} completed orders
+                    <p className="text-[10px] text-[#8A99A8] mt-0.5">
+                      {sellerProfile.completed_orders || 0} đơn đã hoàn tất
                     </p>
                   </div>
                 </div>
@@ -418,31 +404,31 @@ function OrderDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-blue-200/80 bg-white/92 shadow-sm">
+          <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-950 text-lg">Actions</CardTitle>
+              <CardTitle className="text-[#102A43] text-lg">Thao tác</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {isSeller && order.status === "confirmed" ? (
                 <Button
-                  className="rmk-glow-button w-full"
+                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
                   onClick={() => orderMutation.mutate("shipping")}
                   disabled={orderMutation.isPending}
                 >
                   <Truck className="mr-2 size-4" />
-                  Mark as Shipped
+                  Đã giao hàng
                 </Button>
               ) : null}
 
               {isBuyer &&
               (order.status === "shipping" || order.status === "delivered") ? (
                 <Button
-                  className="rmk-glow-button w-full"
+                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
                   onClick={() => releaseMutation.mutate()}
                   disabled={releaseMutation.isPending}
                 >
                   <CheckCircle2 className="mr-2 size-4" />
-                  Confirm Receipt
+                  Xác nhận nhận hàng
                 </Button>
               ) : null}
 
@@ -455,30 +441,30 @@ function OrderDetailPage() {
                   onClick={() => setDisputeOpen(true)}
                 >
                   <AlertTriangle className="mr-2 size-4" />
-                  Report Issue
+                  Báo cáo vấn đề
                 </Button>
               ) : null}
 
               {order.status === "delivered" && (isBuyer || isSeller) ? (
                 <Button
                   variant="outline"
-                  className="w-full border-blue-200 bg-white/90"
+                  className="w-full border-[#D8E2EF] bg-white text-[#5B7083]"
                   onClick={() => orderMutation.mutate("completed")}
                   disabled={orderMutation.isPending}
                 >
                   <Package className="mr-2 size-4" />
-                  Mark Completed
+                  Đánh dấu hoàn tất
                 </Button>
               ) : null}
 
               {order.status === "completed" && !hasReviewed ? (
                 <Button
                   variant="outline"
-                  className="w-full border-emerald-200 text-emerald-700"
+                  className="w-full border-[#A7F3D0] text-[#059669]"
                   onClick={() => setReviewOpen(true)}
                 >
                   <ShieldCheck className="mr-2 size-4" />
-                  Leave Review
+                  Đánh giá
                 </Button>
               ) : null}
             </CardContent>
