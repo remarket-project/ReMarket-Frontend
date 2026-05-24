@@ -1,6 +1,13 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { BadgeCheck, Clock3, PackageCheck, Search, Wallet } from "lucide-react"
+import {
+  BadgeCheck,
+  Clock3,
+  Package,
+  PackageCheck,
+  Search,
+  Wallet,
+} from "lucide-react"
 import { useMemo, useState } from "react"
 
 import { type OrderRead, OrdersService } from "@/client"
@@ -10,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useAuth from "@/hooks/useAuth"
+import { formatVND, ORDER_STATUS_LABELS } from "@/lib/order-utils"
 
 type RoleTab = "buying" | "selling"
 
@@ -23,14 +31,8 @@ function getOrdersQueryOptions() {
   }
 }
 
-function currency(value: string) {
-  const amount = Number(value)
-  if (Number.isNaN(amount)) return `$${value}`
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(amount)
+function currency(value: string | number) {
+  return formatVND(value)
 }
 
 export const Route = createFileRoute("/_layout/orders")({
@@ -186,11 +188,13 @@ function OrdersPage() {
                 className={`cursor-pointer ${
                   statusFilter === status
                     ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
-                    : "border-[#D8E2EF] bg-white text-[#2563EB]"
+                    : "border-[#D8E2EF] bg-white text-[#5B7083]"
                 }`}
                 onClick={() => setStatusFilter(status)}
               >
-                {status}
+                {status === "all"
+                  ? "Tất cả"
+                  : (ORDER_STATUS_LABELS[status] ?? status)}
               </Badge>
             ))}
           </div>
@@ -199,9 +203,19 @@ function OrdersPage() {
 
       <section className="mt-4 grid gap-3">
         {filtered.length === 0 ? (
-          <Card className="border-dashed border-[#D8E2EF] bg-white">
-            <CardContent className="p-8 text-center text-sm text-[#5B7083]">
-              Không có đơn hàng phù hợp.
+          <Card className="border-dashed border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+            <CardContent className="flex flex-col items-center gap-3 p-10 text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#EFF6FF]">
+                <Package className="size-6 text-[#93C5FD]" />
+              </div>
+              <p className="text-sm font-semibold text-[#102A43]">
+                Không có đơn hàng nào
+              </p>
+              <p className="text-xs text-[#5B7083]">
+                {role === "buying"
+                  ? "Bạn chưa thực hiện giao dịch mua sản phẩm nào."
+                  : "Bạn chưa thực hiện giao dịch bán sản phẩm nào."}
+              </p>
             </CardContent>
           </Card>
         ) : (

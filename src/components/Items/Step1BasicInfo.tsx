@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import type { UseFormReturn } from "react-hook-form"
 import { CategoriesService } from "@/client"
 import {
@@ -59,7 +59,7 @@ interface Step1Props {
 
 function CreateListingStep1({ form }: Step1Props) {
   // Fetch categories
-  const { data: categoriesData } = useSuspenseQuery({
+  const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       return await CategoriesService.listCategoriesApiV1CategoriesGet({

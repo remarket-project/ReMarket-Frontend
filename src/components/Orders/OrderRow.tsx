@@ -7,19 +7,15 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  formatVND,
+  ORDER_STATUS_COLORS,
+  ORDER_STATUS_LABELS,
+} from "@/lib/order-utils"
 
 interface OrderRowProps {
   order: OrderRead
   role: "buying" | "selling"
-}
-
-const statusToneConfig: Record<string, string> = {
-  completed: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  cancelled: "border-rose-200 bg-rose-50 text-rose-700",
-  shipping: "border-sky-200 bg-sky-50 text-sky-700",
-  delivered: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  confirmed: "border-violet-200 bg-violet-50 text-violet-700",
-  pending: "border-amber-200 bg-amber-50 text-amber-700",
 }
 
 const stages: OrderRead["status"][] = [
@@ -30,14 +26,8 @@ const stages: OrderRead["status"][] = [
   "completed",
 ]
 
-function formatCurrency(price: string) {
-  const numeric = Number(price)
-  if (Number.isNaN(numeric)) return `$${price}`
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(numeric)
+function formatCurrency(price: string | number) {
+  return formatVND(price)
 }
 
 function shortDate(value: string) {
@@ -121,11 +111,11 @@ export function OrderRow({ order, role }: OrderRowProps) {
                 params={{ orderId: order.id }}
                 className="font-semibold text-sm text-blue-950 hover:text-blue-700 flex items-center gap-1 leading-snug"
               >
-                {listing?.title || `Item #${order.listing_id.slice(0, 8)}`}
+                {listing?.title || `Sản phẩm #${order.listing_id.slice(0, 8)}`}
                 <ExternalLink className="w-3.5 h-3.5 text-blue-500/80 inline" />
               </Link>
               <p className="text-[11px] text-zinc-500 mt-1">
-                Order #{order.id.slice(0, 8)} • {shortDate(order.created_at)}
+                Đơn hàng #{order.id.slice(0, 8)} • {shortDate(order.created_at)}
               </p>
             </div>
           </div>
@@ -137,14 +127,17 @@ export function OrderRow({ order, role }: OrderRowProps) {
                 {formatCurrency(order.final_price)}
               </p>
               <Badge
-                className={`capitalize mt-1 ${statusToneConfig[order.status] ?? "border-blue-200 bg-blue-50 text-blue-700"}`}
+                className={`capitalize mt-1 border ${ORDER_STATUS_COLORS[order.status] ?? "border-blue-200 bg-blue-50 text-blue-700"}`}
               >
-                {order.status}
+                {ORDER_STATUS_LABELS[order.status] ?? order.status}
               </Badge>
             </div>
-            <Button className="rmk-glow-button" asChild>
+            <Button
+              className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-bold text-xs rounded-xl shadow-md cursor-pointer py-4"
+              asChild
+            >
               <Link to="/orders/$orderId" params={{ orderId: order.id }}>
-                View
+                Xem chi tiết
               </Link>
             </Button>
           </div>
@@ -162,29 +155,33 @@ export function OrderRow({ order, role }: OrderRowProps) {
               </Avatar>
               <div className="min-w-0 text-xs">
                 <p className="font-semibold text-blue-950">
-                  {role === "buying" ? "Seller:" : "Buyer:"}{" "}
+                  {role === "buying" ? "Người bán:" : "Người mua:"}{" "}
                   <Link
                     to="/u/$userId"
                     params={{ userId: counterpart.id }}
-                    className="hover:underline"
+                    className="hover:underline font-bold text-[#2563EB]"
                   >
                     @{counterpart.full_name}
                   </Link>
                 </p>
                 <p className="text-zinc-500 flex items-center gap-1 mt-0.5">
                   <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                  <span>{ratingAvg.toFixed(1)}</span>
+                  <span className="font-semibold text-zinc-700">
+                    {ratingAvg.toFixed(1)}
+                  </span>
                   <span>·</span>
-                  <span>{counterpart.completed_orders || 0} orders</span>
+                  <span>
+                    {counterpart.completed_orders || 0} đơn hàng thành công
+                  </span>
                 </p>
               </div>
             </div>
 
             <Badge
               variant="outline"
-              className="text-[10px] bg-white border-zinc-200 text-zinc-600"
+              className="text-[10px] bg-white border-zinc-200 text-zinc-600 font-semibold px-2 py-0.5 rounded-full"
             >
-              Score: {counterpart.trust_score || 100}
+              Điểm uy tín: {counterpart.trust_score || 100}
             </Badge>
           </div>
         )}
@@ -204,19 +201,19 @@ export function OrderRow({ order, role }: OrderRowProps) {
                 />
               ))}
             </div>
-            <div className="flex justify-between text-[10px] text-zinc-400 px-0.5">
-              <span>Created</span>
-              <span>Confirmed</span>
-              <span>Shipped</span>
-              <span>Delivered</span>
-              <span>Completed</span>
+            <div className="flex justify-between text-[10px] font-medium text-zinc-400 px-0.5">
+              <span>Tạo đơn</span>
+              <span>Xác nhận</span>
+              <span>Đang giao</span>
+              <span>Đã giao</span>
+              <span>Hoàn tất</span>
             </div>
           </div>
         )}
 
         {isCancelled && (
-          <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-2.5 text-center text-xs text-rose-600 font-medium">
-            🚫 Order was cancelled and closed.
+          <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-2.5 text-center text-xs text-rose-600 font-bold">
+            🚫 Đơn hàng đã bị hủy và đóng lại.
           </div>
         )}
       </CardContent>

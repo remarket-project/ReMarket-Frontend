@@ -14,7 +14,6 @@ import {
   Package,
   Plus,
   Search,
-  ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   TrendingUp,
@@ -28,8 +27,8 @@ import { columns } from "@/components/Items/columns"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import PendingItems from "@/components/Pending/PendingItems"
 import { Badge } from "@/components/ui/badge"
+import useAuth from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -104,6 +103,39 @@ export const Route = createFileRoute("/_layout/items")({
 // ─── Skeleton Loading ─────────────────────────────────────────────────────────
 // (Skeleton shown inline in Suspense fallback via PendingItems)
 
+// ─── Format VND Helper ─────────────────────────────────────────────────────────
+function formatVND(value: number) {
+  if (!value || Number.isNaN(value) || value <= 0) return "0 ₫"
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
+// ─── KPI Chip Component ───────────────────────────────────────────────────────
+interface KPIChipProps {
+  icon: React.ComponentType<{ className?: string }>
+  value: string | number
+  label: string
+}
+
+function KPIChip({ icon: Icon, value, label }: KPIChipProps) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-[#D8E2EF] bg-slate-50 px-4 py-2.5 shadow-sm">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+        <Icon className="size-4.5" />
+      </div>
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[#5B7083]">
+          {label}
+        </p>
+        <p className="text-sm font-bold text-[#102A43] mt-0.5">{value}</p>
+      </div>
+    </div>
+  )
+}
+
 // ─── Filter Sidebar Content ────────────────────────────────────────────────────
 interface FilterPanelProps {
   query: string
@@ -143,27 +175,27 @@ function FilterPanel({
     <div className="space-y-5">
       {/* Search */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wider text-blue-900/70">
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
           Tìm kiếm
         </label>
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-blue-500" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 z-10" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Từ khóa..."
-            className="border-blue-200 bg-white/90 pl-9"
+            className="border-[#D8E2EF] bg-white pl-9 h-10 rounded-xl focus-visible:ring-blue-500"
           />
         </div>
       </div>
 
       {/* Category */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wider text-blue-900/70">
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
           Danh mục
         </label>
         <Select value={categoryId} onValueChange={setCategoryId}>
-          <SelectTrigger className="border-blue-200 bg-white/90">
+          <SelectTrigger className="border-[#D8E2EF] bg-white h-10 rounded-xl focus:ring-blue-500">
             <SelectValue placeholder="Tất cả danh mục" />
           </SelectTrigger>
           <SelectContent>
@@ -179,8 +211,8 @@ function FilterPanel({
 
       {/* Price range */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wider text-blue-900/70">
-          Khoảng giá
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
+          Khoảng giá (VND)
         </label>
         <div className="flex gap-2">
           <Input
@@ -189,7 +221,7 @@ function FilterPanel({
             placeholder="Thấp nhất"
             type="number"
             min={0}
-            className="border-blue-200 bg-white/90"
+            className="border-[#D8E2EF] bg-white h-10 rounded-xl focus-visible:ring-blue-500"
           />
           <Input
             value={maxPrice}
@@ -197,14 +229,14 @@ function FilterPanel({
             placeholder="Cao nhất"
             type="number"
             min={0}
-            className="border-blue-200 bg-white/90"
+            className="border-[#D8E2EF] bg-white h-10 rounded-xl focus-visible:ring-blue-500"
           />
         </div>
       </div>
 
       {/* Condition */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-wider text-blue-900/70">
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
           Tình trạng
         </label>
         <div className="grid grid-cols-2 gap-1.5">
@@ -213,10 +245,10 @@ function FilterPanel({
               key={opt.value}
               type="button"
               onClick={() => setConditionMode(opt.value)}
-              className={`rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
+              className={`rounded-xl border px-2.5 py-2 text-xs font-semibold transition cursor-pointer ${
                 conditionMode === opt.value
                   ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-blue-200 bg-white/90 text-blue-900/80 hover:border-blue-400 hover:bg-blue-50"
+                  : "border-[#D8E2EF] bg-white text-[#5B7083] hover:border-slate-300 hover:bg-slate-50"
               }`}
             >
               {opt.label}
@@ -227,14 +259,14 @@ function FilterPanel({
 
       {/* Sort */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wider text-blue-900/70">
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
           Sắp xếp
         </label>
         <Select
           value={sortMode}
           onValueChange={(v) => setSortMode(v as SortMode)}
         >
-          <SelectTrigger className="border-blue-200 bg-white/90">
+          <SelectTrigger className="border-[#D8E2EF] bg-white h-10 rounded-xl focus:ring-blue-500">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -250,7 +282,7 @@ function FilterPanel({
       {/* Reset */}
       <Button
         variant="outline"
-        className="w-full border-blue-200 bg-white/90"
+        className="w-full border-[#D8E2EF] bg-white hover:bg-slate-50 text-[#5B7083] h-10 rounded-xl cursor-pointer"
         onClick={onReset}
       >
         <X className="mr-2 size-4" />
@@ -263,19 +295,19 @@ function FilterPanel({
 // ─── Empty State ──────────────────────────────────────────────────────────────
 function EmptyState({ onReset }: { onReset: () => void }) {
   return (
-    <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed border-blue-300 bg-white/70 p-14 text-center">
-      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-blue-50">
-        <Package className="size-8 text-blue-300" />
+    <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#D8E2EF] bg-white p-14 text-center">
+      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-slate-50">
+        <Package className="size-8 text-slate-400" />
       </div>
-      <h3 className="text-lg font-semibold text-blue-950">
+      <h3 className="text-lg font-semibold text-[#102A43]">
         Không có tin phù hợp
       </h3>
-      <p className="mt-1 max-w-xs text-sm text-blue-900/70">
+      <p className="mt-1 max-w-xs text-sm text-[#5B7083]">
         Hãy thử bỏ bớt bộ lọc hoặc đổi sang từ khóa khác.
       </p>
       <Button
         variant="outline"
-        className="mt-5 border-blue-200 bg-white/90"
+        className="mt-5 border-[#D8E2EF] bg-white hover:bg-slate-50 text-[#5B7083] h-10 rounded-xl cursor-pointer"
         onClick={onReset}
       >
         Đặt lại bộ lọc
@@ -288,6 +320,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
 function ItemsContent() {
   const { data } = useSuspenseQuery(getItemsQueryOptions())
   const listings = data.items
+  const { user } = useAuth()
 
   const [query, setQuery] = useState("")
   const [categoryId, setCategoryId] = useState("all")
@@ -398,105 +431,36 @@ function ItemsContent() {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="rmk-wave-layer rmk-wave-back" />
-        <div className="rmk-wave-layer rmk-wave-front" />
-        <div className="rmk-grid-fade" />
+    <div className="space-y-6">
+      {/* ── Header Section ── */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-6 shadow-sm">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-[#102A43]">Tin đăng</h1>
+          <p className="text-sm text-[#5B7083]">
+            Khám phá {stats.total} tin đăng với escrow bảo chứng
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <KPIChip icon={Package} value={stats.total} label="Tổng tin" />
+          <KPIChip icon={Sparkles} value={stats.recent} label="Mới tuần này" />
+          <KPIChip
+            icon={TrendingUp}
+            value={formatVND(stats.avgPrice)}
+            label="Giá TB"
+          />
+        </div>
       </div>
 
-      {/* ── Hero Header ── */}
-      <section className="rounded-3xl border border-blue-200/70 bg-white/85 p-5 shadow-xl shadow-blue-100/70 md:p-7">
-        <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
-          <div className="space-y-2">
-            <Badge
-              variant="outline"
-              className="border-blue-200 bg-blue-50 text-blue-700"
-            >
-              <Sparkles className="mr-1.5 size-3" /> Khám phá tin đăng
-            </Badge>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-blue-950 md:text-3xl">
-              Tìm tin phù hợp nhanh hơn
-            </h1>
-            <p className="max-w-lg text-sm text-blue-900/75">
-              Duyệt tin với trạng thái rõ ràng, thông tin tin cậy và giao dịch
-              được bảo vệ.
-            </p>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Card className="border-blue-200/75 bg-blue-50/55 py-3">
-              <CardContent className="flex items-center justify-between px-4">
-                <div>
-                  <p className="text-xs text-blue-900/70">Bảo vệ</p>
-                  <p className="text-sm font-semibold text-blue-950">
-                    Có escrow bảo chứng
-                  </p>
-                </div>
-                <ShieldCheck className="size-4 text-blue-700" />
-              </CardContent>
-            </Card>
-            <Card className="border-emerald-200/75 bg-emerald-50/60 py-3">
-              <CardContent className="flex items-center justify-between px-4">
-                <div>
-                  <p className="text-xs text-emerald-800/70">Hiệu quả</p>
-                  <p className="text-sm font-semibold text-emerald-900">
-                    +18% trong tuần
-                  </p>
-                </div>
-                <TrendingUp className="size-4 text-emerald-700" />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* ── KPI row ── */}
-      <section className="mt-5 grid gap-3 sm:grid-cols-3">
-        <Card className="border-blue-200/80 bg-white/90">
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium uppercase tracking-wide text-blue-900/60">
-              Tổng số tin
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <p className="text-2xl font-bold text-blue-950">{stats.total}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-blue-200/80 bg-white/90">
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium uppercase tracking-wide text-blue-900/60">
-              Tin mới trong tuần
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <p className="text-2xl font-bold text-blue-950">{stats.recent}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-blue-200/80 bg-white/90">
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium uppercase tracking-wide text-blue-900/60">
-              Giá trung bình
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <p className="text-2xl font-bold text-blue-950">
-              ${stats.avgPrice.toFixed(0)}
-            </p>
-          </CardContent>
-        </Card>
-      </section>
-
       {/* ── Content area: sidebar + main ── */}
-      <div className="mt-5 flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Desktop filter sidebar */}
-        <aside className="hidden w-64 flex-shrink-0 lg:block">
-          <div className="sticky top-4 rounded-2xl border border-blue-200/70 bg-white/92 p-5 shadow-md shadow-blue-100/60">
-            <div className="mb-4 flex items-center gap-2">
-              <Filter className="size-4 text-blue-700" />
-              <h2 className="text-sm font-semibold text-blue-950">Bộ lọc</h2>
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="sticky top-4 rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Filter className="size-4 text-blue-600" />
+              <h2 className="text-sm font-bold text-[#102A43]">Bộ lọc</h2>
               {activeFilterCount > 0 && (
-                <Badge className="ml-auto bg-blue-600 text-white text-[10px]">
+                <Badge className="ml-auto bg-blue-600 text-white text-[10px] px-1.5 py-0">
                   {activeFilterCount}
                 </Badge>
               )}
@@ -514,10 +478,10 @@ function ItemsContent() {
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className="border-blue-200 bg-white/90 lg:hidden"
+                  className="border-[#D8E2EF] bg-white text-[#5B7083] hover:bg-slate-50 lg:hidden cursor-pointer h-9 rounded-xl"
                   size="sm"
                 >
-                  <SlidersHorizontal className="mr-2 size-4" />
+                  <SlidersHorizontal className="mr-2 size-4 text-[#5B7083]" />
                   Bộ lọc
                   {activeFilterCount > 0 && (
                     <Badge className="ml-1.5 bg-blue-600 text-white text-[10px] px-1.5 py-0">
@@ -539,7 +503,7 @@ function ItemsContent() {
             {/* Results count */}
             <Badge
               variant="secondary"
-              className="border-blue-200 bg-blue-50 text-blue-700"
+              className="border-[#D8E2EF] bg-slate-100 text-[#5B7083] font-medium py-1 px-3 rounded-lg text-xs"
             >
               {filteredItems.length} kết quả • Trang {currentPage}/{totalPages}
             </Badge>
@@ -551,7 +515,7 @@ function ItemsContent() {
                   value={sortMode}
                   onValueChange={(v) => setSortMode(v as SortMode)}
                 >
-                  <SelectTrigger className="h-9 w-48 border-blue-200 bg-white/90 text-sm">
+                  <SelectTrigger className="h-9 w-48 border-[#D8E2EF] bg-white text-xs font-semibold rounded-xl text-slate-700">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -565,11 +529,15 @@ function ItemsContent() {
               </div>
 
               {/* View toggle */}
-              <div className="flex gap-1 rounded-lg border border-blue-200/70 bg-white/90 p-1">
+              <div className="flex gap-1 rounded-xl border border-[#D8E2EF] bg-white p-1 shadow-sm">
                 <Button
                   size="icon"
                   variant={viewMode === "grid" ? "default" : "ghost"}
-                  className={`size-7 ${viewMode === "grid" ? "rmk-glow-button" : "text-blue-700"}`}
+                  className={`size-7 rounded-lg cursor-pointer ${
+                    viewMode === "grid"
+                      ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
+                      : "text-[#5B7083] hover:text-[#102A43] hover:bg-slate-50"
+                  }`}
                   onClick={() => setViewMode("grid")}
                   title="Chế độ lưới"
                 >
@@ -578,7 +546,11 @@ function ItemsContent() {
                 <Button
                   size="icon"
                   variant={viewMode === "table" ? "default" : "ghost"}
-                  className={`size-7 ${viewMode === "table" ? "rmk-glow-button" : "text-blue-700"}`}
+                  className={`size-7 rounded-lg cursor-pointer ${
+                    viewMode === "table"
+                      ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
+                      : "text-[#5B7083] hover:text-[#102A43] hover:bg-slate-50"
+                  }`}
                   onClick={() => setViewMode("table")}
                   title="Chế độ bảng"
                 >
@@ -587,12 +559,18 @@ function ItemsContent() {
               </div>
 
               {/* Add listing CTA */}
-              <Button className="rmk-glow-button" size="sm" asChild>
-                <Link to="/items/create">
-                  <Plus className="mr-1.5 size-4" />
-                  Đăng tin
-                </Link>
-              </Button>
+              {user && (
+                <Button
+                  className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white h-9 rounded-xl font-semibold shadow-sm cursor-pointer"
+                  size="sm"
+                  asChild
+                >
+                  <Link to="/items/create">
+                    <Plus className="mr-1.5 size-4" />
+                    Đăng tin
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
 
@@ -600,33 +578,42 @@ function ItemsContent() {
           {activeFilterCount > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {query && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-white px-2.5 py-0.5 text-xs text-blue-700">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
                   Từ khóa: "{query}"
-                  <button type="button" onClick={() => setQuery("")}>
-                    <X className="size-3" />
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
+                    <X className="size-3 shrink-0" />
                   </button>
                 </span>
               )}
               {conditionMode !== "all" && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-white px-2.5 py-0.5 text-xs text-blue-700">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
                   Tình trạng: {conditionMode.replace("_", " ")}
-                  <button type="button" onClick={() => setConditionMode("all")}>
-                    <X className="size-3" />
+                  <button
+                    type="button"
+                    onClick={() => setConditionMode("all")}
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
+                    <X className="size-3 shrink-0" />
                   </button>
                 </span>
               )}
               {(minPrice || maxPrice) && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-white px-2.5 py-0.5 text-xs text-blue-700">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
                   Giá: {minPrice ? `${minPrice}` : "0"} –{" "}
                   {maxPrice ? `${maxPrice}` : "∞"}
                   <button
                     type="button"
+                    className="hover:text-slate-900 cursor-pointer"
                     onClick={() => {
                       setMinPrice("")
                       setMaxPrice("")
                     }}
                   >
-                    <X className="size-3" />
+                    <X className="size-3 shrink-0" />
                   </button>
                 </span>
               )}
@@ -637,7 +624,7 @@ function ItemsContent() {
           {filteredItems.length === 0 ? (
             <EmptyState onReset={handleReset} />
           ) : viewMode === "grid" ? (
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {pagedItems.map((item: ListingRead, idx) => (
                 <ListingCard
                   key={item.id}
@@ -647,17 +634,17 @@ function ItemsContent() {
               ))}
             </div>
           ) : (
-            <div className="mt-5 rounded-2xl border border-blue-200/75 bg-white/90 p-2 shadow-md">
+            <div className="mt-6 rounded-2xl border border-[#D8E2EF] bg-white p-2 shadow-sm">
               <DataTable columns={columns} data={pagedItems as any} />
             </div>
           )}
 
           {filteredItems.length > 0 && (
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="border-blue-200 bg-white/90"
+                className="border-[#D8E2EF] bg-white text-[#5B7083] hover:bg-slate-50 cursor-pointer h-9 rounded-xl"
                 disabled={currentPage === 1}
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               >
@@ -668,7 +655,11 @@ function ItemsContent() {
                 <Button
                   key={p}
                   size="sm"
-                  className={p === currentPage ? "rmk-glow-button" : ""}
+                  className={
+                    p === currentPage
+                      ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8] cursor-pointer"
+                      : "border-[#D8E2EF] bg-white text-[#5B7083] hover:bg-slate-50 cursor-pointer"
+                  }
                   variant={p === currentPage ? "default" : "outline"}
                   onClick={() => setPage(p)}
                 >
@@ -678,7 +669,7 @@ function ItemsContent() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-blue-200 bg-white/90"
+                className="border-[#D8E2EF] bg-white text-[#5B7083] hover:bg-slate-50 cursor-pointer h-9 rounded-xl"
                 disabled={currentPage === totalPages}
                 onClick={() =>
                   setPage((prev) => Math.min(prev + 1, totalPages))

@@ -12,6 +12,8 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
 
 import {
   EscrowService,
@@ -29,6 +31,22 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import useAuth from "@/hooks/useAuth"
 
+const ESCROW_STATUS_LABELS: Record<string, string> = {
+  pending: "Chờ thanh toán",
+  funded: "Đã nạp tiền (Bảo chứng)",
+  released: "Đã giải ngân",
+  refunded: "Đã hoàn tiền",
+  disputed: "Đang tranh chấp",
+}
+
+const conditionLabels: Record<string, string> = {
+  brand_new: "Mới nguyên hộp",
+  like_new: "Như mới",
+  good: "Tốt",
+  fair: "Khá",
+  poor: "Kém",
+}
+
 function getOrderDetailQueryOptions(orderId: string) {
   return {
     queryFn: async () => {
@@ -43,14 +61,8 @@ function getOrderDetailQueryOptions(orderId: string) {
   }
 }
 
-function currency(value: string) {
-  const amount = Number(value)
-  if (Number.isNaN(amount)) return `$${value}`
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(amount)
+function currency(value: string | number) {
+  return formatVND(value)
 }
 
 function dateTime(value: string) {
@@ -67,8 +79,8 @@ function dateTime(value: string) {
 
 export const Route = createFileRoute("/_layout/orders/$orderId")({
   component: OrderDetailPage,
-  head: () => ({
-    meta: [{ title: "Order Detail - ReMarket" }],
+  head: ({ params }) => ({
+    meta: [{ title: `Chi tiết đơn #${params.orderId?.slice(0, 8) || ""} - ReMarket` }],
   }),
 })
 
@@ -175,8 +187,54 @@ function OrderDetailPage() {
 
   if (isLoading || isListingLoading) {
     return (
-      <div className="rounded-2xl border border-[#D8E2EF] bg-white p-8 text-[#5B7083]">
-        Đang tải chi tiết đơn hàng...
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-9 w-24 rounded-xl" />
+          <Skeleton className="h-6 w-32 rounded-full" />
+          <Skeleton className="h-6 w-24 rounded-full" />
+        </div>
+        <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
+          <div className="space-y-4">
+            <Card className="border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex gap-4">
+                  <Skeleton className="size-20 rounded-xl" />
+                  <div className="space-y-2 flex-1 pt-1">
+                    <Skeleton className="h-6 w-2/3" />
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-5 w-1/4 rounded-full" />
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 pt-2">
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+              <CardContent className="p-5 space-y-3">
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-32 w-full rounded-xl" />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-4">
+            <Card className="border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+              <CardContent className="p-5 space-y-3">
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+              </CardContent>
+            </Card>
+            <Card className="border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+              <CardContent className="p-5 space-y-4">
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     )
   }
@@ -226,8 +284,8 @@ function OrderDetailPage() {
         >
           Đơn #{order.id.slice(0, 8)}
         </Badge>
-        <Badge className="border-[#D8E2EF] bg-white text-[#2563EB] capitalize">
-          {order.status}
+        <Badge className={`capitalize border ${ORDER_STATUS_COLORS[order.status] ?? "border-[#D8E2EF] bg-white text-[#2563EB]"}`}>
+          {ORDER_STATUS_LABELS[order.status] ?? order.status}
         </Badge>
       </section>
 
@@ -262,9 +320,9 @@ function OrderDetailPage() {
                   {listing?.condition_grade && (
                     <Badge
                       variant="outline"
-                      className="text-[10px] uppercase font-semibold border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] mt-1"
+                      className="text-[10px] uppercase font-bold border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] mt-1 px-2.5 py-0.5 rounded-full"
                     >
-                      Tình trạng: {listing.condition_grade.replace("_", " ")}
+                      Độ mới: {conditionLabels[listing.condition_grade] ?? listing.condition_grade.replace("_", " ")}
                     </Badge>
                   )}
                 </div>
@@ -315,10 +373,10 @@ function OrderDetailPage() {
                   {currency(escrow.amount)}
                 </span>
               </div>
-              <div className="rounded-xl border border-[#D8E2EF] bg-white px-3 py-2 text-[#5B7083]">
+              <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] px-3 py-2 text-[#5B7083]">
                 Trạng thái escrow:{" "}
-                <span className="font-semibold capitalize text-[#102A43]">
-                  {escrow.status}
+                <span className="font-bold text-[#102A43]">
+                  {ESCROW_STATUS_LABELS[escrow.status] ?? escrow.status}
                 </span>
               </div>
               <Button
@@ -463,7 +521,7 @@ function OrderDetailPage() {
                   onClick={() => orderMutation.mutate("completed")}
                   disabled={orderMutation.isPending}
                 >
-                  <Package className="mr-2 size-4" />
+                  <CheckCircle2 className="mr-2 size-4" />
                   Đánh dấu hoàn tất
                 </Button>
               ) : null}

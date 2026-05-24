@@ -23,7 +23,6 @@ import CreateListingStep2 from "@/components/Items/Step2Description"
 import CreateListingStep3 from "@/components/Items/Step3Images"
 import CreateListingStep3Location from "@/components/Items/Step3Location"
 import CreateListingStep4 from "@/components/Items/Step4Review"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -34,6 +33,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Progress } from "@/components/ui/progress"
+import { Form } from "@/components/ui/form"
+
+function formatVND(value: number) {
+  if (!value || Number.isNaN(value) || value <= 0) return "0 ₫"
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(value)
+}
 
 const DRAFT_KEY = "rmk-create-listing-draft-v1"
 
@@ -71,11 +80,11 @@ const listingFormSchema = z.object({
 type ListingFormData = z.infer<typeof listingFormSchema>
 
 const steps = [
-  { id: 1, label: "Thông tin cơ bản" },
-  { id: 2, label: "Mô tả" },
-  { id: 3, label: "Ảnh" },
-  { id: 4, label: "Địa điểm" },
-  { id: 5, label: "Xem lại" },
+  { id: 1, label: "Thông tin cơ bản", shortLabel: "Cơ bản" },
+  { id: 2, label: "Mô tả", shortLabel: "Mô tả" },
+  { id: 3, label: "Ảnh", shortLabel: "Ảnh" },
+  { id: 4, label: "Địa điểm", shortLabel: "Địa chỉ" },
+  { id: 5, label: "Xem lại", shortLabel: "Review" },
 ]
 
 const conditionLabel: Record<ListingFormData["conditionGrade"], string> = {
@@ -88,28 +97,46 @@ const conditionLabel: Record<ListingFormData["conditionGrade"], string> = {
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-      {steps.map((step, idx) => (
-        <div key={step.id} className="flex items-center gap-2">
-          <div
-            className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-              currentStep > step.id
-                ? "bg-[#059669] text-white"
-                : currentStep === step.id
-                  ? "bg-[#2563EB] text-white"
-                  : "bg-[#E2E8F0] text-[#5B7083]"
-            }`}
-          >
-            {currentStep > step.id ? <Check className="size-4" /> : step.id}
+    <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:gap-2">
+      {steps.map((step, idx) => {
+        const isDone = currentStep > step.id
+        const isActive = currentStep === step.id
+        return (
+          <div key={step.id} className="flex items-center gap-1 sm:gap-2">
+            <div
+              className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${
+                isDone
+                  ? "bg-[#059669] text-white"
+                  : isActive
+                    ? "bg-[#2563EB] text-white"
+                    : "bg-[#F1F5F9] text-[#5B7083]"
+              }`}
+            >
+              {isDone ? <Check className="size-4" /> : step.id}
+            </div>
+            {/* Short label on mobile, full label on tablet+ */}
+            <span
+              className={`text-xs font-semibold whitespace-nowrap transition-colors duration-300 ${
+                isActive
+                  ? "text-[#2563EB]"
+                  : isDone
+                    ? "text-[#059669]"
+                    : "text-[#8A99A8]"
+              }`}
+            >
+              <span className="sm:hidden">{step.shortLabel}</span>
+              <span className="hidden sm:block">{step.label}</span>
+            </span>
+            {idx < steps.length - 1 && (
+              <div
+                className={`h-px w-4 sm:w-8 transition-colors duration-300 ${
+                  isDone ? "bg-[#059669]" : "bg-[#D8E2EF]"
+                }`}
+              />
+            )}
           </div>
-          <span className="hidden whitespace-nowrap text-xs text-[#5B7083] sm:block">
-            {step.label}
-          </span>
-          {idx < steps.length - 1 && (
-            <div className="h-px w-5 bg-[#D8E2EF] sm:w-8" />
-          )}
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
@@ -296,39 +323,33 @@ function CreateListingPage() {
   const isNegotiable = form.watch("isNegotiable")
 
   return (
-    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
-      <section className="mb-6 rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7">
+    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8 shadow-sm">
+      <section className="mb-6 rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7 shadow-sm">
         <Button
           variant="outline"
           size="sm"
-          className="mb-4 border-[#D8E2EF] bg-white"
+          className="mb-4 border-[#D8E2EF] bg-white text-[#5B7083] hover:bg-[#F8FAFC] cursor-pointer"
           onClick={() => navigate({ to: "/items" })}
         >
-          <ArrowLeft className="mr-2 size-4" />
+          <ArrowLeft className="mr-1.5 size-4" />
           Quay lại
         </Button>
-        <Badge
-          variant="outline"
-          className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
-        >
-          {/* <Sparkles className="mr-1.5 size-3" /> */}
-          Đăng tin mới
-        </Badge>
-        <h1 className="mt-2 text-2xl font-bold text-[#102A43] md:text-3xl">
+        <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
           Đăng tin mới
         </h1>
         <p className="mt-1 text-sm text-[#5B7083] md:text-base">
           Bước {currentStep}/{totalSteps}: {steps[currentStep - 1].label}
         </p>
-        <div className="mt-4">
+        <div className="mt-4 border-t border-slate-100 pt-4">
           <StepIndicator currentStep={currentStep} />
         </div>
-        <Progress value={progress} className="mt-4 h-2" />
+        <Progress value={progress} className="mt-4 h-2 bg-slate-100" />
       </section>
 
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]"
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]"
         onKeyDown={(event) => {
           if (
             event.key === "Enter" &&
@@ -343,7 +364,7 @@ function CreateListingPage() {
           }
         }}
       >
-        <Card className="border-[#D8E2EF] bg-white">
+        <Card className="border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
           <CardHeader>
             <CardTitle className="text-[#102A43]">
               {steps[currentStep - 1].label}
@@ -356,30 +377,32 @@ function CreateListingPage() {
             {currentStep === 4 && <CreateListingStep3Location form={form} />}
             {currentStep === 5 && <CreateListingStep4 form={form} />}
 
-            <div className="mt-8 flex justify-between border-t border-[#D8E2EF] pt-6">
+            <div className="mt-8 flex justify-between border-t border-[#F1F5F9] pt-6">
               <Button
                 variant="outline"
-                className="border-[#D8E2EF] bg-white"
+                className="border-[#D8E2EF] text-[#5B7083] hover:bg-[#F8FAFC] cursor-pointer"
                 onClick={handlePreviousStep}
                 disabled={currentStep === 1}
                 type="button"
               >
-                ← Quay lại
+                <ArrowLeft className="mr-1.5 size-4" />
+                Quay lại
               </Button>
 
               {currentStep < totalSteps ? (
                 <Button
-                  className="bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
+                  className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] cursor-pointer"
                   onClick={handleNextStep}
                   type="button"
                 >
-                  Tiếp theo <ChevronRight className="ml-2 size-4" />
+                  Tiếp theo
+                  <ChevronRight className="ml-1.5 size-4" />
                 </Button>
               ) : (
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-[#059669] text-white hover:bg-[#047857] font-semibold"
+                  className="bg-[#059669] text-white hover:bg-[#047857] font-semibold min-w-[140px] cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>
@@ -389,7 +412,7 @@ function CreateListingPage() {
                   ) : (
                     <>
                       <Rocket className="mr-2 size-4" />
-                      Đăng tin
+                      Đăng tin ngay
                     </>
                   )}
                 </Button>
@@ -398,57 +421,94 @@ function CreateListingPage() {
           </CardContent>
         </Card>
 
-        <Card className="sticky top-4 h-fit border-[#D8E2EF] bg-white">
-          <CardHeader>
-            <CardTitle className="text-lg text-[#102A43]">Xem trước</CardTitle>
+        <Card className="sticky top-20 h-fit border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-base font-bold text-[#102A43]">
+              Xem trước
+            </CardTitle>
+            {/* Auto-save badge */}
+            <span className="flex items-center gap-1 text-[10px] text-[#059669] font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
+              <CheckCircle2 className="size-3" />
+              Đã lưu nháp
+            </span>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {images[0]?.url ? (
-              <img
-                src={images[0].url}
-                className="h-48 w-full rounded-lg object-cover"
-                alt="Ảnh chính"
-              />
+          <CardContent className="space-y-3 pt-4 border-t border-slate-100">
+            {/* Image preview */}
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#D8E2EF] bg-[#F8FAFC]">
+              {images[0]?.url ? (
+                <img
+                  src={images[0].url}
+                  className="h-full w-full object-cover"
+                  alt="Ảnh chính"
+                />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-2">
+                  <Package className="size-10 text-[#D8E2EF]" />
+                  <span className="text-xs text-[#8A99A8] font-medium">
+                    Chưa có ảnh
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            {title ? (
+              <p className="font-bold text-[#102A43] text-sm line-clamp-2 leading-relaxed">
+                {title}
+              </p>
             ) : (
-              <div className="flex h-48 w-full items-center justify-center rounded-lg bg-[#EFF6FF]">
-                <Package className="size-10 text-[#2563EB]" />
-              </div>
+              <p className="text-slate-400 text-xs italic">Chưa nhập tiêu đề</p>
             )}
 
-            {title && <p className="font-semibold text-[#102A43]">{title}</p>}
-            {price > 0 && (
-              <p className="text-lg font-bold text-[#059669]">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(price)}{" "}
-                {isNegotiable ? "(Có thể thương lượng)" : ""}
+            {price > 0 ? (
+              <p className="text-base font-extrabold text-[#2563EB]">
+                {formatVND(price)}{" "}
+                {isNegotiable && (
+                  <span className="text-xs font-normal text-[#5B7083]">
+                    (Có thương lượng)
+                  </span>
+                )}
               </p>
+            ) : (
+              <p className="text-slate-400 text-xs italic">Chưa nhập giá</p>
             )}
+
             {condition && (
-              <Badge
-                variant="outline"
-                className="border-[#D8E2EF] bg-[#EFF6FF] text-[#2563EB]"
-              >
+              <span className="inline-flex rounded-full bg-[#EFF6FF] px-2.5 py-0.5 text-[10px] font-bold text-[#2563EB] uppercase tracking-wider">
                 {conditionLabel[condition]}
-              </Badge>
+              </span>
             )}
             {province && (
-              <p className="text-xs text-[#5B7083]">📍 Đã chọn địa điểm</p>
+              <p className="text-xs text-[#5B7083] font-medium">
+                📍 {province}
+              </p>
             )}
 
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-[#5B7083]">
-                Mức độ hoàn thiện
-              </p>
-              <Progress value={completeness} className="h-1.5" />
-              <p className="text-xs text-[#5B7083]">
-                {completeness}% hoàn thiện
-              </p>
+            {/* Completeness */}
+            <div className="space-y-2 border-t border-slate-100 pt-3 mt-4">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#5B7083] font-medium">
+                  Mức độ hoàn thiện
+                </span>
+                <span
+                  className={`font-bold ${completeness >= 80 ? "text-[#059669]" : "text-[#D97706]"}`}
+                >
+                  {completeness}%
+                </span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    completeness >= 80 ? "bg-[#059669]" : "bg-[#2563EB]"
+                  }`}
+                  style={{ width: `${completeness}%` }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
       </form>
+    </Form>
 
       {/* Success Dialog */}
       <Dialog
@@ -461,21 +521,21 @@ function CreateListingPage() {
       >
         <DialogContent className="max-w-md border-[#A7F3D0] bg-white p-6 text-center rounded-2xl shadow-2xl">
           <DialogHeader className="flex flex-col items-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#ECFDF5] mb-4 animate-bounce">
-              <CheckCircle2 className="h-10 w-10 text-[#059669]" />
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#ECFDF5] mb-4 shadow-inner">
+              <CheckCircle2 className="h-12 w-12 text-[#059669] animate-[scale-in_0.3s_ease-out]" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-[#102A43]">
-              Đăng tin thành công!
+            <DialogTitle className="text-2xl font-extrabold text-[#102A43] tracking-tight">
+              🎉 Đăng tin thành công!
             </DialogTitle>
-            <DialogDescription className="mt-2 text-sm text-[#5B7083]">
-              Tin của bạn đã được đăng lên ReMarket. Chúng tôi sẽ thông báo khi
-              có người quan tâm.
+            <DialogDescription className="mt-2 text-sm leading-relaxed text-[#5B7083]">
+              Tin của bạn đang chờ kiểm duyệt. Chúng tôi sẽ gửi thông báo ngay
+              khi tin của bạn được duyệt hiển thị trên chợ.
             </DialogDescription>
           </DialogHeader>
 
           <div className="my-6 border-t border-[#D8E2EF] py-4 flex flex-col gap-3">
             <Button
-              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold flex items-center justify-center gap-2 rounded-xl py-5"
+              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 transition-transform text-white font-bold flex items-center justify-center gap-2 rounded-xl py-5 shadow-lg shadow-blue-500/10 cursor-pointer"
               onClick={() => {
                 if (createdListingId) {
                   navigate({
@@ -491,7 +551,7 @@ function CreateListingPage() {
 
             <Button
               variant="outline"
-              className="w-full border-[#D8E2EF] text-[#5B7083] font-semibold flex items-center justify-center gap-2 rounded-xl py-5 bg-white hover:bg-[#F5F8FC]"
+              className="w-full border-[#D8E2EF] text-[#5B7083] font-bold flex items-center justify-center gap-2 rounded-xl py-5 bg-white hover:bg-[#F5F8FC] cursor-pointer"
               onClick={() => {
                 setShowSuccessModal(false)
                 setCreatedListingId(null)

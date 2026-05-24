@@ -10,11 +10,11 @@ import {
 import type { OrderRead } from "@/client"
 
 const stages = [
-  { key: "pending", label: "Order Created", icon: ShoppingCart },
-  { key: "confirmed", label: "Confirmed", icon: CheckCircle2 },
-  { key: "shipping", label: "Shipping", icon: Truck },
-  { key: "delivered", label: "Delivered", icon: Package },
-  { key: "completed", label: "Completed", icon: BadgeCheck },
+  { key: "pending", label: "Đã tạo đơn", icon: ShoppingCart },
+  { key: "confirmed", label: "Đã xác nhận", icon: CheckCircle2 },
+  { key: "shipping", label: "Đang vận chuyển", icon: Truck },
+  { key: "delivered", label: "Đã giao hàng", icon: Package },
+  { key: "completed", label: "Hoàn tất", icon: BadgeCheck },
 ]
 
 function getStageIndex(status: OrderRead["status"]) {
@@ -64,8 +64,8 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
                 {stage.label}
               </p>
               {idx === current ? (
-                <p className="text-xs font-medium text-blue-700">
-                  Current status
+                <p className="text-xs font-semibold text-blue-700 mt-0.5">
+                  Trạng thái hiện tại
                 </p>
               ) : null}
             </div>
@@ -73,9 +73,9 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
         )
       })}
       {order.status === "cancelled" ? (
-        <div className="mt-1 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+        <div className="mt-3 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 font-bold">
           <Clock3 className="size-4" />
-          Order cancelled
+          Đơn hàng đã bị hủy
         </div>
       ) : null}
     </div>
