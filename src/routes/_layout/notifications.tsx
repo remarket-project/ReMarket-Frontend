@@ -162,7 +162,15 @@ function NotificationsPage() {
               }`}
               onClick={() => setFilter(item)}
             >
-              {item === "all" ? "Tất cả" : item === "unread" ? "Chưa đọc" : item === "offers" ? "Đề nghị" : item === "orders" ? "Đơn hàng" : "Hệ thống"}
+              {item === "all"
+                ? "Tất cả"
+                : item === "unread"
+                  ? "Chưa đọc"
+                  : item === "offers"
+                    ? "Đề nghị"
+                    : item === "orders"
+                      ? "Đơn hàng"
+                      : "Hệ thống"}
             </Badge>
           ),
         )}

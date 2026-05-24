@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   ArrowLeft,
   BadgeCheck,
@@ -15,27 +15,27 @@ import {
   Pencil,
   ShieldCheck,
   Star,
-  Truck,
   Wallet,
-} from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+} from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 
 import {
+  CategoriesService,
   ListingsService,
   type ListingWithImages,
   OffersService,
   OrdersService,
   UsersService,
-} from "@/client";
-import { ImageGallery } from "@/components/Listings/ImageGallery";
-import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import useAuth from "@/hooks/useAuth";
+} from "@/client"
+import { ImageGallery } from "@/components/Listings/ImageGallery"
+import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import useAuth from "@/hooks/useAuth"
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 export const Route = createFileRoute("/_layout/items/$listingId")({
@@ -43,37 +43,37 @@ export const Route = createFileRoute("/_layout/items/$listingId")({
   head: () => ({
     meta: [{ title: "Chi tiết tin đăng - ReMarket" }],
   }),
-});
+})
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function currency(value: string) {
-  const n = Number(value);
-  if (Number.isNaN(n)) return `$${value}`;
-  return new Intl.NumberFormat("en-US", {
+  const n = Number(value)
+  if (Number.isNaN(n)) return `${value}₫`
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
-  }).format(n);
+  }).format(n)
 }
 
 function prettyDate(value: string) {
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "Không rõ";
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return "Không rõ"
   return d.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  });
+  })
 }
 
 function timeAgo(value: string) {
-  const ms = Date.now() - new Date(value).getTime();
-  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-  if (days === 0) return "Hôm nay";
-  if (days === 1) return "Hôm qua";
-  if (days < 7) return `${days} ngày trước`;
-  if (days < 30) return `${Math.floor(days / 7)} tuần trước`;
-  return `${Math.floor(days / 30)} tháng trước`;
+  const ms = Date.now() - new Date(value).getTime()
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24))
+  if (days === 0) return "Hôm nay"
+  if (days === 1) return "Hôm qua"
+  if (days < 7) return `${days} ngày trước`
+  if (days < 30) return `${Math.floor(days / 7)} tuần trước`
+  return `${Math.floor(days / 30)} tháng trước`
 }
 
 const conditionConfig: Record<string, { label: string; className: string }> = {
@@ -97,7 +97,7 @@ const conditionConfig: Record<string, { label: string; className: string }> = {
     label: "Kém",
     className: "bg-rose-50 text-rose-700 border-rose-200",
   },
-};
+}
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   active: {
@@ -120,7 +120,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
     label: "Bị từ chối",
     className: "bg-rose-50 text-rose-700 border-rose-200",
   },
-};
+}
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function DetailSkeleton() {
@@ -143,7 +143,7 @@ function DetailSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Similar Listings ─────────────────────────────────────────────────────────
@@ -151,21 +151,21 @@ function SimilarListings({
   categoryId,
   excludeId,
 }: {
-  categoryId: string;
-  excludeId: string;
+  categoryId: string
+  excludeId: string
 }) {
   const { data } = useQuery({
     queryKey: ["similar-listings", categoryId],
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 8 }),
     enabled: Boolean(categoryId),
-  });
+  })
 
   const similar = (data?.items ?? [])
     .filter((l) => l.id !== excludeId)
-    .slice(0, 4);
+    .slice(0, 4)
 
-  if (similar.length === 0) return null;
+  if (similar.length === 0) return null
 
   return (
     <div className="mt-6">
@@ -175,7 +175,7 @@ function SimilarListings({
           const cond = conditionConfig[l.condition_grade] ?? {
             label: l.condition_grade,
             className: "",
-          };
+          }
           return (
             <Link
               key={l.id}
@@ -203,11 +203,11 @@ function SimilarListings({
                 </div>
               </div>
             </Link>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Seller Card ─────────────────────────────────────────────────────────────
@@ -219,7 +219,7 @@ function SellerCard({ sellerId }: { sellerId: string }) {
   } = useQuery({
     queryKey: ["user-public", sellerId],
     queryFn: () => UsersService.readUserPublicProfile({ userId: sellerId }),
-  });
+  })
 
   if (isLoading) {
     return (
@@ -234,7 +234,7 @@ function SellerCard({ sellerId }: { sellerId: string }) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (isError || !seller) {
@@ -244,30 +244,36 @@ function SellerCard({ sellerId }: { sellerId: string }) {
           Hồ sơ người bán hiện chưa khả dụng.
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const initials = seller.full_name.slice(0, 2).toUpperCase();
-  const trustScore = Number(seller.trust_score || 0);
-  const ratingAvg = Number(seller.rating_avg || 0);
+  const initials = seller.full_name.slice(0, 2).toUpperCase()
+  const trustScore = Number(seller.trust_score || 0)
+  const ratingAvg = Number(seller.rating_avg || 0)
 
   return (
     <Card className="border-[#D8E2EF] bg-white">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base text-[#102A43]">
-          <Star className="size-4 text-[#F59E0B]" /> Hồ sơ người bán
+          <Star className="size-4 text-[#F59E0B]" /> Thông tin người bán
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-start gap-3">
-          <Avatar className="size-12 rounded-xl border-2 border-[#D8E2EF]">
+        <Link
+          to="/u/$userId"
+          params={{ userId: sellerId }}
+          className="flex items-start gap-3 group"
+        >
+          <Avatar className="size-14 rounded-xl border-2 border-[#D8E2EF]">
             <AvatarImage src={seller.avatar_url ?? undefined} />
             <AvatarFallback className="rounded-xl bg-[#EFF6FF] text-[#2563EB] font-bold">
               {initials}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="font-semibold text-[#102A43]">{seller.full_name}</p>
+            <p className="font-semibold text-[#102A43] group-hover:text-[#2563EB] transition-colors">
+              {seller.full_name}
+            </p>
             <div className="mt-0.5 flex items-center gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
@@ -280,28 +286,34 @@ function SellerCard({ sellerId }: { sellerId: string }) {
               </span>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="space-y-2 text-xs text-[#5B7083]">
-          {trustScore >= 80 && (
-            <p className="flex items-center gap-2">
-              <BadgeCheck className="size-3.5 text-[#16A34A]" />
-              Điểm tin cậy: {trustScore}/100
+        <div className="grid grid-cols-2 gap-2 text-xs text-[#5B7083]">
+          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+            <p className="text-[#5B7083]">Điểm tin cậy</p>
+            <p className="text-lg font-bold text-[#102A43]">{trustScore}/100</p>
+          </div>
+          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+            <p className="text-[#5B7083]">Đơn đã hoàn tất</p>
+            <p className="text-lg font-bold text-[#102A43]">
+              {seller.completed_orders}
             </p>
-          )}
-          <p className="flex items-center gap-2">
-            <Truck className="size-3.5 text-[#2563EB]" />
-            {seller.completed_orders} đơn đã hoàn tất
-          </p>
-          <p className="flex items-center gap-2">
-            <CalendarDays className="size-3.5 text-[#2563EB]" />
-            Tham gia từ {prettyDate(seller.created_at)}
-          </p>
+          </div>
+          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+            <p className="text-[#5B7083]">Đánh giá TB</p>
+            <p className="text-lg font-bold text-[#102A43]">
+              {ratingAvg.toFixed(1)} ★
+            </p>
+          </div>
+          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
+            <p className="text-[#5B7083]">Tham gia</p>
+            <p className="text-lg font-bold text-[#102A43]">
+              {prettyDate(seller.created_at)}
+            </p>
+          </div>
         </div>
 
-        {seller.bio && (
-          <p className="text-xs text-[#5B7083] line-clamp-2">{seller.bio}</p>
-        )}
+        {seller.bio && <p className="text-sm text-[#5B7083]">{seller.bio}</p>}
 
         <Button
           variant="outline"
@@ -310,20 +322,20 @@ function SellerCard({ sellerId }: { sellerId: string }) {
           asChild
         >
           <Link to="/u/$userId" params={{ userId: sellerId }}>
-            Xem hồ sơ đầy đủ
+            Xem trang hồ sơ
           </Link>
         </Button>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 function ListingDetailPage() {
-  const { listingId } = Route.useParams();
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
+  const { listingId } = Route.useParams()
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
@@ -332,13 +344,13 @@ function ListingDetailPage() {
         const listing =
           await ListingsService.getListingApiV1ListingsListingIdGet({
             listingId,
-          });
-        return { listing };
+          })
+        return { listing }
       } catch {
-        return { listing: null as ListingWithImages | null };
+        return { listing: null as ListingWithImages | null }
       }
     },
-  });
+  })
 
   const { data: offersData } = useQuery({
     queryKey: ["listing-offers", listingId],
@@ -349,7 +361,16 @@ function ListingDetailPage() {
         limit: 50,
       }),
     enabled: Boolean(data?.listing),
-  });
+  })
+
+  const { data: category } = useQuery({
+    queryKey: ["listing-category", data?.listing?.category_id],
+    queryFn: () =>
+      CategoriesService.getCategoryByIdApiV1CategoriesIdCategoryIdGet({
+        categoryId: data!.listing!.category_id,
+      }),
+    enabled: Boolean(data?.listing?.category_id),
+  })
 
   const buyNowMutation = useMutation({
     mutationFn: () =>
@@ -357,17 +378,17 @@ function ListingDetailPage() {
         requestBody: { listing_id: listingId },
       }),
     onSuccess: (_order) => {
-      toast.success("Order created! Proceed to fund escrow.");
-      queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+      toast.success("Order created! Proceed to fund escrow.")
+      queryClient.invalidateQueries({ queryKey: ["my-orders"] })
     },
     onError: (err: any) => {
       const msg =
-        err?.body?.detail || "Failed to create order. Please try again.";
-      toast.error(msg);
+        err?.body?.detail || "Failed to create order. Please try again."
+      toast.error(msg)
     },
-  });
+  })
 
-  if (isLoading) return <DetailSkeleton />;
+  if (isLoading) return <DetailSkeleton />
 
   if (!data?.listing) {
     return (
@@ -379,35 +400,38 @@ function ListingDetailPage() {
         <p className="mt-1 text-sm text-[#5B7083]">
           Tin đăng có thể đã bị ẩn hoặc gỡ bỏ.
         </p>
-        <Button className="mt-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" asChild>
+        <Button
+          className="mt-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          asChild
+        >
           <Link to="/items">Quay lại danh sách</Link>
         </Button>
       </div>
-    );
+    )
   }
 
-  const listing = data.listing;
-  const images = listing.images ?? [];
-  const isSeller = user?.id === listing.seller_id;
-  const isSold = listing.status === "sold";
-  const canMakeOffer = !isSeller && !isSold && listing.is_negotiable;
-  const canBuyNow = !isSeller && !isSold;
+  const listing = data.listing
+  const images = listing.images ?? []
+  const isSeller = user?.id === listing.seller_id
+  const isSold = listing.status === "sold"
+  const canMakeOffer = !isSeller && !isSold && listing.is_negotiable
+  const canBuyNow = !isSeller && !isSold
 
-  const offersArr = offersData ?? [];
-  const offerCount = offersArr.length;
+  const offersArr = offersData ?? []
+  const offerCount = offersArr.length
   const bestOffer = offersArr.reduce<number>((best, o) => {
-    const p = Number(o.offer_price);
-    return Number.isNaN(p) ? best : Math.max(best, p);
-  }, 0);
+    const p = Number(o.offer_price)
+    return Number.isNaN(p) ? best : Math.max(best, p)
+  }, 0)
 
   const condition = conditionConfig[listing.condition_grade] ?? {
     label: listing.condition_grade,
     className: "",
-  };
+  }
   const status = statusConfig[listing.status] ?? {
     label: listing.status,
     className: "",
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -471,7 +495,7 @@ function ListingDetailPage() {
                 </p>
                 <p className="flex items-center gap-2">
                   <MapPin className="size-4 text-[#2563EB]" />
-                  Vị trí trao đổi sau
+                  {category?.name ?? "Đang xác định..."}
                 </p>
               </div>
 
@@ -482,8 +506,8 @@ function ListingDetailPage() {
                   className="border-[#D8E2EF] bg-white text-[#2563EB] w-fit"
                   asChild
                 >
-                  <Link to="/items/$listingId" params={{ listingId }}>
-                    <Pencil className="mr-1.5 size-4" /> Chỉnh sửa tin
+                  <Link to="/items/create">
+                    <Pencil className="mr-1.5 size-4" /> Đăng tin mới
                   </Link>
                 </Button>
               )}
@@ -554,11 +578,13 @@ function ListingDetailPage() {
                 >
                   {buyNowMutation.isPending ? (
                     <>
-                      <Loader2 className="mr-2 size-4 animate-spin" /> Đang xử lý...
+                      <Loader2 className="mr-2 size-4 animate-spin" /> Đang xử
+                      lý...
                     </>
                   ) : (
                     <>
-                      <ShieldCheck className="mr-2 size-4" /> Mua ngay qua escrow
+                      <ShieldCheck className="mr-2 size-4" /> Mua ngay qua
+                      escrow
                     </>
                   )}
                 </Button>
@@ -596,9 +622,12 @@ function ListingDetailPage() {
             <CardContent className="grid gap-2 text-sm">
               <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-white p-3">
                 <span className="flex items-center gap-2 text-[#5B7083]">
-                  <Handshake className="size-4 text-[#2563EB]" /> Đề nghị đang có
+                  <Handshake className="size-4 text-[#2563EB]" /> Đề nghị đang
+                  có
                 </span>
-                <span className="font-semibold text-[#102A43]">{offerCount}</span>
+                <span className="font-semibold text-[#102A43]">
+                  {offerCount}
+                </span>
               </div>
               <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#ECFDF5] p-3">
                 <span className="flex items-center gap-2 text-[#059669]">
@@ -653,5 +682,5 @@ function ListingDetailPage() {
         listedPrice={listing.price}
       />
     </div>
-  );
+  )
 }

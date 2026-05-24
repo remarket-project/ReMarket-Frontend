@@ -41,9 +41,7 @@ function RegulationPage() {
                 Người dùng phải đủ 18 tuổi hoặc có sự đồng ý của người giám hộ.
               </li>
               <li>Tài khoản phải được đăng ký bằng thông tin chính xác.</li>
-              <li>
-                Mỗi cá nhân chỉ được sở hữu một tài khoản trên ReMarket.
-              </li>
+              <li>Mỗi cá nhân chỉ được sở hữu một tài khoản trên ReMarket.</li>
             </ul>
           </section>
 
@@ -78,9 +76,9 @@ function RegulationPage() {
               5. Xử lý vi phạm
             </h2>
             <p className="mt-2">
-              Tùy theo mức độ vi phạm, ReMarket có thể áp dụng các biện pháp: cảnh
-              cáo, khóa tạm thời, khóa vĩnh viễn tài khoản, và/hoặc chuyển cho cơ
-              quan chức năng nếu có dấu hiệu vi phạm pháp luật hình sự.
+              Tùy theo mức độ vi phạm, ReMarket có thể áp dụng các biện pháp:
+              cảnh cáo, khóa tạm thời, khóa vĩnh viễn tài khoản, và/hoặc chuyển
+              cho cơ quan chức năng nếu có dấu hiệu vi phạm pháp luật hình sự.
             </p>
           </section>
         </div>

@@ -1,12 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import {
-  BadgeCheck,
-  Clock3,
-  PackageCheck,
-  Search,
-  Wallet,
-} from "lucide-react"
+import { BadgeCheck, Clock3, PackageCheck, Search, Wallet } from "lucide-react"
 import { useMemo, useState } from "react"
 
 import { type OrderRead, OrdersService } from "@/client"
@@ -177,7 +171,14 @@ function OrdersPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             {(
-              ["all", "pending", "shipping", "delivered", "completed", "cancelled"] as const
+              [
+                "all",
+                "pending",
+                "shipping",
+                "delivered",
+                "completed",
+                "cancelled",
+              ] as const
             ).map((status) => (
               <Badge
                 key={status}

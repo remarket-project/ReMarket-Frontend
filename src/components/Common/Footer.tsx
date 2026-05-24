@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { FaGithub, FaLinkedinIn } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { Link } from "@tanstack/react-router"
+import { FaGithub, FaLinkedinIn } from "react-icons/fa"
+import { FaXTwitter } from "react-icons/fa6"
 
 const footerColumns = [
   {
@@ -35,7 +35,7 @@ const footerColumns = [
       { label: "Chính sách bảo mật", to: "/legal/privacy" as const },
     ],
   },
-];
+]
 
 const socialLinks = [
   {
@@ -49,10 +49,10 @@ const socialLinks = [
     href: "https://linkedin.com",
     label: "LinkedIn của ReMarket",
   },
-];
+]
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="border-t border-[#D8E2EF] bg-white px-6 py-8 mt-8">
@@ -61,8 +61,8 @@ export function Footer() {
           <div className="space-y-4">
             <p className="text-lg font-bold text-[#102A43]">ReMarket</p>
             <p className="max-w-sm text-sm text-[#5B7083]">
-              Nền tảng mua bán đồ đã qua sử dụng với giao dịch minh bạch,
-              thanh toán an toàn qua escrow và cộng đồng tin cậy.
+              Nền tảng mua bán đồ đã qua sử dụng với giao dịch minh bạch, thanh
+              toán an toàn qua escrow và cộng đồng tin cậy.
             </p>
             <div className="flex items-center gap-4">
               {socialLinks.map(({ icon: Icon, href, label }) => (
@@ -107,5 +107,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

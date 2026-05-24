@@ -22,9 +22,7 @@ function AboutPage() {
 
         <div className="space-y-6 text-[#5B7083]">
           <section>
-            <h2 className="text-lg font-semibold text-[#102A43]">
-              Sứ mệnh
-            </h2>
+            <h2 className="text-lg font-semibold text-[#102A43]">Sứ mệnh</h2>
             <p className="mt-2">
               ReMarket ra đời với sứ mệnh tạo ra một thị trường đồ cũ minh bạch,
               nơi người mua và người bán có thể giao dịch an tâm nhờ hệ thống
@@ -57,9 +55,7 @@ function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-[#102A43]">
-              Liên hệ
-            </h2>
+            <h2 className="text-lg font-semibold text-[#102A43]">Liên hệ</h2>
             <p className="mt-2">
               ReMarket được phát triển bởi đội ngũ kỹ sư và nhà thiết kế đam mê
               tạo ra một nền tảng mua bán an toàn hơn. Mọi thắc mắc xin vui lòng

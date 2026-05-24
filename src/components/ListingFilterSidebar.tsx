@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { CategoriesService } from "@/client";
+import { useQuery } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
+import { CategoriesService } from "@/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 type Props = {
-  className?: string;
-  q: string;
-  setQ: (v: string) => void;
-  minPrice: string;
-  setMinPrice: (v: string) => void;
-  maxPrice: string;
-  setMaxPrice: (v: string) => void;
-  categoryId?: string;
-  setCategoryId: (v?: string) => void;
-  onReset?: () => void;
-  onApply?: () => void;
-};
+  className?: string
+  q: string
+  setQ: (v: string) => void
+  minPrice: string
+  setMinPrice: (v: string) => void
+  maxPrice: string
+  setMaxPrice: (v: string) => void
+  categoryId?: string
+  setCategoryId: (v?: string) => void
+  onReset?: () => void
+  onApply?: () => void
+}
 
 export default function ListingFilterSidebar({
   className = "",
@@ -35,38 +35,38 @@ export default function ListingFilterSidebar({
     queryKey: ["categories"],
     queryFn: () =>
       CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 100 } as any),
-  });
+  })
 
-  const categories = categoriesData?.data ?? [];
+  const categories = categoriesData?.data ?? []
 
-  const [localQ, setLocalQ] = useState(q);
-  const [localMin, setLocalMin] = useState(minPrice);
-  const [localMax, setLocalMax] = useState(maxPrice);
+  const [localQ, setLocalQ] = useState(q)
+  const [localMin, setLocalMin] = useState(minPrice)
+  const [localMax, setLocalMax] = useState(maxPrice)
   const [localCategory, setLocalCategory] = useState<string | undefined>(
     categoryId,
-  );
+  )
 
   // keep local state in sync when parent changes externally
-  useEffect(() => setLocalQ(q), [q]);
-  useEffect(() => setLocalMin(minPrice), [minPrice]);
-  useEffect(() => setLocalMax(maxPrice), [maxPrice]);
-  useEffect(() => setLocalCategory(categoryId), [categoryId]);
+  useEffect(() => setLocalQ(q), [q])
+  useEffect(() => setLocalMin(minPrice), [minPrice])
+  useEffect(() => setLocalMax(maxPrice), [maxPrice])
+  useEffect(() => setLocalCategory(categoryId), [categoryId])
 
   const handleApply = () => {
-    setQ(localQ);
-    setMinPrice(localMin);
-    setMaxPrice(localMax);
-    setCategoryId(localCategory);
-    if (onApply) onApply();
-  };
+    setQ(localQ)
+    setMinPrice(localMin)
+    setMaxPrice(localMax)
+    setCategoryId(localCategory)
+    if (onApply) onApply()
+  }
 
   const handleReset = () => {
-    setLocalQ("");
-    setLocalMin("");
-    setLocalMax("");
-    setLocalCategory(undefined);
-    if (onReset) onReset();
-  };
+    setLocalQ("")
+    setLocalMin("")
+    setLocalMax("")
+    setLocalCategory(undefined)
+    if (onReset) onReset()
+  }
 
   return (
     <aside
@@ -126,5 +126,5 @@ export default function ListingFilterSidebar({
         </Button>
       </div>
     </aside>
-  );
+  )
 }

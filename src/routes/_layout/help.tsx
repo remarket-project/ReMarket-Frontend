@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { HelpCircle, Search, Shield, MessageSquare } from "lucide-react"
+import { HelpCircle, MessageSquare, Search, Shield } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 

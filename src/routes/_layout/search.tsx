@@ -1,22 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { LayoutGrid, List, Search, SlidersHorizontal, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { z } from "zod";
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { LayoutGrid, List, Search, SlidersHorizontal, X } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { z } from "zod"
 
-import { CategoriesService, type ListingRead, ListingsService } from "@/client";
-import { ListingCard } from "@/components/Listings/ListingCard";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { CategoriesService, type ListingRead, ListingsService } from "@/client"
+import { ListingCard } from "@/components/Listings/ListingCard"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 
 const searchSchema = z.object({
   q: z.string().catch(""),
@@ -25,9 +25,9 @@ const searchSchema = z.object({
   maxPrice: z.string().catch(""),
   view: z.enum(["grid", "list"]).catch("grid"),
   page: z.string().catch("1"),
-});
+})
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 24
 
 export const Route = createFileRoute("/_layout/search")({
   component: SearchResultsPage,
@@ -39,26 +39,26 @@ export const Route = createFileRoute("/_layout/search")({
       },
     ],
   }),
-});
+})
 
 function formatCurrency(value: string) {
-  const amount = Number(value);
-  if (Number.isNaN(amount)) return value;
+  const amount = Number(value)
+  if (Number.isNaN(amount)) return value
   return new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(amount)
 }
 
 function formatDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Unknown date";
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return "Unknown date"
   return date.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  });
+  })
 }
 
 function conditionLabel(condition: string) {
@@ -68,28 +68,28 @@ function conditionLabel(condition: string) {
     good: "Tốt",
     fair: "Khá",
     poor: "Kém",
-  };
+  }
 
-  return labels[condition] ?? condition.split("_").join(" ");
+  return labels[condition] ?? condition.split("_").join(" ")
 }
 
 function parsePrice(value: string) {
-  if (!value) return undefined;
-  const num = Number(value);
-  if (Number.isNaN(num) || num < 0) return undefined;
-  return num;
+  if (!value) return undefined
+  const num = Number(value)
+  if (Number.isNaN(num) || num < 0) return undefined
+  return num
 }
 
 function SearchResultsPage() {
-  const search = Route.useSearch();
-  const navigate = useNavigate();
+  const search = Route.useSearch()
+  const navigate = useNavigate()
 
   const [draft, setDraft] = useState({
     q: search.q,
     categoryId: search.categoryId,
     minPrice: search.minPrice,
     maxPrice: search.maxPrice,
-  });
+  })
 
   useEffect(() => {
     setDraft({
@@ -97,13 +97,13 @@ function SearchResultsPage() {
       categoryId: search.categoryId,
       minPrice: search.minPrice,
       maxPrice: search.maxPrice,
-    });
-  }, [search.q, search.categoryId, search.minPrice, search.maxPrice]);
+    })
+  }, [search.q, search.categoryId, search.minPrice, search.maxPrice])
 
-  const page = Math.max(1, Number(search.page) || 1);
-  const minPrice = parsePrice(search.minPrice);
-  const maxPrice = parsePrice(search.maxPrice);
-  const skip = (page - 1) * PAGE_SIZE;
+  const page = Math.max(1, Number(search.page) || 1)
+  const minPrice = parsePrice(search.minPrice)
+  const maxPrice = parsePrice(search.maxPrice)
+  const skip = (page - 1) * PAGE_SIZE
 
   const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
@@ -112,7 +112,7 @@ function SearchResultsPage() {
         skip: 0,
         limit: 100,
       }),
-  });
+  })
 
   const {
     data: listingsData,
@@ -136,17 +136,17 @@ function SearchResultsPage() {
         skip,
         limit: PAGE_SIZE,
       }),
-  });
+  })
 
-  const listings = listingsData?.items ?? [];
-  const total = listingsData?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const listings = listingsData?.items ?? []
+  const total = listingsData?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  const categories = categoriesData?.data ?? [];
+  const categories = categoriesData?.data ?? []
   const categoryMap = useMemo(
     () => new Map(categories.map((cat: any) => [cat.id, cat.name])),
     [categories],
-  );
+  )
 
   const activeFilters = [
     search.q ? { label: `Keyword: ${search.q}`, key: "q" as const } : null,
@@ -162,7 +162,7 @@ function SearchResultsPage() {
     search.maxPrice
       ? { label: `Max: $${search.maxPrice}`, key: "maxPrice" as const }
       : null,
-  ].filter(Boolean) as Array<{ label: string; key: keyof typeof search }>;
+  ].filter(Boolean) as Array<{ label: string; key: keyof typeof search }>
 
   const applyFilters = () => {
     navigate({
@@ -175,8 +175,8 @@ function SearchResultsPage() {
         maxPrice: draft.maxPrice,
         page: "1",
       },
-    });
-  };
+    })
+  }
 
   const clearFilters = () => {
     navigate({
@@ -189,8 +189,8 @@ function SearchResultsPage() {
         view: search.view,
         page: "1",
       },
-    });
-  };
+    })
+  }
 
   const setView = (view: "grid" | "list") => {
     navigate({
@@ -199,19 +199,19 @@ function SearchResultsPage() {
         ...search,
         view,
       },
-    });
-  };
+    })
+  }
 
   const goToPage = (nextPage: number) => {
-    const safePage = Math.min(Math.max(nextPage, 1), totalPages);
+    const safePage = Math.min(Math.max(nextPage, 1), totalPages)
     navigate({
       to: "/search",
       search: {
         ...search,
         page: String(safePage),
       },
-    });
-  };
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -256,7 +256,9 @@ function SearchResultsPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-medium text-[#5B7083] mb-1 block">Từ khóa</label>
+              <label className="text-xs font-medium text-[#5B7083] mb-1 block">
+                Từ khóa
+              </label>
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A99A8]" />
                 <Input
@@ -271,7 +273,9 @@ function SearchResultsPage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#5B7083] mb-1 block">Danh mục</label>
+              <label className="text-xs font-medium text-[#5B7083] mb-1 block">
+                Danh mục
+              </label>
               <Select
                 value={draft.categoryId}
                 onValueChange={(value) =>
@@ -294,7 +298,9 @@ function SearchResultsPage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#5B7083] mb-1 block">Khoảng giá</label>
+              <label className="text-xs font-medium text-[#5B7083] mb-1 block">
+                Khoảng giá
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 <Input
                   type="number"
@@ -302,7 +308,10 @@ function SearchResultsPage() {
                   placeholder="Từ"
                   value={draft.minPrice}
                   onChange={(event) =>
-                    setDraft((prev) => ({ ...prev, minPrice: event.target.value }))
+                    setDraft((prev) => ({
+                      ...prev,
+                      minPrice: event.target.value,
+                    }))
                   }
                   className="border-[#D8E2EF]"
                 />
@@ -312,7 +321,10 @@ function SearchResultsPage() {
                   placeholder="Đến"
                   value={draft.maxPrice}
                   onChange={(event) =>
-                    setDraft((prev) => ({ ...prev, maxPrice: event.target.value }))
+                    setDraft((prev) => ({
+                      ...prev,
+                      maxPrice: event.target.value,
+                    }))
                   }
                   className="border-[#D8E2EF]"
                 />
@@ -382,7 +394,7 @@ function SearchResultsPage() {
           {isLoading ? (
             <div className="rounded-2xl border border-[#D8E2EF] bg-white p-8 text-center">
               <div className="grid grid-cols-3 gap-4">
-                {[1,2,3].map((i) => (
+                {[1, 2, 3].map((i) => (
                   <div key={i} className="space-y-3">
                     <div className="rmk-skeleton h-40 w-full" />
                     <div className="rmk-skeleton h-4 w-3/4" />
@@ -393,8 +405,14 @@ function SearchResultsPage() {
             </div>
           ) : isError ? (
             <div className="rounded-2xl border border-[#E11D48] bg-red-50 p-6 text-center">
-              <p className="text-sm text-[#E11D48]">Không tải được kết quả. Vui lòng thử lại.</p>
-              <Button className="mt-3" variant="outline" onClick={() => window.location.reload()}>
+              <p className="text-sm text-[#E11D48]">
+                Không tải được kết quả. Vui lòng thử lại.
+              </p>
+              <Button
+                className="mt-3"
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
                 Thử lại
               </Button>
             </div>
@@ -406,7 +424,10 @@ function SearchResultsPage() {
               <p className="mt-1 text-sm text-[#5B7083]">
                 Hãy thử bỏ bớt bộ lọc hoặc thay đổi từ khóa.
               </p>
-              <Button className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" onClick={clearFilters}>
+              <Button
+                className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+                onClick={clearFilters}
+              >
                 Xóa bộ lọc
               </Button>
             </div>
@@ -426,21 +447,22 @@ function SearchResultsPage() {
                       item={listing}
                       animationDelay={index * 50}
                     />
-                  );
+                  )
                 }
 
-                const categoryName = categoryMap.get(listing.category_id);
+                const categoryName = categoryMap.get(listing.category_id)
                 const images =
                   "images" in listing && listing.images
                     ? (listing.images as any)
-                    : [];
+                    : []
                 const primaryImage =
-                  images.find((img: any) => img.is_primary) ??
-                  images[0] ??
-                  null;
+                  images.find((img: any) => img.is_primary) ?? images[0] ?? null
 
                 return (
-                  <Card key={listing.id} className="border-[#D8E2EF] bg-white transition hover:-translate-y-0.5 hover:border-[#2563EB]/30">
+                  <Card
+                    key={listing.id}
+                    className="border-[#D8E2EF] bg-white transition hover:-translate-y-0.5 hover:border-[#2563EB]/30"
+                  >
                     <CardContent className="p-4 flex flex-col gap-4 sm:flex-row sm:items-center">
                       <div className="relative h-32 w-full overflow-hidden rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] sm:w-40 flex-shrink-0">
                         {primaryImage ? (
@@ -477,7 +499,9 @@ function SearchResultsPage() {
                             {listing.title}
                           </Link>
                           {categoryName && (
-                            <p className="text-xs text-[#5B7083]">{categoryName}</p>
+                            <p className="text-xs text-[#5B7083]">
+                              {categoryName}
+                            </p>
                           )}
                         </div>
 
@@ -498,7 +522,7 @@ function SearchResultsPage() {
                       </div>
                     </CardContent>
                   </Card>
-                );
+                )
               })}
             </div>
           )}
@@ -530,5 +554,5 @@ function SearchResultsPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }

@@ -49,7 +49,6 @@ function getSellerProfileQueryOptions(userId: string) {
   }
 }
 
-
 function day(value: string) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return "Unknown"
@@ -180,7 +179,9 @@ function SellerProfilePage() {
       <section className="mt-6 grid gap-4 xl:grid-cols-[1.4fr_1fr]">
         <Card className="border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-[#102A43]">Tin đăng & Đánh giá</CardTitle>
+            <CardTitle className="text-[#102A43]">
+              Tin đăng & Đánh giá
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="listings">
@@ -269,11 +270,15 @@ function SellerProfilePage() {
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-[#5B7083]">Đánh giá TB</span>
-                <span className="font-semibold text-[#102A43]">{rating.toFixed(1)} ★</span>
+                <span className="font-semibold text-[#102A43]">
+                  {rating.toFixed(1)} ★
+                </span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-[#5B7083]">Tham gia</span>
-                <span className="font-semibold text-[#102A43]">{day(profile.created_at)}</span>
+                <span className="font-semibold text-[#102A43]">
+                  {day(profile.created_at)}
+                </span>
               </div>
             </div>
 

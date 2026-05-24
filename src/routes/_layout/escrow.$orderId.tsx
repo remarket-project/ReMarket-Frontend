@@ -157,7 +157,10 @@ function EscrowDetailPage() {
         <h2 className="text-xl font-semibold text-[#102A43]">
           Không tìm thấy escrow
         </h2>
-        <Button className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" asChild>
+        <Button
+          className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          asChild
+        >
           <Link to="/orders">Quay lại đơn hàng</Link>
         </Button>
       </div>
@@ -282,7 +285,8 @@ function EscrowDetailPage() {
                     <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
                       <AvatarImage src={buyerProfile.avatar_url ?? undefined} />
                       <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
-                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() || "B"}
+                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() ||
+                          "B"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
@@ -314,9 +318,12 @@ function EscrowDetailPage() {
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex items-center gap-2">
                     <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
-                      <AvatarImage src={sellerProfile.avatar_url ?? undefined} />
+                      <AvatarImage
+                        src={sellerProfile.avatar_url ?? undefined}
+                      />
                       <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
-                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() || "S"}
+                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() ||
+                          "S"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
@@ -403,9 +410,9 @@ function EscrowDetailPage() {
                 Cách bảo chứng Escrow hoạt động
               </p>
               <p className="leading-relaxed">
-                Tiền được giữ trong tài khoản bảo chứng của bên thứ ba bởi ReMarket.
-                Khi giao hàng hoàn tất và người mua xác nhận, tiền sẽ được giải ngân
-                vào ví người bán.
+                Tiền được giữ trong tài khoản bảo chứng của bên thứ ba bởi
+                ReMarket. Khi giao hàng hoàn tất và người mua xác nhận, tiền sẽ
+                được giải ngân vào ví người bán.
               </p>
             </div>
           </CardContent>

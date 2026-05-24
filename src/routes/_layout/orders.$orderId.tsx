@@ -184,8 +184,13 @@ function OrderDetailPage() {
   if (!data?.order) {
     return (
       <div className="rounded-2xl border border-dashed border-[#D8E2EF] bg-white p-10 text-center">
-        <h2 className="text-xl font-semibold text-[#102A43]">Không tìm thấy đơn hàng</h2>
-        <Button className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" asChild>
+        <h2 className="text-xl font-semibold text-[#102A43]">
+          Không tìm thấy đơn hàng
+        </h2>
+        <Button
+          className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          asChild
+        >
           <Link to="/orders">Quay lại đơn hàng</Link>
         </Button>
       </div>
@@ -267,9 +272,7 @@ function OrderDetailPage() {
 
               <div className="grid gap-3 sm:grid-cols-2 pt-2">
                 <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
-                  <p className="text-xs text-[#5B7083] font-medium">
-                    Giá cuối
-                  </p>
+                  <p className="text-xs text-[#5B7083] font-medium">Giá cuối</p>
                   <p className="text-xl font-bold text-[#102A43] mt-1">
                     {currency(order.final_price)}
                   </p>
@@ -318,7 +321,11 @@ function OrderDetailPage() {
                   {escrow.status}
                 </span>
               </div>
-              <Button className="w-full border-[#2563EB] text-[#2563EB]" variant="outline" asChild>
+              <Button
+                className="w-full border-[#2563EB] text-[#2563EB]"
+                variant="outline"
+                asChild
+              >
                 <Link to="/escrow/$orderId" params={{ orderId }}>
                   Xem chi tiết Escrow
                 </Link>
@@ -340,7 +347,8 @@ function OrderDetailPage() {
                     <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
                       <AvatarImage src={buyerProfile.avatar_url ?? undefined} />
                       <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
-                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() || "B"}
+                        {buyerProfile.full_name?.slice(0, 2).toUpperCase() ||
+                          "B"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">
@@ -372,9 +380,12 @@ function OrderDetailPage() {
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex items-center gap-2">
                     <Avatar className="size-9 rounded-lg border border-[#D8E2EF]">
-                      <AvatarImage src={sellerProfile.avatar_url ?? undefined} />
+                      <AvatarImage
+                        src={sellerProfile.avatar_url ?? undefined}
+                      />
                       <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] font-bold text-xs">
-                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() || "S"}
+                        {sellerProfile.full_name?.slice(0, 2).toUpperCase() ||
+                          "S"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-xs">

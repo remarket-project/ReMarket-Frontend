@@ -1,15 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from "@tanstack/react-router"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import type { Body_login_login_access_token as AccessToken } from "@/client";
-import { AuthLayout } from "@/components/Common/AuthLayout";
-import { Checkbox } from "@/components/ui/checkbox";
+import type { Body_login_login_access_token as AccessToken } from "@/client"
+import { AuthLayout } from "@/components/Common/AuthLayout"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -17,11 +17,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { LoadingButton } from "@/components/ui/loading-button"
+import { PasswordInput } from "@/components/ui/password-input"
+import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 
 const formSchema = z.object({
   username: z.email(),
@@ -29,9 +29,9 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "Vui lòng nhập mật khẩu" })
     .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
-}) satisfies z.ZodType<AccessToken>;
+}) satisfies z.ZodType<AccessToken>
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/login")({
     if (isLoggedIn()) {
       throw redirect({
         to: "/",
-      });
+      })
     }
   },
   head: () => ({
@@ -49,10 +49,10 @@ export const Route = createFileRoute("/login")({
       },
     ],
   }),
-});
+})
 
 function Login() {
-  const { loginMutation } = useAuth();
+  const { loginMutation } = useAuth()
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -61,12 +61,12 @@ function Login() {
       username: "",
       password: "",
     },
-  });
+  })
 
   const onSubmit = (data: FormData) => {
-    if (loginMutation.isPending) return;
-    loginMutation.mutate(data);
-  };
+    if (loginMutation.isPending) return
+    loginMutation.mutate(data)
+  }
 
   return (
     <AuthLayout>
@@ -164,5 +164,5 @@ function Login() {
         </form>
       </Form>
     </AuthLayout>
-  );
+  )
 }

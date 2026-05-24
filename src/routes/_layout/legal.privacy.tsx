@@ -73,8 +73,8 @@ function PrivacyPage() {
             </h2>
             <p className="mt-2">
               Bạn có quyền truy cập, chỉnh sửa và xóa thông tin cá nhân của mình
-              bất kỳ lúc nào qua trang Cài đặt tài khoản. Bạn cũng có thể yêu cầu
-              chúng tôi xuất dữ liệu của bạn.
+              bất kỳ lúc nào qua trang Cài đặt tài khoản. Bạn cũng có thể yêu
+              cầu chúng tôi xuất dữ liệu của bạn.
             </p>
           </section>
         </div>

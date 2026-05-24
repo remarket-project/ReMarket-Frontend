@@ -1,26 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Camera, MapPin, Sparkles } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Camera, MapPin, Sparkles } from "lucide-react"
 
 import { UsersService, type UserUpdateMe } from "@/client"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { LoadingButton } from "@/components/ui/loading-button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
 import useAuth from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
 import { cn } from "@/lib/utils"
@@ -36,7 +36,11 @@ const PRESET_AVATARS = [
 ]
 
 const formSchema = z.object({
-  full_name: z.string().min(2, "Name must be at least 2 characters").max(30).optional(),
+  full_name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(30)
+    .optional(),
   email: z.string().email("Invalid email address"),
   phone: z.string().max(15, "Phone number is too long").optional(),
   bio: z.string().max(200, "Bio cannot exceed 200 characters").optional(),
@@ -95,14 +99,19 @@ const UserInformation = () => {
     const updateData: UserUpdateMe = {}
 
     // Only include updated fields
-    if (data.full_name !== currentUser?.full_name) updateData.full_name = data.full_name
+    if (data.full_name !== currentUser?.full_name)
+      updateData.full_name = data.full_name
     if (data.phone !== currentUser?.phone) updateData.phone = data.phone
     if (data.bio !== currentUser?.bio) updateData.bio = data.bio
-    if (data.avatar_url !== currentUser?.avatar_url) updateData.avatar_url = data.avatar_url
-    if (data.province !== currentUser?.province) updateData.province = data.province
-    if (data.district !== currentUser?.district) updateData.district = data.district
+    if (data.avatar_url !== currentUser?.avatar_url)
+      updateData.avatar_url = data.avatar_url
+    if (data.province !== currentUser?.province)
+      updateData.province = data.province
+    if (data.district !== currentUser?.district)
+      updateData.district = data.district
     if (data.ward !== currentUser?.ward) updateData.ward = data.ward
-    if (data.address_detail !== currentUser?.address_detail) updateData.address_detail = data.address_detail
+    if (data.address_detail !== currentUser?.address_detail)
+      updateData.address_detail = data.address_detail
 
     mutation.mutate(updateData)
   }
@@ -118,11 +127,19 @@ const UserInformation = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-blue-100 pb-4">
         <div>
-          <h3 className="font-display text-lg font-bold text-blue-950">User Profile</h3>
-          <p className="text-xs text-blue-900/60">Update your avatar, bio, location, and credentials.</p>
+          <h3 className="font-display text-lg font-bold text-blue-950">
+            User Profile
+          </h3>
+          <p className="text-xs text-blue-900/60">
+            Update your avatar, bio, location, and credentials.
+          </p>
         </div>
         {!editMode && (
-          <Button type="button" onClick={toggleEditMode} className="rmk-glow-button h-9 px-4 text-xs">
+          <Button
+            type="button"
+            onClick={toggleEditMode}
+            className="rmk-glow-button h-9 px-4 text-xs"
+          >
             Edit Profile
           </Button>
         )}
@@ -130,7 +147,6 @@ const UserInformation = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          
           {/* Avatar Section */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="relative">
@@ -154,15 +170,22 @@ const UserInformation = () => {
 
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-blue-950">Profile Photo</p>
+                <p className="text-sm font-semibold text-blue-950">
+                  Profile Photo
+                </p>
                 {editMode && (
-                  <Badge variant="outline" className="border-blue-200 bg-blue-50 text-[10px] text-blue-700">
+                  <Badge
+                    variant="outline"
+                    className="border-blue-200 bg-blue-50 text-[10px] text-blue-700"
+                  >
                     <Sparkles className="mr-1 size-2.5" /> Preset Available
                   </Badge>
                 )}
               </div>
-              <p className="text-xs text-blue-900/60">Choose a stunning preset or provide a custom image URL.</p>
-              
+              <p className="text-xs text-blue-900/60">
+                Choose a stunning preset or provide a custom image URL.
+              </p>
+
               {editMode && (
                 <div className="space-y-3 pt-1">
                   {showPresets && (
@@ -171,13 +194,23 @@ const UserInformation = () => {
                         <button
                           key={idx}
                           type="button"
-                          onClick={() => form.setValue("avatar_url", url, { shouldDirty: true })}
+                          onClick={() =>
+                            form.setValue("avatar_url", url, {
+                              shouldDirty: true,
+                            })
+                          }
                           className={cn(
                             "size-10 overflow-hidden rounded-full border-2 transition hover:scale-105",
-                            form.watch("avatar_url") === url ? "border-blue-600 scale-105" : "border-transparent"
+                            form.watch("avatar_url") === url
+                              ? "border-blue-600 scale-105"
+                              : "border-transparent",
                           )}
                         >
-                          <img src={url} alt={`Preset ${idx + 1}`} className="h-full w-full object-cover" />
+                          <img
+                            src={url}
+                            alt={`Preset ${idx + 1}`}
+                            className="h-full w-full object-cover"
+                          />
                         </button>
                       ))}
                     </div>
@@ -188,7 +221,12 @@ const UserInformation = () => {
                     render={({ field }) => (
                       <FormItem className="max-w-md">
                         <FormControl>
-                          <Input placeholder="Or paste image URL here..." type="url" className="h-8 text-xs" {...field} />
+                          <Input
+                            placeholder="Or paste image URL here..."
+                            type="url"
+                            className="h-8 text-xs"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -206,10 +244,16 @@ const UserInformation = () => {
               name="full_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">Full name</FormLabel>
+                  <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
+                    Full name
+                  </FormLabel>
                   <FormControl>
                     {editMode ? (
-                      <Input placeholder="Enter your full name" {...field} className="border-blue-100 bg-white/50 focus:bg-white" />
+                      <Input
+                        placeholder="Enter your full name"
+                        {...field}
+                        className="border-blue-100 bg-white/50 focus:bg-white"
+                      />
                     ) : (
                       <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 font-medium">
                         {field.value || "N/A"}
@@ -223,14 +267,18 @@ const UserInformation = () => {
 
             {/* Email (Always Read-only with verified status) */}
             <FormItem>
-              <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">Email address</FormLabel>
+              <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
+                Email address
+              </FormLabel>
               <div className="flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 font-medium">
                 <span className="truncate">{currentUser?.email}</span>
                 <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700 font-semibold">
                   Verified
                 </Badge>
               </div>
-              <FormDescription className="text-[10px] text-blue-900/50">Used for transactional notifications and account recovery.</FormDescription>
+              <FormDescription className="text-[10px] text-blue-900/50">
+                Used for transactional notifications and account recovery.
+              </FormDescription>
             </FormItem>
 
             {/* Phone */}
@@ -239,10 +287,16 @@ const UserInformation = () => {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">Phone number</FormLabel>
+                  <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
+                    Phone number
+                  </FormLabel>
                   <FormControl>
                     {editMode ? (
-                      <Input placeholder="+84 90 123 4567" {...field} className="border-blue-100 bg-white/50 focus:bg-white" />
+                      <Input
+                        placeholder="+84 90 123 4567"
+                        {...field}
+                        className="border-blue-100 bg-white/50 focus:bg-white"
+                      />
                     ) : (
                       <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 font-medium">
                         {field.value || "Not configured"}
@@ -260,7 +314,9 @@ const UserInformation = () => {
               name="bio"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">Bio / Description</FormLabel>
+                  <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
+                    Bio / Description
+                  </FormLabel>
                   <FormControl>
                     {editMode ? (
                       <div className="relative">
@@ -300,10 +356,16 @@ const UserInformation = () => {
                 name="province"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">Province / City</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
+                      Province / City
+                    </FormLabel>
                     <FormControl>
                       {editMode ? (
-                        <Input placeholder="e.g. Hồ Chí Minh" {...field} className="border-blue-100 bg-white/50 focus:bg-white" />
+                        <Input
+                          placeholder="e.g. Hồ Chí Minh"
+                          {...field}
+                          className="border-blue-100 bg-white/50 focus:bg-white"
+                        />
                       ) : (
                         <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-xs text-blue-950 font-medium">
                           {field.value || "N/A"}
@@ -321,10 +383,16 @@ const UserInformation = () => {
                 name="district"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">District</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
+                      District
+                    </FormLabel>
                     <FormControl>
                       {editMode ? (
-                        <Input placeholder="e.g. Quận 1" {...field} className="border-blue-100 bg-white/50 focus:bg-white" />
+                        <Input
+                          placeholder="e.g. Quận 1"
+                          {...field}
+                          className="border-blue-100 bg-white/50 focus:bg-white"
+                        />
                       ) : (
                         <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-xs text-blue-950 font-medium">
                           {field.value || "N/A"}
@@ -342,10 +410,16 @@ const UserInformation = () => {
                 name="ward"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">Ward</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
+                      Ward
+                    </FormLabel>
                     <FormControl>
                       {editMode ? (
-                        <Input placeholder="e.g. Phường Bến Nghé" {...field} className="border-blue-100 bg-white/50 focus:bg-white" />
+                        <Input
+                          placeholder="e.g. Phường Bến Nghé"
+                          {...field}
+                          className="border-blue-100 bg-white/50 focus:bg-white"
+                        />
                       ) : (
                         <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-xs text-blue-950 font-medium">
                           {field.value || "N/A"}
@@ -364,10 +438,16 @@ const UserInformation = () => {
               name="address_detail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">Street Address Detail</FormLabel>
+                  <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
+                    Street Address Detail
+                  </FormLabel>
                   <FormControl>
                     {editMode ? (
-                      <Input placeholder="e.g. 123 Nguyễn Huệ" {...field} className="border-blue-100 bg-white/50 focus:bg-white" />
+                      <Input
+                        placeholder="e.g. 123 Nguyễn Huệ"
+                        {...field}
+                        className="border-blue-100 bg-white/50 focus:bg-white"
+                      />
                     ) : (
                       <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 font-medium">
                         {field.value || "N/A"}

@@ -166,9 +166,7 @@ function AdminModerationPage() {
         </Card>
         <Card className="border-[#D8E2EF] bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-[#5B7083]">
-              Đã chọn
-            </CardTitle>
+            <CardTitle className="text-sm text-[#5B7083]">Đã chọn</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-bold text-[#102A43]">
             {selectedCount}
@@ -235,10 +233,7 @@ function AdminModerationPage() {
 
       <section className="mt-4 grid gap-3">
         {pendingCards.map((listing: ListingRead) => (
-          <Card
-            key={listing.id}
-            className="border-[#D8E2EF] bg-white"
-          >
+          <Card key={listing.id} className="border-[#D8E2EF] bg-white">
             <CardContent className="grid gap-3 p-4 md:grid-cols-[auto_1fr_auto_auto] md:items-center">
               <Checkbox
                 checked={selectedIds.includes(listing.id)}

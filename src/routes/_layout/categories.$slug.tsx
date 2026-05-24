@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   ArrowLeft,
   ChevronRight,
@@ -7,39 +7,99 @@ import {
   List,
   Package,
   SlidersHorizontal,
-} from "lucide-react";
-import { useState } from "react";
+} from "lucide-react"
+import { useState } from "react"
 
-import { CategoriesService, ListingsService } from "@/client";
-import { ListingCard } from "@/components/Listings/ListingCard";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CategoriesService, ListingsService } from "@/client"
+import { ListingCard } from "@/components/Listings/ListingCard"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const Route = createFileRoute("/_layout/categories/$slug")({
   component: CategoryLandingPage,
-});
+})
 
 const hardcodedCategories = [
-  { name: "Công nghệ", slug: "cong-nghe", icon: "📱", color: "bg-blue-50", desc: "Điện thoại, laptop, máy tính bảng & phụ kiện" },
-  { name: "Gia dụng", slug: "gia-dung", icon: "🏠", color: "bg-amber-50", desc: "Đồ dùng nhà bếp, nội thất & thiết bị gia đình" },
-  { name: "Thời trang", slug: "thoi-trang", icon: "👕", color: "bg-rose-50", desc: "Quần áo, giày dép, túi xách & phụ kiện" },
-  { name: "Máy ảnh", slug: "may-anh", icon: "📷", color: "bg-purple-50", desc: "Máy ảnh, ống kính & thiết bị nhiếp ảnh" },
-  { name: "Gaming", slug: "gaming", icon: "🎮", color: "bg-green-50", desc: "Console, game & phụ kiện chơi game" },
-  { name: "Đời sống", slug: "doi-song", icon: "🌿", color: "bg-emerald-50", desc: "Đồ dùng cá nhân, làm đẹp & sức khỏe" },
-  { name: "Thể thao", slug: "the-thao", icon: "⚽", color: "bg-orange-50", desc: "Dụng cụ thể thao, xe đạp & thiết bị ngoài trời" },
-  { name: "Xe cộ", slug: "xe-co", icon: "🚗", color: "bg-cyan-50", desc: "Xe máy, ô tô & phụ tùng" },
-  { name: "Sách", slug: "sach", icon: "📚", color: "bg-yellow-50", desc: "Sách các loại, truyện & tài liệu học tập" },
-  { name: "Âm nhạc", slug: "am-nhac", icon: "🎵", color: "bg-indigo-50", desc: "Nhạc cụ, thiết bị âm thanh & phụ kiện" },
-];
+  {
+    name: "Công nghệ",
+    slug: "cong-nghe",
+    icon: "📱",
+    color: "bg-blue-50",
+    desc: "Điện thoại, laptop, máy tính bảng & phụ kiện",
+  },
+  {
+    name: "Gia dụng",
+    slug: "gia-dung",
+    icon: "🏠",
+    color: "bg-amber-50",
+    desc: "Đồ dùng nhà bếp, nội thất & thiết bị gia đình",
+  },
+  {
+    name: "Thời trang",
+    slug: "thoi-trang",
+    icon: "👕",
+    color: "bg-rose-50",
+    desc: "Quần áo, giày dép, túi xách & phụ kiện",
+  },
+  {
+    name: "Máy ảnh",
+    slug: "may-anh",
+    icon: "📷",
+    color: "bg-purple-50",
+    desc: "Máy ảnh, ống kính & thiết bị nhiếp ảnh",
+  },
+  {
+    name: "Gaming",
+    slug: "gaming",
+    icon: "🎮",
+    color: "bg-green-50",
+    desc: "Console, game & phụ kiện chơi game",
+  },
+  {
+    name: "Đời sống",
+    slug: "doi-song",
+    icon: "🌿",
+    color: "bg-emerald-50",
+    desc: "Đồ dùng cá nhân, làm đẹp & sức khỏe",
+  },
+  {
+    name: "Thể thao",
+    slug: "the-thao",
+    icon: "⚽",
+    color: "bg-orange-50",
+    desc: "Dụng cụ thể thao, xe đạp & thiết bị ngoài trời",
+  },
+  {
+    name: "Xe cộ",
+    slug: "xe-co",
+    icon: "🚗",
+    color: "bg-cyan-50",
+    desc: "Xe máy, ô tô & phụ tùng",
+  },
+  {
+    name: "Sách",
+    slug: "sach",
+    icon: "📚",
+    color: "bg-yellow-50",
+    desc: "Sách các loại, truyện & tài liệu học tập",
+  },
+  {
+    name: "Âm nhạc",
+    slug: "am-nhac",
+    icon: "🎵",
+    color: "bg-indigo-50",
+    desc: "Nhạc cụ, thiết bị âm thanh & phụ kiện",
+  },
+]
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 20
 
 function CategoryLandingPage() {
-  const { slug } = Route.useParams();
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [page, setPage] = useState(0);
+  const { slug } = Route.useParams()
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [page, setPage] = useState(0)
 
-  const category = hardcodedCategories.find((c) => c.slug === slug);
+  const category = hardcodedCategories.find((c) => c.slug === slug)
 
   // Try to fetch real category from API for categoryId
   const { data: apiCategory } = useQuery({
@@ -48,9 +108,9 @@ function CategoryLandingPage() {
       CategoriesService.getCategoryBySlugApiV1CategoriesSlugGet({ slug }),
     staleTime: 1000 * 60 * 5,
     retry: false,
-  });
+  })
 
-  const categoryId = apiCategory?.id;
+  const categoryId = apiCategory?.id
 
   // Fetch listings
   const {
@@ -68,11 +128,11 @@ function CategoryLandingPage() {
         limit: PAGE_SIZE,
       }),
     enabled: Boolean(category),
-  });
+  })
 
-  const listings = listingsData?.items ?? [];
-  const total = listingsData?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const listings = listingsData?.items ?? []
+  const total = listingsData?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   // Not found
   if (!category) {
@@ -85,25 +145,32 @@ function CategoryLandingPage() {
         <p className="mt-1 text-sm text-[#5B7083]">
           Danh mục "{slug}" không tồn tại.
         </p>
-        <Button className="mt-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" asChild>
+        <Button
+          className="mt-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          asChild
+        >
           <Link to="/categories">Xem tất cả danh mục</Link>
         </Button>
       </div>
-    );
+    )
   }
 
   // Related categories (other categories)
   const relatedCategories = hardcodedCategories
     .filter((c) => c.slug !== slug)
-    .slice(0, 6);
+    .slice(0, 6)
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[#5B7083]">
-        <Link to="/" className="hover:text-[#2563EB]">Trang chủ</Link>
+        <Link to="/" className="hover:text-[#2563EB]">
+          Trang chủ
+        </Link>
         <ChevronRight className="size-3.5" />
-        <Link to="/categories" className="hover:text-[#2563EB]">Danh mục</Link>
+        <Link to="/categories" className="hover:text-[#2563EB]">
+          Danh mục
+        </Link>
         <ChevronRight className="size-3.5" />
         <span className="text-[#102A43] font-medium">{category.name}</span>
       </div>
@@ -122,14 +189,18 @@ function CategoryLandingPage() {
 
       {/* Category Header */}
       <div className="flex items-start gap-4 rounded-2xl border border-[#D8E2EF] bg-white p-6">
-        <span className={`flex size-16 items-center justify-center rounded-2xl ${category.color} text-3xl flex-shrink-0`}>
+        <span
+          className={`flex size-16 items-center justify-center rounded-2xl ${category.color} text-3xl flex-shrink-0`}
+        >
           {category.icon}
         </span>
         <div className="min-w-0">
           <h1 className="text-2xl font-bold text-[#102A43]">{category.name}</h1>
           <p className="mt-1 text-sm text-[#5B7083]">{category.desc}</p>
           <p className="mt-1 text-xs text-[#8A99A8]">
-            {isLoading ? "Đang tải..." : `${total.toLocaleString("vi-VN")} tin đăng`}
+            {isLoading
+              ? "Đang tải..."
+              : `${total.toLocaleString("vi-VN")} tin đăng`}
           </p>
         </div>
       </div>
@@ -212,7 +283,11 @@ function CategoryLandingPage() {
           <p className="mt-1 text-sm text-[#5B7083]">
             Danh mục "{category.name}" hiện chưa có tin đăng nào.
           </p>
-          <Button className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white" size="sm" asChild>
+          <Button
+            className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+            size="sm"
+            asChild
+          >
             <Link to="/">Khám phá các danh mục khác</Link>
           </Button>
         </div>
@@ -229,7 +304,11 @@ function CategoryLandingPage() {
             }
           >
             {listings.map((item, i) => (
-              <ListingCard key={item.id} item={item as any} animationDelay={i * 50} />
+              <ListingCard
+                key={item.id}
+                item={item as any}
+                animationDelay={i * 50}
+              />
             ))}
           </div>
 
@@ -277,7 +356,9 @@ function CategoryLandingPage() {
                 className="group"
               >
                 <div className="flex flex-col items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white p-4 text-center transition hover:border-[#2563EB]/40 hover:shadow-sm">
-                  <span className={`flex size-10 items-center justify-center rounded-xl ${cat.color} text-xl`}>
+                  <span
+                    className={`flex size-10 items-center justify-center rounded-xl ${cat.color} text-xl`}
+                  >
                     {cat.icon}
                   </span>
                   <span className="text-xs font-medium text-[#5B7083] group-hover:text-[#2563EB]">
@@ -290,5 +371,5 @@ function CategoryLandingPage() {
         </section>
       )}
     </div>
-  );
+  )
 }

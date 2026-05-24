@@ -1,49 +1,113 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Grid3X3, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute, Link } from "@tanstack/react-router"
+import { ChevronRight, Grid3X3, Loader2 } from "lucide-react"
 
-import { CategoriesService } from "@/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { CategoriesService } from "@/client"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 export const Route = createFileRoute("/_layout/categories")({
   component: CategoriesPage,
-});
+})
 
 const hardcodedCategories = [
-  { name: "Công nghệ", slug: "cong-nghe", icon: "📱", color: "bg-blue-50", desc: "Điện thoại, laptop, máy tính bảng & phụ kiện" },
-  { name: "Gia dụng", slug: "gia-dung", icon: "🏠", color: "bg-amber-50", desc: "Đồ dùng nhà bếp, nội thất & thiết bị gia đình" },
-  { name: "Thời trang", slug: "thoi-trang", icon: "👕", color: "bg-rose-50", desc: "Quần áo, giày dép, túi xách & phụ kiện" },
-  { name: "Máy ảnh", slug: "may-anh", icon: "📷", color: "bg-purple-50", desc: "Máy ảnh, ống kính & thiết bị nhiếp ảnh" },
-  { name: "Gaming", slug: "gaming", icon: "🎮", color: "bg-green-50", desc: "Console, game & phụ kiện chơi game" },
-  { name: "Đời sống", slug: "doi-song", icon: "🌿", color: "bg-emerald-50", desc: "Đồ dùng cá nhân, làm đẹp & sức khỏe" },
-  { name: "Thể thao", slug: "the-thao", icon: "⚽", color: "bg-orange-50", desc: "Dụng cụ thể thao, xe đạp & thiết bị ngoài trời" },
-  { name: "Xe cộ", slug: "xe-co", icon: "🚗", color: "bg-cyan-50", desc: "Xe máy, ô tô & phụ tùng" },
-  { name: "Sách", slug: "sach", icon: "📚", color: "bg-yellow-50", desc: "Sách các loại, truyện & tài liệu học tập" },
-  { name: "Âm nhạc", slug: "am-nhac", icon: "🎵", color: "bg-indigo-50", desc: "Nhạc cụ, thiết bị âm thanh & phụ kiện" },
-];
+  {
+    name: "Công nghệ",
+    slug: "cong-nghe",
+    icon: "📱",
+    color: "bg-blue-50",
+    desc: "Điện thoại, laptop, máy tính bảng & phụ kiện",
+  },
+  {
+    name: "Gia dụng",
+    slug: "gia-dung",
+    icon: "🏠",
+    color: "bg-amber-50",
+    desc: "Đồ dùng nhà bếp, nội thất & thiết bị gia đình",
+  },
+  {
+    name: "Thời trang",
+    slug: "thoi-trang",
+    icon: "👕",
+    color: "bg-rose-50",
+    desc: "Quần áo, giày dép, túi xách & phụ kiện",
+  },
+  {
+    name: "Máy ảnh",
+    slug: "may-anh",
+    icon: "📷",
+    color: "bg-purple-50",
+    desc: "Máy ảnh, ống kính & thiết bị nhiếp ảnh",
+  },
+  {
+    name: "Gaming",
+    slug: "gaming",
+    icon: "🎮",
+    color: "bg-green-50",
+    desc: "Console, game & phụ kiện chơi game",
+  },
+  {
+    name: "Đời sống",
+    slug: "doi-song",
+    icon: "🌿",
+    color: "bg-emerald-50",
+    desc: "Đồ dùng cá nhân, làm đẹp & sức khỏe",
+  },
+  {
+    name: "Thể thao",
+    slug: "the-thao",
+    icon: "⚽",
+    color: "bg-orange-50",
+    desc: "Dụng cụ thể thao, xe đạp & thiết bị ngoài trời",
+  },
+  {
+    name: "Xe cộ",
+    slug: "xe-co",
+    icon: "🚗",
+    color: "bg-cyan-50",
+    desc: "Xe máy, ô tô & phụ tùng",
+  },
+  {
+    name: "Sách",
+    slug: "sach",
+    icon: "📚",
+    color: "bg-yellow-50",
+    desc: "Sách các loại, truyện & tài liệu học tập",
+  },
+  {
+    name: "Âm nhạc",
+    slug: "am-nhac",
+    icon: "🎵",
+    color: "bg-indigo-50",
+    desc: "Nhạc cụ, thiết bị âm thanh & phụ kiện",
+  },
+]
 
 function CategoriesPage() {
   const { data: apiCategories, isLoading } = useQuery({
     queryKey: ["categories-all"],
-    queryFn: () => CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 50 }),
+    queryFn: () =>
+      CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 50 }),
     staleTime: 1000 * 60 * 5,
-  });
+  })
 
-  const categories = apiCategories?.data && apiCategories.data.length > 0
-    ? apiCategories.data.map((c) => ({
-        name: c.name,
-        slug: c.slug,
-        id: c.id,
-        icon_url: c.icon_url,
-      }))
-    : null;
+  const categories =
+    apiCategories?.data && apiCategories.data.length > 0
+      ? apiCategories.data.map((c) => ({
+          name: c.name,
+          slug: c.slug,
+          id: c.id,
+          icon_url: c.icon_url,
+        }))
+      : null
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[#5B7083]">
-        <Link to="/" className="hover:text-[#2563EB]">Trang chủ</Link>
+        <Link to="/" className="hover:text-[#2563EB]">
+          Trang chủ
+        </Link>
         <ChevronRight className="size-3.5" />
         <span className="text-[#102A43] font-medium">Danh mục</span>
       </div>
@@ -83,7 +147,9 @@ function CategoriesPage() {
           >
             <Card className="border-[#D8E2EF] bg-white transition hover:border-[#2563EB]/40 hover:shadow-md h-full">
               <CardContent className="flex flex-col items-center gap-3 p-6 text-center">
-                <span className={`flex size-14 items-center justify-center rounded-2xl ${cat.color} text-2xl`}>
+                <span
+                  className={`flex size-14 items-center justify-center rounded-2xl ${cat.color} text-2xl`}
+                >
                   {cat.icon}
                 </span>
                 <div>
@@ -119,5 +185,5 @@ function CategoriesPage() {
         </section>
       )}
     </div>
-  );
+  )
 }

@@ -1,73 +1,73 @@
-import { useEffect, useRef, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import ListingFilterSidebar from "@/components/ListingFilterSidebar";
-import { ListingsService, CategoriesService } from "@/client";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
+import { useEffect, useRef, useState } from "react"
+import { CategoriesService, ListingsService } from "@/client"
+import ListingFilterSidebar from "@/components/ListingFilterSidebar"
+import { Button } from "@/components/ui/button"
 
 export const Route = createFileRoute("/search" as any)({
   component: SearchPage,
-});
+})
 
 function useQueryParams() {
-  const qp = new URLSearchParams(window.location.search);
+  const qp = new URLSearchParams(window.location.search)
   return {
     q: qp.get("q") || "",
     location: qp.get("location") || "",
     categoryId: qp.get("categoryId") || undefined,
     minPrice: qp.get("minPrice") || "",
     maxPrice: qp.get("maxPrice") || "",
-  };
+  }
 }
 
 function SearchPage() {
-  const initial = useQueryParams();
-  const [qState, setQState] = useState(initial.q);
-  const [locationState] = useState(initial.location);
+  const initial = useQueryParams()
+  const [qState, setQState] = useState(initial.q)
+  const [locationState] = useState(initial.location)
   const [categoryId, setCategoryId] = useState<string | undefined>(
     initial.categoryId,
-  );
-  const [minPrice, setMinPrice] = useState(initial.minPrice);
-  const [maxPrice, setMaxPrice] = useState(initial.maxPrice);
+  )
+  const [minPrice, setMinPrice] = useState(initial.minPrice)
+  const [maxPrice, setMaxPrice] = useState(initial.maxPrice)
 
-  const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState<any[]>([]);
-  const [total, setTotal] = useState<number | null>(null);
-  const [page, setPage] = useState(0);
-  const limit = 20;
-  const [showFilters, setShowFilters] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const [debouncedQ, setDebouncedQ] = useState(qState);
+  const [loading, setLoading] = useState(false)
+  const [items, setItems] = useState<any[]>([])
+  const [total, setTotal] = useState<number | null>(null)
+  const [page, setPage] = useState(0)
+  const limit = 20
+  const [showFilters, setShowFilters] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const [debouncedQ, setDebouncedQ] = useState(qState)
 
   // reset when filters change
   useEffect(() => {
-    setItems([]);
-    setTotal(null);
-    setPage(0);
+    setItems([])
+    setTotal(null)
+    setPage(0)
     // sync URL params without navigating
-    const params = new URLSearchParams();
-    if (qState) params.set("q", qState);
-    if (locationState) params.set("location", locationState);
-    if (categoryId) params.set("categoryId", categoryId);
-    if (minPrice) params.set("minPrice", minPrice);
-    if (maxPrice) params.set("maxPrice", maxPrice);
-    const url = `/search?${params.toString()}`;
-    window.history.replaceState({}, "", url);
-  }, [qState, locationState, categoryId, minPrice, maxPrice]);
+    const params = new URLSearchParams()
+    if (qState) params.set("q", qState)
+    if (locationState) params.set("location", locationState)
+    if (categoryId) params.set("categoryId", categoryId)
+    if (minPrice) params.set("minPrice", minPrice)
+    if (maxPrice) params.set("maxPrice", maxPrice)
+    const url = `/search?${params.toString()}`
+    window.history.replaceState({}, "", url)
+  }, [qState, locationState, categoryId, minPrice, maxPrice])
 
   // debounce q input to reduce API calls
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQ(qState), 400);
-    return () => clearTimeout(t);
-  }, [qState]);
+    const t = setTimeout(() => setDebouncedQ(qState), 400)
+    return () => clearTimeout(t)
+  }, [qState])
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
     const fetchPage = async (p: number) => {
-      setLoading(true);
+      setLoading(true)
       try {
-        let data: any[] = [];
-        let tot: number | null = null;
+        let data: any[] = []
+        let tot: number | null = null
         try {
           const res = await ListingsService.listListingsApiV1ListingsGet({
             keyword: debouncedQ || undefined,
@@ -76,42 +76,42 @@ function SearchPage() {
             maxPrice: maxPrice ? Number(maxPrice) : undefined,
             skip: p * limit,
             limit,
-          } as any);
-          data = res?.items ?? [];
-          tot = res?.total ?? null;
-        } catch (err) {
-          const params = new URLSearchParams();
-          if (qState) params.set("q", qState);
-          if (locationState) params.set("location", locationState);
-          if (categoryId) params.set("categoryId", categoryId);
-          if (minPrice) params.set("minPrice", minPrice);
-          if (maxPrice) params.set("maxPrice", maxPrice);
-          params.set("skip", String(p * limit));
-          params.set("limit", String(limit));
-          const r = await fetch(`/api/mock/listings?${params.toString()}`);
-          const json = await r.json();
-          data = Array.isArray(json) ? json : (json?.items ?? []);
-          tot = json?.total ?? null;
+          } as any)
+          data = res?.items ?? []
+          tot = res?.total ?? null
+        } catch (_err) {
+          const params = new URLSearchParams()
+          if (qState) params.set("q", qState)
+          if (locationState) params.set("location", locationState)
+          if (categoryId) params.set("categoryId", categoryId)
+          if (minPrice) params.set("minPrice", minPrice)
+          if (maxPrice) params.set("maxPrice", maxPrice)
+          params.set("skip", String(p * limit))
+          params.set("limit", String(limit))
+          const r = await fetch(`/api/mock/listings?${params.toString()}`)
+          const json = await r.json()
+          data = Array.isArray(json) ? json : (json?.items ?? [])
+          tot = json?.total ?? null
         }
 
-        if (!mounted) return;
-        setItems((prev) => (p === 0 ? data : [...prev, ...data]));
-        if (tot !== null) setTotal(tot);
+        if (!mounted) return
+        setItems((prev) => (p === 0 ? data : [...prev, ...data]))
+        if (tot !== null) setTotal(tot)
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setLoading(false)
       }
-    };
+    }
 
-    fetchPage(page);
+    fetchPage(page)
     return () => {
-      mounted = false;
-    };
-  }, [debouncedQ, locationState, categoryId, minPrice, maxPrice, page]);
+      mounted = false
+    }
+  }, [debouncedQ, locationState, categoryId, minPrice, maxPrice, page, qState])
 
   // IntersectionObserver to increment page for infinite scroll
   useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
+    const el = sentinelRef.current
+    if (!el) return
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -120,27 +120,27 @@ function SearchPage() {
             !loading &&
             (total === null || items.length < (total ?? Infinity))
           ) {
-            setPage((p) => p + 1);
+            setPage((p) => p + 1)
           }
-        });
+        })
       },
       { rootMargin: "200px" },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [loading, total, items.length]);
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [loading, total, items.length])
 
   // load categories to map id -> name for chips
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
     queryFn: () =>
       CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 200 } as any),
-  });
-  const categoriesMap = new Map<string, string>();
-  (categoriesData?.data ?? []).forEach((c: any) => {
-    if (c && c.id)
-      categoriesMap.set(String(c.id), c.name || c.title || String(c.id));
-  });
+  })
+  const categoriesMap = new Map<string, string>()
+  ;(categoriesData?.data ?? []).forEach((c: any) => {
+    if (c?.id)
+      categoriesMap.set(String(c.id), c.name || c.title || String(c.id))
+  })
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
@@ -155,10 +155,10 @@ function SearchPage() {
           categoryId={categoryId}
           setCategoryId={setCategoryId}
           onReset={() => {
-            setQState("");
-            setCategoryId(undefined);
-            setMinPrice("");
-            setMaxPrice("");
+            setQState("")
+            setCategoryId(undefined)
+            setMinPrice("")
+            setMaxPrice("")
           }}
           onApply={() => {}}
         />
@@ -210,10 +210,10 @@ function SearchPage() {
             <button
               className="rmk-chip rmk-chip-clear"
               onClick={() => {
-                setQState("");
-                setCategoryId(undefined);
-                setMinPrice("");
-                setMaxPrice("");
+                setQState("")
+                setCategoryId(undefined)
+                setMinPrice("")
+                setMaxPrice("")
               }}
             >
               Xóa tất cả
@@ -286,10 +286,10 @@ function SearchPage() {
               categoryId={categoryId}
               setCategoryId={setCategoryId}
               onReset={() => {
-                setQState("");
-                setCategoryId(undefined);
-                setMinPrice("");
-                setMaxPrice("");
+                setQState("")
+                setCategoryId(undefined)
+                setMinPrice("")
+                setMaxPrice("")
               }}
               onApply={() => setShowFilters(false)}
             />
@@ -301,5 +301,5 @@ function SearchPage() {
         </div>
       ) : null}
     </div>
-  );
+  )
 }

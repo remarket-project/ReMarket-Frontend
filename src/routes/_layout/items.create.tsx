@@ -181,8 +181,7 @@ function CreateListingPage() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (form.formState.isDirty && !showSuccessModal) {
         e.preventDefault()
-        e.returnValue =
-          "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời trang?"
+        e.returnValue = "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời trang?"
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
@@ -283,9 +282,7 @@ function CreateListingPage() {
       setCreatedListingId(created.id)
       setShowSuccessModal(true)
     } catch (error: any) {
-      toast.error(
-        error?.body?.detail || "Đăng tin thất bại. Vui lòng thử lại.",
-      )
+      toast.error(error?.body?.detail || "Đăng tin thất bại. Vui lòng thử lại.")
     } finally {
       setIsSubmitting(false)
     }

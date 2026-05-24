@@ -190,7 +190,10 @@ function WalletPage() {
       </section>
 
       <section className="mt-4 flex flex-wrap gap-3">
-        <Button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white" onClick={() => setTopupOpen(true)}>
+        <Button
+          className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          onClick={() => setTopupOpen(true)}
+        >
           <PlusCircle className="mr-2 size-4" />
           Nạp tiền
         </Button>
@@ -309,7 +312,9 @@ function WalletPage() {
 
         <Card className="border-[#D8E2EF] bg-white">
           <CardHeader>
-            <CardTitle className="text-[#102A43]">Escrow đang hoạt động</CardTitle>
+            <CardTitle className="text-[#102A43]">
+              Escrow đang hoạt động
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {escrowOrderIds.length === 0 ? (

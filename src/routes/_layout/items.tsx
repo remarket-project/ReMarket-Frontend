@@ -1,5 +1,5 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,43 +14,37 @@ import {
   Sparkles,
   TrendingUp,
   X,
-} from "lucide-react";
-import { Suspense, useEffect, useMemo, useState } from "react";
+} from "lucide-react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 
-import { CategoriesService, type ListingRead, ListingsService } from "@/client";
-import { DataTable } from "@/components/Common/DataTable";
-import { columns } from "@/components/Items/columns";
-import { ListingCard } from "@/components/Listings/ListingCard";
-import PendingItems from "@/components/Pending/PendingItems";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { CategoriesService, type ListingRead, ListingsService } from "@/client"
+import { DataTable } from "@/components/Common/DataTable"
+import { columns } from "@/components/Items/columns"
+import { ListingCard } from "@/components/Listings/ListingCard"
+import PendingItems from "@/components/Pending/PendingItems"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@/components/ui/sheet"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type SortMode = "newest" | "oldest" | "price_asc" | "price_desc" | "a-z";
-type ViewMode = "grid" | "table";
-type ConditionMode =
-  | "all"
-  | "brand_new"
-  | "like_new"
-  | "good"
-  | "fair"
-  | "poor";
+type SortMode = "newest" | "oldest" | "price_asc" | "price_desc" | "a-z"
+type ViewMode = "grid" | "table"
+type ConditionMode = "all" | "brand_new" | "like_new" | "good" | "fair" | "poor"
 
 const conditionOptions: { value: ConditionMode; label: string }[] = [
   { value: "all", label: "Tất cả" },
@@ -59,7 +53,7 @@ const conditionOptions: { value: ConditionMode; label: string }[] = [
   { value: "good", label: "Tốt" },
   { value: "fair", label: "Khá" },
   { value: "poor", label: "Kém" },
-];
+]
 
 const sortOptions: { value: SortMode; label: string }[] = [
   { value: "newest", label: "Mới nhất" },
@@ -67,7 +61,7 @@ const sortOptions: { value: SortMode; label: string }[] = [
   { value: "price_asc", label: "Giá: thấp đến cao" },
   { value: "price_desc", label: "Giá: cao đến thấp" },
   { value: "a-z", label: "A–Z" },
-];
+]
 
 // ─── Query Options ────────────────────────────────────────────────────────────
 function getItemsQueryOptions() {
@@ -76,14 +70,14 @@ function getItemsQueryOptions() {
       const response = await ListingsService.listListingsApiV1ListingsGet({
         skip: 0,
         limit: 100,
-      });
+      })
       return {
         items: response.items ?? [],
         total: response.total ?? 0,
-      };
+      }
     },
     queryKey: ["items"],
-  };
+  }
 }
 
 function getCategoriesQueryOptions() {
@@ -91,7 +85,7 @@ function getCategoriesQueryOptions() {
     queryFn: () =>
       CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 100 }),
     queryKey: ["categories"],
-  };
+  }
 }
 
 // ─── Route ────────────────────────────────────────────────────────────────────
@@ -100,26 +94,26 @@ export const Route = createFileRoute("/_layout/items")({
   head: () => ({
     meta: [{ title: "Danh sách tin - ReMarket" }],
   }),
-});
+})
 
 // ─── Skeleton Loading ─────────────────────────────────────────────────────────
 // (Skeleton shown inline in Suspense fallback via PendingItems)
 
 // ─── Filter Sidebar Content ────────────────────────────────────────────────────
 interface FilterPanelProps {
-  query: string;
-  setQuery: (v: string) => void;
-  categoryId: string;
-  setCategoryId: (v: string) => void;
-  minPrice: string;
-  setMinPrice: (v: string) => void;
-  maxPrice: string;
-  setMaxPrice: (v: string) => void;
-  conditionMode: ConditionMode;
-  setConditionMode: (v: ConditionMode) => void;
-  sortMode: SortMode;
-  setSortMode: (v: SortMode) => void;
-  onReset: () => void;
+  query: string
+  setQuery: (v: string) => void
+  categoryId: string
+  setCategoryId: (v: string) => void
+  minPrice: string
+  setMinPrice: (v: string) => void
+  maxPrice: string
+  setMaxPrice: (v: string) => void
+  conditionMode: ConditionMode
+  setConditionMode: (v: ConditionMode) => void
+  sortMode: SortMode
+  setSortMode: (v: SortMode) => void
+  onReset: () => void
 }
 
 function FilterPanel({
@@ -137,8 +131,8 @@ function FilterPanel({
   setSortMode,
   onReset,
 }: FilterPanelProps) {
-  const { data: categoriesData } = useQuery(getCategoriesQueryOptions());
-  const categories = categoriesData?.data ?? [];
+  const { data: categoriesData } = useQuery(getCategoriesQueryOptions())
+  const categories = categoriesData?.data ?? []
 
   return (
     <div className="space-y-5">
@@ -258,7 +252,7 @@ function FilterPanel({
         Xóa bộ lọc
       </Button>
     </div>
-  );
+  )
 }
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
@@ -282,54 +276,54 @@ function EmptyState({ onReset }: { onReset: () => void }) {
         Đặt lại bộ lọc
       </Button>
     </div>
-  );
+  )
 }
 
 // ─── Main content ─────────────────────────────────────────────────────────────
 function ItemsContent() {
-  const { data } = useSuspenseQuery(getItemsQueryOptions());
-  const listings = data.items;
+  const { data } = useSuspenseQuery(getItemsQueryOptions())
+  const listings = data.items
 
-  const [query, setQuery] = useState("");
-  const [categoryId, setCategoryId] = useState("all");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [conditionMode, setConditionMode] = useState<ConditionMode>("all");
-  const [sortMode, setSortMode] = useState<SortMode>("newest");
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("")
+  const [categoryId, setCategoryId] = useState("all")
+  const [minPrice, setMinPrice] = useState("")
+  const [maxPrice, setMaxPrice] = useState("")
+  const [conditionMode, setConditionMode] = useState<ConditionMode>("all")
+  const [sortMode, setSortMode] = useState<SortMode>("newest")
+  const [viewMode, setViewMode] = useState<ViewMode>("grid")
+  const [page, setPage] = useState(1)
 
   function handleReset() {
-    setQuery("");
-    setCategoryId("all");
-    setMinPrice("");
-    setMaxPrice("");
-    setConditionMode("all");
-    setSortMode("newest");
-    setPage(1);
+    setQuery("")
+    setCategoryId("all")
+    setMinPrice("")
+    setMaxPrice("")
+    setConditionMode("all")
+    setSortMode("newest")
+    setPage(1)
   }
 
-  const now = Date.now();
-  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now()
+  const weekMs = 7 * 24 * 60 * 60 * 1000
 
   const stats = useMemo(() => {
-    const total = listings.length;
+    const total = listings.length
     const recent = listings.filter((item: ListingRead) => {
-      const created = item.created_at ? new Date(item.created_at).getTime() : 0;
-      return !Number.isNaN(created) && now - created <= weekMs;
-    }).length;
+      const created = item.created_at ? new Date(item.created_at).getTime() : 0
+      return !Number.isNaN(created) && now - created <= weekMs
+    }).length
     const avgPrice =
       listings.reduce(
         (sum: number, item: ListingRead) => sum + (Number(item.price) || 0),
         0,
-      ) / (total || 1);
-    return { total, recent, avgPrice };
-  }, [listings, now]);
+      ) / (total || 1)
+    return { total, recent, avgPrice }
+  }, [listings, now])
 
   const filteredItems = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const minP = minPrice ? Number(minPrice) : 0;
-    const maxP = maxPrice ? Number(maxPrice) : Infinity;
+    const q = query.trim().toLowerCase()
+    const minP = minPrice ? Number(minPrice) : 0
+    const maxP = maxPrice ? Number(maxPrice) : Infinity
 
     const list = listings.filter((item: ListingRead) => {
       if (
@@ -337,34 +331,26 @@ function ItemsContent() {
         !item.title.toLowerCase().includes(q) &&
         !item.description?.toLowerCase().includes(q)
       )
-        return false;
+        return false
       if (conditionMode !== "all" && item.condition_grade !== conditionMode)
-        return false;
-      if (categoryId !== "all" && item.category_id !== categoryId) return false;
-      const price = Number(item.price) || 0;
-      if (price < minP || price > maxP) return false;
-      return true;
-    });
+        return false
+      if (categoryId !== "all" && item.category_id !== categoryId) return false
+      const price = Number(item.price) || 0
+      if (price < minP || price > maxP) return false
+      return true
+    })
 
     return list.sort((a: ListingRead, b: ListingRead) => {
-      if (sortMode === "a-z") return a.title.localeCompare(b.title);
+      if (sortMode === "a-z") return a.title.localeCompare(b.title)
       if (sortMode === "price_asc")
-        return (Number(a.price) || 0) - (Number(b.price) || 0);
+        return (Number(a.price) || 0) - (Number(b.price) || 0)
       if (sortMode === "price_desc")
-        return (Number(b.price) || 0) - (Number(a.price) || 0);
-      const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
-      const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
-      return sortMode === "newest" ? bTime - aTime : aTime - bTime;
-    });
-  }, [
-    listings,
-    query,
-    conditionMode,
-    categoryId,
-    minPrice,
-    maxPrice,
-    sortMode,
-  ]);
+        return (Number(b.price) || 0) - (Number(a.price) || 0)
+      const aTime = a.created_at ? new Date(a.created_at).getTime() : 0
+      const bTime = b.created_at ? new Date(b.created_at).getTime() : 0
+      return sortMode === "newest" ? bTime - aTime : aTime - bTime
+    })
+  }, [listings, query, conditionMode, categoryId, minPrice, maxPrice, sortMode])
 
   const activeFilterCount = [
     query,
@@ -372,23 +358,23 @@ function ItemsContent() {
     minPrice,
     maxPrice,
     conditionMode !== "all" ? conditionMode : "",
-  ].filter(Boolean).length;
+  ].filter(Boolean).length
 
   useEffect(() => {
-    setPage(1);
-  }, []);
+    setPage(1)
+  }, [])
 
-  const pageSize = viewMode === "grid" ? 9 : 10;
-  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
-  const currentPage = Math.min(page, totalPages);
+  const pageSize = viewMode === "grid" ? 9 : 10
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
   const pagedItems = filteredItems.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
-  );
+  )
   const pageButtons = Array.from({ length: totalPages }, (_, i) => i + 1).slice(
     Math.max(0, currentPage - 3),
     Math.min(totalPages, currentPage + 2),
-  );
+  )
 
   const filterProps = {
     query,
@@ -404,7 +390,7 @@ function ItemsContent() {
     sortMode,
     setSortMode,
     onReset: handleReset,
-  };
+  }
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-white/70 p-4 shadow-2xl shadow-blue-100/60 backdrop-blur-sm sm:p-6 md:p-8">
@@ -631,8 +617,8 @@ function ItemsContent() {
                   <button
                     type="button"
                     onClick={() => {
-                      setMinPrice("");
-                      setMaxPrice("");
+                      setMinPrice("")
+                      setMaxPrice("")
                     }}
                   >
                     <X className="size-3" />
@@ -701,7 +687,7 @@ function ItemsContent() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function ItemsInner() {
@@ -709,7 +695,7 @@ function ItemsInner() {
     <Suspense fallback={<PendingItems />}>
       <ItemsContent />
     </Suspense>
-  );
+  )
 }
 
 function Items() {
@@ -717,5 +703,5 @@ function Items() {
     <div className="flex flex-col gap-6">
       <ItemsInner />
     </div>
-  );
+  )
 }

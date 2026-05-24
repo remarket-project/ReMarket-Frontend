@@ -1,33 +1,40 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import {
-  createFileRoute,
-  Link as RouterLink,
-  redirect,
-} from "@tanstack/react-router";
-import {
-  ArrowRight,
+  AlertCircle,
   ChevronRight,
-  Clock,
+  Clock3,
   Eye,
-  Heart,
-  MapPin,
-  MessageCircle,
-  Shield,
-  ShieldCheck,
-  Star,
-} from "lucide-react";
+  RefreshCw,
+  Sparkles,
+  Wallet,
+} from "lucide-react"
+import { useMemo, useState } from "react"
 
-import { ListingsService } from "@/client";
-import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { type ListingRead, ListingsService } from "@/client"
+import { ListingCard } from "@/components/Listings/ListingCard"
+import { Button } from "@/components/ui/button"
+
+const categoryRailItems = [
+  { name: "Công nghệ", icon: "📱", slug: "cong-nghe" },
+  { name: "Gia dụng", icon: "🏠", slug: "gia-dung" },
+  { name: "Thời trang", icon: "👕", slug: "thoi-trang" },
+  { name: "Máy ảnh", icon: "📷", slug: "may-anh" },
+  { name: "Gaming", icon: "🎮", slug: "gaming" },
+  { name: "Đời sống", icon: "🌿", slug: "doi-song" },
+  { name: "Thể thao", icon: "⚽", slug: "the-thao" },
+  { name: "Xe cộ", icon: "🚗", slug: "xe-co" },
+  { name: "Sách", icon: "📚", slug: "sach" },
+  { name: "Âm nhạc", icon: "🎵", slug: "am-nhac" },
+  { name: "Xem tất cả", icon: "→", slug: "" },
+] as const
 
 export const Route = createFileRoute("/_layout/")({
   component: MarketplaceHome,
   beforeLoad: async () => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token")?.trim()
     if (!token) {
-      throw redirect({ to: "/login" });
+      throw redirect({ to: "/login" })
     }
   },
   head: () => ({
@@ -37,323 +44,296 @@ export const Route = createFileRoute("/_layout/")({
       },
     ],
   }),
-});
+})
 
-const categories = [
-  { name: "Công nghệ", slug: "cong-nghe", icon: "📱", color: "bg-blue-50" },
-  { name: "Gia dụng", slug: "gia-dung", icon: "🏠", color: "bg-amber-50" },
-  { name: "Thời trang", slug: "thoi-trang", icon: "👕", color: "bg-rose-50" },
-  { name: "Máy ảnh", slug: "may-anh", icon: "📷", color: "bg-purple-50" },
-  { name: "Gaming", slug: "gaming", icon: "🎮", color: "bg-green-50" },
-  { name: "Đời sống", slug: "doi-song", icon: "🌿", color: "bg-emerald-50" },
-  { name: "Thể thao", slug: "the-thao", icon: "⚽", color: "bg-orange-50" },
-  { name: "Xe cộ", slug: "xe-co", icon: "🚗", color: "bg-cyan-50" },
-  { name: "Sách", slug: "sach", icon: "📚", color: "bg-yellow-50" },
-  { name: "Âm nhạc", slug: "am-nhac", icon: "🎵", color: "bg-indigo-50" },
-];
+function FeedSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div
+          key={i}
+          className="overflow-hidden rounded-[18px] border border-[#D8E2EF] bg-white"
+        >
+          <div className="aspect-[4/3] animate-pulse bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE]" />
+          <div className="space-y-2 p-3">
+            <div className="h-3.5 animate-pulse rounded bg-[#EFF6FF]" />
+            <div className="h-4 w-1/2 animate-pulse rounded bg-[#EFF6FF]" />
+            <div className="h-3 w-2/3 animate-pulse rounded bg-[#EFF6FF]" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
-const featuredListings = [
-  {
-    title: "iPhone 13 Pro 256GB",
-    price: "9.800.000₫",
-    condition: "Như mới",
-    location: "Quận 1, TP. HCM",
-    postedAt: "15 phút trước",
-    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
-    seller: "Kelly Studio",
-    rating: 4.9,
-  },
-  {
-    title: "Ghế bành phong cách mid-century",
-    price: "4.200.000₫",
-    condition: "Rất tốt",
-    location: "Thảo Điền, TP. HCM",
-    postedAt: "32 phút trước",
-    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
-    seller: "Nha Market",
-    rating: 4.8,
-  },
-  {
-    title: "Áo khoác Patagonia",
-    price: "2.900.000₫",
-    condition: "Tốt",
-    location: "Bình Thạnh, TP. HCM",
-    postedAt: "1 giờ trước",
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
-    seller: "City Wardrobe",
-    rating: 4.7,
-  },
-  {
-    title: "Fujifilm X-T4 Body Only",
-    price: "24.500.000₫",
-    condition: "Rất tốt",
-    location: "Quận 7, TP. HCM",
-    postedAt: "2 giờ trước",
-    image: "https://images.unsplash.com/photo-1516724562728-afc824a36e84?auto=format&fit=crop&w=800&q=80",
-    seller: "Frame Vault",
-    rating: 5.0,
-  },
-  {
-    title: "Herman Miller Sayl Gaming",
-    price: "11.800.000₫",
-    condition: "Như mới",
-    location: "Phú Nhuận, TP. HCM",
-    postedAt: "3 giờ trước",
-    image: "https://images.unsplash.com/photo-1541558869434-2840d308329a?auto=format&fit=crop&w=800&q=80",
-    seller: "Workspace Lab",
-    rating: 4.9,
-  },
-  {
-    title: "Nintendo Switch OLED",
-    price: "5.700.000₫",
-    condition: "Rất tốt",
-    location: "Gò Vấp, TP. HCM",
-    postedAt: "45 phút trước",
-    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800&q=80",
-    seller: "Play Safe",
-    rating: 4.8,
-  },
-];
+const feedTabs = ["Dành cho bạn", "Mới nhất", "Gần bạn", "Nổi bật"] as const
+
+function parsePrice(value: string) {
+  const digits = Number(String(value).replace(/[^0-9.]/g, ""))
+  return Number.isFinite(digits) ? digits : 0
+}
 
 function MarketplaceHome() {
-  const [activeTab, setActiveTab] = useState<string>("for-you");
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [activeTab, setActiveTab] =
+    useState<(typeof feedTabs)[number]>("Dành cho bạn")
 
-  const { data: listingsData } = useQuery({
+  const {
+    data: listingsData,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["home-listings"],
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({
         skip: 0,
-        limit: 12,
+        limit: 24,
       }),
-  });
+  })
 
-  const listings = listingsData?.items ?? [];
-  const totalListings = listingsData?.total ?? 0;
+  const listings = listingsData?.items ?? []
+  const totalListings = listingsData?.total ?? listings.length
 
-  const tabs = [
-    { key: "for-you", label: "Dành cho bạn" },
-    { key: "latest", label: "Mới nhất" },
-    { key: "nearby", label: "Gần bạn" },
-    { key: "featured", label: "Nổi bật" },
-  ];
+  const recentCount = useMemo(() => {
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+    return listings.filter(
+      (item) => new Date(item.created_at).getTime() >= sevenDaysAgo,
+    ).length
+  }, [listings])
 
-  const feedPool = listings.length > 0
-    ? listings
-    : featuredListings;
+  const averagePrice = useMemo(() => {
+    if (listings.length === 0) return 0
+    const sum = listings.reduce((acc, item) => acc + parsePrice(item.price), 0)
+    return Math.round(sum / listings.length)
+  }, [listings])
+
+  const visibleListings = useMemo(() => {
+    const cloned = [...listings]
+    if (activeTab === "Mới nhất") {
+      return cloned.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      )
+    }
+    if (activeTab === "Nổi bật") {
+      return cloned.sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
+    }
+    return cloned
+  }, [activeTab, listings])
+
+  const featuredListings = useMemo(
+    () => visibleListings.slice(0, 8),
+    [visibleListings],
+  )
 
   return (
-    <div className="space-y-8">
-      {/* Trust Banner */}
-      <section className="rmk-info-banner">
-        <div className="rmk-info-banner-item">
-          <div className="rmk-info-banner-icon">
-            <ShieldCheck className="size-5" />
-          </div>
+    <div className="space-y-6">
+      {/* Danh mục */}
+      <section className="rounded-[26px] border border-[#D8E2EF] bg-white px-4 py-4 shadow-sm sm:px-5">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <div>
-            <p className="font-semibold text-[#102A43] text-sm">
-              Thanh toán an toàn
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#2563EB]">
+              Danh mục
             </p>
-            <p className="text-xs text-[#5B7083]">
-              Tiền được giữ trong escrow đến khi cả hai bên xác nhận
-            </p>
+            <h2 className="mt-1 text-lg font-bold text-[#102A43] md:text-xl">
+              Khám phá theo nhóm sản phẩm
+            </h2>
           </div>
+          <Link
+            to="/categories"
+            className="text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8]"
+          >
+            Xem tất cả
+          </Link>
         </div>
-        <div className="rmk-info-banner-item">
-          <div className="rmk-info-banner-icon">
-            <Shield className="size-5" />
-          </div>
-          <div>
-            <p className="font-semibold text-[#102A43] text-sm">
-              Người bán uy tín
-            </p>
-            <p className="text-xs text-[#5B7083]">
-              Hồ sơ đã xác minh, đánh giá minh bạch từ người mua
-            </p>
-          </div>
-        </div>
-        <div className="rmk-info-banner-item">
-          <div className="rmk-info-banner-icon">
-            <MessageCircle className="size-5" />
-          </div>
-          <div>
-            <p className="font-semibold text-[#102A43] text-sm">
-              Hỗ trợ 24/7
-            </p>
-            <p className="text-xs text-[#5B7083]">
-              Đội ngũ hỗ trợ giải quyết tranh chấp nhanh chóng
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Categories Grid */}
-      <section>
-        <div className="rmk-section-title">
-          <h2>Danh mục nổi bật</h2>
-          <RouterLink to="/categories" className="hover:underline">
-            Xem tất cả <ChevronRight className="size-4" />
-          </RouterLink>
-        </div>
-        <div className="grid grid-cols-5 gap-3 sm:grid-cols-5 md:grid-cols-10">
-          {categories.map((cat) => (
-            <RouterLink
-              key={cat.name}
-              to="/categories/$slug"
-              params={{ slug: cat.slug }}
-              className="rmk-card flex flex-col items-center gap-2 p-4 text-center hover:border-[#2563EB]"
+        <div className="rmk-category-rail">
+          {categoryRailItems.map((category) => (
+            <Link
+              key={category.name}
+              to={category.slug ? "/categories/$slug" : "/categories"}
+              params={category.slug ? { slug: category.slug } : undefined}
+              className="rmk-category-item min-w-[92px] rounded-2xl bg-[#F8FAFC]"
             >
-              <span className={`w-10 h-10 rounded-full ${cat.color} flex items-center justify-center text-lg`}>
-                {cat.icon}
-              </span>
-              <span className="text-xs text-[#5B7083] font-medium">{cat.name}</span>
-            </RouterLink>
+              <span className="text-lg">{category.icon}</span>
+              <span>{category.name}</span>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* Feed Tabs + Listings */}
-      <section>
-        <div className="rmk-section-title">
-          <div className="flex items-center gap-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`rmk-tab-pill ${activeTab === tab.key ? "active" : ""}`}
-              >
-                {tab.label}
-              </button>
-            ))}
+      {/* Tin nổi bật hôm nay */}
+      <section className="rounded-[26px] border border-[#D8E2EF] bg-white p-4 shadow-sm sm:p-5">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#2563EB]">
+              <Clock3 className="size-3.5" />
+              Tin nổi bật hôm nay
+            </div>
+            <h2 className="mt-2 text-lg font-bold text-[#102A43] md:text-xl">
+              Gần bạn, dễ chốt, dễ quét
+            </h2>
+            <p className="mt-1 text-sm text-[#5B7083]">
+              Dải tin ngang giúp trang giống marketplace hơn và đưa sản phẩm vào
+              mắt người dùng sớm hơn.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium text-[#5B7083]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF6FF] px-3 py-1 text-[#2563EB]">
+                <Sparkles className="size-3.5" />
+                {totalListings} tin
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F8FAFC] px-3 py-1">
+                <RefreshCw className="size-3.5 text-[#2563EB]" />
+                {recentCount} tin mới 7 ngày
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F8FAFC] px-3 py-1">
+                <Wallet className="size-3.5 text-[#2563EB]" />
+                {averagePrice
+                  ? new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                      maximumFractionDigits: 0,
+                    }).format(averagePrice)
+                  : "0 đ"}
+              </span>
+            </div>
           </div>
-          <RouterLink to="/items" className="hover:underline text-sm">
-            Xem tất cả <ChevronRight className="size-4 inline" />
-          </RouterLink>
+          <Button
+            className="hidden rounded-full bg-[#2563EB] px-4 text-sm font-semibold text-white hover:bg-[#1D4ED8] md:inline-flex"
+            size="sm"
+            asChild
+          >
+            <Link to="/items/create">Đăng tin</Link>
+          </Button>
         </div>
 
-        {/* Listing Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {(activeTab === "latest"
-            ? [...feedPool].reverse()
-            : activeTab === "nearby"
-              ? feedPool.filter((_, i) => i % 3 !== 0)
-              : feedPool
-          )
-            .slice(0, visibleCount)
-            .map((item: any, idx: number) => (
+        {featuredListings.length > 0 ? (
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {featuredListings.map((item: ListingRead, idx: number) => (
               <div
-                key={`${item.title}-${idx}`}
-                className="rmk-listing-card-market group"
+                key={item.id}
+                className="w-[220px] flex-none sm:w-[230px] md:w-[240px]"
               >
-                {/* Image */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE]">
-                  {item.image_url || item.image ? (
-                    <img
-                      src={item.image_url || item.image}
-                      alt={item.title}
-                      className="rmk-listing-image h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <Eye className="size-10 text-[#93C5FD]" />
-                    </div>
-                  )}
-                  {/* Save button */}
-                  <button
-                    type="button"
-                    className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full bg-white/80 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white"
-                    aria-label="Lưu tin"
-                  >
-                    <Heart className="size-4 text-[#5B7083] hover:text-red-500" />
-                  </button>
-                  {/* Condition chip */}
-                  <span className="absolute bottom-2 left-2 inline-flex items-center rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-[#5B7083] backdrop-blur-sm">
-                    {(item as any).condition_grade ? (
-                      (item as any).condition_grade === "like_new" ? "Như mới" :
-                      (item as any).condition_grade === "brand_new" ? "Mới nguyên" :
-                      (item as any).condition_grade === "good" ? "Tốt" :
-                      (item as any).condition_grade === "fair" ? "Khá" : "Kém"
-                    ) : (item as any).condition || "Tốt"}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="p-3 space-y-2">
-                  <h3 className="text-sm font-semibold text-[#102A43] line-clamp-2 leading-snug min-h-[2.5em]">
-                    {item.title}
-                  </h3>
-                  <p className="text-base font-bold text-[#2563EB]">
-                    {(item as any).price_formatted || (item as any).price || item.price}
-                  </p>
-                  <div className="flex items-center gap-1 text-xs text-[#5B7083]">
-                    <MapPin className="size-3" />
-                    <span className="truncate">
-                      {(item as any).location || (item as any).city || (item as any).postedAt?.split("•")[0] || "Đã đăng"}
-                    </span>
-                    <span className="mx-1">•</span>
-                    <Clock className="size-3 flex-shrink-0" />
-                    <span className="truncate">
-                      {(item as any).postedAt || "Hôm nay"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center gap-1">
-                      <Star className="size-3 fill-[#F59E0B] text-[#F59E0B]" />
-                      <span className="text-[10px] text-[#5B7083]">
-                        {(item as any).rating || "4.8"}
-                      </span>
-                    </div>
-                    <Badge variant="outline" className="text-[10px] border-[#D8E2EF] text-[#5B7083]">
-                      {(item as any).is_negotiable !== false ? "Có thể thương lượng" : "Giá niêm yết"}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* View detail link */}
-                <RouterLink
-                  to="/items/$listingId"
-                  params={{ listingId: (item as any).id || "1" }}
-                  className="block border-t border-[#D8E2EF] px-3 py-2 text-xs font-medium text-[#2563EB] hover:bg-[#EFF6FF] transition-colors"
-                >
-                  Xem chi tiết →
-                </RouterLink>
+                <ListingCard item={item} animationDelay={idx * 50} />
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="rounded-[22px] border border-dashed border-[#D8E2EF] bg-[#F8FAFC] px-4 py-10 text-center text-sm text-[#5B7083]">
+            Chưa có tin nổi bật để hiển thị.
+          </div>
+        )}
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-[#102A43] md:text-xl">
+              Tin đăng mới nhất
+            </h2>
+            <p className="mt-1 text-sm text-[#5B7083]">
+              Feed dày hơn, sáng hơn và dễ xem nhanh hơn.
+            </p>
+          </div>
+          <Button
+            className="hidden rounded-full bg-[#2563EB] px-4 text-sm font-semibold text-white hover:bg-[#1D4ED8] md:inline-flex"
+            size="sm"
+            asChild
+          >
+            <Link to="/items/create">Đăng tin</Link>
+          </Button>
         </div>
 
-        {/* Load more */}
-        {visibleCount < feedPool.length && (
-          <div className="mt-6 text-center">
-            <Button
-              onClick={() => setVisibleCount((v) => v + 8)}
-              className="rounded-full border border-[#D8E2EF] bg-white text-[#2563EB] hover:bg-[#EFF6FF] px-8"
-              variant="outline"
+        <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1">
+          {feedTabs.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`rmk-tab-pill ${activeTab === tab ? "active" : ""}`}
             >
-              Xem thêm
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {isLoading ? (
+          <FeedSkeleton />
+        ) : isError ? (
+          <div className="rounded-[22px] border border-[#D8E2EF] bg-white p-10 text-center shadow-sm">
+            <AlertCircle className="mx-auto mb-3 size-8 text-[#DC2626]" />
+            <p className="text-sm font-medium text-[#102A43]">
+              Không thể tải tin đăng
+            </p>
+            <p className="mt-1 text-xs text-[#5B7083]">
+              Có lỗi xảy ra khi kết nối đến máy chủ.
+            </p>
+            <Button
+              variant="outline"
+              className="mt-4 gap-2 rounded-full border-[#D8E2EF] bg-white"
+              size="sm"
+              onClick={() => refetch()}
+            >
+              <RefreshCw className="size-4" />
+              Thử lại
+            </Button>
+          </div>
+        ) : visibleListings.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {visibleListings.map((item: ListingRead, idx: number) => (
+              <ListingCard
+                key={item.id}
+                item={item}
+                animationDelay={idx * 50}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[22px] border border-dashed border-[#D8E2EF] bg-white p-10 text-center shadow-sm">
+            <Eye className="mx-auto mb-3 size-8 text-[#94A3B8]" />
+            <p className="text-sm text-[#5B7083]">
+              Chưa có tin đăng nào. Hãy là người đầu tiên!
+            </p>
+            <Button
+              className="mt-4 rounded-full bg-[#2563EB] px-4 text-white hover:bg-[#1D4ED8]"
+              size="sm"
+              asChild
+            >
+              <Link to="/items/create">Đăng tin ngay</Link>
             </Button>
           </div>
         )}
       </section>
 
-      {/* Total listings count */}
-      <section className="flex items-center justify-between rounded-2xl border border-[#D8E2EF] bg-white px-5 py-4">
-        <div className="flex items-center gap-2 text-sm text-[#5B7083]">
-          <Eye className="size-4" />
+      <div className="flex items-center justify-between rounded-[22px] border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-2 text-xs text-[#5B7083]">
+          <Eye className="size-3.5 text-[#2563EB]" />
           <span>
-            Có <strong className="text-[#102A43]">{totalListings || feedPool.length}</strong> tin đang được đăng bán
+            <strong className="text-[#102A43]">{totalListings}</strong> tin đang
+            được đăng bán
           </span>
         </div>
         <Button
-          className="rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white gap-2"
+          className="h-9 rounded-full bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8]"
           size="sm"
           asChild
         >
-          <RouterLink to="/items/create">
-            Đăng tin ngay <ArrowRight className="size-4" />
-          </RouterLink>
+          <Link to="/items/create">Đăng tin</Link>
         </Button>
-      </section>
+      </div>
+
+      <Link
+        to="/search"
+        className="flex items-center justify-between rounded-[22px] border border-[#D8E2EF] bg-white px-4 py-4 text-sm shadow-sm transition hover:border-[#BFDBFE] hover:shadow-md"
+      >
+        <div>
+          <p className="font-semibold text-[#102A43]">Mở rộng tìm kiếm</p>
+          <p className="mt-1 text-xs text-[#5B7083]">
+            Lọc sâu theo danh mục, giá và khu vực để tìm tin phù hợp hơn.
+          </p>
+        </div>
+        <ChevronRight className="size-4 text-[#2563EB]" />
+      </Link>
     </div>
-  );
+  )
 }

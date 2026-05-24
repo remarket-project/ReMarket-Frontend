@@ -1,15 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
-} from "@tanstack/react-router";
-import { Mail, Phone, UserRound } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { PasswordStrength } from "@/components/Auth/PasswordStrength";
-import { AuthLayout } from "@/components/Common/AuthLayout";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@tanstack/react-router"
+import { Mail, Phone, UserRound } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { PasswordStrength } from "@/components/Auth/PasswordStrength"
+import { AuthLayout } from "@/components/Common/AuthLayout"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -17,11 +17,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { LoadingButton } from "@/components/ui/loading-button"
+import { PasswordInput } from "@/components/ui/password-input"
+import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 
 const formSchema = z
   .object({
@@ -42,15 +42,15 @@ const formSchema = z
   .refine((data) => data.password === data.confirm_password, {
     message: "Mật khẩu nhập lại không khớp",
     path: ["confirm_password"],
-  });
+  })
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute("/signup")({
   component: SignUp,
   beforeLoad: async () => {
     if (isLoggedIn()) {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/" })
     }
   },
   head: () => ({
@@ -60,10 +60,10 @@ export const Route = createFileRoute("/signup")({
       },
     ],
   }),
-});
+})
 
 function SignUp() {
-  const { signUpMutation } = useAuth();
+  const { signUpMutation } = useAuth()
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -76,20 +76,20 @@ function SignUp() {
       confirm_password: "",
       agree_terms: false,
     },
-  });
+  })
 
   const onSubmit = (data: FormData) => {
-    if (signUpMutation.isPending) return;
+    if (signUpMutation.isPending) return
 
     const {
       confirm_password: _confirmPassword,
       agree_terms: _agreeTerms,
       ...submitData
-    } = data;
-    signUpMutation.mutate(submitData);
-  };
+    } = data
+    signUpMutation.mutate(submitData)
+  }
 
-  const password = form.watch("password");
+  const password = form.watch("password")
 
   return (
     <AuthLayout>
@@ -268,5 +268,5 @@ function SignUp() {
         </form>
       </Form>
     </AuthLayout>
-  );
+  )
 }
