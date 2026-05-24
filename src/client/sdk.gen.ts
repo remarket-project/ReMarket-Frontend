@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { GetDashboardStatsApiV1AdminDashboardGetResponse, ListUsersApiV1AdminUsersGetData, ListUsersApiV1AdminUsersGetResponse, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchData, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchResponse, GetPendingListingsRouteApiV1AdminListingsPendingGetData, GetPendingListingsRouteApiV1AdminListingsPendingGetResponse, ApproveListingApiV1AdminListingsListingIdApprovePostData, ApproveListingApiV1AdminListingsListingIdApprovePostResponse, RejectListingRouteApiV1AdminListingsListingIdRejectPostData, RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostData, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RefreshAccessTokenApiV1AuthRefreshPostData, RefreshAccessTokenApiV1AuthRefreshPostResponse, LogoutApiV1AuthLogoutPostResponse, VerifyEmailApiV1AuthVerifyEmailPostData, VerifyEmailApiV1AuthVerifyEmailPostResponse, ResendVerificationApiV1AuthResendVerificationPostData, ResendVerificationApiV1AuthResendVerificationPostResponse, ForgotPasswordApiV1AuthForgotPasswordPostData, ForgotPasswordApiV1AuthForgotPasswordPostResponse, ResetPasswordApiV1AuthResetPasswordPostData, ResetPasswordApiV1AuthResetPasswordPostResponse, ListCategoriesApiV1CategoriesGetData, ListCategoriesApiV1CategoriesGetResponse, CreateCategoryApiV1CategoriesPostData, CreateCategoryApiV1CategoriesPostResponse, GetRootCategoriesApiV1CategoriesRootsGetResponse, GetCategoryBySlugApiV1CategoriesSlugGetData, GetCategoryBySlugApiV1CategoriesSlugGetResponse, GetCategoryByIdApiV1CategoriesIdCategoryIdGetData, GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse, UpdateCategoryApiV1CategoriesCategoryIdPutData, UpdateCategoryApiV1CategoriesCategoryIdPutResponse, DeleteCategoryApiV1CategoriesCategoryIdDeleteData, DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse, RootGetResponse, GetEscrowApiV1EscrowsOrderIdGetData, GetEscrowApiV1EscrowsOrderIdGetResponse, FundEscrowApiV1EscrowsOrderIdFundPostData, FundEscrowApiV1EscrowsOrderIdFundPostResponse, RequestRefundApiV1EscrowsOrderIdRefundRequestPostData, RequestRefundApiV1EscrowsOrderIdRefundRequestPostResponse, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostData, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostResponse, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostData, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostResponse, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostData, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostResponse, GetDisputedEscrowsApiV1EscrowsDisputedGetData, GetDisputedEscrowsApiV1EscrowsDisputedGetResponse, ListListingsApiV1ListingsGetData, ListListingsApiV1ListingsGetResponse, CreateListingApiV1ListingsPostData, CreateListingApiV1ListingsPostResponse, GetMyListingsApiV1ListingsMeGetData, GetMyListingsApiV1ListingsMeGetResponse, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteData, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteResponse, GetListingApiV1ListingsListingIdGetData, GetListingApiV1ListingsListingIdGetResponse, UpdateListingApiV1ListingsListingIdPatchData, UpdateListingApiV1ListingsListingIdPatchResponse, DeleteListingApiV1ListingsListingIdDeleteData, DeleteListingApiV1ListingsListingIdDeleteResponse, UploadListingImageApiV1ListingsListingIdImagesPostData, UploadListingImageApiV1ListingsListingIdImagesPostResponse, GetMyNotificationsApiV1NotificationsGetData, GetMyNotificationsApiV1NotificationsGetResponse, GetUnreadNotificationsCountApiV1NotificationsUnreadCountGetResponse, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutData, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutResponse, MarkAllNotificationsAsReadApiV1NotificationsReadAllPutResponse, CreateOfferApiV1OffersPostData, CreateOfferApiV1OffersPostResponse, GetMySentOffersApiV1OffersMeSentGetData, GetMySentOffersApiV1OffersMeSentGetResponse, GetMyReceivedOffersApiV1OffersMeReceivedGetData, GetMyReceivedOffersApiV1OffersMeReceivedGetResponse, GetOffersForListingApiV1OffersListingListingIdGetData, GetOffersForListingApiV1OffersListingListingIdGetResponse, UpdateOfferStatusApiV1OffersOfferIdStatusPatchData, UpdateOfferStatusApiV1OffersOfferIdStatusPatchResponse, GetOfferApiV1OffersOfferIdGetData, GetOfferApiV1OffersOfferIdGetResponse, GetMyOrdersApiV1OrdersGetResponse, CreateDirectOrderApiV1OrdersPostData, CreateDirectOrderApiV1OrdersPostResponse, GetMyOrdersApiV1OrdersMeGetResponse, GetOrderApiV1OrdersOrderIdGetData, GetOrderApiV1OrdersOrderIdGetResponse, CompleteOrderApiV1OrdersOrderIdCompletePostData, CompleteOrderApiV1OrdersOrderIdCompletePostResponse, CancelOrderApiV1OrdersOrderIdCancelPostData, CancelOrderApiV1OrdersOrderIdCancelPostResponse, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse, CreateReviewApiV1ReviewsPostData, CreateReviewApiV1ReviewsPostResponse, GetUserReviewsApiV1ReviewsUserUserIdGetData, GetUserReviewsApiV1ReviewsUserUserIdGetResponse, GetReviewApiV1ReviewsOrderIdGetData, GetReviewApiV1ReviewsOrderIdGetResponse, GetCurrentUserInfoApiV1UsersMeGetResponse, UpdateMyProfileApiV1UsersMePutData, UpdateMyProfileApiV1UsersMePutResponse, ChangePasswordApiV1UsersMePasswordPutData, ChangePasswordApiV1UsersMePasswordPutResponse, GetUserProfileApiV1UsersUserIdGetData, GetUserProfileApiV1UsersUserIdGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, HealthCheckApiV1UtilsHealthCheckGetResponse, GetMyWalletApiV1WalletMeGetResponse, DemoTopupApiV1WalletDemoTopupPostData, DemoTopupApiV1WalletDemoTopupPostResponse, GetTransactionsApiV1WalletTransactionsGetData, GetTransactionsApiV1WalletTransactionsGetResponse } from './types.gen';
+import type { GetDashboardStatsApiV1AdminDashboardGetResponse, ListUsersApiV1AdminUsersGetData, ListUsersApiV1AdminUsersGetResponse, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchData, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchResponse, GetPendingListingsRouteApiV1AdminListingsPendingGetData, GetPendingListingsRouteApiV1AdminListingsPendingGetResponse, ApproveListingApiV1AdminListingsListingIdApprovePostData, ApproveListingApiV1AdminListingsListingIdApprovePostResponse, RejectListingRouteApiV1AdminListingsListingIdRejectPostData, RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostData, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostResponse, ListAuditTrailApiV1AdminAuditTrailGetData, ListAuditTrailApiV1AdminAuditTrailGetResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RefreshAccessTokenApiV1AuthRefreshPostData, RefreshAccessTokenApiV1AuthRefreshPostResponse, LogoutApiV1AuthLogoutPostResponse, VerifyEmailApiV1AuthVerifyEmailPostData, VerifyEmailApiV1AuthVerifyEmailPostResponse, ResendVerificationApiV1AuthResendVerificationPostData, ResendVerificationApiV1AuthResendVerificationPostResponse, ForgotPasswordApiV1AuthForgotPasswordPostData, ForgotPasswordApiV1AuthForgotPasswordPostResponse, ResetPasswordApiV1AuthResetPasswordPostData, ResetPasswordApiV1AuthResetPasswordPostResponse, ListCategoriesApiV1CategoriesGetData, ListCategoriesApiV1CategoriesGetResponse, CreateCategoryApiV1CategoriesPostData, CreateCategoryApiV1CategoriesPostResponse, GetRootCategoriesApiV1CategoriesRootsGetResponse, GetCategoryBySlugApiV1CategoriesSlugGetData, GetCategoryBySlugApiV1CategoriesSlugGetResponse, GetCategoryByIdApiV1CategoriesIdCategoryIdGetData, GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse, UpdateCategoryApiV1CategoriesCategoryIdPutData, UpdateCategoryApiV1CategoriesCategoryIdPutResponse, DeleteCategoryApiV1CategoriesCategoryIdDeleteData, DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse, ListMyConversationsApiV1ChatsConversationsGetData, ListMyConversationsApiV1ChatsConversationsGetResponse, CreateListingConversationApiV1ChatsConversationsListingListingIdPostData, CreateListingConversationApiV1ChatsConversationsListingListingIdPostResponse, GetConversationDetailApiV1ChatsConversationsConversationIdGetData, GetConversationDetailApiV1ChatsConversationsConversationIdGetResponse, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse, SendMessageApiV1ChatsConversationsConversationIdMessagesPostData, SendMessageApiV1ChatsConversationsConversationIdMessagesPostResponse, GetHelpPagesApiV1ContentHelpGetData, GetHelpPagesApiV1ContentHelpGetResponse, GetLegalPagesApiV1ContentLegalGetData, GetLegalPagesApiV1ContentLegalGetResponse, GetContentApiV1ContentKeyGetData, GetContentApiV1ContentKeyGetResponse, RootGetResponse, GetEscrowApiV1EscrowsOrderIdGetData, GetEscrowApiV1EscrowsOrderIdGetResponse, FundEscrowApiV1EscrowsOrderIdFundPostData, FundEscrowApiV1EscrowsOrderIdFundPostResponse, RequestRefundApiV1EscrowsOrderIdRefundRequestPostData, RequestRefundApiV1EscrowsOrderIdRefundRequestPostResponse, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostData, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostResponse, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostData, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostResponse, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostData, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostResponse, GetDisputedEscrowsApiV1EscrowsDisputedGetData, GetDisputedEscrowsApiV1EscrowsDisputedGetResponse, ListListingsApiV1ListingsGetData, ListListingsApiV1ListingsGetResponse, CreateListingApiV1ListingsPostData, CreateListingApiV1ListingsPostResponse, GetFeaturedListingsApiV1ListingsFeaturedGetData, GetFeaturedListingsApiV1ListingsFeaturedGetResponse, GetTrendingListingsApiV1ListingsTrendingGetData, GetTrendingListingsApiV1ListingsTrendingGetResponse, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetData, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetResponse, GetPriceBandSummaryApiV1ListingsPriceBandsGetData, GetPriceBandSummaryApiV1ListingsPriceBandsGetResponse, GetMyListingsApiV1ListingsMeGetData, GetMyListingsApiV1ListingsMeGetResponse, GetRelatedListingsApiV1ListingsListingIdRelatedGetData, GetRelatedListingsApiV1ListingsListingIdRelatedGetResponse, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteData, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteResponse, GetListingApiV1ListingsListingIdGetData, GetListingApiV1ListingsListingIdGetResponse, UpdateListingApiV1ListingsListingIdPatchData, UpdateListingApiV1ListingsListingIdPatchResponse, DeleteListingApiV1ListingsListingIdDeleteData, DeleteListingApiV1ListingsListingIdDeleteResponse, UploadListingImageApiV1ListingsListingIdImagesPostData, UploadListingImageApiV1ListingsListingIdImagesPostResponse, GetMyNotificationsApiV1NotificationsGetData, GetMyNotificationsApiV1NotificationsGetResponse, GetUnreadNotificationsCountApiV1NotificationsUnreadCountGetResponse, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutData, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutResponse, MarkAllNotificationsAsReadApiV1NotificationsReadAllPutResponse, CreateOfferApiV1OffersPostData, CreateOfferApiV1OffersPostResponse, GetMySentOffersApiV1OffersMeSentGetData, GetMySentOffersApiV1OffersMeSentGetResponse, GetMyReceivedOffersApiV1OffersMeReceivedGetData, GetMyReceivedOffersApiV1OffersMeReceivedGetResponse, GetOffersForListingApiV1OffersListingListingIdGetData, GetOffersForListingApiV1OffersListingListingIdGetResponse, UpdateOfferStatusApiV1OffersOfferIdStatusPatchData, UpdateOfferStatusApiV1OffersOfferIdStatusPatchResponse, GetOfferApiV1OffersOfferIdGetData, GetOfferApiV1OffersOfferIdGetResponse, GetMyOrdersApiV1OrdersGetResponse, CreateDirectOrderApiV1OrdersPostData, CreateDirectOrderApiV1OrdersPostResponse, GetMyOrdersApiV1OrdersMeGetResponse, GetOrderApiV1OrdersOrderIdGetData, GetOrderApiV1OrdersOrderIdGetResponse, GetOrderTimelineApiV1OrdersOrderIdTimelineGetData, GetOrderTimelineApiV1OrdersOrderIdTimelineGetResponse, CompleteOrderApiV1OrdersOrderIdCompletePostData, CompleteOrderApiV1OrdersOrderIdCompletePostResponse, CancelOrderApiV1OrdersOrderIdCancelPostData, CancelOrderApiV1OrdersOrderIdCancelPostResponse, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse, CreateReviewApiV1ReviewsPostData, CreateReviewApiV1ReviewsPostResponse, GetUserReviewsApiV1ReviewsUserUserIdGetData, GetUserReviewsApiV1ReviewsUserUserIdGetResponse, GetReviewApiV1ReviewsOrderIdGetData, GetReviewApiV1ReviewsOrderIdGetResponse, ListSavedListingsApiV1SavedListingsGetData, ListSavedListingsApiV1SavedListingsGetResponse, SaveListingApiV1SavedListingsListingIdPostData, SaveListingApiV1SavedListingsListingIdPostResponse, UnsaveListingApiV1SavedListingsListingIdDeleteData, UnsaveListingApiV1SavedListingsListingIdDeleteResponse, ListFollowedSellersApiV1FollowedSellersGetData, ListFollowedSellersApiV1FollowedSellersGetResponse, FollowSellerApiV1FollowedSellersSellerIdPostData, FollowSellerApiV1FollowedSellersSellerIdPostResponse, UnfollowSellerApiV1FollowedSellersSellerIdDeleteData, UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse, GetCurrentUserInfoApiV1UsersMeGetResponse, UpdateMyProfileApiV1UsersMePutData, UpdateMyProfileApiV1UsersMePutResponse, ChangePasswordApiV1UsersMePasswordPutData, ChangePasswordApiV1UsersMePasswordPutResponse, GetUserProfileApiV1UsersUserIdGetData, GetUserProfileApiV1UsersUserIdGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, HealthCheckApiV1UtilsHealthCheckGetResponse, GetMyWalletApiV1WalletMeGetResponse, DemoTopupApiV1WalletDemoTopupPostData, DemoTopupApiV1WalletDemoTopupPostResponse, GetTransactionsApiV1WalletTransactionsGetData, GetTransactionsApiV1WalletTransactionsGetResponse } from './types.gen';
 
 export class AdminService {
     /**
@@ -152,6 +152,34 @@ export class AdminService {
             },
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class AdminAuditService {
+    /**
+     * List Audit Trail
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @param data.action
+     * @param data.targetType
+     * @returns AdminAuditTrailResponse Successful Response
+     * @throws ApiError
+     */
+    public static listAuditTrailApiV1AdminAuditTrailGet(data: ListAuditTrailApiV1AdminAuditTrailGetData = {}): CancelablePromise<ListAuditTrailApiV1AdminAuditTrailGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/admin/audit-trail',
+            query: {
+                skip: data.skip,
+                limit: data.limit,
+                action: data.action,
+                target_type: data.targetType
+            },
             errors: {
                 422: 'Validation Error'
             }
@@ -477,6 +505,175 @@ export class CategoriesService {
     }
 }
 
+export class ChatsService {
+    /**
+     * List My Conversations
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns ChatConversationRead Successful Response
+     * @throws ApiError
+     */
+    public static listMyConversationsApiV1ChatsConversationsGet(data: ListMyConversationsApiV1ChatsConversationsGetData = {}): CancelablePromise<ListMyConversationsApiV1ChatsConversationsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/chats/conversations',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Listing Conversation
+     * @param data The data for the request.
+     * @param data.listingId
+     * @returns ChatConversationRead Successful Response
+     * @throws ApiError
+     */
+    public static createListingConversationApiV1ChatsConversationsListingListingIdPost(data: CreateListingConversationApiV1ChatsConversationsListingListingIdPostData): CancelablePromise<CreateListingConversationApiV1ChatsConversationsListingListingIdPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/chats/conversations/listing/{listing_id}',
+            path: {
+                listing_id: data.listingId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Conversation Detail
+     * @param data The data for the request.
+     * @param data.conversationId
+     * @returns ChatConversationRead Successful Response
+     * @throws ApiError
+     */
+    public static getConversationDetailApiV1ChatsConversationsConversationIdGet(data: GetConversationDetailApiV1ChatsConversationsConversationIdGetData): CancelablePromise<GetConversationDetailApiV1ChatsConversationsConversationIdGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/chats/conversations/{conversation_id}',
+            path: {
+                conversation_id: data.conversationId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Messages
+     * @param data The data for the request.
+     * @param data.conversationId
+     * @returns ChatMessageRead Successful Response
+     * @throws ApiError
+     */
+    public static listMessagesApiV1ChatsConversationsConversationIdMessagesGet(data: ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData): CancelablePromise<ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/chats/conversations/{conversation_id}/messages',
+            path: {
+                conversation_id: data.conversationId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Send Message
+     * @param data The data for the request.
+     * @param data.conversationId
+     * @param data.requestBody
+     * @returns ChatMessageRead Successful Response
+     * @throws ApiError
+     */
+    public static sendMessageApiV1ChatsConversationsConversationIdMessagesPost(data: SendMessageApiV1ChatsConversationsConversationIdMessagesPostData): CancelablePromise<SendMessageApiV1ChatsConversationsConversationIdMessagesPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/chats/conversations/{conversation_id}/messages',
+            path: {
+                conversation_id: data.conversationId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class ContentService {
+    /**
+     * Get Help Pages
+     * @param data The data for the request.
+     * @param data.locale
+     * @returns StaticContentCollection Successful Response
+     * @throws ApiError
+     */
+    public static getHelpPagesApiV1ContentHelpGet(data: GetHelpPagesApiV1ContentHelpGetData = {}): CancelablePromise<GetHelpPagesApiV1ContentHelpGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/content/help',
+            query: {
+                locale: data.locale
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Legal Pages
+     * @param data The data for the request.
+     * @param data.locale
+     * @returns StaticContentCollection Successful Response
+     * @throws ApiError
+     */
+    public static getLegalPagesApiV1ContentLegalGet(data: GetLegalPagesApiV1ContentLegalGetData = {}): CancelablePromise<GetLegalPagesApiV1ContentLegalGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/content/legal',
+            query: {
+                locale: data.locale
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Content
+     * @param data The data for the request.
+     * @param data.key
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static getContentApiV1ContentKeyGet(data: GetContentApiV1ContentKeyGetData): CancelablePromise<GetContentApiV1ContentKeyGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/content/{key}',
+            path: {
+                key: data.key
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
 export class DefaultService {
     /**
      * Root
@@ -732,6 +929,7 @@ export class ListingsService {
      * @param data.sellerId
      * @param data.minPrice
      * @param data.maxPrice
+     * @param data.sortBy
      * @param data.skip
      * @param data.limit
      * @returns ListingPaginated Successful Response
@@ -747,6 +945,7 @@ export class ListingsService {
                 seller_id: data.sellerId,
                 min_price: data.minPrice,
                 max_price: data.maxPrice,
+                sort_by: data.sortBy,
                 skip: data.skip,
                 limit: data.limit
             },
@@ -777,6 +976,92 @@ export class ListingsService {
     }
     
     /**
+     * Get Featured Listings
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns ListingPaginated Successful Response
+     * @throws ApiError
+     */
+    public static getFeaturedListingsApiV1ListingsFeaturedGet(data: GetFeaturedListingsApiV1ListingsFeaturedGetData = {}): CancelablePromise<GetFeaturedListingsApiV1ListingsFeaturedGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/listings/featured',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Trending Listings
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns ListingPaginated Successful Response
+     * @throws ApiError
+     */
+    public static getTrendingListingsApiV1ListingsTrendingGet(data: GetTrendingListingsApiV1ListingsTrendingGetData = {}): CancelablePromise<GetTrendingListingsApiV1ListingsTrendingGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/listings/trending',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Search Suggestions
+     * @param data The data for the request.
+     * @param data.q
+     * @param data.limit
+     * @returns string Successful Response
+     * @throws ApiError
+     */
+    public static getSearchSuggestionsApiV1ListingsSearchSuggestionsGet(data: GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetData): CancelablePromise<GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/listings/search-suggestions',
+            query: {
+                q: data.q,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Price Band Summary
+     * @param data The data for the request.
+     * @param data.categoryId
+     * @returns PriceBandRead Successful Response
+     * @throws ApiError
+     */
+    public static getPriceBandSummaryApiV1ListingsPriceBandsGet(data: GetPriceBandSummaryApiV1ListingsPriceBandsGetData = {}): CancelablePromise<GetPriceBandSummaryApiV1ListingsPriceBandsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/listings/price-bands',
+            query: {
+                category_id: data.categoryId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
      * Get My Listings
      * Danh sách bài đăng của tôi (tất cả trạng thái)
      * @param data The data for the request.
@@ -794,6 +1079,32 @@ export class ListingsService {
             query: {
                 keyword: data.keyword,
                 status: data.status,
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Related Listings
+     * @param data The data for the request.
+     * @param data.listingId
+     * @param data.skip
+     * @param data.limit
+     * @returns ListingPaginated Successful Response
+     * @throws ApiError
+     */
+    public static getRelatedListingsApiV1ListingsListingIdRelatedGet(data: GetRelatedListingsApiV1ListingsListingIdRelatedGetData): CancelablePromise<GetRelatedListingsApiV1ListingsListingIdRelatedGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/listings/{listing_id}/related',
+            path: {
+                listing_id: data.listingId
+            },
+            query: {
                 skip: data.skip,
                 limit: data.limit
             },
@@ -1200,6 +1511,26 @@ export class OrdersService {
     }
     
     /**
+     * Get Order Timeline
+     * @param data The data for the request.
+     * @param data.orderId
+     * @returns OrderEventRead Successful Response
+     * @throws ApiError
+     */
+    public static getOrderTimelineApiV1OrdersOrderIdTimelineGet(data: GetOrderTimelineApiV1OrdersOrderIdTimelineGetData): CancelablePromise<GetOrderTimelineApiV1OrdersOrderIdTimelineGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/orders/{order_id}/timeline',
+            path: {
+                order_id: data.orderId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
      * Complete Order
      * Hoàn thành đơn hàng
      * @param data The data for the request.
@@ -1322,6 +1653,132 @@ export class ReviewsService {
             url: '/api/v1/reviews/{order_id}',
             path: {
                 order_id: data.orderId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class SocialService {
+    /**
+     * List Saved Listings
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns SavedListingCollection Successful Response
+     * @throws ApiError
+     */
+    public static listSavedListingsApiV1SavedListingsGet(data: ListSavedListingsApiV1SavedListingsGetData = {}): CancelablePromise<ListSavedListingsApiV1SavedListingsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/saved-listings',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Save Listing
+     * @param data The data for the request.
+     * @param data.listingId
+     * @returns SavedListingItem Successful Response
+     * @throws ApiError
+     */
+    public static saveListingApiV1SavedListingsListingIdPost(data: SaveListingApiV1SavedListingsListingIdPostData): CancelablePromise<SaveListingApiV1SavedListingsListingIdPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/saved-listings/{listing_id}',
+            path: {
+                listing_id: data.listingId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Unsave Listing
+     * @param data The data for the request.
+     * @param data.listingId
+     * @returns void Successful Response
+     * @throws ApiError
+     */
+    public static unsaveListingApiV1SavedListingsListingIdDelete(data: UnsaveListingApiV1SavedListingsListingIdDeleteData): CancelablePromise<UnsaveListingApiV1SavedListingsListingIdDeleteResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/saved-listings/{listing_id}',
+            path: {
+                listing_id: data.listingId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Followed Sellers
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns FollowedSellerCollection Successful Response
+     * @throws ApiError
+     */
+    public static listFollowedSellersApiV1FollowedSellersGet(data: ListFollowedSellersApiV1FollowedSellersGetData = {}): CancelablePromise<ListFollowedSellersApiV1FollowedSellersGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/followed-sellers',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Follow Seller
+     * @param data The data for the request.
+     * @param data.sellerId
+     * @returns FollowedSellerItem Successful Response
+     * @throws ApiError
+     */
+    public static followSellerApiV1FollowedSellersSellerIdPost(data: FollowSellerApiV1FollowedSellersSellerIdPostData): CancelablePromise<FollowSellerApiV1FollowedSellersSellerIdPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/followed-sellers/{seller_id}',
+            path: {
+                seller_id: data.sellerId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Unfollow Seller
+     * @param data The data for the request.
+     * @param data.sellerId
+     * @returns void Successful Response
+     * @throws ApiError
+     */
+    public static unfollowSellerApiV1FollowedSellersSellerIdDelete(data: UnfollowSellerApiV1FollowedSellersSellerIdDeleteData): CancelablePromise<UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/followed-sellers/{seller_id}',
+            path: {
+                seller_id: data.sellerId
             },
             errors: {
                 422: 'Validation Error'

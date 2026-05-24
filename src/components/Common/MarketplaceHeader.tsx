@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useLocation } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { Link, useLocation } from "@tanstack/react-router"
 import {
   Bell,
   ChevronDown,
@@ -14,13 +14,13 @@ import {
   Settings,
   ShoppingCart,
   Wallet,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+} from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
-import { type NotificationRead, NotificationsService } from "@/client";
-import NotificationIcon from "@/components/Common/NotificationIcon";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { type NotificationRead, NotificationsService } from "@/client"
+import NotificationIcon from "@/components/Common/NotificationIcon"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,11 +28,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import useAuth from "@/hooks/useAuth";
-import { cn } from "@/lib/utils";
-import { getInitials } from "@/utils";
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import useAuth from "@/hooks/useAuth"
+import { cn } from "@/lib/utils"
+import { getInitials } from "@/utils"
 
 const categories = [
   { name: "Công nghệ", slug: "cong-nghe", icon: "📱" },
@@ -46,25 +46,25 @@ const categories = [
   { name: "Sách", slug: "sach", icon: "📚" },
   { name: "Âm nhạc", slug: "am-nhac", icon: "🎵" },
   { name: "Xem tất cả", slug: "", icon: "→" },
-] as const;
+] as const
 
 function SearchShell({ compact, hero }: { compact: boolean; hero?: boolean }) {
   const submitTone = hero
     ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
-    : "bg-[#2563EB] text-white hover:bg-[#1D4ED8]";
+    : "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
 
   return (
     <search className="w-full">
       <form
         onSubmit={(e) => {
-          e.preventDefault();
-          const form = e.target as HTMLFormElement;
+          e.preventDefault()
+          const form = e.target as HTMLFormElement
           const query = (
             form.elements.namedItem("q") as HTMLInputElement
-          )?.value?.trim();
-          const params = new URLSearchParams();
-          if (query) params.set("q", query);
-          window.location.href = `/search${params.toString() ? `?${params.toString()}` : ""}`;
+          )?.value?.trim()
+          const params = new URLSearchParams()
+          if (query) params.set("q", query)
+          window.location.href = `/search${params.toString() ? `?${params.toString()}` : ""}`
         }}
         className="w-full"
       >
@@ -127,7 +127,7 @@ function SearchShell({ compact, hero }: { compact: boolean; hero?: boolean }) {
         </div>
       </form>
     </search>
-  );
+  )
 }
 
 function CategoryMenu({ transparent }: { transparent?: boolean }) {
@@ -161,7 +161,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
               <span className="mr-3 text-base">{category.icon}</span>
               <span>{category.name}</span>
             </>
-          );
+          )
           if (!category.slug) {
             return (
               <Link key={category.name} to="/categories">
@@ -169,7 +169,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
                   {itemContent}
                 </DropdownMenuItem>
               </Link>
-            );
+            )
           }
           return (
             <Link
@@ -181,29 +181,29 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
                 {itemContent}
               </DropdownMenuItem>
             </Link>
-          );
+          )
         })}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
 
 export function MarketplaceHeader() {
-  const { user: currentUser, logout } = useAuth();
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const notifRef = useRef<HTMLDivElement>(null);
-  const queryClient = useQueryClient();
+  const { user: currentUser, logout } = useAuth()
+  const location = useLocation()
+  const isHome = location.pathname === "/"
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [notifOpen, setNotifOpen] = useState(false)
+  const notifRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     // 250px is the robust scroll threshold that guarantees the banner is scrolled past before sticky header displays, working seamlessly across devices
-    const onScroll = () => setIsScrolled(window.scrollY > 250);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const onScroll = () => setIsScrolled(window.scrollY > 250)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   const { data: notifData } = useQuery({
     queryKey: ["notifications-header"],
@@ -213,71 +213,71 @@ export function MarketplaceHeader() {
         limit: 5,
       }),
     enabled: Boolean(currentUser),
-  });
+  })
 
   const { data: unreadData } = useQuery({
     queryKey: ["notifications-unread-count"],
     queryFn: () =>
       NotificationsService.getUnreadNotificationsCountApiV1NotificationsUnreadCountGet(),
     enabled: Boolean(currentUser),
-  });
+  })
 
   const markAllRead = useMutation({
     mutationFn: () =>
       NotificationsService.markAllNotificationsAsReadApiV1NotificationsReadAllPut(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications-header"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
       queryClient.invalidateQueries({
         queryKey: ["notifications-unread-count"],
-      });
+      })
     },
-  });
+  })
 
-  const notifications = (notifData?.items ?? []) as NotificationRead[];
-  const unreadCount = typeof unreadData === "number" ? unreadData : 0;
-  const showTransparent = isHome && !isScrolled;
+  const notifications = (notifData?.items ?? []) as NotificationRead[]
+  const unreadCount = typeof unreadData === "number" ? unreadData : 0
+  const showTransparent = isHome && !isScrolled
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
-        setNotifOpen(false);
+        setNotifOpen(false)
       }
     }
     if (notifOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside)
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [notifOpen]);
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [notifOpen])
 
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
-      if (e.key === "Escape") setNotifOpen(false);
+      if (e.key === "Escape") setNotifOpen(false)
     }
     if (notifOpen) {
-      document.addEventListener("keydown", handleEsc);
+      document.addEventListener("keydown", handleEsc)
     }
-    return () => document.removeEventListener("keydown", handleEsc);
-  }, [notifOpen]);
+    return () => document.removeEventListener("keydown", handleEsc)
+  }, [notifOpen])
 
   function timeAgo(value: string) {
-    const ms = Date.now() - new Date(value).getTime();
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const ms = Date.now() - new Date(value).getTime()
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24))
     if (days === 0) {
-      const hours = Math.floor(ms / (1000 * 60 * 60));
+      const hours = Math.floor(ms / (1000 * 60 * 60))
       if (hours === 0) {
-        const mins = Math.floor(ms / (1000 * 60));
-        return `${max(1, mins)} phút trước`;
+        const mins = Math.floor(ms / (1000 * 60))
+        return `${max(1, mins)} phút trước`
       }
-      return `${hours} giờ trước`;
+      return `${hours} giờ trước`
     }
-    if (days === 1) return "Hôm qua";
-    if (days < 7) return `${days} ngày trước`;
-    return `${Math.floor(days / 7)} tuần trước`;
+    if (days === 1) return "Hôm qua"
+    if (days < 7) return `${days} ngày trước`
+    return `${Math.floor(days / 7)} tuần trước`
   }
 
   // Safe helper to avoid negative minutes
   function max(a: number, b: number) {
-    return a > b ? a : b;
+    return a > b ? a : b
   }
 
   const renderHeader = (transparent: boolean, showSearch: boolean) => (
@@ -404,10 +404,10 @@ export function MarketplaceHeader() {
                     </div>
                   ) : (
                     notifications.map((n: NotificationRead) => {
-                      const linkData = n.data as Record<string, unknown> | null;
+                      const linkData = n.data as Record<string, unknown> | null
                       const listingId = linkData?.listing_id as
                         | string
-                        | undefined;
+                        | undefined
                       return (
                         <Link
                           key={n.id}
@@ -433,7 +433,7 @@ export function MarketplaceHeader() {
                             <span className="mt-1.5 size-2 shrink-0 rounded-full bg-[#2563EB]" />
                           )}
                         </Link>
-                      );
+                      )
                     })
                   )}
                 </div>
@@ -571,7 +571,7 @@ export function MarketplaceHeader() {
         </div>
       )}
     </div>
-  );
+  )
 
   return (
     <>
@@ -623,5 +623,5 @@ export function MarketplaceHeader() {
         </>
       ) : null}
     </>
-  );
+  )
 }

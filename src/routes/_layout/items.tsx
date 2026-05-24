@@ -1,5 +1,10 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useChildMatches,
+} from "@tanstack/react-router"
 import {
   ChevronLeft,
   ChevronRight,
@@ -699,6 +704,13 @@ function ItemsInner() {
 }
 
 function Items() {
+  const childMatches = useChildMatches()
+  const hasChild = childMatches.length > 0
+
+  if (hasChild) {
+    return <Outlet />
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <ItemsInner />

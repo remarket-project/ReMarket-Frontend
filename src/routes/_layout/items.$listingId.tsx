@@ -5,6 +5,7 @@ import {
   BadgeCheck,
   CalendarDays,
   CheckCircle2,
+  ChevronRight,
   Clock3,
   Eye,
   Handshake,
@@ -29,13 +30,15 @@ import {
   UsersService,
 } from "@/client"
 import { ImageGallery } from "@/components/Listings/ImageGallery"
+import { ListingCard } from "@/components/Listings/ListingCard"
 import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import useAuth from "@/hooks/useAuth"
+import { cn } from "@/lib/utils"
+import { getInitials } from "@/utils"
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 export const Route = createFileRoute("/_layout/items/$listingId")({
@@ -59,9 +62,9 @@ function currency(value: string) {
 function prettyDate(value: string) {
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return "Không rõ"
-  return d.toLocaleDateString(undefined, {
+  return d.toLocaleDateString("vi-VN", {
     day: "2-digit",
-    month: "short",
+    month: "2-digit",
     year: "numeric",
   })
 }
@@ -105,7 +108,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
     className: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   pending: {
-    label: "Đang chờ",
+    label: "Đang chờ duyệt",
     className: "bg-amber-50 text-amber-700 border-amber-200",
   },
   sold: {
@@ -125,86 +128,42 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function DetailSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="mb-5 flex gap-3">
-        <Skeleton className="h-9 w-32" />
-        <Skeleton className="h-6 w-20" />
-        <Skeleton className="h-6 w-16" />
+    <div className="space-y-8 animate-pulse">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-4 rounded-full" />
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-4 w-4 rounded-full" />
+        <Skeleton className="h-4 w-48" />
       </div>
-      <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
-        <div className="space-y-5">
-          <Skeleton className="h-96 w-full rounded-2xl" />
-          <Skeleton className="h-48 w-full rounded-2xl" />
+      {/* Main grid */}
+      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        <div className="space-y-4">
+          <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="h-16 w-16 rounded-xl flex-shrink-0"
+              />
+            ))}
+          </div>
         </div>
         <div className="space-y-4">
-          <Skeleton className="h-56 w-full rounded-2xl" />
-          <Skeleton className="h-44 w-full rounded-2xl" />
+          <Skeleton className="h-64 w-full rounded-2xl" />
+          <Skeleton className="h-48 w-full rounded-2xl" />
           <Skeleton className="h-32 w-full rounded-2xl" />
         </div>
       </div>
-    </div>
-  )
-}
-
-// ─── Similar Listings ─────────────────────────────────────────────────────────
-function SimilarListings({
-  categoryId,
-  excludeId,
-}: {
-  categoryId: string
-  excludeId: string
-}) {
-  const { data } = useQuery({
-    queryKey: ["similar-listings", categoryId],
-    queryFn: () =>
-      ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 8 }),
-    enabled: Boolean(categoryId),
-  })
-
-  const similar = (data?.items ?? [])
-    .filter((l) => l.id !== excludeId)
-    .slice(0, 4)
-
-  if (similar.length === 0) return null
-
-  return (
-    <div className="mt-6">
-      <h3 className="mb-3 font-semibold text-[#102A43]">Bạn có thể thích</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {similar.map((l) => {
-          const cond = conditionConfig[l.condition_grade] ?? {
-            label: l.condition_grade,
-            className: "",
-          }
-          return (
-            <Link
-              key={l.id}
-              to="/items/$listingId"
-              params={{ listingId: l.id }}
-              className="group flex gap-3 rounded-xl border border-[#D8E2EF] bg-white p-3 transition hover:border-[#2563EB]/30 hover:shadow-md"
-            >
-              <div className="flex size-14 flex-shrink-0 items-center justify-center rounded-lg border border-[#D8E2EF] bg-[#EFF6FF]">
-                <Package className="size-6 text-[#93C5FD]" />
-              </div>
-              <div className="min-w-0">
-                <p className="line-clamp-1 text-sm font-semibold text-[#102A43] group-hover:text-[#2563EB]">
-                  {l.title}
-                </p>
-                <div className="mt-1 flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className={`text-[10px] ${cond.className}`}
-                  >
-                    {cond.label}
-                  </Badge>
-                  <span className="text-xs font-bold text-[#2563EB]">
-                    {currency(l.price)}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          )
-        })}
+      {/* Tabs */}
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-28 rounded-full" />
+          ))}
+        </div>
+        <Skeleton className="h-40 w-full rounded-2xl" />
       </div>
     </div>
   )
@@ -223,110 +182,367 @@ function SellerCard({ sellerId }: { sellerId: string }) {
 
   if (isLoading) {
     return (
-      <Card className="border-[#D8E2EF] bg-white">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-3">
-            <Skeleton className="size-12 rounded-xl" />
-            <div className="space-y-1.5 flex-1">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-3 w-24" />
-            </div>
+      <div className="rounded-2xl border border-[#D8E2EF] bg-white p-5">
+        <div className="flex items-center gap-3">
+          <Skeleton className="size-14 rounded-xl" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-48" />
+            <Skeleton className="h-2 w-full rounded-full" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
   if (isError || !seller) {
     return (
-      <Card className="border-[#D8E2EF] bg-white">
-        <CardContent className="p-5 text-sm text-[#5B7083]">
-          Hồ sơ người bán hiện chưa khả dụng.
-        </CardContent>
-      </Card>
+      <div className="rounded-2xl border border-[#D8E2EF] bg-white p-5 text-sm text-[#5B7083]">
+        Hồ sơ người bán hiện chưa khả dụng.
+      </div>
     )
   }
 
-  const initials = seller.full_name.slice(0, 2).toUpperCase()
   const trustScore = Number(seller.trust_score || 0)
   const ratingAvg = Number(seller.rating_avg || 0)
+  const isVerified = trustScore >= 80
 
   return (
-    <Card className="border-[#D8E2EF] bg-white">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base text-[#102A43]">
-          <Star className="size-4 text-[#F59E0B]" /> Thông tin người bán
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="rounded-2xl border border-[#D8E2EF] bg-white overflow-hidden">
+      {/* Header */}
+      <div className="px-5 pt-5 pb-3 border-b border-[#F1F5F9]">
+        <h3 className="text-sm font-semibold text-[#102A43] flex items-center gap-1.5">
+          <Star className="size-4 text-[#F59E0B]" />
+          Thông tin người bán
+        </h3>
+      </div>
+
+      <div className="p-5 space-y-4">
+        {/* Avatar + Name + Rating */}
         <Link
           to="/u/$userId"
           params={{ userId: sellerId }}
           className="flex items-start gap-3 group"
         >
-          <Avatar className="size-14 rounded-xl border-2 border-[#D8E2EF]">
+          <Avatar className="size-14 rounded-xl border-2 border-[#D8E2EF] shrink-0">
             <AvatarImage src={seller.avatar_url ?? undefined} />
-            <AvatarFallback className="rounded-xl bg-[#EFF6FF] text-[#2563EB] font-bold">
-              {initials}
+            <AvatarFallback className="rounded-xl bg-[#EFF6FF] text-[#2563EB] font-bold text-base">
+              {getInitials(seller.full_name)}
             </AvatarFallback>
           </Avatar>
-          <div className="min-w-0">
-            <p className="font-semibold text-[#102A43] group-hover:text-[#2563EB] transition-colors">
-              {seller.full_name}
-            </p>
-            <div className="mt-0.5 flex items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <p className="font-semibold text-[#102A43] group-hover:text-[#2563EB] transition-colors leading-tight">
+                {seller.full_name}
+              </p>
+              {isVerified && (
+                <BadgeCheck
+                  className="size-4 text-[#2563EB] shrink-0"
+                  aria-label="Đã xác minh"
+                />
+              )}
+            </div>
+            {/* Stars */}
+            <div className="mt-1 flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`size-3 ${i < Math.round(ratingAvg) ? "fill-[#F59E0B] text-[#F59E0B]" : "text-[#D8E2EF]"}`}
+                  className={`size-3.5 ${i < Math.round(ratingAvg) ? "fill-[#F59E0B] text-[#F59E0B]" : "text-[#D8E2EF]"}`}
                 />
               ))}
-              <span className="ml-1 text-xs text-[#5B7083]">
+              <span className="ml-1.5 text-xs text-[#5B7083]">
                 {ratingAvg.toFixed(1)} · {seller.rating_count} đánh giá
               </span>
             </div>
+            <p className="mt-0.5 text-xs text-[#5B7083]">
+              Tham gia {prettyDate(seller.created_at)}
+            </p>
           </div>
         </Link>
 
-        <div className="grid grid-cols-2 gap-2 text-xs text-[#5B7083]">
-          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
-            <p className="text-[#5B7083]">Điểm tin cậy</p>
-            <p className="text-lg font-bold text-[#102A43]">{trustScore}/100</p>
+        {/* Trust progress bar */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-[#5B7083] font-medium">Điểm tin cậy</span>
+            <span
+              className={cn(
+                "font-bold",
+                trustScore >= 80
+                  ? "text-[#059669]"
+                  : trustScore >= 50
+                    ? "text-[#2563EB]"
+                    : "text-[#D97706]",
+              )}
+            >
+              {trustScore}/100
+            </span>
           </div>
-          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
-            <p className="text-[#5B7083]">Đơn đã hoàn tất</p>
-            <p className="text-lg font-bold text-[#102A43]">
-              {seller.completed_orders}
-            </p>
-          </div>
-          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
-            <p className="text-[#5B7083]">Đánh giá TB</p>
-            <p className="text-lg font-bold text-[#102A43]">
-              {ratingAvg.toFixed(1)} ★
-            </p>
-          </div>
-          <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
-            <p className="text-[#5B7083]">Tham gia</p>
-            <p className="text-lg font-bold text-[#102A43]">
-              {prettyDate(seller.created_at)}
-            </p>
+          <div className="h-1.5 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all duration-700",
+                trustScore >= 80
+                  ? "bg-[#059669]"
+                  : trustScore >= 50
+                    ? "bg-[#2563EB]"
+                    : "bg-[#D97706]",
+              )}
+              style={{ width: `${trustScore}%` }}
+            />
           </div>
         </div>
 
-        {seller.bio && <p className="text-sm text-[#5B7083]">{seller.bio}</p>}
+        {/* Stats grid */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] p-3 text-center">
+            <p className="text-lg font-bold text-[#102A43]">
+              {seller.completed_orders}
+            </p>
+            <p className="text-[10px] text-[#5B7083] mt-0.5">Đơn thành công</p>
+          </div>
+          <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] p-3 text-center">
+            <p className="text-lg font-bold text-[#102A43]">
+              {ratingAvg.toFixed(1)} ★
+            </p>
+            <p className="text-[10px] text-[#5B7083] mt-0.5">Đánh giá TB</p>
+          </div>
+        </div>
+
+        {seller.bio && (
+          <p className="text-xs text-[#5B7083] leading-relaxed border-t border-[#F1F5F9] pt-3">
+            {seller.bio}
+          </p>
+        )}
 
         <Button
           variant="outline"
-          className="w-full border-[#D8E2EF] bg-white text-[#2563EB]"
+          className="w-full border-[#D8E2EF] bg-white text-[#2563EB] hover:bg-[#EFF6FF] text-sm"
           size="sm"
           asChild
         >
           <Link to="/u/$userId" params={{ userId: sellerId }}>
-            Xem trang hồ sơ
+            Xem trang hồ sơ đầy đủ
+            <ChevronRight className="ml-1.5 size-3.5" />
           </Link>
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
+  )
+}
+
+// ─── Detail Tabs ──────────────────────────────────────────────────────────────
+type TabKey = "description" | "specs" | "market"
+
+function DetailTabs({
+  listing,
+  categoryName,
+  offerCount,
+  bestOffer,
+}: {
+  listing: ListingWithImages
+  categoryName: string | undefined
+  offerCount: number
+  bestOffer: number
+}) {
+  const [activeTab, setActiveTab] = useState<TabKey>("description")
+  const [descExpanded, setDescExpanded] = useState(false)
+
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: "description", label: "Mô tả" },
+    { key: "specs", label: "Thông số" },
+    { key: "market", label: "Nhịp thị trường" },
+  ]
+
+  const description = listing.description || ""
+  const shouldTruncate = description.length > 400
+  const displayedDesc =
+    shouldTruncate && !descExpanded
+      ? `${description.slice(0, 400)}…`
+      : description
+
+  return (
+    <div className="rounded-2xl border border-[#D8E2EF] bg-white overflow-hidden">
+      {/* Tab bar */}
+      <div className="flex border-b border-[#D8E2EF]">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              "relative px-5 py-3.5 text-sm font-medium transition-colors flex-1",
+              activeTab === tab.key
+                ? "text-[#2563EB]"
+                : "text-[#5B7083] hover:text-[#102A43]",
+            )}
+          >
+            {tab.label}
+            {activeTab === tab.key && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB] rounded-t-full" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      <div className="p-5">
+        {activeTab === "description" && (
+          <div className="space-y-3">
+            {description ? (
+              <>
+                <p className="text-sm text-[#102A43] leading-relaxed whitespace-pre-line">
+                  {displayedDesc}
+                </p>
+                {shouldTruncate && (
+                  <button
+                    type="button"
+                    onClick={() => setDescExpanded((v) => !v)}
+                    className="text-xs font-medium text-[#2563EB] hover:underline"
+                  >
+                    {descExpanded ? "Thu gọn ▲" : "Xem thêm ▼"}
+                  </button>
+                )}
+              </>
+            ) : (
+              <p className="text-sm italic text-[#8A99A8]">
+                Người bán chưa cung cấp mô tả chi tiết.
+              </p>
+            )}
+          </div>
+        )}
+
+        {activeTab === "specs" && (
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            {[
+              {
+                icon: <BadgeCheck className="size-4 text-[#2563EB]" />,
+                label: "Tình trạng",
+                value:
+                  conditionConfig[listing.condition_grade]?.label ??
+                  listing.condition_grade,
+              },
+              {
+                icon: <MapPin className="size-4 text-[#2563EB]" />,
+                label: "Danh mục",
+                value: categoryName ?? "Đang xác định…",
+              },
+              {
+                icon: <CalendarDays className="size-4 text-[#2563EB]" />,
+                label: "Ngày đăng",
+                value: prettyDate(listing.created_at),
+              },
+              {
+                icon: <Eye className="size-4 text-[#2563EB]" />,
+                label: "Cập nhật",
+                value: prettyDate(listing.updated_at),
+              },
+              {
+                icon: <Handshake className="size-4 text-[#2563EB]" />,
+                label: "Thương lượng",
+                value: listing.is_negotiable
+                  ? "Có thể thương lượng"
+                  : "Giá cố định",
+              },
+              {
+                icon: <BadgeCheck className="size-4 text-[#2563EB]" />,
+                label: "Mã tin đăng",
+                value: `#${listing.id.slice(0, 8).toUpperCase()}`,
+              },
+            ].map(({ icon, label, value }) => (
+              <div
+                key={label}
+                className="flex items-start gap-3 rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] px-4 py-3"
+              >
+                <span className="mt-0.5 shrink-0">{icon}</span>
+                <div className="min-w-0">
+                  <p className="text-[11px] text-[#5B7083] uppercase tracking-wide font-medium">
+                    {label}
+                  </p>
+                  <p className="text-sm font-semibold text-[#102A43] mt-0.5 truncate">
+                    {value}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "market" && (
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-white px-4 py-3.5">
+              <span className="flex items-center gap-2 text-sm text-[#5B7083]">
+                <Handshake className="size-4 text-[#2563EB]" />
+                Đề nghị đang có
+              </span>
+              <span className="font-bold text-[#102A43]">{offerCount}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#ECFDF5] px-4 py-3.5">
+              <span className="flex items-center gap-2 text-sm text-[#059669]">
+                <Wallet className="size-4" />
+                Giá đề nghị tốt nhất
+              </span>
+              <span className="font-bold text-[#059669]">
+                {bestOffer > 0 ? currency(String(bestOffer)) : "–"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#FFFBEB] px-4 py-3.5">
+              <span className="flex items-center gap-2 text-sm text-[#D97706]">
+                <Clock3 className="size-4" />
+                Cập nhật gần nhất
+              </span>
+              <span className="font-bold text-[#D97706]">
+                {prettyDate(listing.updated_at)}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Similar Listings ─────────────────────────────────────────────────────────
+function SimilarListings({
+  categoryId,
+  excludeId,
+}: {
+  categoryId: string
+  excludeId: string
+}) {
+  const { data } = useQuery({
+    queryKey: ["similar-listings", categoryId],
+    queryFn: () =>
+      ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 10 }),
+    enabled: Boolean(categoryId),
+  })
+
+  const similar = (data?.items ?? [])
+    .filter((l) => l.id !== excludeId)
+    .slice(0, 8)
+
+  if (similar.length === 0) return null
+
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-[#102A43]">
+          Bạn có thể thích 🔥
+        </h2>
+        <Link
+          to="/categories/$slug"
+          params={{ slug: categoryId }}
+          className="flex items-center gap-1 text-sm font-medium text-[#2563EB] hover:underline"
+        >
+          Xem tất cả
+          <ChevronRight className="size-4" />
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {similar.map((l, i) => (
+          <ListingCard key={l.id} item={l} animationDelay={i * 40} />
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -336,6 +552,7 @@ function ListingDetailPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [offerDialogOpen, setOfferDialogOpen] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
@@ -360,7 +577,9 @@ function ListingDetailPage() {
         skip: 0,
         limit: 50,
       }),
-    enabled: Boolean(data?.listing),
+    enabled:
+      Boolean(data?.listing) &&
+      Boolean(user && data?.listing?.seller_id === user.id),
   })
 
   const { data: category } = useQuery({
@@ -377,13 +596,14 @@ function ListingDetailPage() {
       OrdersService.createDirectOrderApiV1OrdersPost({
         requestBody: { listing_id: listingId },
       }),
-    onSuccess: (_order) => {
-      toast.success("Order created! Proceed to fund escrow.")
+    onSuccess: () => {
+      toast.success("Đặt hàng thành công! Tiến hành nạp tiền vào escrow.")
       queryClient.invalidateQueries({ queryKey: ["my-orders"] })
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       const msg =
-        err?.body?.detail || "Failed to create order. Please try again."
+        (err as { body?: { detail?: string } })?.body?.detail ||
+        "Đặt hàng thất bại. Vui lòng thử lại."
       toast.error(msg)
     },
   })
@@ -392,19 +612,22 @@ function ListingDetailPage() {
 
   if (!data?.listing) {
     return (
-      <div className="rounded-3xl border border-dashed border-[#D8E2EF] bg-white p-12 text-center">
-        <Package className="mx-auto mb-4 size-12 text-[#D8E2EF]" />
+      <div className="rounded-3xl border border-dashed border-[#D8E2EF] bg-white p-16 text-center">
+        <Package className="mx-auto mb-4 size-14 text-[#D8E2EF]" />
         <h2 className="text-xl font-semibold text-[#102A43]">
           Không tìm thấy tin đăng
         </h2>
-        <p className="mt-1 text-sm text-[#5B7083]">
+        <p className="mt-1.5 text-sm text-[#5B7083]">
           Tin đăng có thể đã bị ẩn hoặc gỡ bỏ.
         </p>
         <Button
-          className="mt-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          className="mt-6 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
           asChild
         >
-          <Link to="/items">Quay lại danh sách</Link>
+          <Link to="/items">
+            <ArrowLeft className="mr-2 size-4" />
+            Quay lại danh sách
+          </Link>
         </Button>
       </div>
     )
@@ -434,17 +657,47 @@ function ListingDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* ── Breadcrumb row ── */}
-      <section className="mb-5 flex flex-wrap items-center gap-2">
+    <div className="space-y-8">
+      {/* ── Breadcrumb ── */}
+      <nav
+        className="flex flex-wrap items-center gap-1.5 text-sm"
+        aria-label="Breadcrumb"
+      >
+        <Link
+          to="/"
+          className="text-[#5B7083] hover:text-[#2563EB] transition-colors"
+        >
+          Trang chủ
+        </Link>
+        <ChevronRight className="size-3.5 text-[#D8E2EF]" />
+        {category ? (
+          <>
+            <Link
+              to="/categories/$slug"
+              params={{ slug: category.slug ?? "" }}
+              className="text-[#5B7083] hover:text-[#2563EB] transition-colors"
+            >
+              {category.name}
+            </Link>
+            <ChevronRight className="size-3.5 text-[#D8E2EF]" />
+          </>
+        ) : null}
+        <span className="max-w-[240px] truncate font-medium text-[#102A43]">
+          {listing.title}
+        </span>
+      </nav>
+
+      {/* ── Status badges row ── */}
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="outline"
-          className="border-[#D8E2EF] bg-white text-[#5B7083]"
+          className="border-[#D8E2EF] bg-white text-[#5B7083] hover:text-[#2563EB]"
           size="sm"
           asChild
         >
           <Link to="/items">
-            <ArrowLeft className="mr-1.5 size-4" /> Quay lại danh sách
+            <ArrowLeft className="mr-1.5 size-4" />
+            Quay lại
           </Link>
         </Button>
         <Badge variant="outline" className={`text-xs ${condition.className}`}>
@@ -456,222 +709,200 @@ function ListingDetailPage() {
         {isSold && (
           <Badge className="bg-zinc-700 text-white text-xs">SOLD</Badge>
         )}
-      </section>
+        <span className="ml-auto flex items-center gap-1 text-xs text-[#5B7083]">
+          <Eye className="size-3.5" />
+          Đăng {timeAgo(listing.created_at)}
+        </span>
+      </div>
 
-      {/* ── Main grid: left + right ── */}
-      <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
-        {/* ── LEFT column ── */}
-        <div className="space-y-5">
-          {/* Image gallery */}
+      {/* ── Main 2-column grid ── */}
+      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        {/* ── LEFT: Image gallery ── */}
+        <div>
           <ImageGallery images={images} title={listing.title} />
-
-          {/* Description card */}
-          <Card className="border-[#D8E2EF] bg-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-xl text-[#102A43]">
-                {listing.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-[#5B7083]">
-              <p className="text-sm leading-relaxed">
-                {listing.description || (
-                  <span className="italic text-[#8A99A8]">
-                    Chưa có mô tả cho tin đăng này.
-                  </span>
-                )}
-              </p>
-              <div className="grid gap-2 text-sm sm:grid-cols-2">
-                <p className="flex items-center gap-2">
-                  <CalendarDays className="size-4 text-[#2563EB]" />
-                  Đăng {timeAgo(listing.created_at)}
-                </p>
-                <p className="flex items-center gap-2">
-                  <Eye className="size-4 text-[#2563EB]" />
-                  Cập nhật {prettyDate(listing.updated_at)}
-                </p>
-                <p className="flex items-center gap-2">
-                  <BadgeCheck className="size-4 text-[#2563EB]" />
-                  Người bán #{listing.seller_id.slice(0, 8)}
-                </p>
-                <p className="flex items-center gap-2">
-                  <MapPin className="size-4 text-[#2563EB]" />
-                  {category?.name ?? "Đang xác định..."}
-                </p>
-              </div>
-
-              {isSeller && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-[#D8E2EF] bg-white text-[#2563EB] w-fit"
-                  asChild
-                >
-                  <Link to="/items/create">
-                    <Pencil className="mr-1.5 size-4" /> Đăng tin mới
-                  </Link>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Seller card */}
-          <SellerCard sellerId={listing.seller_id} />
-
-          {/* Similar listings */}
-          <SimilarListings
-            categoryId={listing.category_id}
-            excludeId={listing.id}
-          />
         </div>
 
-        {/* ── RIGHT column ── */}
+        {/* ── RIGHT: Price + Seller + Trust ── */}
         <div className="space-y-4">
-          {/* Price & Action card */}
-          <Card className="sticky top-4 border-[#D8E2EF] bg-white">
-            <CardHeader className="space-y-2 pb-3">
-              <CardTitle className="text-3xl font-bold text-[#1D4ED8]">
-                {currency(listing.price)}
-              </CardTitle>
-              <p className="text-xs text-[#5B7083]">
-                {listing.is_negotiable
-                  ? "✓ Có thể thương lượng"
-                  : "Giá cố định"}
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          {/* Price & Action card (sticky on desktop) */}
+          <div className="rounded-2xl border border-[#D8E2EF] bg-white overflow-hidden lg:sticky lg:top-20">
+            {/* Title inside card on mobile/tablet */}
+            <div className="px-5 pt-5 pb-3">
+              <h1 className="text-xl font-bold text-[#102A43] leading-snug">
+                {listing.title}
+              </h1>
+              <div className="mt-3 flex items-end gap-3">
+                <span className="text-3xl font-extrabold text-[#1D4ED8] tracking-tight">
+                  {currency(listing.price)}
+                </span>
+                {listing.is_negotiable && (
+                  <span className="mb-0.5 rounded-full bg-[#EFF6FF] px-2.5 py-1 text-xs font-medium text-[#2563EB]">
+                    ✓ Có thể thương lượng
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="px-5 pb-5 space-y-3">
               {/* Sold banner */}
               {isSold && (
-                <div className="rounded-xl border border-[#D8E2EF] bg-zinc-50 p-3 text-center text-sm font-semibold text-zinc-600">
-                  Tin này đã được bán
-                </div>
-              )}
-
-              {/* Seller actions */}
-              {isSeller && !isSold && (
-                <div className="rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] p-3 text-sm text-[#102A43]">
-                  <p className="font-semibold">Bạn đang sở hữu tin này</p>
-                  <p className="text-xs mt-0.5 text-[#5B7083]">
-                    {offerCount > 0
-                      ? `${offerCount} đề nghị nhận được`
-                      : "Chưa có đề nghị nào"}
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-center">
+                  <p className="text-sm font-semibold text-zinc-600">
+                    Tin này đã được bán
+                  </p>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Hãy xem các sản phẩm tương tự bên dưới
                   </p>
                 </div>
               )}
 
-              {/* Make offer */}
+              {/* Seller badge (owner) */}
+              {isSeller && !isSold && (
+                <div className="rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#2563EB]">
+                      <Package className="size-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1D4ED8]">
+                        Bạn đang sở hữu tin này
+                      </p>
+                      <p className="text-xs text-[#5B7083] mt-0.5">
+                        {offerCount > 0
+                          ? `${offerCount} đề nghị nhận được · Giá cao nhất: ${bestOffer > 0 ? currency(String(bestOffer)) : "–"}`
+                          : "Chưa có đề nghị nào"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Make offer button */}
               {canMakeOffer && (
                 <Button
-                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white gap-2"
+                  id="btn-make-offer"
+                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white gap-2 h-11"
                   onClick={() => setOfferDialogOpen(true)}
                 >
-                  <Handshake className="size-4" /> Đưa giá
+                  <Handshake className="size-4" />
+                  Đưa giá ngay
                 </Button>
               )}
 
-              {/* Buy now */}
+              {/* Buy now button */}
               {canBuyNow && (
                 <Button
+                  id="btn-buy-now"
                   variant="outline"
-                  className="w-full border-[#2563EB] text-[#2563EB]"
+                  className="w-full border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
                   disabled={buyNowMutation.isPending}
                   onClick={() => buyNowMutation.mutate()}
                 >
                   {buyNowMutation.isPending ? (
                     <>
-                      <Loader2 className="mr-2 size-4 animate-spin" /> Đang xử
-                      lý...
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Đang xử lý...
                     </>
                   ) : (
                     <>
-                      <ShieldCheck className="mr-2 size-4" /> Mua ngay qua
-                      escrow
+                      <ShieldCheck className="size-4" />
+                      Mua ngay qua Escrow
                     </>
                   )}
                 </Button>
               )}
 
-              {/* Escrow info */}
-              <div className="rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] p-3 text-xs text-[#5B7083] leading-relaxed">
-                🛡️{" "}
-                <span className="font-semibold text-[#102A43]">
-                  Được bảo chứng bởi escrow.
-                </span>{" "}
-                Thanh toán được giữ an toàn cho đến khi bạn xác nhận nhận hàng.
-              </div>
-
               {/* Save button */}
               {!isSeller && (
                 <Button
+                  id="btn-save-listing"
                   variant="ghost"
-                  className="w-full text-[#2563EB]"
+                  className={cn(
+                    "w-full gap-2 h-9",
+                    saved
+                      ? "text-rose-500 hover:text-rose-600"
+                      : "text-[#5B7083] hover:text-[#2563EB]",
+                  )}
                   size="sm"
+                  onClick={() => setSaved((v) => !v)}
                 >
-                  <Heart className="mr-2 size-4" /> Lưu tin
+                  <Heart className={cn("size-4", saved && "fill-rose-500")} />
+                  {saved ? "Đã lưu tin" : "Lưu tin"}
                 </Button>
               )}
-            </CardContent>
-          </Card>
 
-          {/* Market Pulse card */}
-          <Card className="border-[#D8E2EF] bg-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base text-[#102A43]">
-                Nhịp thị trường
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-2 text-sm">
-              <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-white p-3">
-                <span className="flex items-center gap-2 text-[#5B7083]">
-                  <Handshake className="size-4 text-[#2563EB]" /> Đề nghị đang
-                  có
-                </span>
-                <span className="font-semibold text-[#102A43]">
-                  {offerCount}
-                </span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#ECFDF5] p-3">
-                <span className="flex items-center gap-2 text-[#059669]">
-                  <Wallet className="size-4" /> Giá đề nghị tốt nhất
-                </span>
-                <span className="font-semibold text-[#059669]">
-                  {bestOffer > 0 ? currency(String(bestOffer)) : "–"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#FFFBEB] p-3">
-                <span className="flex items-center gap-2 text-[#D97706]">
-                  <Clock3 className="size-4" /> Cập nhật gần nhất
-                </span>
-                <span className="font-semibold text-[#D97706]">
-                  {prettyDate(listing.updated_at)}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Edit button for seller */}
+              {isSeller && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] gap-2"
+                  asChild
+                >
+                  <Link to="/items/create">
+                    <Pencil className="size-4" />
+                    Đăng tin mới
+                  </Link>
+                </Button>
+              )}
 
-          {/* Trust Signals card */}
-          <Card className="border-[#D8E2EF] bg-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base text-[#102A43]">
-                Tín hiệu tin cậy
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2.5 text-sm text-[#5B7083]">
-              <p className="flex items-center gap-2">
-                <ShieldCheck className="size-4 text-[#2563EB] flex-shrink-0" />
-                Thanh toán qua escrow - tiền được bảo vệ đến khi giao hàng xong
+              {/* Escrow trust badge */}
+              <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] p-3 text-xs text-[#5B7083] leading-relaxed">
+                <div className="flex items-start gap-2">
+                  <ShieldCheck className="size-4 text-[#2563EB] shrink-0 mt-0.5" />
+                  <p>
+                    <span className="font-semibold text-[#102A43]">
+                      Bảo chứng bởi Escrow ReMarket.
+                    </span>{" "}
+                    Tiền thanh toán được giữ an toàn cho đến khi bạn xác nhận đã
+                    nhận hàng.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seller card */}
+          <SellerCard sellerId={listing.seller_id} />
+
+          {/* Trust signals */}
+          <div className="rounded-2xl border border-[#D8E2EF] bg-white p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-[#102A43]">
+              Giao dịch an toàn
+            </h3>
+            <div className="space-y-2.5 text-sm text-[#5B7083]">
+              <p className="flex items-start gap-2.5">
+                <ShieldCheck className="size-4 text-[#2563EB] flex-shrink-0 mt-0.5" />
+                Thanh toán qua escrow – tiền được bảo vệ đến khi giao hàng xong
               </p>
-              <p className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-[#16A34A] flex-shrink-0" />
+              <p className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-[#16A34A] flex-shrink-0 mt-0.5" />
                 Quy trình giao dịch đã được nền tảng xác minh
               </p>
-              <p className="flex items-center gap-2">
-                <BadgeCheck className="size-4 text-[#2563EB] flex-shrink-0" />
-                Có hỗ trợ xử lý tranh chấp khi cần
+              <p className="flex items-start gap-2.5">
+                <BadgeCheck className="size-4 text-[#2563EB] flex-shrink-0 mt-0.5" />
+                Hỗ trợ xử lý tranh chấp 24/7 khi cần
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* ── Detail tabs (description, specs, market) ── */}
+      <DetailTabs
+        listing={listing}
+        categoryName={category?.name}
+        offerCount={offerCount}
+        bestOffer={bestOffer}
+      />
+
+      {/* ── Similar products ── */}
+      {listing.category_id && (
+        <SimilarListings
+          categoryId={listing.category_id}
+          excludeId={listing.id}
+        />
+      )}
 
       {/* Make Offer Dialog */}
       <MakeOfferDialog
