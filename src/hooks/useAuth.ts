@@ -30,7 +30,7 @@ const useAuth = () => {
     mutationFn: (data: UserRegister) =>
       UsersService.registerUser({ requestBody: data }),
     onSuccess: () => {
-      navigate({ to: "/login" })
+      // Handled in component
     },
     onError: handleError.bind(showErrorToast),
     onSettled: () => {

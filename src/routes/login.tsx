@@ -4,12 +4,12 @@ import {
   Link as RouterLink,
   redirect,
 } from "@tanstack/react-router"
+import { Lock, Mail } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import type { Body_login_login_access_token as AccessToken } from "@/client"
 import { AuthLayout } from "@/components/Common/AuthLayout"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -75,8 +75,13 @@ function Login() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-6"
         >
-          <div className="space-y-1 text-center">
-            <h1 className="rmk-auth-form-title">Đăng nhập ReMarket</h1>
+          <div className="space-y-2 text-center">
+            <h1 className="rmk-auth-form-title font-extrabold text-2xl tracking-tight text-slate-900">
+              Chào mừng trở lại
+            </h1>
+            <p className="text-sm text-slate-500">
+              Đăng nhập để khám phá hàng nghìn tin đăng chất lượng
+            </p>
           </div>
 
           <div className="grid gap-4">
@@ -85,16 +90,21 @@ function Login() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                    Email
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      data-testid="email-input"
-                      placeholder="ban@vidu.com"
-                      type="email"
-                      autoComplete="email"
-                      className="rmk-auth-input"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400 z-10" />
+                      <Input
+                        data-testid="email-input"
+                        placeholder="ban@vidu.com"
+                        type="email"
+                        autoComplete="email"
+                        className="rmk-auth-input pl-10 h-10.5 rounded-xl border-slate-200 focus-visible:ring-blue-500 focus-visible:border-blue-500"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -107,58 +117,62 @@ function Login() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center">
-                    <FormLabel>Mật khẩu</FormLabel>
+                    <FormLabel className="text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                      Mật khẩu
+                    </FormLabel>
                     <RouterLink
                       to="/recover-password"
-                      className="rmk-auth-link ml-auto text-sm"
+                      className="rmk-auth-link ml-auto text-xs font-semibold"
                     >
                       Quên mật khẩu?
                     </RouterLink>
                   </div>
                   <FormControl>
-                    <PasswordInput
-                      data-testid="password-input"
-                      placeholder="Nhập mật khẩu"
-                      autoComplete="current-password"
-                      className="rmk-auth-input"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400 z-10" />
+                      <PasswordInput
+                        data-testid="password-input"
+                        placeholder="Nhập mật khẩu"
+                        autoComplete="current-password"
+                        className="rmk-auth-input pl-10 h-10.5 rounded-xl border-slate-200 focus-visible:ring-blue-500 focus-visible:border-blue-500"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
 
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="remember-me"
-                className="flex items-center gap-2 text-sm"
-              >
-                <Checkbox id="remember-me" aria-label="Ghi nhớ đăng nhập" />
-                <span>Ghi nhớ đăng nhập</span>
-              </label>
-              <span className="text-muted-foreground text-xs">
-                Phiên đăng nhập an toàn
-              </span>
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-slate-400">
+                  Hoặc tiếp tục với
+                </span>
+              </div>
             </div>
 
             <LoadingButton
               type="submit"
-              className="rmk-auth-submit"
+              className="rmk-auth-submit w-full h-10.5 rounded-xl text-sm font-semibold shadow-md shadow-blue-500/10 cursor-pointer"
               loading={loginMutation.isPending}
             >
               Đăng nhập
             </LoadingButton>
 
-            <p className="rmk-auth-note rounded-md px-3 py-2 text-xs">
+            <p className="rmk-auth-note rounded-xl px-4 py-3 text-xs leading-relaxed border border-blue-100 bg-blue-50/50 text-blue-800">
               Nếu email chưa xác minh, vui lòng hoàn tất xác minh trước khi đăng
               nhập lại.
             </p>
           </div>
 
-          <div className="text-center text-sm">
-            <RouterLink to="/signup" className="rmk-auth-link font-medium">
-              Đăng ký
+          <div className="text-center text-sm text-slate-500">
+            Chưa có tài khoản?{" "}
+            <RouterLink to="/signup" className="rmk-auth-link font-semibold">
+              Đăng ký ngay
             </RouterLink>
           </div>
         </form>
