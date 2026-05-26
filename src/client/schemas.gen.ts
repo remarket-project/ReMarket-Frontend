@@ -770,7 +770,7 @@ export const ListingPaginatedSchema = {
     properties: {
         items: {
             items: {
-                '$ref': '#/components/schemas/ListingRead'
+                '$ref': '#/components/schemas/ListingWithImages'
             },
             type: 'array',
             title: 'Items',
@@ -1122,6 +1122,28 @@ export const ListingWithImagesSchema = {
             type: 'array',
             title: 'Images',
             default: []
+        },
+        seller_name: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Seller Name'
+        },
+        seller_avatar_url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Seller Avatar Url'
         }
     },
     type: 'object',

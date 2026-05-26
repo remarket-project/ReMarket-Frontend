@@ -31,7 +31,7 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
   const province = form.watch("province")
   const district = form.watch("district")
 
-  const { data: provinces = [] } = useQuery({
+  const { data: provinces = [], isFetching: loadingProvinces } = useQuery({
     queryKey: ["vn-provinces"],
     queryFn: async (): Promise<VnLocation[]> => {
       const response = await fetch("https://provinces.open-api.vn/api/p/")
@@ -40,9 +40,11 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
       }
       return response.json()
     },
+    staleTime: 24 * 60 * 60 * 1000, // Cache for 24 hours
+    gcTime: 24 * 60 * 60 * 1000,
   })
 
-  const { data: districts = [] } = useQuery({
+  const { data: districts = [], isFetching: loadingDistricts } = useQuery({
     queryKey: ["vn-districts", province],
     queryFn: async (): Promise<VnLocation[]> => {
       const response = await fetch(
@@ -54,9 +56,11 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
       return response.json()
     },
     enabled: Boolean(province),
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 24 * 60 * 60 * 1000,
   })
 
-  const { data: wards = [] } = useQuery({
+  const { data: wards = [], isFetching: loadingWards } = useQuery({
     queryKey: ["vn-wards", district],
     queryFn: async (): Promise<VnLocation[]> => {
       const response = await fetch(
@@ -68,6 +72,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
       return response.json()
     },
     enabled: Boolean(district),
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 24 * 60 * 60 * 1000,
   })
 
   return (
@@ -78,11 +84,10 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
           <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-sm text-blue-900 dark:text-blue-100">
-              📍 Your listing location
+              📍 Địa điểm bán hàng
             </p>
             <p className="text-xs text-blue-800 dark:text-blue-200 mt-1">
-              This helps local buyers find your item and is used for shipping
-              calculations.
+              Điều này giúp người mua ở gần dễ dàng tìm thấy sản phẩm của bạn và hỗ trợ tính toán phí vận chuyển.
             </p>
           </div>
         </div>
@@ -94,7 +99,7 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
         name="province"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Province/City *</FormLabel>
+            <FormLabel>Tỉnh / Thành phố *</FormLabel>
             <Select
               value={field.value}
               onValueChange={(value) => {
@@ -102,10 +107,11 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
                 form.setValue("district", "", { shouldValidate: true })
                 form.setValue("ward", "", { shouldValidate: true })
               }}
+              disabled={loadingProvinces}
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select your province" />
+                  <SelectValue placeholder={loadingProvinces ? "Đang tải Tỉnh / Thành phố..." : "Chọn Tỉnh / Thành phố"} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -127,20 +133,24 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
         name="district"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>District *</FormLabel>
+            <FormLabel>Quận / Huyện *</FormLabel>
             <Select
               value={field.value}
               onValueChange={(value) => {
                 field.onChange(value)
                 form.setValue("ward", "", { shouldValidate: true })
               }}
-              disabled={!province}
+              disabled={!province || loadingDistricts}
             >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue
                     placeholder={
-                      province ? "Select district" : "First select province"
+                      loadingDistricts
+                        ? "Đang tải Quận / Huyện..."
+                        : province
+                        ? "Chọn Quận / Huyện"
+                        : "Vui lòng chọn Tỉnh / Thành phố trước"
                     }
                   />
                 </SelectTrigger>
@@ -164,17 +174,21 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
         name="ward"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Ward *</FormLabel>
+            <FormLabel>Phường / Xã *</FormLabel>
             <Select
               value={field.value}
               onValueChange={field.onChange}
-              disabled={!district}
+              disabled={!district || loadingWards}
             >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue
                     placeholder={
-                      district ? "Select ward" : "First select district"
+                      loadingWards
+                        ? "Đang tải Phường / Xã..."
+                        : district
+                        ? "Chọn Phường / Xã"
+                        : "Vui lòng chọn Quận / Huyện trước"
                     }
                   />
                 </SelectTrigger>
@@ -198,17 +212,16 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
         name="addressDetail"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Specific Address (Optional)</FormLabel>
+            <FormLabel>Địa chỉ cụ thể (Tùy chọn)</FormLabel>
             <FormControl>
               <Input
-                placeholder="e.g., 123 Main Street, Apartment 456"
+                placeholder="Ví dụ: 123 Đường Nguyễn Trãi, Căn hộ 456"
                 maxLength={255}
                 {...field}
               />
             </FormControl>
             <FormDescription>
-              Help buyers know exactly where to pick up or to understand the
-              area better
+              Giúp người mua biết chính xác địa điểm nhận hàng hoặc hình dung rõ hơn về khu vực giao dịch
             </FormDescription>
             <FormMessage />
           </FormItem>

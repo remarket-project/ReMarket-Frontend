@@ -34,6 +34,14 @@ const statusTone: Record<string, string> = {
   disputed: "bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]",
 }
 
+const statusLabels: Record<string, string> = {
+  pending: "Đang chờ thanh toán",
+  funded: "Đã ký quỹ",
+  released: "Đã giải ngân",
+  refunded: "Đã hoàn tiền",
+  disputed: "Đang tranh chấp",
+}
+
 function getEscrowDetailQueryOptions(orderId: string) {
   return {
     queryFn: async () => {
@@ -49,10 +57,10 @@ function getEscrowDetailQueryOptions(orderId: string) {
 
 function money(value: string | number) {
   const amount = Number(value)
-  if (Number.isNaN(amount)) return `$${value}`
-  return new Intl.NumberFormat("en-US", {
+  if (Number.isNaN(amount)) return `${value} đ`
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
   }).format(amount)
 }
@@ -109,10 +117,10 @@ function EscrowDetailPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["escrow-detail", orderId] })
-      toast.success("Release requested successfully.")
+      toast.success("Đã gửi yêu cầu giải ngân thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to request release."),
+      toast.error(error?.body?.detail || "Không thể yêu cầu giải ngân."),
   })
 
   const sellerConfirmMutation = useMutation({
@@ -122,10 +130,10 @@ function EscrowDetailPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["escrow-detail", orderId] })
-      toast.success("Escrow release confirmed.")
+      toast.success("Đã xác nhận giải ngân escrow thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to confirm release."),
+      toast.error(error?.body?.detail || "Không thể xác nhận giải ngân."),
   })
 
   const disputeMutation = useMutation({
@@ -137,10 +145,10 @@ function EscrowDetailPage() {
     onSuccess: () => {
       setOpenDispute(false)
       queryClient.invalidateQueries({ queryKey: ["escrow-detail", orderId] })
-      toast.success("Dispute opened.")
+      toast.success("Đã mở tranh chấp thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to open dispute."),
+      toast.error(error?.body?.detail || "Không thể mở tranh chấp."),
   })
 
   if (isLoading || isListingLoading) {
@@ -201,7 +209,7 @@ function EscrowDetailPage() {
             "bg-[#EFF6FF] text-[#2563EB] border-[#D8E2EF] font-semibold"
           }
         >
-          {escrow.status}
+          {statusLabels[escrow.status] || escrow.status}
         </Badge>
       </section>
 
@@ -251,7 +259,7 @@ function EscrowDetailPage() {
                 <div className="rounded-xl border border-[#D8E2EF] bg-white p-3">
                   <p className="text-xs text-[#5B7083]">Trạng thái</p>
                   <p className="text-sm font-bold text-[#059669] capitalize mt-1">
-                    {escrow.status}
+                    {statusLabels[escrow.status] || escrow.status}
                   </p>
                 </div>
               </div>

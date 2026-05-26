@@ -115,7 +115,9 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
 
         <div className="flex items-center justify-between gap-2 text-[10px] text-[#64748B]">
           <span className="min-w-0 truncate">
-            Người bán #{item.seller_id.slice(0, 8)}
+            {"seller_name" in item && item.seller_name
+              ? item.seller_name
+              : `Người bán #${item.seller_id.slice(0, 8)}`}
           </span>
           <span className="flex shrink-0 items-center gap-0.5">
             <Clock className="size-2.5" />

@@ -14,18 +14,40 @@ import { Toaster } from "./components/ui/sonner"
 import "./index.css"
 import { routeTree } from "./routeTree.gen"
 
+import { refreshAccessToken } from "./lib/tokenRefresh"
+
 const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:8000")
   .replace(/\/+$/, "")
   .replace(/\/api\/v1$/i, "")
 
 OpenAPI.BASE = apiBase
 OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || ""
+  let token = localStorage.getItem("access_token")
+  if (token) {
+    try {
+      const payloadBase64 = token.split(".")[1]
+      const decoded = JSON.parse(atob(payloadBase64))
+      const exp = decoded.exp * 1000 // Convert to ms
+      const now = Date.now()
+      
+      // If expired or about to expire in less than 30 seconds, try to refresh
+      if (exp - now < 30 * 1000) {
+        const newToken = await refreshAccessToken()
+        if (newToken) {
+          token = newToken
+        }
+      }
+    } catch (e) {
+      // Ignore decoding errors, return original token
+    }
+  }
+  return token || ""
 }
 
 const handleApiError = (error: Error) => {
   if (error instanceof ApiError && [401, 403].includes(error.status)) {
     localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
     window.location.href = "/login"
   }
 }

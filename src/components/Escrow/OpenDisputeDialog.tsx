@@ -23,16 +23,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 
 const schema = z.object({
-  reason: z.string().min(10, "Please provide at least 10 characters."),
+  reason: z.string().min(10, "Vui lòng nhập ít nhất 10 ký tự."),
 })
 
 type FormData = z.infer<typeof schema>
 
 const reasons = [
-  "Item not received",
-  "Item not as described",
-  "Item damaged",
-  "Seller unresponsive",
+  "Chưa nhận được sản phẩm",
+  "Sản phẩm không đúng mô tả",
+  "Sản phẩm bị hư hỏng",
+  "Người bán không phản hồi",
 ]
 
 interface OpenDisputeDialogProps {
@@ -59,9 +59,9 @@ export default function OpenDisputeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Open a Dispute</DialogTitle>
+          <DialogTitle>Mở tranh chấp</DialogTitle>
           <DialogDescription>
-            This will freeze the escrow and notify admins for review.
+            Thao tác này sẽ đóng băng tài khoản bảo chứng (escrow) và thông báo cho ban quản trị xem xét.
           </DialogDescription>
         </DialogHeader>
 
@@ -72,7 +72,7 @@ export default function OpenDisputeDialog({
               name="reason"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel>Reason *</FormLabel>
+                  <FormLabel>Lý do *</FormLabel>
                   <FormControl>
                     <RadioGroup
                       value={field.value}
@@ -100,11 +100,11 @@ export default function OpenDisputeDialog({
               name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Details</FormLabel>
+                  <FormLabel>Chi tiết</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={3}
-                      placeholder="Describe your issue in more detail..."
+                      placeholder="Mô tả chi tiết hơn về vấn đề của bạn..."
                       value={field.value}
                       onChange={field.onChange}
                     />
@@ -119,14 +119,14 @@ export default function OpenDisputeDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 type="submit"
                 className="rmk-glow-button"
                 disabled={isPending}
               >
-                Submit Dispute
+                Gửi yêu cầu tranh chấp
               </Button>
             </DialogFooter>
           </form>

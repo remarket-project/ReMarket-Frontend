@@ -28,8 +28,8 @@ import { Textarea } from "@/components/ui/textarea"
 
 const offerSchema = z.object({
   offer_price: z
-    .number({ message: "Please enter a valid price" })
-    .positive("Offer must be greater than 0"),
+    .number({ message: "Vui lòng nhập mức giá hợp lệ" })
+    .positive("Đề nghị giá phải lớn hơn 0"),
   message: z.string().optional(),
 })
 
@@ -71,7 +71,7 @@ export function MakeOfferDialog({
       }),
     onSuccess: () => {
       toast.success(
-        "Offer submitted successfully! The seller will be notified.",
+        "Đã gửi đề nghị thành công! Người bán sẽ nhận được thông báo.",
       )
       queryClient.invalidateQueries({ queryKey: ["listing-offers", listingId] })
       form.reset()
@@ -79,7 +79,7 @@ export function MakeOfferDialog({
     },
     onError: (err: any) => {
       const msg =
-        err?.body?.detail || "Failed to submit offer. Please try again."
+        err?.body?.detail || "Không thể gửi đề nghị. Vui lòng thử lại."
       toast.error(msg)
     },
   })
@@ -94,12 +94,12 @@ export function MakeOfferDialog({
     mutation.mutate(data)
   }
 
-  const formatUSD = (v: string) => {
+  const formatVND = (v: string) => {
     const n = Number(v)
-    if (Number.isNaN(n)) return v
-    return new Intl.NumberFormat("en-US", {
+    if (Number.isNaN(n)) return `${v} đ`
+    return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "USD",
+      currency: "VND",
       maximumFractionDigits: 0,
     }).format(n)
   }
@@ -110,10 +110,10 @@ export function MakeOfferDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-blue-950">
             <Handshake className="size-5 text-blue-700" />
-            Make an Offer
+            Đưa ra đề nghị
           </DialogTitle>
           <DialogDescription className="text-blue-900/70">
-            You're making an offer on{" "}
+            Bạn đang đưa ra đề nghị cho{" "}
             <span className="font-semibold text-blue-900">{listingTitle}</span>
           </DialogDescription>
         </DialogHeader>
@@ -121,14 +121,14 @@ export function MakeOfferDialog({
         {/* Listed price context */}
         <div className="rounded-xl border border-blue-200/70 bg-blue-50/60 p-3 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-blue-900/70">Listed price</span>
+            <span className="text-blue-900/70">Giá niêm yết</span>
             <span className="font-bold text-blue-950">
-              {formatUSD(listedPrice)}
+              {formatVND(listedPrice)}
             </span>
           </div>
           {pctOfListed !== null && (
             <div className="mt-1 flex items-center justify-between">
-              <span className="text-blue-900/60 text-xs">Your offer</span>
+              <span className="text-blue-900/60 text-xs">Đề nghị của bạn</span>
               <span
                 className={`text-xs font-semibold ${
                   pctOfListed >= 90
@@ -138,7 +138,7 @@ export function MakeOfferDialog({
                       : "text-rose-700"
                 }`}
               >
-                {pctOfListed}% of listed price
+                {pctOfListed}% so với giá niêm yết
               </span>
             </div>
           )}
@@ -152,20 +152,17 @@ export function MakeOfferDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-blue-900/80">
-                    Your offer price *
+                    Mức giá đề nghị của bạn *
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-blue-700">
-                        $
-                      </span>
                       <Input
                         {...field}
                         type="number"
                         min={1}
                         step={1}
-                        placeholder="Enter your offer"
-                        className="border-blue-200 bg-white pl-7"
+                        placeholder="Nhập mức giá đề xuất"
+                        className="border-blue-200 bg-white pr-8 animate-none"
                         onChange={(e) =>
                           field.onChange(
                             e.target.value === ""
@@ -174,6 +171,9 @@ export function MakeOfferDialog({
                           )
                         }
                       />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-blue-700">
+                        đ
+                      </span>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -187,13 +187,13 @@ export function MakeOfferDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-blue-900/80">
-                    Message to seller{" "}
-                    <span className="text-blue-900/50">(optional)</span>
+                    Lời nhắn cho người bán{" "}
+                    <span className="text-blue-900/50">(tùy chọn)</span>
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Hi, I'm interested in this item. Can you consider..."
+                      placeholder="Xin chào, tôi rất quan tâm đến sản phẩm này. Bạn có cân nhắc giá..."
                       className="border-blue-200 bg-white"
                       rows={3}
                     />
@@ -204,8 +204,8 @@ export function MakeOfferDialog({
             />
 
             <div className="rounded-xl border border-blue-200/50 bg-blue-50/40 p-3 text-xs text-blue-900/70">
-              🛡️ Your offer is protected. If accepted, payment goes through
-              escrow and is released only after delivery confirmation.
+              🛡️ Đề nghị của bạn được bảo vệ. Nếu được chấp nhận, thanh toán sẽ đi qua
+              tài khoản bảo chứng (escrow) và chỉ giải ngân sau khi xác nhận nhận hàng.
             </div>
 
             <DialogFooter className="gap-2">
@@ -215,7 +215,7 @@ export function MakeOfferDialog({
                 className="border-blue-200"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 type="submit"
@@ -225,12 +225,12 @@ export function MakeOfferDialog({
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 size-4 animate-spin" />
-                    Submitting...
+                    Đang gửi...
                   </>
                 ) : (
                   <>
                     <Handshake className="mr-2 size-4" />
-                    Submit Offer
+                    Gửi đề nghị
                   </>
                 )}
               </Button>

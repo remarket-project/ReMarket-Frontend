@@ -45,7 +45,7 @@ function CreateListingStep3({ form }: Step3Props) {
     const acceptedTypes = ["image/jpeg", "image/png", "image/webp"]
 
     if (remainingSlots <= 0) {
-      toast.error("You can upload up to 10 images only.")
+      toast.error("Bạn chỉ có thể tải lên tối đa 10 ảnh.")
       return
     }
 
@@ -60,13 +60,13 @@ function CreateListingStep3({ form }: Step3Props) {
     ).length
 
     if (selected.length > remainingSlots) {
-      toast.warning(`Only ${remainingSlots} image slot(s) remaining.`)
+      toast.warning(`Chỉ còn lại ${remainingSlots} chỗ để tải ảnh.`)
     }
     if (invalidTypeCount > 0) {
-      toast.error("Only JPG, PNG, and WebP files are supported.")
+      toast.error("Chỉ hỗ trợ định dạng ảnh JPG, PNG và WebP.")
     }
     if (invalidSizeCount > 0) {
-      toast.error("Each image must be 5MB or smaller.")
+      toast.error("Mỗi ảnh phải có dung lượng từ 5MB trở xuống.")
     }
 
     validFiles.forEach((file) => {
@@ -122,7 +122,7 @@ function CreateListingStep3({ form }: Step3Props) {
     <div className="space-y-6">
       {/* Upload Zone */}
       <div>
-        <FormLabel className="block mb-3">Images *</FormLabel>
+        <FormLabel className="block mb-3">Ảnh sản phẩm *</FormLabel>
         <div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -145,22 +145,22 @@ function CreateListingStep3({ form }: Step3Props) {
           <label htmlFor="image-input" className="cursor-pointer block">
             <Upload className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Drag images here or click to browse
+              Kéo thả ảnh vào đây hoặc nhấp để chọn từ thiết bị
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              JPG, PNG, or WebP • Max 5MB each • Up to 10 images
+              JPG, PNG, hoặc WebP • Tối đa 5MB mỗi ảnh • Lên tới 10 ảnh
             </p>
           </label>
         </div>
         <FormDescription className="mt-2">
-          {fields.length}/10 images uploaded
+          Đã tải lên {fields.length}/10 ảnh
         </FormDescription>
       </div>
 
       {/* Image Gallery */}
       {fields.length > 0 && (
         <div>
-          <FormLabel className="block mb-3">Your Images</FormLabel>
+          <FormLabel className="block mb-3">Danh sách ảnh của bạn</FormLabel>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {fields.map((field: any, index) => (
               <div
@@ -179,7 +179,7 @@ function CreateListingStep3({ form }: Step3Props) {
                 {field.isPrimary && (
                   <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
                     <Star className="w-3 h-3 fill-white" />
-                    Primary
+                    Ảnh chính
                   </div>
                 )}
 
@@ -214,13 +214,13 @@ function CreateListingStep3({ form }: Step3Props) {
       {/* Tips */}
       <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <p className="font-semibold text-sm text-blue-900 dark:text-blue-100 mb-2">
-          📸 Image tips:
+          📸 Mẹo chụp ảnh sản phẩm:
         </p>
         <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
-          <li>Use good lighting and clear photos</li>
-          <li>Show the item from multiple angles</li>
-          <li>Include close-ups of any defects or damage</li>
-          <li>First image will be shown in search results</li>
+          <li>Sử dụng ánh sáng tốt và chụp ảnh rõ nét</li>
+          <li>Chụp sản phẩm từ nhiều góc độ khác nhau</li>
+          <li>Chụp cận cảnh những chỗ bị lỗi hoặc hư hại (nếu có)</li>
+          <li>Ảnh đầu tiên (Ảnh chính) sẽ hiển thị trong kết quả tìm kiếm</li>
         </ul>
       </div>
     </div>

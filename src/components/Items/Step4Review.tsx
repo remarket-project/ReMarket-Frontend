@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { DollarSign, FileText, MapPin } from "lucide-react"
+import { FileText, MapPin } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { CategoriesService } from "@/client"
 import { Badge } from "@/components/ui/badge"
@@ -20,11 +20,11 @@ function CreateListingStep4({ form }: Step4Props) {
   const data = form.getValues()
 
   const conditionLabels: Record<string, string> = {
-    brand_new: "Brand New",
-    like_new: "Like New",
-    good: "Good",
-    fair: "Fair",
-    poor: "Poor",
+    brand_new: "Mới nguyên hộp",
+    like_new: "Như mới",
+    good: "Tốt",
+    fair: "Khá",
+    poor: "Kém",
   }
 
   // Fetch categories to show human-readable name
@@ -89,7 +89,7 @@ function CreateListingStep4({ form }: Step4Props) {
     <div className="space-y-6">
       <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg p-4">
         <p className="text-sm text-green-900 dark:text-green-100">
-          ✅ All information looks good! Review below and publish when ready.
+          ✅ Mọi thông tin đã đầy đủ! Vui lòng xem lại bên dưới và bấm đăng tin khi đã sẵn sàng.
         </p>
       </div>
 
@@ -112,7 +112,7 @@ function CreateListingStep4({ form }: Step4Props) {
                 )}
                 {img.isPrimary && (
                   <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                    Primary
+                    Ảnh chính
                   </div>
                 )}
               </div>
@@ -129,16 +129,19 @@ function CreateListingStep4({ form }: Step4Props) {
             </h2>
             {data.isNegotiable && (
               <Badge variant="secondary" className="mb-2">
-                Negotiable
+                Có thương lượng
               </Badge>
             )}
           </div>
 
           {/* Price */}
           <div className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
             <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-              ${data.price?.toFixed(2)}
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+                maximumFractionDigits: 0,
+              }).format(data.price || 0)}
             </span>
           </div>
 
@@ -146,7 +149,7 @@ function CreateListingStep4({ form }: Step4Props) {
           <div className="grid grid-cols-2 gap-4 my-6 py-4 border-y border-gray-200 dark:border-gray-700">
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold mb-1">
-                Condition
+                Tình trạng
               </p>
               <Badge variant="outline">
                 {conditionLabels[data.conditionGrade] || data.conditionGrade}
@@ -156,7 +159,7 @@ function CreateListingStep4({ form }: Step4Props) {
             {data.province && (
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> Location
+                  <MapPin className="w-3 h-3" /> Địa điểm
                 </p>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   {provinceName}
@@ -172,7 +175,7 @@ function CreateListingStep4({ form }: Step4Props) {
           {data.description && (
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold mb-2 flex items-center gap-1">
-                <FileText className="w-3 h-3" /> Description
+                <FileText className="w-3 h-3" /> Mô tả
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
                 {data.description}
@@ -186,21 +189,21 @@ function CreateListingStep4({ form }: Step4Props) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Images</CardTitle>
+            <CardTitle className="text-sm font-semibold">Ảnh sản phẩm</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">
               {data.images?.length || 0}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {data.images?.length === 1 ? "image" : "images"} uploaded
+              Đã tải lên {data.images?.length || 0} ảnh
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Category</CardTitle>
+            <CardTitle className="text-sm font-semibold">Danh mục</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
@@ -211,10 +214,10 @@ function CreateListingStep4({ form }: Step4Props) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Status</CardTitle>
+            <CardTitle className="text-sm font-semibold">Trạng thái</CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="default">Ready to Publish</Badge>
+            <Badge variant="default">Sẵn sàng đăng tin</Badge>
           </CardContent>
         </Card>
       </div>
@@ -236,8 +239,7 @@ function CreateListingStep4({ form }: Step4Props) {
                   />
                 </FormControl>
                 <span>
-                  I confirm this item is accurately described and I legally own
-                  it.
+                  Tôi xác nhận sản phẩm này được mô tả chính xác và thuộc sở hữu hợp pháp của tôi.
                 </span>
               </label>
               <FormMessage />
@@ -259,7 +261,7 @@ function CreateListingStep4({ form }: Step4Props) {
                   />
                 </FormControl>
                 <span>
-                  I agree to ReMarket's seller terms and marketplace policy.
+                  Tôi đồng ý với các điều khoản của người bán và chính sách chợ mua bán của ReMarket.
                 </span>
               </label>
               <FormMessage />

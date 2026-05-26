@@ -43,6 +43,9 @@ const useAuth = () => {
       formData: data,
     })
     localStorage.setItem("access_token", response.access_token)
+    if (response.refresh_token) {
+      localStorage.setItem("refresh_token", response.refresh_token)
+    }
   }
 
   const loginMutation = useMutation({
@@ -55,6 +58,7 @@ const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
     navigate({ to: "/login" })
   }
 

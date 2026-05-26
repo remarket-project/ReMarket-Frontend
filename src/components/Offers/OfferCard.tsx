@@ -28,33 +28,33 @@ interface OfferCardProps {
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   accepted: {
-    label: "Accepted",
+    label: "Đã chấp nhận",
     className: "border-emerald-200 bg-emerald-50 text-emerald-700",
   },
   rejected: {
-    label: "Rejected",
+    label: "Đã từ chối",
     className: "border-rose-200 bg-rose-50 text-rose-700",
   },
   countered: {
-    label: "Countered",
+    label: "Phản đề nghị",
     className: "border-violet-200 bg-violet-50 text-violet-700",
   },
   expired: {
-    label: "Expired",
+    label: "Hết hạn",
     className: "border-zinc-200 bg-zinc-100 text-zinc-700",
   },
   pending: {
-    label: "Pending",
+    label: "Đang chờ",
     className: "border-amber-200 bg-amber-50 text-amber-700",
   },
 }
 
 function formatCurrency(price: string) {
   const numeric = Number(price)
-  if (Number.isNaN(numeric)) return `$${price}`
-  return new Intl.NumberFormat("en-US", {
+  if (Number.isNaN(numeric)) return `${price} đ`
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
   }).format(numeric)
 }
@@ -156,11 +156,11 @@ export function OfferCard({
                 params={{ listingId: offer.listing_id }}
                 className="font-semibold text-sm text-blue-950 hover:text-blue-700 flex items-center gap-1 leading-snug"
               >
-                {listing?.title || `Item #${offer.listing_id.slice(0, 8)}`}
-                <ExternalLink className="w-3 h-3 text-blue-500/80 inline" />
+                {listing?.title || `Sản phẩm #${offer.listing_id.slice(0, 8)}`}
+                <ExternalLink className="w-3.5 h-3.5 text-blue-500/80 inline" />
               </Link>
               <p className="text-[11px] text-zinc-500 mt-1 flex items-center gap-1.5">
-                <span>Offer #{offer.id.slice(0, 8)}</span>
+                <span>Đề nghị #{offer.id.slice(0, 8)}</span>
                 <span>•</span>
                 <span className="flex items-center gap-0.5">
                   <Clock3 className="w-3 h-3" /> {formatDate(offer.updated_at)}
@@ -191,7 +191,7 @@ export function OfferCard({
               </Avatar>
               <div className="min-w-0 text-xs">
                 <p className="font-semibold text-blue-950 flex items-center gap-1">
-                  {role === "received" ? "Buyer:" : "Seller:"}{" "}
+                  {role === "received" ? "Người mua:" : "Người bán:"}{" "}
                   <Link
                     to="/u/$userId"
                     params={{ userId: participant.id }}
@@ -205,7 +205,7 @@ export function OfferCard({
                   <span>{ratingAvg.toFixed(1)}</span>
                   <span>·</span>
                   <span>
-                    {participant.completed_orders || 0} completed orders
+                    {participant.completed_orders || 0} đơn hàng thành công
                   </span>
                 </p>
               </div>
@@ -215,7 +215,7 @@ export function OfferCard({
               variant="outline"
               className="text-[10px] border-blue-200 bg-white"
             >
-              Trust Score: {participant.trust_score || 100}
+              Điểm uy tín: {participant.trust_score || 100}
             </Badge>
           </div>
         )}
@@ -223,13 +223,13 @@ export function OfferCard({
         {/* Pricing context & ratio info */}
         <div className="flex flex-wrap items-center justify-between text-xs text-zinc-500 bg-zinc-50/50 border border-zinc-100 rounded-xl px-3 py-2 gap-2">
           <span>
-            Listed Price:{" "}
+            Giá niêm yết:{" "}
             <strong className="text-zinc-700">
               {formatCurrency(String(listedPrice))}
             </strong>
           </span>
           <span className="flex items-center gap-1">
-            <span>Offer Ratio:</span>
+            <span>Tỷ lệ đề nghị:</span>
             <strong
               className={`font-semibold ${
                 ratio >= 85
@@ -254,7 +254,7 @@ export function OfferCard({
               onClick={() => onCounter(offer)}
               disabled={isPending}
             >
-              <ArrowLeftRight className="w-4 h-4 mr-1.5" /> Counter Offer
+              <ArrowLeftRight className="w-4 h-4 mr-1.5" /> Phản đề nghị
             </Button>
             <Button
               size="sm"
@@ -262,7 +262,7 @@ export function OfferCard({
               onClick={() => onAccept(offer)}
               disabled={isPending}
             >
-              <CheckCircle2 className="w-4 h-4 mr-1.5" /> Accept
+              <CheckCircle2 className="w-4 h-4 mr-1.5" /> Chấp nhận
             </Button>
             <Button
               size="sm"
@@ -271,7 +271,7 @@ export function OfferCard({
               onClick={() => onReject(offer)}
               disabled={isPending}
             >
-              <XCircle className="w-4 h-4 mr-1.5" /> Reject
+              <XCircle className="w-4 h-4 mr-1.5" /> Từ chối
             </Button>
           </div>
         )}
@@ -279,7 +279,7 @@ export function OfferCard({
         {offer.status === "countered" && role === "sent" && (
           <div className="flex flex-wrap gap-2 pt-1">
             <div className="w-full text-xs text-violet-700 font-medium mb-1">
-              ✨ Seller countered with:{" "}
+              ✨ Người bán đã đề xuất giá mới:{" "}
               <strong className="text-sm font-bold">
                 {formatCurrency(offer.offer_price)}
               </strong>
@@ -290,7 +290,7 @@ export function OfferCard({
               onClick={() => onAccept(offer)}
               disabled={isPending}
             >
-              <ThumbsUp className="w-4 h-4 mr-1.5" /> Accept Counter
+              <ThumbsUp className="w-4 h-4 mr-1.5" /> Chấp nhận giá đề xuất
             </Button>
             <Button
               size="sm"
@@ -299,7 +299,7 @@ export function OfferCard({
               onClick={() => onReject(offer)}
               disabled={isPending}
             >
-              <XCircle className="w-4 h-4 mr-1.5" /> Decline
+              <XCircle className="w-4 h-4 mr-1.5" /> Từ chối
             </Button>
           </div>
         )}
@@ -307,7 +307,7 @@ export function OfferCard({
         {isAccepted && (
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> This offer was accepted.
+              <CheckCircle2 className="w-4 h-4" /> Đề nghị này đã được chấp nhận.
             </span>
             <Button
               size="sm"
@@ -316,7 +316,7 @@ export function OfferCard({
               asChild
             >
               <Link to="/orders">
-                View orders <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+                Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
               </Link>
             </Button>
           </div>

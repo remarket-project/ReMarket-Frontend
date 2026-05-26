@@ -38,12 +38,12 @@ const PRESET_AVATARS = [
 const formSchema = z.object({
   full_name: z
     .string()
-    .min(2, "Name must be at least 2 characters")
+    .min(2, "Tên phải có ít nhất 2 ký tự")
     .max(30)
     .optional(),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().max(15, "Phone number is too long").optional(),
-  bio: z.string().max(200, "Bio cannot exceed 200 characters").optional(),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
+  phone: z.string().max(15, "Số điện thoại quá dài").optional(),
+  bio: z.string().max(200, "Mô tả bản thân không được vượt quá 200 ký tự").optional(),
   avatar_url: z.string().optional(),
   province: z.string().optional(),
   district: z.string().optional(),
@@ -86,7 +86,7 @@ const UserInformation = () => {
     mutationFn: (data: UserUpdateMe) =>
       UsersService.updateUserMe({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Profile updated successfully")
+      showSuccessToast("Cập nhật hồ sơ thành công")
       toggleEditMode()
     },
     onError: handleError.bind(showErrorToast),
@@ -128,10 +128,10 @@ const UserInformation = () => {
       <div className="flex items-center justify-between border-b border-blue-100 pb-4">
         <div>
           <h3 className="font-display text-lg font-bold text-blue-950">
-            User Profile
+            Hồ sơ cá nhân
           </h3>
           <p className="text-xs text-blue-900/60">
-            Update your avatar, bio, location, and credentials.
+            Cập nhật ảnh đại diện, tiểu sử, địa điểm giao dịch và thông tin cá nhân.
           </p>
         </div>
         {!editMode && (
@@ -140,7 +140,7 @@ const UserInformation = () => {
             onClick={toggleEditMode}
             className="rmk-glow-button h-9 px-4 text-xs"
           >
-            Edit Profile
+            Chỉnh sửa hồ sơ
           </Button>
         )}
       </div>
@@ -161,7 +161,7 @@ const UserInformation = () => {
                   type="button"
                   onClick={() => setShowPresets(!showPresets)}
                   className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full border border-blue-200 bg-white shadow-md hover:bg-blue-50"
-                  title="Choose preset avatar"
+                  title="Chọn ảnh đại diện mẫu"
                 >
                   <Camera className="size-3.5 text-blue-700" />
                 </button>
@@ -171,19 +171,19 @@ const UserInformation = () => {
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-semibold text-blue-950">
-                  Profile Photo
+                  Ảnh đại diện
                 </p>
                 {editMode && (
                   <Badge
                     variant="outline"
                     className="border-blue-200 bg-blue-50 text-[10px] text-blue-700"
                   >
-                    <Sparkles className="mr-1 size-2.5" /> Preset Available
+                    <Sparkles className="mr-1 size-2.5" /> Sẵn ảnh mẫu
                   </Badge>
                 )}
               </div>
               <p className="text-xs text-blue-900/60">
-                Choose a stunning preset or provide a custom image URL.
+                Chọn một ảnh đại diện mẫu đẹp mắt hoặc cung cấp URL ảnh tùy chỉnh của bạn.
               </p>
 
               {editMode && (
@@ -222,7 +222,7 @@ const UserInformation = () => {
                       <FormItem className="max-w-md">
                         <FormControl>
                           <Input
-                            placeholder="Or paste image URL here..."
+                            placeholder="Hoặc dán URL ảnh tại đây..."
                             type="url"
                             className="h-8 text-xs"
                             {...field}
@@ -245,12 +245,12 @@ const UserInformation = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
-                    Full name
+                    Họ và tên
                   </FormLabel>
                   <FormControl>
                     {editMode ? (
                       <Input
-                        placeholder="Enter your full name"
+                        placeholder="Nhập họ và tên của bạn"
                         {...field}
                         className="border-blue-100 bg-white/50 focus:bg-white"
                       />
@@ -268,16 +268,16 @@ const UserInformation = () => {
             {/* Email (Always Read-only with verified status) */}
             <FormItem>
               <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
-                Email address
+                Địa chỉ email
               </FormLabel>
               <div className="flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 font-medium">
                 <span className="truncate">{currentUser?.email}</span>
                 <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700 font-semibold">
-                  Verified
+                  Đã xác minh
                 </Badge>
               </div>
               <FormDescription className="text-[10px] text-blue-900/50">
-                Used for transactional notifications and account recovery.
+                Được dùng cho các thông báo giao dịch và khôi phục tài khoản.
               </FormDescription>
             </FormItem>
 
@@ -288,7 +288,7 @@ const UserInformation = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
-                    Phone number
+                    Số điện thoại
                   </FormLabel>
                   <FormControl>
                     {editMode ? (
@@ -299,7 +299,7 @@ const UserInformation = () => {
                       />
                     ) : (
                       <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 font-medium">
-                        {field.value || "Not configured"}
+                        {field.value || "Chưa thiết lập"}
                       </div>
                     )}
                   </FormControl>
@@ -315,13 +315,13 @@ const UserInformation = () => {
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel className="text-xs font-bold text-blue-900/70 uppercase">
-                    Bio / Description
+                    Tiểu sử / Mô tả
                   </FormLabel>
                   <FormControl>
                     {editMode ? (
                       <div className="relative">
                         <Textarea
-                          placeholder="Tell potential buyers about yourself or your store..."
+                          placeholder="Giới thiệu với người mua tiềm năng về bản thân hoặc cửa hàng của bạn..."
                           {...field}
                           maxLength={200}
                           className="min-h-[80px] border-blue-100 bg-white/50 focus:bg-white pr-10"
@@ -332,7 +332,7 @@ const UserInformation = () => {
                       </div>
                     ) : (
                       <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-sm text-blue-950 whitespace-pre-wrap min-h-[50px]">
-                        {field.value || "No bio description configured yet."}
+                        {field.value || "Chưa thiết lập tiểu sử / mô tả."}
                       </div>
                     )}
                   </FormControl>
@@ -346,7 +346,7 @@ const UserInformation = () => {
           <div className="space-y-4 border-t border-blue-100 pt-6">
             <div className="flex items-center gap-1.5 text-blue-950 font-semibold">
               <MapPin className="size-4 text-blue-700" />
-              <span className="text-sm font-bold">Trading Location</span>
+              <span className="text-sm font-bold">Địa điểm giao dịch</span>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
@@ -357,12 +357,12 @@ const UserInformation = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
-                      Province / City
+                      Tỉnh / Thành phố
                     </FormLabel>
                     <FormControl>
                       {editMode ? (
                         <Input
-                          placeholder="e.g. Hồ Chí Minh"
+                          placeholder="Ví dụ: Hồ Chí Minh"
                           {...field}
                           className="border-blue-100 bg-white/50 focus:bg-white"
                         />
@@ -384,12 +384,12 @@ const UserInformation = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
-                      District
+                      Quận / Huyện
                     </FormLabel>
                     <FormControl>
                       {editMode ? (
                         <Input
-                          placeholder="e.g. Quận 1"
+                          placeholder="Ví dụ: Quận 1"
                           {...field}
                           className="border-blue-100 bg-white/50 focus:bg-white"
                         />
@@ -411,12 +411,12 @@ const UserInformation = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
-                      Ward
+                      Phường / Xã
                     </FormLabel>
                     <FormControl>
                       {editMode ? (
                         <Input
-                          placeholder="e.g. Phường Bến Nghé"
+                          placeholder="Ví dụ: Phường Bến Nghé"
                           {...field}
                           className="border-blue-100 bg-white/50 focus:bg-white"
                         />
@@ -439,12 +439,12 @@ const UserInformation = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[10px] font-bold text-blue-900/70 uppercase">
-                    Street Address Detail
+                    Địa chỉ chi tiết (Đường, số nhà)
                   </FormLabel>
                   <FormControl>
                     {editMode ? (
                       <Input
-                        placeholder="e.g. 123 Nguyễn Huệ"
+                        placeholder="Ví dụ: 123 Nguyễn Huệ"
                         {...field}
                         className="border-blue-100 bg-white/50 focus:bg-white"
                       />
@@ -469,7 +469,7 @@ const UserInformation = () => {
                 disabled={!form.formState.isDirty}
                 className="rmk-glow-button px-6 text-xs h-9"
               >
-                Save Changes
+                Lưu thay đổi
               </LoadingButton>
               <Button
                 type="button"
@@ -478,7 +478,7 @@ const UserInformation = () => {
                 disabled={mutation.isPending}
                 className="border-blue-200 bg-white text-xs h-9"
               >
-                Cancel
+                Hủy
               </Button>
             </div>
           )}

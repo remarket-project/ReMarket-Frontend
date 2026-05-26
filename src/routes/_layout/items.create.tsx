@@ -65,15 +65,15 @@ const listingFormSchema = z.object({
         isPrimary: z.boolean(),
       }),
     )
-    .min(1, "At least 1 image required"),
+    .min(1, "Yêu cầu ít nhất 1 ảnh"),
   confirmAccuracy: z
     .boolean()
-    .refine((value) => value, "Please confirm your listing accuracy."),
+    .refine((value) => value, "Vui lòng xác nhận tính chính xác của thông tin đăng bán."),
   agreeTerms: z
     .boolean()
     .refine(
       (value) => value,
-      "Please agree to seller terms before publishing.",
+      "Vui lòng đồng ý với các điều khoản của người bán trước khi đăng.",
     ),
 })
 
@@ -84,7 +84,7 @@ const steps = [
   { id: 2, label: "Mô tả", shortLabel: "Mô tả" },
   { id: 3, label: "Ảnh", shortLabel: "Ảnh" },
   { id: 4, label: "Địa điểm", shortLabel: "Địa chỉ" },
-  { id: 5, label: "Xem lại", shortLabel: "Review" },
+  { id: 5, label: "Xem lại", shortLabel: "Xem lại" },
 ]
 
 const conditionLabel: Record<ListingFormData["conditionGrade"], string> = {

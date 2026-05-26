@@ -57,6 +57,14 @@ export const Route = createFileRoute("/_layout/offers")({
   }),
 })
 
+const statusLabels: Record<OfferView, string> = {
+  all: "Tất cả",
+  pending: "Đang chờ",
+  accepted: "Đã chấp nhận",
+  countered: "Phản đề nghị",
+  rejected: "Đã từ chối",
+}
+
 function OffersPage() {
   const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(getOffersQueryOptions())
@@ -146,7 +154,7 @@ function OffersPage() {
         </Card>
         <Card className="border-amber-200/80 bg-amber-50/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-amber-800/80">Pending</CardTitle>
+            <CardTitle className="text-sm text-amber-800/80">Đang chờ</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-2 text-2xl font-bold text-amber-900">
             <Clock3 className="size-4" />
@@ -156,7 +164,7 @@ function OffersPage() {
         <Card className="border-emerald-200/80 bg-emerald-50/60">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-emerald-800/80">
-              Accepted
+              Đã chấp nhận
             </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-2 text-2xl font-bold text-emerald-900">
@@ -167,7 +175,7 @@ function OffersPage() {
         <Card className="border-violet-200/80 bg-violet-50/60">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-violet-800/80">
-              Countered
+              Phản đề nghị
             </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-2 text-2xl font-bold text-violet-900">
@@ -211,7 +219,7 @@ function OffersPage() {
                 }`}
                 onClick={() => setStatusView(status)}
               >
-                {status}
+                {statusLabels[status]}
               </Badge>
             ))}
           </div>

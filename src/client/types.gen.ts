@@ -198,7 +198,7 @@ export type ListingImageRead = {
  * Response schema for paginated listings
  */
 export type ListingPaginated = {
-    items?: Array<ListingRead>;
+    items?: Array<ListingWithImages>;
     total: number;
     skip: number;
     limit: number;
@@ -272,6 +272,8 @@ export type ListingWithImages = {
     created_at: string;
     updated_at: string;
     images?: Array<ListingImageRead>;
+    seller_name?: (string | null);
+    seller_avatar_url?: (string | null);
 };
 
 /**

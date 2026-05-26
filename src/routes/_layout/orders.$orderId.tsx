@@ -133,10 +133,10 @@ function OrderDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-      toast.success("Order updated successfully.")
+      toast.success("Đã cập nhật trạng thái đơn hàng thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to update order."),
+      toast.error(error?.body?.detail || "Không thể cập nhật đơn hàng."),
   })
 
   const releaseMutation = useMutation({
@@ -146,10 +146,10 @@ function OrderDetailPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Release request submitted.")
+      toast.success("Đã gửi yêu cầu giải ngân thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to request release."),
+      toast.error(error?.body?.detail || "Không thể gửi yêu cầu giải ngân."),
   })
 
   const disputeMutation = useMutation({
@@ -161,10 +161,10 @@ function OrderDetailPage() {
     onSuccess: () => {
       setDisputeOpen(false)
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Dispute submitted.")
+      toast.success("Đã gửi yêu cầu tranh chấp thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to open dispute."),
+      toast.error(error?.body?.detail || "Không thể mở tranh chấp."),
   })
 
   const reviewMutation = useMutation({
@@ -179,10 +179,10 @@ function OrderDetailPage() {
     onSuccess: () => {
       setReviewOpen(false)
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Review submitted.")
+      toast.success("Đã gửi đánh giá thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Unable to submit review."),
+      toast.error(error?.body?.detail || "Không thể gửi đánh giá."),
   })
 
   if (isLoading || isListingLoading) {

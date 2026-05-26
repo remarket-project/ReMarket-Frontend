@@ -173,10 +173,6 @@ function MarketplaceHome() {
             <h2 className="mt-2 text-lg font-bold text-[#102A43] md:text-xl">
               Gần bạn, dễ chốt, dễ quét
             </h2>
-            <p className="mt-1 text-sm text-[#5B7083]">
-              Dải tin ngang giúp trang giống marketplace hơn và đưa sản phẩm vào
-              mắt người dùng sớm hơn.
-            </p>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium text-[#5B7083]">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF6FF] px-3 py-1 text-[#2563EB]">
                 <Sparkles className="size-3.5" />
@@ -198,13 +194,6 @@ function MarketplaceHome() {
               </span>
             </div>
           </div>
-          <Button
-            className="hidden rounded-full bg-[#2563EB] px-4 text-sm font-semibold text-white hover:bg-[#1D4ED8] md:inline-flex"
-            size="sm"
-            asChild
-          >
-            <Link to="/items/create">Đăng tin</Link>
-          </Button>
         </div>
 
         {featuredListings.length > 0 ? (
@@ -231,17 +220,7 @@ function MarketplaceHome() {
             <h2 className="text-lg font-bold text-[#102A43] md:text-xl">
               Tin đăng mới nhất
             </h2>
-            <p className="mt-1 text-sm text-[#5B7083]">
-              Feed dày hơn, sáng hơn và dễ xem nhanh hơn.
-            </p>
           </div>
-          <Button
-            className="hidden rounded-full bg-[#2563EB] px-4 text-sm font-semibold text-white hover:bg-[#1D4ED8] md:inline-flex"
-            size="sm"
-            asChild
-          >
-            <Link to="/items/create">Đăng tin</Link>
-          </Button>
         </div>
 
         <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1">
@@ -294,13 +273,6 @@ function MarketplaceHome() {
             <p className="text-sm text-[#5B7083]">
               Chưa có tin đăng nào. Hãy là người đầu tiên!
             </p>
-            <Button
-              className="mt-4 rounded-full bg-[#2563EB] px-4 text-white hover:bg-[#1D4ED8]"
-              size="sm"
-              asChild
-            >
-              <Link to="/items/create">Đăng tin ngay</Link>
-            </Button>
           </div>
         )}
       </section>
@@ -313,13 +285,6 @@ function MarketplaceHome() {
             được đăng bán
           </span>
         </div>
-        <Button
-          className="h-9 rounded-full bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8]"
-          size="sm"
-          asChild
-        >
-          <Link to="/items/create">Đăng tin</Link>
-        </Button>
       </div>
 
       <Link

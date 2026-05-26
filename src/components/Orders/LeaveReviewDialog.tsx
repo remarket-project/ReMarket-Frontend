@@ -51,9 +51,9 @@ export default function LeaveReviewDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Leave a Review</DialogTitle>
+          <DialogTitle>Gửi đánh giá</DialogTitle>
           <DialogDescription>
-            Share your experience after this order was completed.
+            Chia sẻ trải nghiệm của bạn sau khi hoàn thành đơn hàng này.
           </DialogDescription>
         </DialogHeader>
 
@@ -67,7 +67,7 @@ export default function LeaveReviewDialog({
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rating (1 to 5)</FormLabel>
+                  <FormLabel>Đánh giá sao (1 đến 5)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -90,11 +90,11 @@ export default function LeaveReviewDialog({
               name="comment"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Comment (optional)</FormLabel>
+                  <FormLabel>Nhận xét (tùy chọn)</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={3}
-                      placeholder="Great communication..."
+                      placeholder="Giao dịch nhanh chóng, người bán thân thiện..."
                       {...field}
                     />
                   </FormControl>
@@ -108,14 +108,14 @@ export default function LeaveReviewDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 type="submit"
                 className="rmk-glow-button"
                 disabled={isPending}
               >
-                Submit Review
+                Gửi đánh giá
               </Button>
             </DialogFooter>
           </form>

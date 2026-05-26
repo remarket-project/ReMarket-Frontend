@@ -43,10 +43,10 @@ export const Route = createFileRoute("/_layout/search")({
 
 function formatCurrency(value: string) {
   const amount = Number(value)
-  if (Number.isNaN(amount)) return value
-  return new Intl.NumberFormat(undefined, {
+  if (Number.isNaN(amount)) return `${value} đ`
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
   }).format(amount)
 }
@@ -149,18 +149,18 @@ function SearchResultsPage() {
   )
 
   const activeFilters = [
-    search.q ? { label: `Keyword: ${search.q}`, key: "q" as const } : null,
+    search.q ? { label: `Từ khóa: ${search.q}`, key: "q" as const } : null,
     search.categoryId
       ? {
-          label: `Category: ${categoryMap.get(search.categoryId) ?? "Unknown"}`,
+          label: `Danh mục: ${categoryMap.get(search.categoryId) ?? "Không rõ"}`,
           key: "categoryId" as const,
         }
       : null,
     search.minPrice
-      ? { label: `Min: $${search.minPrice}`, key: "minPrice" as const }
+      ? { label: `Giá tối thiểu: ${formatCurrency(search.minPrice)}`, key: "minPrice" as const }
       : null,
     search.maxPrice
-      ? { label: `Max: $${search.maxPrice}`, key: "maxPrice" as const }
+      ? { label: `Giá tối đa: ${formatCurrency(search.maxPrice)}`, key: "maxPrice" as const }
       : null,
   ].filter(Boolean) as Array<{ label: string; key: keyof typeof search }>
 

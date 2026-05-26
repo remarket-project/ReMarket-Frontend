@@ -49,10 +49,10 @@ function getWalletQueryOptions() {
 
 function money(value: string | number) {
   const amount = Number(value)
-  if (Number.isNaN(amount)) return `$${value}`
-  return new Intl.NumberFormat(undefined, {
+  if (Number.isNaN(amount)) return `${value} đ`
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     maximumFractionDigits: 0,
   }).format(amount)
 }
@@ -102,10 +102,10 @@ function WalletPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
       setTopupOpen(false)
-      toast.success("Funds added to wallet.")
+      toast.success("Đã nạp tiền vào ví thành công.")
     },
     onError: (error: any) => {
-      toast.error(error?.body?.detail || "Unable to add funds.")
+      toast.error(error?.body?.detail || "Không thể nạp tiền vào ví.")
     },
   })
 

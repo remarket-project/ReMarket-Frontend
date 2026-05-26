@@ -27,6 +27,16 @@ const schema = z.object({
   note: z.string().optional(),
 })
 
+function formatCurrency(price: string | number) {
+  const numeric = Number(price)
+  if (Number.isNaN(numeric)) return `${price} đ`
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(numeric)
+}
+
 type FormData = z.infer<typeof schema>
 
 interface CounterOfferDialogProps {
@@ -62,10 +72,9 @@ export default function CounterOfferDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Counter Offer</DialogTitle>
+          <DialogTitle>Đưa ra giá phản hồi</DialogTitle>
           <DialogDescription>
-            Listed: ${listedPrice.toFixed(0)} • Buyer offered: $
-            {buyerOffer.toFixed(0)}
+            Giá niêm yết: {formatCurrency(listedPrice)} • Người mua đề nghị: {formatCurrency(buyerOffer)}
           </DialogDescription>
         </DialogHeader>
 
@@ -79,7 +88,7 @@ export default function CounterOfferDialog({
               name="offer_price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your counter price *</FormLabel>
+                  <FormLabel>Mức giá phản hồi của bạn *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -100,11 +109,11 @@ export default function CounterOfferDialog({
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note (optional)</FormLabel>
+                  <FormLabel>Ghi chú (tùy chọn)</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={3}
-                      placeholder="Thanks for your offer. I can do..."
+                      placeholder="Cảm ơn bạn đã quan tâm. Tôi có thể nhượng lại với giá này..."
                       {...field}
                     />
                   </FormControl>
@@ -118,14 +127,14 @@ export default function CounterOfferDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 type="submit"
                 className="rmk-glow-button"
                 disabled={isPending}
               >
-                Send Counter
+                Gửi giá phản hồi
               </Button>
             </DialogFooter>
           </form>
