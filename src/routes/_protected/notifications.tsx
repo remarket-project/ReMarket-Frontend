@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Bell, CheckCheck } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -74,7 +74,7 @@ function typeGroup(
   return "system"
 }
 
-export const Route = createFileRoute("/_layout/notifications")({
+export const Route = createFileRoute("/_protected/notifications")({
   component: NotificationsPage,
   head: () => ({
     meta: [{ title: "Thông báo - ReMarket" }],

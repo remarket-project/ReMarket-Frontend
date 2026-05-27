@@ -1,4 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod"
+﻿import { zodResolver } from "@hookform/resolvers/zod"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import confetti from "canvas-confetti"
 import {
@@ -588,7 +588,7 @@ function CreateListingPage() {
   )
 }
 
-export const Route = createFileRoute("/_layout/items/create")({
+export const Route = createFileRoute("/_protected/items/create")({
   component: CreateListingPage,
   head: () => ({
     meta: [

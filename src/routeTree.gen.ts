@@ -14,33 +14,34 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LandingRouteImport } from './routes/landing'
+import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
-import { Route as LayoutWalletRouteImport } from './routes/_layout/wallet'
-import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as ProtectedWalletRouteImport } from './routes/_protected/wallet'
+import { Route as ProtectedSettingsRouteImport } from './routes/_protected/settings'
+import { Route as ProtectedOrdersRouteImport } from './routes/_protected/orders'
+import { Route as ProtectedOffersRouteImport } from './routes/_protected/offers'
+import { Route as ProtectedNotificationsRouteImport } from './routes/_protected/notifications'
+import { Route as ProtectedAdminRouteImport } from './routes/_protected/admin'
 import { Route as LayoutSearchRouteImport } from './routes/_layout/search'
-import { Route as LayoutOrdersRouteImport } from './routes/_layout/orders'
-import { Route as LayoutOffersRouteImport } from './routes/_layout/offers'
-import { Route as LayoutNotificationsRouteImport } from './routes/_layout/notifications'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
 import { Route as LayoutHelpRouteImport } from './routes/_layout/help'
 import { Route as LayoutCategoriesRouteImport } from './routes/_layout/categories'
-import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+import { Route as ProtectedOrdersOrderIdRouteImport } from './routes/_protected/orders.$orderId'
+import { Route as ProtectedItemsCreateRouteImport } from './routes/_protected/items.create'
+import { Route as ProtectedEscrowOrderIdRouteImport } from './routes/_protected/escrow.$orderId'
+import { Route as ProtectedAdminModerationRouteImport } from './routes/_protected/admin.moderation'
 import { Route as LayoutUUserIdRouteImport } from './routes/_layout/u.$userId'
-import { Route as LayoutOrdersOrderIdRouteImport } from './routes/_layout/orders.$orderId'
 import { Route as LayoutLegalTermsRouteImport } from './routes/_layout/legal.terms'
 import { Route as LayoutLegalRegulationRouteImport } from './routes/_layout/legal.regulation'
 import { Route as LayoutLegalPrivacyRouteImport } from './routes/_layout/legal.privacy'
 import { Route as LayoutLegalAboutRouteImport } from './routes/_layout/legal.about'
-import { Route as LayoutItemsCreateRouteImport } from './routes/_layout/items.create'
 import { Route as LayoutItemsListingIdRouteImport } from './routes/_layout/items.$listingId'
 import { Route as LayoutHelpSafetyRouteImport } from './routes/_layout/help.safety'
 import { Route as LayoutHelpFaqRouteImport } from './routes/_layout/help.faq'
 import { Route as LayoutHelpContactRouteImport } from './routes/_layout/help.contact'
-import { Route as LayoutEscrowOrderIdRouteImport } from './routes/_layout/escrow.$orderId'
 import { Route as LayoutCategoriesSlugRouteImport } from './routes/_layout/categories.$slug'
-import { Route as LayoutAdminModerationRouteImport } from './routes/_layout/admin.moderation'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -67,6 +68,10 @@ const LandingRoute = LandingRouteImport.update({
   path: '/landing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedRoute = ProtectedRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRouteImport,
@@ -81,34 +86,39 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutWalletRoute = LayoutWalletRouteImport.update({
+const ProtectedWalletRoute = ProtectedWalletRouteImport.update({
   id: '/wallet',
   path: '/wallet',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => ProtectedRoute,
 } as any)
-const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
+const ProtectedSettingsRoute = ProtectedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedOrdersRoute = ProtectedOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedOffersRoute = ProtectedOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedNotificationsRoute = ProtectedNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedAdminRoute = ProtectedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const LayoutSearchRoute = LayoutSearchRouteImport.update({
   id: '/search',
   path: '/search',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutOrdersRoute = LayoutOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutOffersRoute = LayoutOffersRouteImport.update({
-  id: '/offers',
-  path: '/offers',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutNotificationsRoute = LayoutNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutItemsRoute = LayoutItemsRouteImport.update({
@@ -126,20 +136,31 @@ const LayoutCategoriesRoute = LayoutCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutAdminRoute = LayoutAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => LayoutRoute,
+const ProtectedOrdersOrderIdRoute = ProtectedOrdersOrderIdRouteImport.update({
+  id: '/$orderId',
+  path: '/$orderId',
+  getParentRoute: () => ProtectedOrdersRoute,
 } as any)
+const ProtectedItemsCreateRoute = ProtectedItemsCreateRouteImport.update({
+  id: '/items/create',
+  path: '/items/create',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedEscrowOrderIdRoute = ProtectedEscrowOrderIdRouteImport.update({
+  id: '/escrow/$orderId',
+  path: '/escrow/$orderId',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedAdminModerationRoute =
+  ProtectedAdminModerationRouteImport.update({
+    id: '/moderation',
+    path: '/moderation',
+    getParentRoute: () => ProtectedAdminRoute,
+  } as any)
 const LayoutUUserIdRoute = LayoutUUserIdRouteImport.update({
   id: '/u/$userId',
   path: '/u/$userId',
   getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutOrdersOrderIdRoute = LayoutOrdersOrderIdRouteImport.update({
-  id: '/$orderId',
-  path: '/$orderId',
-  getParentRoute: () => LayoutOrdersRoute,
 } as any)
 const LayoutLegalTermsRoute = LayoutLegalTermsRouteImport.update({
   id: '/legal/terms',
@@ -161,11 +182,6 @@ const LayoutLegalAboutRoute = LayoutLegalAboutRouteImport.update({
   path: '/legal/about',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutItemsCreateRoute = LayoutItemsCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => LayoutItemsRoute,
-} as any)
 const LayoutItemsListingIdRoute = LayoutItemsListingIdRouteImport.update({
   id: '/$listingId',
   path: '/$listingId',
@@ -186,20 +202,10 @@ const LayoutHelpContactRoute = LayoutHelpContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => LayoutHelpRoute,
 } as any)
-const LayoutEscrowOrderIdRoute = LayoutEscrowOrderIdRouteImport.update({
-  id: '/escrow/$orderId',
-  path: '/escrow/$orderId',
-  getParentRoute: () => LayoutRoute,
-} as any)
 const LayoutCategoriesSlugRoute = LayoutCategoriesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => LayoutCategoriesRoute,
-} as any)
-const LayoutAdminModerationRoute = LayoutAdminModerationRouteImport.update({
-  id: '/moderation',
-  path: '/moderation',
-  getParentRoute: () => LayoutAdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -209,98 +215,99 @@ export interface FileRoutesByFullPath {
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/admin': typeof LayoutAdminRouteWithChildren
   '/categories': typeof LayoutCategoriesRouteWithChildren
   '/help': typeof LayoutHelpRouteWithChildren
   '/items': typeof LayoutItemsRouteWithChildren
-  '/notifications': typeof LayoutNotificationsRoute
-  '/offers': typeof LayoutOffersRoute
-  '/orders': typeof LayoutOrdersRouteWithChildren
   '/search': typeof LayoutSearchRoute
-  '/settings': typeof LayoutSettingsRoute
-  '/wallet': typeof LayoutWalletRoute
+  '/admin': typeof ProtectedAdminRouteWithChildren
+  '/notifications': typeof ProtectedNotificationsRoute
+  '/offers': typeof ProtectedOffersRoute
+  '/orders': typeof ProtectedOrdersRouteWithChildren
+  '/settings': typeof ProtectedSettingsRoute
+  '/wallet': typeof ProtectedWalletRoute
   '/search/': typeof SearchIndexRoute
-  '/admin/moderation': typeof LayoutAdminModerationRoute
   '/categories/$slug': typeof LayoutCategoriesSlugRoute
-  '/escrow/$orderId': typeof LayoutEscrowOrderIdRoute
   '/help/contact': typeof LayoutHelpContactRoute
   '/help/faq': typeof LayoutHelpFaqRoute
   '/help/safety': typeof LayoutHelpSafetyRoute
   '/items/$listingId': typeof LayoutItemsListingIdRoute
-  '/items/create': typeof LayoutItemsCreateRoute
   '/legal/about': typeof LayoutLegalAboutRoute
   '/legal/privacy': typeof LayoutLegalPrivacyRoute
   '/legal/regulation': typeof LayoutLegalRegulationRoute
   '/legal/terms': typeof LayoutLegalTermsRoute
-  '/orders/$orderId': typeof LayoutOrdersOrderIdRoute
   '/u/$userId': typeof LayoutUUserIdRoute
+  '/admin/moderation': typeof ProtectedAdminModerationRoute
+  '/escrow/$orderId': typeof ProtectedEscrowOrderIdRoute
+  '/items/create': typeof ProtectedItemsCreateRoute
+  '/orders/$orderId': typeof ProtectedOrdersOrderIdRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof LayoutIndexRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/admin': typeof LayoutAdminRouteWithChildren
   '/categories': typeof LayoutCategoriesRouteWithChildren
   '/help': typeof LayoutHelpRouteWithChildren
   '/items': typeof LayoutItemsRouteWithChildren
-  '/notifications': typeof LayoutNotificationsRoute
-  '/offers': typeof LayoutOffersRoute
-  '/orders': typeof LayoutOrdersRouteWithChildren
   '/search': typeof SearchIndexRoute
-  '/settings': typeof LayoutSettingsRoute
-  '/wallet': typeof LayoutWalletRoute
-  '/': typeof LayoutIndexRoute
-  '/admin/moderation': typeof LayoutAdminModerationRoute
+  '/admin': typeof ProtectedAdminRouteWithChildren
+  '/notifications': typeof ProtectedNotificationsRoute
+  '/offers': typeof ProtectedOffersRoute
+  '/orders': typeof ProtectedOrdersRouteWithChildren
+  '/settings': typeof ProtectedSettingsRoute
+  '/wallet': typeof ProtectedWalletRoute
   '/categories/$slug': typeof LayoutCategoriesSlugRoute
-  '/escrow/$orderId': typeof LayoutEscrowOrderIdRoute
   '/help/contact': typeof LayoutHelpContactRoute
   '/help/faq': typeof LayoutHelpFaqRoute
   '/help/safety': typeof LayoutHelpSafetyRoute
   '/items/$listingId': typeof LayoutItemsListingIdRoute
-  '/items/create': typeof LayoutItemsCreateRoute
   '/legal/about': typeof LayoutLegalAboutRoute
   '/legal/privacy': typeof LayoutLegalPrivacyRoute
   '/legal/regulation': typeof LayoutLegalRegulationRoute
   '/legal/terms': typeof LayoutLegalTermsRoute
-  '/orders/$orderId': typeof LayoutOrdersOrderIdRoute
   '/u/$userId': typeof LayoutUUserIdRoute
+  '/admin/moderation': typeof ProtectedAdminModerationRoute
+  '/escrow/$orderId': typeof ProtectedEscrowOrderIdRoute
+  '/items/create': typeof ProtectedItemsCreateRoute
+  '/orders/$orderId': typeof ProtectedOrdersOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
+  '/_protected': typeof ProtectedRouteWithChildren
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/_layout/admin': typeof LayoutAdminRouteWithChildren
   '/_layout/categories': typeof LayoutCategoriesRouteWithChildren
   '/_layout/help': typeof LayoutHelpRouteWithChildren
   '/_layout/items': typeof LayoutItemsRouteWithChildren
-  '/_layout/notifications': typeof LayoutNotificationsRoute
-  '/_layout/offers': typeof LayoutOffersRoute
-  '/_layout/orders': typeof LayoutOrdersRouteWithChildren
   '/_layout/search': typeof LayoutSearchRoute
-  '/_layout/settings': typeof LayoutSettingsRoute
-  '/_layout/wallet': typeof LayoutWalletRoute
+  '/_protected/admin': typeof ProtectedAdminRouteWithChildren
+  '/_protected/notifications': typeof ProtectedNotificationsRoute
+  '/_protected/offers': typeof ProtectedOffersRoute
+  '/_protected/orders': typeof ProtectedOrdersRouteWithChildren
+  '/_protected/settings': typeof ProtectedSettingsRoute
+  '/_protected/wallet': typeof ProtectedWalletRoute
   '/_layout/': typeof LayoutIndexRoute
   '/search/': typeof SearchIndexRoute
-  '/_layout/admin/moderation': typeof LayoutAdminModerationRoute
   '/_layout/categories/$slug': typeof LayoutCategoriesSlugRoute
-  '/_layout/escrow/$orderId': typeof LayoutEscrowOrderIdRoute
   '/_layout/help/contact': typeof LayoutHelpContactRoute
   '/_layout/help/faq': typeof LayoutHelpFaqRoute
   '/_layout/help/safety': typeof LayoutHelpSafetyRoute
   '/_layout/items/$listingId': typeof LayoutItemsListingIdRoute
-  '/_layout/items/create': typeof LayoutItemsCreateRoute
   '/_layout/legal/about': typeof LayoutLegalAboutRoute
   '/_layout/legal/privacy': typeof LayoutLegalPrivacyRoute
   '/_layout/legal/regulation': typeof LayoutLegalRegulationRoute
   '/_layout/legal/terms': typeof LayoutLegalTermsRoute
-  '/_layout/orders/$orderId': typeof LayoutOrdersOrderIdRoute
   '/_layout/u/$userId': typeof LayoutUUserIdRoute
+  '/_protected/admin/moderation': typeof ProtectedAdminModerationRoute
+  '/_protected/escrow/$orderId': typeof ProtectedEscrowOrderIdRoute
+  '/_protected/items/create': typeof ProtectedItemsCreateRoute
+  '/_protected/orders/$orderId': typeof ProtectedOrdersOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -311,101 +318,103 @@ export interface FileRouteTypes {
     | '/recover-password'
     | '/reset-password'
     | '/signup'
-    | '/admin'
     | '/categories'
     | '/help'
     | '/items'
+    | '/search'
+    | '/admin'
     | '/notifications'
     | '/offers'
     | '/orders'
-    | '/search'
     | '/settings'
     | '/wallet'
     | '/search/'
-    | '/admin/moderation'
     | '/categories/$slug'
-    | '/escrow/$orderId'
     | '/help/contact'
     | '/help/faq'
     | '/help/safety'
     | '/items/$listingId'
-    | '/items/create'
     | '/legal/about'
     | '/legal/privacy'
     | '/legal/regulation'
     | '/legal/terms'
-    | '/orders/$orderId'
     | '/u/$userId'
+    | '/admin/moderation'
+    | '/escrow/$orderId'
+    | '/items/create'
+    | '/orders/$orderId'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/landing'
     | '/login'
     | '/recover-password'
     | '/reset-password'
     | '/signup'
-    | '/admin'
     | '/categories'
     | '/help'
     | '/items'
+    | '/search'
+    | '/admin'
     | '/notifications'
     | '/offers'
     | '/orders'
-    | '/search'
     | '/settings'
     | '/wallet'
-    | '/'
-    | '/admin/moderation'
     | '/categories/$slug'
-    | '/escrow/$orderId'
     | '/help/contact'
     | '/help/faq'
     | '/help/safety'
     | '/items/$listingId'
-    | '/items/create'
     | '/legal/about'
     | '/legal/privacy'
     | '/legal/regulation'
     | '/legal/terms'
-    | '/orders/$orderId'
     | '/u/$userId'
+    | '/admin/moderation'
+    | '/escrow/$orderId'
+    | '/items/create'
+    | '/orders/$orderId'
   id:
     | '__root__'
     | '/_layout'
+    | '/_protected'
     | '/landing'
     | '/login'
     | '/recover-password'
     | '/reset-password'
     | '/signup'
-    | '/_layout/admin'
     | '/_layout/categories'
     | '/_layout/help'
     | '/_layout/items'
-    | '/_layout/notifications'
-    | '/_layout/offers'
-    | '/_layout/orders'
     | '/_layout/search'
-    | '/_layout/settings'
-    | '/_layout/wallet'
+    | '/_protected/admin'
+    | '/_protected/notifications'
+    | '/_protected/offers'
+    | '/_protected/orders'
+    | '/_protected/settings'
+    | '/_protected/wallet'
     | '/_layout/'
     | '/search/'
-    | '/_layout/admin/moderation'
     | '/_layout/categories/$slug'
-    | '/_layout/escrow/$orderId'
     | '/_layout/help/contact'
     | '/_layout/help/faq'
     | '/_layout/help/safety'
     | '/_layout/items/$listingId'
-    | '/_layout/items/create'
     | '/_layout/legal/about'
     | '/_layout/legal/privacy'
     | '/_layout/legal/regulation'
     | '/_layout/legal/terms'
-    | '/_layout/orders/$orderId'
     | '/_layout/u/$userId'
+    | '/_protected/admin/moderation'
+    | '/_protected/escrow/$orderId'
+    | '/_protected/items/create'
+    | '/_protected/orders/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
+  ProtectedRoute: typeof ProtectedRouteWithChildren
   LandingRoute: typeof LandingRoute
   LoginRoute: typeof LoginRoute
   RecoverPasswordRoute: typeof RecoverPasswordRoute
@@ -451,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LandingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_layout': {
       id: '/_layout'
       path: ''
@@ -472,46 +488,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
-    '/_layout/wallet': {
-      id: '/_layout/wallet'
+    '/_protected/wallet': {
+      id: '/_protected/wallet'
       path: '/wallet'
       fullPath: '/wallet'
-      preLoaderRoute: typeof LayoutWalletRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof ProtectedWalletRouteImport
+      parentRoute: typeof ProtectedRoute
     }
-    '/_layout/settings': {
-      id: '/_layout/settings'
+    '/_protected/settings': {
+      id: '/_protected/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof LayoutSettingsRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof ProtectedSettingsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/orders': {
+      id: '/_protected/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof ProtectedOrdersRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/offers': {
+      id: '/_protected/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof ProtectedOffersRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/notifications': {
+      id: '/_protected/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof ProtectedNotificationsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/admin': {
+      id: '/_protected/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof ProtectedAdminRouteImport
+      parentRoute: typeof ProtectedRoute
     }
     '/_layout/search': {
       id: '/_layout/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof LayoutSearchRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/orders': {
-      id: '/_layout/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof LayoutOrdersRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/offers': {
-      id: '/_layout/offers'
-      path: '/offers'
-      fullPath: '/offers'
-      preLoaderRoute: typeof LayoutOffersRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/notifications': {
-      id: '/_layout/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof LayoutNotificationsRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/items': {
@@ -535,12 +558,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutCategoriesRouteImport
       parentRoute: typeof LayoutRoute
     }
-    '/_layout/admin': {
-      id: '/_layout/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof LayoutAdminRouteImport
-      parentRoute: typeof LayoutRoute
+    '/_protected/orders/$orderId': {
+      id: '/_protected/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof ProtectedOrdersOrderIdRouteImport
+      parentRoute: typeof ProtectedOrdersRoute
+    }
+    '/_protected/items/create': {
+      id: '/_protected/items/create'
+      path: '/items/create'
+      fullPath: '/items/create'
+      preLoaderRoute: typeof ProtectedItemsCreateRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/escrow/$orderId': {
+      id: '/_protected/escrow/$orderId'
+      path: '/escrow/$orderId'
+      fullPath: '/escrow/$orderId'
+      preLoaderRoute: typeof ProtectedEscrowOrderIdRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/admin/moderation': {
+      id: '/_protected/admin/moderation'
+      path: '/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof ProtectedAdminModerationRouteImport
+      parentRoute: typeof ProtectedAdminRoute
     }
     '/_layout/u/$userId': {
       id: '/_layout/u/$userId'
@@ -548,13 +592,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/u/$userId'
       preLoaderRoute: typeof LayoutUUserIdRouteImport
       parentRoute: typeof LayoutRoute
-    }
-    '/_layout/orders/$orderId': {
-      id: '/_layout/orders/$orderId'
-      path: '/$orderId'
-      fullPath: '/orders/$orderId'
-      preLoaderRoute: typeof LayoutOrdersOrderIdRouteImport
-      parentRoute: typeof LayoutOrdersRoute
     }
     '/_layout/legal/terms': {
       id: '/_layout/legal/terms'
@@ -584,13 +621,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutLegalAboutRouteImport
       parentRoute: typeof LayoutRoute
     }
-    '/_layout/items/create': {
-      id: '/_layout/items/create'
-      path: '/create'
-      fullPath: '/items/create'
-      preLoaderRoute: typeof LayoutItemsCreateRouteImport
-      parentRoute: typeof LayoutItemsRoute
-    }
     '/_layout/items/$listingId': {
       id: '/_layout/items/$listingId'
       path: '/$listingId'
@@ -619,13 +649,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutHelpContactRouteImport
       parentRoute: typeof LayoutHelpRoute
     }
-    '/_layout/escrow/$orderId': {
-      id: '/_layout/escrow/$orderId'
-      path: '/escrow/$orderId'
-      fullPath: '/escrow/$orderId'
-      preLoaderRoute: typeof LayoutEscrowOrderIdRouteImport
-      parentRoute: typeof LayoutRoute
-    }
     '/_layout/categories/$slug': {
       id: '/_layout/categories/$slug'
       path: '/$slug'
@@ -633,27 +656,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutCategoriesSlugRouteImport
       parentRoute: typeof LayoutCategoriesRoute
     }
-    '/_layout/admin/moderation': {
-      id: '/_layout/admin/moderation'
-      path: '/moderation'
-      fullPath: '/admin/moderation'
-      preLoaderRoute: typeof LayoutAdminModerationRouteImport
-      parentRoute: typeof LayoutAdminRoute
-    }
   }
 }
-
-interface LayoutAdminRouteChildren {
-  LayoutAdminModerationRoute: typeof LayoutAdminModerationRoute
-}
-
-const LayoutAdminRouteChildren: LayoutAdminRouteChildren = {
-  LayoutAdminModerationRoute: LayoutAdminModerationRoute,
-}
-
-const LayoutAdminRouteWithChildren = LayoutAdminRoute._addFileChildren(
-  LayoutAdminRouteChildren,
-)
 
 interface LayoutCategoriesRouteChildren {
   LayoutCategoriesSlugRoute: typeof LayoutCategoriesSlugRoute
@@ -684,43 +688,22 @@ const LayoutHelpRouteWithChildren = LayoutHelpRoute._addFileChildren(
 
 interface LayoutItemsRouteChildren {
   LayoutItemsListingIdRoute: typeof LayoutItemsListingIdRoute
-  LayoutItemsCreateRoute: typeof LayoutItemsCreateRoute
 }
 
 const LayoutItemsRouteChildren: LayoutItemsRouteChildren = {
   LayoutItemsListingIdRoute: LayoutItemsListingIdRoute,
-  LayoutItemsCreateRoute: LayoutItemsCreateRoute,
 }
 
 const LayoutItemsRouteWithChildren = LayoutItemsRoute._addFileChildren(
   LayoutItemsRouteChildren,
 )
 
-interface LayoutOrdersRouteChildren {
-  LayoutOrdersOrderIdRoute: typeof LayoutOrdersOrderIdRoute
-}
-
-const LayoutOrdersRouteChildren: LayoutOrdersRouteChildren = {
-  LayoutOrdersOrderIdRoute: LayoutOrdersOrderIdRoute,
-}
-
-const LayoutOrdersRouteWithChildren = LayoutOrdersRoute._addFileChildren(
-  LayoutOrdersRouteChildren,
-)
-
 interface LayoutRouteChildren {
-  LayoutAdminRoute: typeof LayoutAdminRouteWithChildren
   LayoutCategoriesRoute: typeof LayoutCategoriesRouteWithChildren
   LayoutHelpRoute: typeof LayoutHelpRouteWithChildren
   LayoutItemsRoute: typeof LayoutItemsRouteWithChildren
-  LayoutNotificationsRoute: typeof LayoutNotificationsRoute
-  LayoutOffersRoute: typeof LayoutOffersRoute
-  LayoutOrdersRoute: typeof LayoutOrdersRouteWithChildren
   LayoutSearchRoute: typeof LayoutSearchRoute
-  LayoutSettingsRoute: typeof LayoutSettingsRoute
-  LayoutWalletRoute: typeof LayoutWalletRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
-  LayoutEscrowOrderIdRoute: typeof LayoutEscrowOrderIdRoute
   LayoutLegalAboutRoute: typeof LayoutLegalAboutRoute
   LayoutLegalPrivacyRoute: typeof LayoutLegalPrivacyRoute
   LayoutLegalRegulationRoute: typeof LayoutLegalRegulationRoute
@@ -729,18 +712,11 @@ interface LayoutRouteChildren {
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutAdminRoute: LayoutAdminRouteWithChildren,
   LayoutCategoriesRoute: LayoutCategoriesRouteWithChildren,
   LayoutHelpRoute: LayoutHelpRouteWithChildren,
   LayoutItemsRoute: LayoutItemsRouteWithChildren,
-  LayoutNotificationsRoute: LayoutNotificationsRoute,
-  LayoutOffersRoute: LayoutOffersRoute,
-  LayoutOrdersRoute: LayoutOrdersRouteWithChildren,
   LayoutSearchRoute: LayoutSearchRoute,
-  LayoutSettingsRoute: LayoutSettingsRoute,
-  LayoutWalletRoute: LayoutWalletRoute,
   LayoutIndexRoute: LayoutIndexRoute,
-  LayoutEscrowOrderIdRoute: LayoutEscrowOrderIdRoute,
   LayoutLegalAboutRoute: LayoutLegalAboutRoute,
   LayoutLegalPrivacyRoute: LayoutLegalPrivacyRoute,
   LayoutLegalRegulationRoute: LayoutLegalRegulationRoute,
@@ -751,8 +727,59 @@ const LayoutRouteChildren: LayoutRouteChildren = {
 const LayoutRouteWithChildren =
   LayoutRoute._addFileChildren(LayoutRouteChildren)
 
+interface ProtectedAdminRouteChildren {
+  ProtectedAdminModerationRoute: typeof ProtectedAdminModerationRoute
+}
+
+const ProtectedAdminRouteChildren: ProtectedAdminRouteChildren = {
+  ProtectedAdminModerationRoute: ProtectedAdminModerationRoute,
+}
+
+const ProtectedAdminRouteWithChildren = ProtectedAdminRoute._addFileChildren(
+  ProtectedAdminRouteChildren,
+)
+
+interface ProtectedOrdersRouteChildren {
+  ProtectedOrdersOrderIdRoute: typeof ProtectedOrdersOrderIdRoute
+}
+
+const ProtectedOrdersRouteChildren: ProtectedOrdersRouteChildren = {
+  ProtectedOrdersOrderIdRoute: ProtectedOrdersOrderIdRoute,
+}
+
+const ProtectedOrdersRouteWithChildren = ProtectedOrdersRoute._addFileChildren(
+  ProtectedOrdersRouteChildren,
+)
+
+interface ProtectedRouteChildren {
+  ProtectedAdminRoute: typeof ProtectedAdminRouteWithChildren
+  ProtectedNotificationsRoute: typeof ProtectedNotificationsRoute
+  ProtectedOffersRoute: typeof ProtectedOffersRoute
+  ProtectedOrdersRoute: typeof ProtectedOrdersRouteWithChildren
+  ProtectedSettingsRoute: typeof ProtectedSettingsRoute
+  ProtectedWalletRoute: typeof ProtectedWalletRoute
+  ProtectedEscrowOrderIdRoute: typeof ProtectedEscrowOrderIdRoute
+  ProtectedItemsCreateRoute: typeof ProtectedItemsCreateRoute
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedAdminRoute: ProtectedAdminRouteWithChildren,
+  ProtectedNotificationsRoute: ProtectedNotificationsRoute,
+  ProtectedOffersRoute: ProtectedOffersRoute,
+  ProtectedOrdersRoute: ProtectedOrdersRouteWithChildren,
+  ProtectedSettingsRoute: ProtectedSettingsRoute,
+  ProtectedWalletRoute: ProtectedWalletRoute,
+  ProtectedEscrowOrderIdRoute: ProtectedEscrowOrderIdRoute,
+  ProtectedItemsCreateRoute: ProtectedItemsCreateRoute,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
+  ProtectedRoute: ProtectedRouteWithChildren,
   LandingRoute: LandingRoute,
   LoginRoute: LoginRoute,
   RecoverPasswordRoute: RecoverPasswordRoute,

@@ -1,18 +1,12 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 import { Footer } from "@/components/Common/Footer"
 import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader"
-import { isLoggedIn } from "@/hooks/useAuth"
 
+// _layout is now PUBLIC — no beforeLoad redirect.
+// Protected pages use _protected.tsx instead.
 export const Route = createFileRoute("/_layout")({
   component: Layout,
-  beforeLoad: async () => {
-    if (!isLoggedIn()) {
-      throw redirect({
-        to: "/login",
-      })
-    }
-  },
 })
 
 function Layout() {

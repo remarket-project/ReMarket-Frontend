@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, Link, redirect } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   AlertCircle,
   ChevronRight,
@@ -29,14 +29,9 @@ const categoryRailItems = [
   { name: "Xem tất cả", icon: "→", slug: "" },
 ] as const
 
+// Homepage is now PUBLIC — no beforeLoad auth guard.
 export const Route = createFileRoute("/_layout/")({
   component: MarketplaceHome,
-  beforeLoad: async () => {
-    const token = localStorage.getItem("access_token")?.trim()
-    if (!token) {
-      throw redirect({ to: "/login" })
-    }
-  },
   head: () => ({
     meta: [
       {
@@ -140,7 +135,7 @@ function MarketplaceHome() {
             </h2>
           </div>
           <Link
-            to="/categories"
+            to="/search"
             className="text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8]"
           >
             Xem tất cả
@@ -151,8 +146,8 @@ function MarketplaceHome() {
           {categoryRailItems.map((category) => (
             <Link
               key={category.name}
-              to={category.slug ? "/categories/$slug" : "/categories"}
-              params={category.slug ? { slug: category.slug } : undefined}
+              to="/search"
+              search={category.slug ? { categorySlug: category.slug } : undefined}
               className="rmk-category-item min-w-[92px] rounded-2xl bg-[#F8FAFC]"
             >
               <span className="text-lg">{category.icon}</span>

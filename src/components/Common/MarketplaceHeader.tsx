@@ -164,7 +164,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
           )
           if (!category.slug) {
             return (
-              <Link key={category.name} to="/categories">
+              <Link key={category.name} to="/search">
                 <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
                   {itemContent}
                 </DropdownMenuItem>
@@ -174,8 +174,8 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
           return (
             <Link
               key={category.name}
-              to="/categories/$slug"
-              params={{ slug: category.slug }}
+              to="/search"
+              search={{ categorySlug: category.slug }}
             >
               <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
                 {itemContent}
@@ -450,21 +450,39 @@ export function MarketplaceHeader() {
             )}
           </div>
 
-          <Button
-            className={cn(
-              "hidden rounded-full font-semibold transition-all md:inline-flex cursor-pointer items-center justify-center",
-              transparent
-                ? "h-10 bg-white text-[#2563EB] border border-[#D8E2EF] hover:bg-gray-50 shadow-sm text-sm px-4"
-                : "h-9 bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-xs px-3.5",
-            )}
-            size="sm"
-            asChild
-          >
-            <Link to="/items/create">
-              <Plus className="size-4" />
-              Đăng tin
-            </Link>
-          </Button>
+          {currentUser ? (
+            <Button
+              className={cn(
+                "hidden rounded-full font-semibold transition-all md:inline-flex cursor-pointer items-center justify-center",
+                transparent
+                  ? "h-10 bg-white text-[#2563EB] border border-[#D8E2EF] hover:bg-gray-50 shadow-sm text-sm px-4"
+                  : "h-9 bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-xs px-3.5",
+              )}
+              size="sm"
+              asChild
+            >
+              <Link to="/items/create">
+                <Plus className="size-4" />
+                Đăng tin
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              className={cn(
+                "hidden rounded-full font-semibold transition-all md:inline-flex cursor-pointer items-center justify-center",
+                transparent
+                  ? "h-10 bg-white text-[#2563EB] border border-[#D8E2EF] hover:bg-gray-50 shadow-sm text-sm px-4"
+                  : "h-9 bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-xs px-3.5",
+              )}
+              size="sm"
+              asChild
+            >
+              <Link to="/login">
+                <Plus className="size-4" />
+                Đăng tin
+              </Link>
+            </Button>
+          )}
 
           {currentUser ? (
             <DropdownMenu modal={false}>
@@ -561,7 +579,34 @@ export function MarketplaceHeader() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : null}
+          ) : (
+            // Guest: show Login + Register buttons
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                className={cn(
+                  "hidden rounded-full transition-all md:inline-flex cursor-pointer items-center justify-center font-medium",
+                  transparent
+                    ? "h-10 px-4 border border-[#D8E2EF] bg-white/90 text-[#102A43] hover:bg-white hover:text-[#2563EB] shadow-sm backdrop-blur-sm text-sm"
+                    : "h-9 px-3 text-[#5B7083] hover:bg-[#EFF6FF] hover:text-[#2563EB] text-xs",
+                )}
+                asChild
+              >
+                <Link to="/login">Đăng nhập</Link>
+              </Button>
+              <Button
+                className={cn(
+                  "hidden rounded-full font-semibold transition-all md:inline-flex cursor-pointer items-center justify-center",
+                  transparent
+                    ? "h-10 bg-[#2563EB] text-white hover:bg-[#1D4ED8] px-4 text-sm shadow-sm"
+                    : "h-9 bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-xs px-3.5",
+                )}
+                asChild
+              >
+                <Link to="/signup">Đăng ký</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

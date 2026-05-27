@@ -1,4 +1,4 @@
-import {
+﻿import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
@@ -76,7 +76,7 @@ function iconForType(type: string, positive: boolean) {
   return positive ? ArrowDown : ArrowUp
 }
 
-export const Route = createFileRoute("/_layout/wallet")({
+export const Route = createFileRoute("/_protected/wallet")({
   component: WalletPage,
   head: () => ({
     meta: [{ title: "Wallet - ReMarket" }],

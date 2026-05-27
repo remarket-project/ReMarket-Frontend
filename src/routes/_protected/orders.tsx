@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
+﻿import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   BadgeCheck,
@@ -35,7 +35,7 @@ function currency(value: string | number) {
   return formatVND(value)
 }
 
-export const Route = createFileRoute("/_layout/orders")({
+export const Route = createFileRoute("/_protected/orders")({
   component: OrdersPage,
   head: () => ({
     meta: [{ title: "Orders - ReMarket" }],

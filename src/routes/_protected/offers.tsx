@@ -1,4 +1,4 @@
-import {
+﻿import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
@@ -50,7 +50,7 @@ function getOffersQueryOptions() {
   }
 }
 
-export const Route = createFileRoute("/_layout/offers")({
+export const Route = createFileRoute("/_protected/offers")({
   component: OffersPage,
   head: () => ({
     meta: [{ title: "Offers - ReMarket" }],

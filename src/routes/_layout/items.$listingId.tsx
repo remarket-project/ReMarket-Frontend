@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import useAuth from "@/hooks/useAuth"
+import { useAuthRequired } from "@/hooks/useAuthRequired" // trigger-hmr
 import { cn } from "@/lib/utils"
 import { getInitials } from "@/utils"
 
@@ -553,6 +554,7 @@ function ListingDetailPage() {
   const queryClient = useQueryClient()
   const [offerDialogOpen, setOfferDialogOpen] = useState(false)
   const [saved, setSaved] = useState(false)
+  const { requireAuth, AuthModal } = useAuthRequired()
 
   const { data, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
@@ -782,21 +784,21 @@ function ListingDetailPage() {
                 <Button
                   id="btn-make-offer"
                   className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white gap-2 h-11"
-                  onClick={() => setOfferDialogOpen(true)}
+                  onClick={requireAuth(() => setOfferDialogOpen(true), "để đưa ra đề nghị giá")}
                 >
                   <Handshake className="size-4" />
                   Đưa giá ngay
                 </Button>
               )}
 
-              {/* Buy now button */}
+              {/* Buy now button — visible to ALL (guests see modal on click) */}
               {canBuyNow && (
                 <Button
                   id="btn-buy-now"
                   variant="outline"
                   className="w-full border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
                   disabled={buyNowMutation.isPending}
-                  onClick={() => buyNowMutation.mutate()}
+                  onClick={requireAuth(() => buyNowMutation.mutate(), "để mua hàng qua Escrow")}
                 >
                   {buyNowMutation.isPending ? (
                     <>
@@ -812,7 +814,7 @@ function ListingDetailPage() {
                 </Button>
               )}
 
-              {/* Save button */}
+              {/* Save button — visible to ALL (guests see modal on click) */}
               {!isSeller && (
                 <Button
                   id="btn-save-listing"
@@ -824,7 +826,7 @@ function ListingDetailPage() {
                       : "text-[#5B7083] hover:text-[#2563EB]",
                   )}
                   size="sm"
-                  onClick={() => setSaved((v) => !v)}
+                  onClick={requireAuth(() => setSaved((v) => !v), "để lưu tin đăng yêu thích")}
                 >
                   <Heart className={cn("size-4", saved && "fill-rose-500")} />
                   {saved ? "Đã lưu tin" : "Lưu tin"}
@@ -912,6 +914,9 @@ function ListingDetailPage() {
         listingTitle={listing.title}
         listedPrice={listing.price}
       />
+
+      {/* Auth Required Modal */}
+      <AuthModal />
     </div>
   )
 }

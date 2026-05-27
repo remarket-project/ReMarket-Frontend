@@ -141,8 +141,8 @@ function CategoriesPage() {
         {hardcodedCategories.map((cat) => (
           <Link
             key={cat.slug}
-            to="/categories/$slug"
-            params={{ slug: cat.slug }}
+            to="/search"
+            search={{ categorySlug: cat.slug }}
             className="group"
           >
             <Card className="border-[#D8E2EF] bg-white transition hover:border-[#2563EB]/40 hover:shadow-md h-full">
@@ -174,8 +174,8 @@ function CategoriesPage() {
             {categories.map((cat) => (
               <Link
                 key={cat.slug}
-                to="/categories/$slug"
-                params={{ slug: cat.slug }}
+                to="/search"
+                search={{ categorySlug: cat.slug }}
                 className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-2 text-sm text-[#5B7083] hover:border-[#2563EB]/40 hover:text-[#2563EB] transition"
               >
                 {cat.name}

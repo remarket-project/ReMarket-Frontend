@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
+﻿import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import {
   AlertTriangle,
@@ -31,7 +31,7 @@ function getUsersQueryOptions() {
   }
 }
 
-export const Route = createFileRoute("/_layout/admin" as any)({
+export const Route = createFileRoute("/_protected/admin" as any)({
   component: Admin,
   beforeLoad: async () => {
     try {

@@ -51,7 +51,11 @@ const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
-      navigate({ to: "/" })
+      // Redirect về URL cũ nếu có redirect param (từ _protected layout),
+      // hoặc về trang chủ mặc định
+      const searchParams = new URLSearchParams(window.location.search)
+      const redirectTo = searchParams.get("redirect") || "/"
+      navigate({ to: redirectTo as "/" })
     },
     onError: handleError.bind(showErrorToast),
   })

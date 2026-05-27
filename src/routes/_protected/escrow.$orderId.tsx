@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   AlertTriangle,
@@ -65,7 +65,7 @@ function money(value: string | number) {
   }).format(amount)
 }
 
-export const Route = createFileRoute("/_layout/escrow/$orderId")({
+export const Route = createFileRoute("/_protected/escrow/$orderId")({
   component: EscrowDetailPage,
   head: () => ({
     meta: [{ title: "Escrow Detail - ReMarket" }],

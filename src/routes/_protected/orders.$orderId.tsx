@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   AlertTriangle,
@@ -77,7 +77,7 @@ function dateTime(value: string) {
   })
 }
 
-export const Route = createFileRoute("/_layout/orders/$orderId")({
+export const Route = createFileRoute("/_protected/orders/$orderId")({
   component: OrderDetailPage,
   head: ({ params }) => ({
     meta: [{ title: `Chi tiết đơn #${params.orderId?.slice(0, 8) || ""} - ReMarket` }],

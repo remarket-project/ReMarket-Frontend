@@ -1,4 +1,4 @@
-import {
+﻿import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 
-export const Route = createFileRoute("/_layout/admin/moderation")({
+export const Route = createFileRoute("/_protected/admin/moderation")({
   component: AdminModerationPage,
   beforeLoad: async () => {
     try {
