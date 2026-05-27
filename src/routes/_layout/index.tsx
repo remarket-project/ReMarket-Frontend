@@ -135,7 +135,7 @@ function MarketplaceHome() {
             </h2>
           </div>
           <Link
-            to="/search"
+            to="/items"
             className="text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8]"
           >
             Xem tất cả
@@ -146,7 +146,7 @@ function MarketplaceHome() {
           {categoryRailItems.map((category) => (
             <Link
               key={category.name}
-              to="/search"
+              to="/items"
               search={category.slug ? { categorySlug: category.slug } : undefined}
               className="rmk-category-item min-w-[92px] rounded-2xl bg-[#F8FAFC]"
             >
@@ -283,7 +283,7 @@ function MarketplaceHome() {
       </div>
 
       <Link
-        to="/search"
+        to="/items"
         className="flex items-center justify-between rounded-[22px] border border-[#D8E2EF] bg-white px-4 py-4 text-sm shadow-sm transition hover:border-[#BFDBFE] hover:shadow-md"
       >
         <div>

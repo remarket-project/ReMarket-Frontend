@@ -23,6 +23,7 @@ import { Route as ProtectedSettingsRouteImport } from './routes/_protected/setti
 import { Route as ProtectedOrdersRouteImport } from './routes/_protected/orders'
 import { Route as ProtectedOffersRouteImport } from './routes/_protected/offers'
 import { Route as ProtectedNotificationsRouteImport } from './routes/_protected/notifications'
+import { Route as ProtectedMyListingsRouteImport } from './routes/_protected/my-listings'
 import { Route as ProtectedAdminRouteImport } from './routes/_protected/admin'
 import { Route as LayoutSearchRouteImport } from './routes/_layout/search'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
@@ -109,6 +110,11 @@ const ProtectedOffersRoute = ProtectedOffersRouteImport.update({
 const ProtectedNotificationsRoute = ProtectedNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedMyListingsRoute = ProtectedMyListingsRouteImport.update({
+  id: '/my-listings',
+  path: '/my-listings',
   getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedAdminRoute = ProtectedAdminRouteImport.update({
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/items': typeof LayoutItemsRouteWithChildren
   '/search': typeof LayoutSearchRoute
   '/admin': typeof ProtectedAdminRouteWithChildren
+  '/my-listings': typeof ProtectedMyListingsRoute
   '/notifications': typeof ProtectedNotificationsRoute
   '/offers': typeof ProtectedOffersRoute
   '/orders': typeof ProtectedOrdersRouteWithChildren
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/items': typeof LayoutItemsRouteWithChildren
   '/search': typeof SearchIndexRoute
   '/admin': typeof ProtectedAdminRouteWithChildren
+  '/my-listings': typeof ProtectedMyListingsRoute
   '/notifications': typeof ProtectedNotificationsRoute
   '/offers': typeof ProtectedOffersRoute
   '/orders': typeof ProtectedOrdersRouteWithChildren
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/_layout/items': typeof LayoutItemsRouteWithChildren
   '/_layout/search': typeof LayoutSearchRoute
   '/_protected/admin': typeof ProtectedAdminRouteWithChildren
+  '/_protected/my-listings': typeof ProtectedMyListingsRoute
   '/_protected/notifications': typeof ProtectedNotificationsRoute
   '/_protected/offers': typeof ProtectedOffersRoute
   '/_protected/orders': typeof ProtectedOrdersRouteWithChildren
@@ -323,6 +332,7 @@ export interface FileRouteTypes {
     | '/items'
     | '/search'
     | '/admin'
+    | '/my-listings'
     | '/notifications'
     | '/offers'
     | '/orders'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/items'
     | '/search'
     | '/admin'
+    | '/my-listings'
     | '/notifications'
     | '/offers'
     | '/orders'
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/_layout/items'
     | '/_layout/search'
     | '/_protected/admin'
+    | '/_protected/my-listings'
     | '/_protected/notifications'
     | '/_protected/offers'
     | '/_protected/orders'
@@ -521,6 +533,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof ProtectedNotificationsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/my-listings': {
+      id: '/_protected/my-listings'
+      path: '/my-listings'
+      fullPath: '/my-listings'
+      preLoaderRoute: typeof ProtectedMyListingsRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/admin': {
@@ -753,6 +772,7 @@ const ProtectedOrdersRouteWithChildren = ProtectedOrdersRoute._addFileChildren(
 
 interface ProtectedRouteChildren {
   ProtectedAdminRoute: typeof ProtectedAdminRouteWithChildren
+  ProtectedMyListingsRoute: typeof ProtectedMyListingsRoute
   ProtectedNotificationsRoute: typeof ProtectedNotificationsRoute
   ProtectedOffersRoute: typeof ProtectedOffersRoute
   ProtectedOrdersRoute: typeof ProtectedOrdersRouteWithChildren
@@ -764,6 +784,7 @@ interface ProtectedRouteChildren {
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedAdminRoute: ProtectedAdminRouteWithChildren,
+  ProtectedMyListingsRoute: ProtectedMyListingsRoute,
   ProtectedNotificationsRoute: ProtectedNotificationsRoute,
   ProtectedOffersRoute: ProtectedOffersRoute,
   ProtectedOrdersRoute: ProtectedOrdersRouteWithChildren,

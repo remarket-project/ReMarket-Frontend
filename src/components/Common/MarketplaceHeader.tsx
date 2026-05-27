@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Link, useLocation } from "@tanstack/react-router"
+import { Link, useLocation, useNavigate } from "@tanstack/react-router"
 import {
   Bell,
   ChevronDown,
@@ -48,7 +48,7 @@ const categories = [
   { name: "Xem tất cả", slug: "", icon: "→" },
 ] as const
 
-function SearchShell({ compact, hero }: { compact: boolean; hero?: boolean }) {
+function SearchShell({ compact, hero, onSearch }: { compact: boolean; hero?: boolean; onSearch?: (q: string) => void }) {
   const submitTone = hero
     ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
     : "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
@@ -62,9 +62,13 @@ function SearchShell({ compact, hero }: { compact: boolean; hero?: boolean }) {
           const query = (
             form.elements.namedItem("q") as HTMLInputElement
           )?.value?.trim()
-          const params = new URLSearchParams()
-          if (query) params.set("q", query)
-          window.location.href = `/search${params.toString() ? `?${params.toString()}` : ""}`
+          if (onSearch) {
+            onSearch(query)
+          } else {
+            const params = new URLSearchParams()
+            if (query) params.set("q", query)
+            window.location.href = `/items${params.toString() ? `?${params.toString()}` : ""}`
+          }
         }}
         className="w-full"
       >
@@ -164,7 +168,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
           )
           if (!category.slug) {
             return (
-              <Link key={category.name} to="/search">
+              <Link key={category.name} to="/items">
                 <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
                   {itemContent}
                 </DropdownMenuItem>
@@ -174,7 +178,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
           return (
             <Link
               key={category.name}
-              to="/search"
+              to="/items"
               search={{ categorySlug: category.slug }}
             >
               <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
@@ -191,6 +195,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
 export function MarketplaceHeader() {
   const { user: currentUser, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const isHome = location.pathname === "/"
   const [isScrolled, setIsScrolled] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
@@ -326,9 +331,9 @@ export function MarketplaceHeader() {
           </span>
         </Link>
 
-        <div className="hidden flex-1 justify-center md:flex">
+          <div className="hidden flex-1 justify-center md:flex">
           <div className="w-full max-w-3xl">
-            {showSearch && <SearchShell compact />}
+            {showSearch && <SearchShell compact onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })} />}
           </div>
         </div>
 
@@ -344,7 +349,7 @@ export function MarketplaceHeader() {
             )}
             asChild
           >
-            <Link to="/search" aria-label="Thích">
+            <Link to="/items" aria-label="Thích">
               <Heart className={transparent ? "size-5" : "size-4.5"} />
             </Link>
           </Button>
@@ -545,6 +550,12 @@ export function MarketplaceHeader() {
                     Đơn hàng
                   </DropdownMenuItem>
                 </Link>
+                <Link to="/my-listings">
+                  <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
+                    <Package className="mr-2 size-4" />
+                    Sản phẩm của tôi
+                  </DropdownMenuItem>
+                </Link>
                 <Link to="/wallet">
                   <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
                     <Wallet className="mr-2 size-4" />
@@ -612,7 +623,7 @@ export function MarketplaceHeader() {
 
       {showSearch && (
         <div className="mt-3 md:hidden">
-          <SearchShell compact />
+          <SearchShell compact onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })} />
         </div>
       )}
     </div>
@@ -662,7 +673,7 @@ export function MarketplaceHeader() {
           </section>
           <div className="relative z-20 -mt-6 flex justify-center px-4 sm:-mt-7 sm:px-6">
             <div className="w-full max-w-4xl">
-              <SearchShell compact={false} hero />
+              <SearchShell compact={false} hero onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })} />
             </div>
           </div>
         </>
