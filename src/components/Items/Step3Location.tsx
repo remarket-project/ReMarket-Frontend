@@ -48,12 +48,13 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
     queryKey: ["vn-districts", province],
     queryFn: async (): Promise<VnLocation[]> => {
       const response = await fetch(
-        `https://provinces.open-api.vn/api/d/?p=${province}`,
+        `https://provinces.open-api.vn/api/p/${province}?depth=2`,
       )
       if (!response.ok) {
         throw new Error("Failed to load districts")
       }
-      return response.json()
+      const data = await response.json()
+      return data.districts || []
     },
     enabled: Boolean(province),
     staleTime: 24 * 60 * 60 * 1000,
@@ -64,12 +65,13 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
     queryKey: ["vn-wards", district],
     queryFn: async (): Promise<VnLocation[]> => {
       const response = await fetch(
-        `https://provinces.open-api.vn/api/w/?d=${district}`,
+        `https://provinces.open-api.vn/api/d/${district}?depth=2`,
       )
       if (!response.ok) {
         throw new Error("Failed to load wards")
       }
-      return response.json()
+      const data = await response.json()
+      return data.wards || []
     },
     enabled: Boolean(district),
     staleTime: 24 * 60 * 60 * 1000,

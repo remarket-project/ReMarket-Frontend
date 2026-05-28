@@ -1,4 +1,4 @@
-﻿import { zodResolver } from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import confetti from "canvas-confetti"
 import {
@@ -109,7 +109,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
                   ? "bg-[#059669] text-white"
                   : isActive
                     ? "bg-[#2563EB] text-white"
-                    : "bg-[#F1F5F9] text-[#5B7083]"
+                    : "bg-muted text-muted-foreground"
               }`}
             >
               {isDone ? <Check className="size-4" /> : step.id}
@@ -121,7 +121,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
                   ? "text-[#2563EB]"
                   : isDone
                     ? "text-[#059669]"
-                    : "text-[#8A99A8]"
+                    : "text-muted-foreground"
               }`}
             >
               <span className="sm:hidden">{step.shortLabel}</span>
@@ -130,7 +130,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
             {idx < steps.length - 1 && (
               <div
                 className={`h-px w-4 sm:w-8 transition-colors duration-300 ${
-                  isDone ? "bg-[#059669]" : "bg-[#D8E2EF]"
+                  isDone ? "bg-[#059669]" : "bg-border"
                 }`}
               />
             )}
@@ -323,27 +323,27 @@ function CreateListingPage() {
   const isNegotiable = form.watch("isNegotiable")
 
   return (
-    <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8 shadow-sm">
-      <section className="mb-6 rounded-2xl border border-[#D8E2EF] bg-white p-5 md:p-7 shadow-sm">
+    <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-sm text-card-foreground">
+      <section className="mb-6 rounded-2xl border border-border bg-card p-5 md:p-7 shadow-sm">
         <Button
           variant="outline"
           size="sm"
-          className="mb-4 border-[#D8E2EF] bg-white text-[#5B7083] hover:bg-[#F8FAFC] cursor-pointer"
+          className="mb-4 border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
           onClick={() => navigate({ to: "/items" })}
         >
           <ArrowLeft className="mr-1.5 size-4" />
           Quay lại
         </Button>
-        <h1 className="text-2xl font-bold text-[#102A43] md:text-3xl">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">
           Đăng tin mới
         </h1>
-        <p className="mt-1 text-sm text-[#5B7083] md:text-base">
+        <p className="mt-1 text-sm text-muted-foreground md:text-base">
           Bước {currentStep}/{totalSteps}: {steps[currentStep - 1].label}
         </p>
-        <div className="mt-4 border-t border-slate-100 pt-4">
+        <div className="mt-4 border-t border-border/50 pt-4">
           <StepIndicator currentStep={currentStep} />
         </div>
-        <Progress value={progress} className="mt-4 h-2 bg-slate-100" />
+        <Progress value={progress} className="mt-4 h-2 bg-muted" />
       </section>
 
       <Form {...form}>
@@ -364,9 +364,9 @@ function CreateListingPage() {
           }
         }}
       >
-        <Card className="border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+        <Card className="border-border bg-card shadow-sm rounded-2xl text-card-foreground">
           <CardHeader>
-            <CardTitle className="text-[#102A43]">
+            <CardTitle className="text-foreground">
               {steps[currentStep - 1].label}
             </CardTitle>
           </CardHeader>
@@ -377,10 +377,10 @@ function CreateListingPage() {
             {currentStep === 4 && <CreateListingStep3Location form={form} />}
             {currentStep === 5 && <CreateListingStep4 form={form} />}
 
-            <div className="mt-8 flex justify-between border-t border-[#F1F5F9] pt-6">
+            <div className="mt-8 flex justify-between border-t border-border pt-6">
               <Button
                 variant="outline"
-                className="border-[#D8E2EF] text-[#5B7083] hover:bg-[#F8FAFC] cursor-pointer"
+                className="border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
                 onClick={handlePreviousStep}
                 disabled={currentStep === 1}
                 type="button"
@@ -421,20 +421,20 @@ function CreateListingPage() {
           </CardContent>
         </Card>
 
-        <Card className="sticky top-20 h-fit border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
+        <Card className="sticky top-20 h-fit border-border bg-card shadow-sm rounded-2xl text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base font-bold text-[#102A43]">
+            <CardTitle className="text-base font-bold text-foreground">
               Xem trước
             </CardTitle>
             {/* Auto-save badge */}
-            <span className="flex items-center gap-1 text-[10px] text-[#059669] font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1 text-[10px] text-[#059669] font-semibold bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full">
               <CheckCircle2 className="size-3" />
               Đã lưu nháp
             </span>
           </CardHeader>
-          <CardContent className="space-y-3 pt-4 border-t border-slate-100">
+          <CardContent className="space-y-3 pt-4 border-t border-border">
             {/* Image preview */}
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#D8E2EF] bg-[#F8FAFC]">
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-muted">
               {images[0]?.url ? (
                 <img
                   src={images[0].url}
@@ -444,7 +444,7 @@ function CreateListingPage() {
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-2">
                   <Package className="size-10 text-[#D8E2EF]" />
-                  <span className="text-xs text-[#8A99A8] font-medium">
+                  <span className="text-xs text-muted-foreground font-medium">
                     Chưa có ảnh
                   </span>
                 </div>
@@ -453,41 +453,41 @@ function CreateListingPage() {
 
             {/* Info */}
             {title ? (
-              <p className="font-bold text-[#102A43] text-sm line-clamp-2 leading-relaxed">
+              <p className="font-bold text-foreground text-sm line-clamp-2 leading-relaxed">
                 {title}
               </p>
             ) : (
-              <p className="text-slate-400 text-xs italic">Chưa nhập tiêu đề</p>
+              <p className="text-muted-foreground/60 text-xs italic">Chưa nhập tiêu đề</p>
             )}
 
             {price > 0 ? (
               <p className="text-base font-extrabold text-[#2563EB]">
                 {formatVND(price)}{" "}
                 {isNegotiable && (
-                  <span className="text-xs font-normal text-[#5B7083]">
+                  <span className="text-xs font-normal text-muted-foreground">
                     (Có thương lượng)
                   </span>
                 )}
               </p>
             ) : (
-              <p className="text-slate-400 text-xs italic">Chưa nhập giá</p>
+              <p className="text-muted-foreground/60 text-xs italic">Chưa nhập giá</p>
             )}
 
             {condition && (
-              <span className="inline-flex rounded-full bg-[#EFF6FF] px-2.5 py-0.5 text-[10px] font-bold text-[#2563EB] uppercase tracking-wider">
+              <span className="inline-flex rounded-full bg-[#EFF6FF] dark:bg-[#EFF6FF]/10 px-2.5 py-0.5 text-[10px] font-bold text-[#2563EB] dark:text-blue-400 uppercase tracking-wider">
                 {conditionLabel[condition]}
               </span>
             )}
             {province && (
-              <p className="text-xs text-[#5B7083] font-medium">
+              <p className="text-xs text-muted-foreground font-medium">
                 📍 {province}
               </p>
             )}
 
             {/* Completeness */}
-            <div className="space-y-2 border-t border-slate-100 pt-3 mt-4">
+            <div className="space-y-2 border-t border-border pt-3 mt-4">
               <div className="flex justify-between text-xs">
-                <span className="text-[#5B7083] font-medium">
+                <span className="text-muted-foreground font-medium">
                   Mức độ hoàn thiện
                 </span>
                 <span
@@ -496,7 +496,7 @@ function CreateListingPage() {
                   {completeness}%
                 </span>
               </div>
-              <div className="h-2 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
                     completeness >= 80 ? "bg-[#059669]" : "bg-[#2563EB]"
@@ -519,21 +519,21 @@ function CreateListingPage() {
           }
         }}
       >
-        <DialogContent className="max-w-md border-[#A7F3D0] bg-white p-6 text-center rounded-2xl shadow-2xl">
+        <DialogContent className="max-w-md border-emerald-200 dark:border-emerald-900/50 bg-card p-6 text-center rounded-2xl shadow-2xl text-card-foreground">
           <DialogHeader className="flex flex-col items-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#ECFDF5] mb-4 shadow-inner">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#ECFDF5] dark:bg-emerald-950/30 mb-4 shadow-inner">
               <CheckCircle2 className="h-12 w-12 text-[#059669] animate-[scale-in_0.3s_ease-out]" />
             </div>
-            <DialogTitle className="text-2xl font-extrabold text-[#102A43] tracking-tight">
+            <DialogTitle className="text-2xl font-extrabold text-foreground tracking-tight">
               🎉 Đăng tin thành công!
             </DialogTitle>
-            <DialogDescription className="mt-2 text-sm leading-relaxed text-[#5B7083]">
+            <DialogDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Tin của bạn đang chờ kiểm duyệt. Chúng tôi sẽ gửi thông báo ngay
               khi tin của bạn được duyệt hiển thị trên chợ.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="my-6 border-t border-[#D8E2EF] py-4 flex flex-col gap-3">
+          <div className="my-6 border-t border-border py-4 flex flex-col gap-3">
             <Button
               className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 transition-transform text-white font-bold flex items-center justify-center gap-2 rounded-xl py-5 shadow-lg shadow-blue-500/10 cursor-pointer"
               onClick={() => {
@@ -551,7 +551,7 @@ function CreateListingPage() {
 
             <Button
               variant="outline"
-              className="w-full border-[#D8E2EF] text-[#5B7083] font-bold flex items-center justify-center gap-2 rounded-xl py-5 bg-white hover:bg-[#F5F8FC] cursor-pointer"
+              className="w-full border-border text-muted-foreground font-bold flex items-center justify-center gap-2 rounded-xl py-5 bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer"
               onClick={() => {
                 setShowSuccessModal(false)
                 setCreatedListingId(null)
@@ -579,7 +579,7 @@ function CreateListingPage() {
             </Button>
           </div>
 
-          <div className="text-xs text-[#5B7083]">
+          <div className="text-xs text-muted-foreground">
             Nhấn ra ngoài để quay lại chợ.
           </div>
         </DialogContent>

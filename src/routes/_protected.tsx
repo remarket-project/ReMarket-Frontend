@@ -28,7 +28,7 @@ function ProtectedLayout() {
     <div className="min-h-screen bg-[#F5F8FC] text-[#102A43]">
       <MarketplaceHeader />
 
-      <main className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6">
+      <main className="mx-auto max-w-[1240px] px-4 pt-[72px] pb-6 sm:px-6">
         <Outlet />
       </main>
 

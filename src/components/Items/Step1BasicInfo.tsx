@@ -142,8 +142,8 @@ function CreateListingStep1({ form }: Step1Props) {
                       "flex cursor-pointer flex-col items-center rounded-xl border-2 p-3 text-center transition",
                       "hover:border-blue-400 hover:bg-blue-50/50",
                       field.value === grade.value
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-200 bg-white",
+                        ? "border-blue-600 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-500"
+                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900/50",
                     )}
                   >
                     <input
@@ -161,7 +161,7 @@ function CreateListingStep1({ form }: Step1Props) {
                     >
                       {grade.label}
                     </span>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       {grade.description}
                     </p>
                   </label>

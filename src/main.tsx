@@ -67,9 +67,14 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// Đảm bảo đồng bộ giao diện sáng (Light Mode) theo yêu cầu của người dùng
+if (localStorage.getItem("vite-ui-theme") === "dark") {
+  localStorage.setItem("vite-ui-theme", "light")
+}
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <LanguageProvider>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
