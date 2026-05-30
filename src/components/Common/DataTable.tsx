@@ -91,39 +91,43 @@ export function DataTable<TData, TValue>({
       </Table>
 
       {table.getPageCount() > 1 && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border-t bg-muted/20">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border-t border-white/[0.06] bg-[#0B0F1A]/30">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="text-sm text-muted-foreground">
-              Showing{" "}
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}{" "}
-              to{" "}
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) *
-                  table.getState().pagination.pageSize,
-                data.length,
-              )}{" "}
-              of{" "}
-              <span className="font-medium text-foreground">{data.length}</span>{" "}
-              entries
+            <div className="text-sm text-slate-400">
+              Hiển thị{" "}
+              <span className="font-medium text-slate-200">
+                {table.getState().pagination.pageIndex *
+                  table.getState().pagination.pageSize +
+                  1}
+              </span>{" "}
+              đến{" "}
+              <span className="font-medium text-slate-200">
+                {Math.min(
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
+                  data.length,
+                )}
+              </span>{" "}
+              trên tổng số{" "}
+              <span className="font-medium text-slate-200">{data.length}</span>{" "}
+              bản ghi
             </div>
             <div className="flex items-center gap-x-2">
-              <p className="text-sm text-muted-foreground">Rows per page</p>
+              <p className="text-sm text-slate-400">Số hàng mỗi trang</p>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
                 onValueChange={(value) => {
                   table.setPageSize(Number(value))
                 }}
               >
-                <SelectTrigger className="h-8 w-[70px]">
+                <SelectTrigger className="h-8 w-[70px] bg-[#1A2233] border-white/[0.08] text-slate-200">
                   <SelectValue
                     placeholder={table.getState().pagination.pageSize}
                   />
                 </SelectTrigger>
-                <SelectContent side="top">
+                <SelectContent side="top" className="bg-[#111827] border-white/[0.08] text-slate-200">
                   {[5, 10, 25, 50].map((pageSize) => (
-                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                    <SelectItem key={pageSize} value={`${pageSize}`} className="hover:bg-blue-500/10 focus:bg-blue-500/10 cursor-pointer">
                       {pageSize}
                     </SelectItem>
                   ))}
@@ -133,13 +137,13 @@ export function DataTable<TData, TValue>({
           </div>
 
           <div className="flex items-center gap-x-6">
-            <div className="flex items-center gap-x-1 text-sm text-muted-foreground">
-              <span>Page</span>
-              <span className="font-medium text-foreground">
+            <div className="flex items-center gap-x-1 text-sm text-slate-400">
+              <span>Trang</span>
+              <span className="font-medium text-slate-200">
                 {table.getState().pagination.pageIndex + 1}
               </span>
-              <span>of</span>
-              <span className="font-medium text-foreground">
+              <span>trên</span>
+              <span className="font-medium text-slate-200">
                 {table.getPageCount()}
               </span>
             </div>
@@ -148,41 +152,41 @@ export function DataTable<TData, TValue>({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 border-white/[0.08] bg-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">Về trang đầu</span>
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 border-white/[0.08] bg-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to previous page</span>
+                <span className="sr-only">Trang trước</span>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 border-white/[0.08] bg-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to next page</span>
+                <span className="sr-only">Trang sau</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 border-white/[0.08] bg-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">Đến trang cuối</span>
                 <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>

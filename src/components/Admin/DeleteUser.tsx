@@ -37,13 +37,14 @@ const DeleteUser = ({ id, onSuccess }: DeleteUserProps) => {
   const mutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      showSuccessToast("The user was deleted successfully")
+      showSuccessToast("Xóa người dùng thành công!")
       setIsOpen(false)
       onSuccess()
     },
     onError: handleError.bind(showErrorToast),
     onSettled: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] })
     },
   })
 
@@ -57,33 +58,38 @@ const DeleteUser = ({ id, onSuccess }: DeleteUserProps) => {
         variant="destructive"
         onSelect={(e) => e.preventDefault()}
         onClick={() => setIsOpen(true)}
+        className="flex items-center gap-2 cursor-pointer text-red-400 hover:text-red-300 focus:bg-red-500/10 focus:text-red-300"
       >
-        <Trash2 />
-        Delete User
+        <Trash2 className="size-4" />
+        Xóa tài khoản
       </DropdownMenuItem>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-[#111827] border-white/[0.08] text-slate-100">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>
-              All items associated with this user will also be{" "}
-              <strong>permanently deleted.</strong> Are you sure? You will not
-              be able to undo this action.
+            <DialogTitle className="text-slate-100">Xóa người dùng</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Tất cả các bài đăng và giao dịch liên quan đến người dùng này cũng sẽ bị{" "}
+              <strong className="text-red-400">xóa vĩnh viễn.</strong> Bạn có chắc chắn không? Hành động này không thể hoàn tác.
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-4 gap-2 sm:gap-0">
             <DialogClose asChild>
-              <Button variant="outline" disabled={mutation.isPending}>
-                Cancel
+              <Button
+                variant="outline"
+                disabled={mutation.isPending}
+                className="border-white/[0.08] bg-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
+              >
+                Hủy bỏ
               </Button>
             </DialogClose>
             <LoadingButton
               variant="destructive"
               type="submit"
               loading={mutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Delete
+              Xóa bỏ
             </LoadingButton>
           </DialogFooter>
         </form>

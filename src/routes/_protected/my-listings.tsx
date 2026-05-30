@@ -7,10 +7,10 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   Clock,
   Eye,
-  EyeOff,
   CheckCircle2,
   Trash2,
   Package,
+  Pencil,
   Plus,
   Search,
   Sparkles,
@@ -421,28 +421,25 @@ function MyListingsPage() {
                     </Link>
                   </Button>
 
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                    asChild
+                  >
+                    <Link to="/items/$listingId/edit" params={{ listingId: item.id }}>
+                      <Pencil className="size-3.5" />
+                      Sửa tin
+                    </Link>
+                  </Button>
+
                   {/* Complete Action buttons depending on state */}
                   {item.status === "active" && (
                     <>
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-[#D8E2EF] text-[#5B7083] hover:text-[#102A43] hover:bg-slate-100 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
-                        disabled={updateStatusMutation.isPending}
-                        onClick={() =>
-                          updateStatusMutation.mutate({
-                            listingId: item.id,
-                            status: "hidden",
-                          })
-                        }
-                      >
-                        <EyeOff className="size-3.5" />
-                        Ẩn tin
-                      </Button>
-                      <Button
                         variant="secondary"
                         size="sm"
-                        className="bg-[#EFF6FF] text-[#2563EB] hover:bg-[#DBEAFE] h-8 text-[11px] rounded-lg font-bold gap-1.5 cursor-pointer col-span-2 mt-0.5 border border-blue-100"
+                        className="bg-[#EFF6FF] text-[#2563EB] hover:bg-[#DBEAFE] h-8 text-[11px] rounded-lg font-bold gap-1.5 cursor-pointer border border-blue-100"
                         disabled={updateStatusMutation.isPending}
                         onClick={() =>
                           updateStatusMutation.mutate({
@@ -452,30 +449,20 @@ function MyListingsPage() {
                         }
                       >
                         <CheckCircle2 className="size-3.5" />
-                        Đánh dấu Đã bán
+                        Đã bán
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                        onClick={() => setDeleteTargetId(item.id)}
+                      >
+                        <Trash2 className="size-3.5" />
+                        Xóa tin
                       </Button>
                     </>
                   )}
 
-                  {item.status === "hidden" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-[#D8E2EF] text-[#5B7083] hover:text-[#102A43] hover:bg-slate-100 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
-                      disabled={updateStatusMutation.isPending}
-                      onClick={() =>
-                        updateStatusMutation.mutate({
-                          listingId: item.id,
-                          status: "active",
-                        })
-                      }
-                    >
-                      <Eye className="size-3.5" />
-                      Hiện tin
-                    </Button>
-                  )}
-
-                  {/* Delete button (displays for all non-pending listings or is default fallback) */}
                   {item.status !== "active" && (
                     <Button
                       variant="destructive"
@@ -485,18 +472,6 @@ function MyListingsPage() {
                     >
                       <Trash2 className="size-3.5" />
                       Xóa tin
-                    </Button>
-                  )}
-
-                  {item.status === "active" && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer col-span-2 mt-0.5"
-                      onClick={() => setDeleteTargetId(item.id)}
-                    >
-                      <Trash2 className="size-3.5" />
-                      Xóa tin đăng này
                     </Button>
                   )}
                 </div>

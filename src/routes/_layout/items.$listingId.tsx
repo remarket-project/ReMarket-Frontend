@@ -841,9 +841,9 @@ function ListingDetailPage() {
                   className="w-full border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] gap-2"
                   asChild
                 >
-                  <Link to="/items/create">
+                  <Link to="/items/$listingId/edit" params={{ listingId }}>
                     <Pencil className="size-4" />
-                    Đăng tin mới
+                    Sửa tin
                   </Link>
                 </Button>
               )}

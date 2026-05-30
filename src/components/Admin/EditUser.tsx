@@ -33,11 +33,11 @@ import { handleError } from "@/utils"
 
 const formSchema = z
   .object({
-    email: z.email({ message: "Invalid email address" }),
+    email: z.email({ message: "Địa chỉ email không hợp lệ" }),
     full_name: z.string().optional(),
     password: z
       .string()
-      .min(8, { message: "Password must be at least 8 characters" })
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" })
       .optional()
       .or(z.literal("")),
     confirm_password: z.string().optional(),
@@ -45,7 +45,7 @@ const formSchema = z
     is_active: z.boolean().optional(),
   })
   .refine((data) => !data.password || data.password === data.confirm_password, {
-    message: "The passwords don't match",
+    message: "Mật khẩu xác nhận không khớp",
     path: ["confirm_password"],
   })
 
@@ -77,18 +77,18 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
     mutationFn: (data: FormData) =>
       UsersService.updateUser({ userId: user.id, requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("User updated successfully")
+      showSuccessToast("Cập nhật thông tin người dùng thành công!")
       setIsOpen(false)
       onSuccess()
     },
     onError: handleError.bind(showErrorToast),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] })
     },
   })
 
   const onSubmit = (data: FormData) => {
-    // exclude confirm_password from submission data and remove password if empty
     const { confirm_password: _, ...submitData } = data
     if (!submitData.password) {
       delete submitData.password
@@ -101,17 +101,18 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
       <DropdownMenuItem
         onSelect={(e) => e.preventDefault()}
         onClick={() => setIsOpen(true)}
+        className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white"
       >
-        <Pencil />
-        Edit User
+        <Pencil className="size-4" />
+        Sửa thông tin
       </DropdownMenuItem>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-[#111827] border-white/[0.08] text-slate-100">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
-              <DialogDescription>
-                Update the user details below.
+              <DialogTitle className="text-slate-100">Sửa người dùng</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Cập nhật thông tin chi tiết người dùng dưới đây.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -120,18 +121,19 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Email <span className="text-destructive">*</span>
+                    <FormLabel className="text-slate-300">
+                      Email <span className="text-red-400">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Email"
                         type="email"
+                        className="bg-[#1A2233] border-white/[0.08] text-slate-100 placeholder:text-slate-600 focus:border-blue-500/40 focus:ring-0"
                         {...field}
                         required
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -141,11 +143,16 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                 name="full_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel className="text-slate-300">Họ và tên</FormLabel>
                     <FormControl>
-                      <Input placeholder="Full name" type="text" {...field} />
+                      <Input
+                        placeholder="Họ và tên"
+                        type="text"
+                        className="bg-[#1A2233] border-white/[0.08] text-slate-100 placeholder:text-slate-600 focus:border-blue-500/40 focus:ring-0"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -155,15 +162,16 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Set Password</FormLabel>
+                    <FormLabel className="text-slate-300">Mật khẩu mới</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Password"
+                        placeholder="Mật khẩu mới (tuỳ chọn)"
                         type="password"
+                        className="bg-[#1A2233] border-white/[0.08] text-slate-100 placeholder:text-slate-600 focus:border-blue-500/40 focus:ring-0"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -173,15 +181,16 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                 name="confirm_password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel className="text-slate-300">Xác nhận mật khẩu mới</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Password"
+                        placeholder="Nhập lại mật khẩu mới"
                         type="password"
+                        className="bg-[#1A2233] border-white/[0.08] text-slate-100 placeholder:text-slate-600 focus:border-blue-500/40 focus:ring-0"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -195,9 +204,10 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        className="border-white/[0.2] data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                     </FormControl>
-                    <FormLabel className="font-normal">Is superuser?</FormLabel>
+                    <FormLabel className="font-normal text-slate-300">Là quản trị viên?</FormLabel>
                   </FormItem>
                 )}
               />
@@ -211,9 +221,10 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        className="border-white/[0.2] data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                     </FormControl>
-                    <FormLabel className="font-normal">Is active?</FormLabel>
+                    <FormLabel className="font-normal text-slate-300">Tài khoản hoạt động?</FormLabel>
                   </FormItem>
                 )}
               />
@@ -221,12 +232,20 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" disabled={mutation.isPending}>
-                  Cancel
+                <Button
+                  variant="outline"
+                  disabled={mutation.isPending}
+                  className="border-white/[0.08] bg-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
+                >
+                  Hủy bỏ
                 </Button>
               </DialogClose>
-              <LoadingButton type="submit" loading={mutation.isPending}>
-                Save
+              <LoadingButton
+                type="submit"
+                loading={mutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Lưu lại
               </LoadingButton>
             </DialogFooter>
           </form>

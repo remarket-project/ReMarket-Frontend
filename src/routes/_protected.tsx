@@ -1,8 +1,9 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { Footer } from "@/components/Common/Footer"
-import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader"
-import { isLoggedIn } from "@/hooks/useAuth"
+import { ApiError, UsersService } from "@/client";
+import { Footer } from "@/components/Common/Footer";
+import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader";
+import { isLoggedIn } from "@/hooks/useAuth";
 
 /**
  * _protected layout — bắt buộc đăng nhập.
@@ -18,10 +19,31 @@ export const Route = createFileRoute("/_protected")({
         search: {
           redirect: location.href,
         },
-      })
+      });
+    }
+
+    try {
+      const currentUser = await UsersService.readUserMe();
+      if (currentUser.role === "admin") {
+        throw redirect({ to: "/admin/dashboard" });
+      }
+    } catch (error) {
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        throw redirect({
+          to: "/login",
+          search: {
+            redirect: location.href,
+          },
+        });
+      }
     }
   },
-})
+});
 
 function ProtectedLayout() {
   return (
@@ -34,5 +56,5 @@ function ProtectedLayout() {
 
       <Footer />
     </div>
-  )
+  );
 }
