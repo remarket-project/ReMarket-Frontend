@@ -1,0 +1,120 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { Loader2 } from "lucide-react"
+import { useEffect, useRef } from "react"
+
+import {
+  ChatsService,
+  type ChatConversationRead,
+  type ChatMessageRead,
+} from "@/client"
+import useAuth from "@/hooks/useAuth"
+import { ChatComposer } from "./ChatComposer"
+import { ChatHeader } from "./ChatHeader"
+import { ChatMessageBubble } from "./ChatMessageBubble"
+import { ListingContextCard } from "./ListingContextCard"
+
+interface ConversationThreadProps {
+  conversation: ChatConversationRead
+  onBack?: () => void
+  showBack?: boolean
+  onMessageSent?: () => void
+}
+
+function getDisplayName(conv: ChatConversationRead, currentUserId?: string) {
+  if (conv.listing?.title) {
+    return conv.listing.title
+  }
+  const otherId = conv.participant_ids?.find((id) => id !== currentUserId)
+  return otherId || "Người dùng"
+}
+
+export function ConversationThread({
+  conversation,
+  onBack,
+  showBack,
+  onMessageSent,
+}: ConversationThreadProps) {
+  const { user } = useAuth()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
+
+  const displayName = getDisplayName(conversation, user?.id)
+
+  const { data: messages, isLoading } = useQuery({
+    queryKey: ["conversation-messages", conversation.id],
+    queryFn: () =>
+      ChatsService.listMessagesApiV1ChatsConversationsConversationIdMessagesGet(
+        { conversationId: conversation.id },
+      ),
+    refetchInterval: false,
+  })
+
+  const sendMutation = useMutation({
+    mutationFn: (content: string) =>
+      ChatsService.sendMessageApiV1ChatsConversationsConversationIdMessagesPost(
+        {
+          conversationId: conversation.id,
+          requestBody: { content },
+        },
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["conversation-messages", conversation.id],
+      })
+      queryClient.invalidateQueries({ queryKey: ["conversations"] })
+      onMessageSent?.()
+    },
+  })
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-[#2563EB]" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <ChatHeader
+        fullName={displayName}
+        showBack={showBack}
+        onBack={onBack}
+      />
+
+      <div className="flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
+        {!messages || messages.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center px-8">
+            <p className="text-sm text-[#5B7083]">
+              Chưa có tin nhắn nào. Hãy gửi lời nhắn để bắt đầu trao đổi!
+            </p>
+          </div>
+        ) : (
+          <>
+            {messages.map((msg: ChatMessageRead) => (
+              <ChatMessageBubble
+                key={msg.id}
+                message={msg}
+                isOwn={msg.sender_id === user?.id}
+              />
+            ))}
+          </>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {conversation.listing && (
+        <ListingContextCard listing={conversation.listing} />
+      )}
+
+      <ChatComposer
+        onSend={(content) => sendMutation.mutate(content)}
+        isPending={sendMutation.isPending}
+      />
+    </div>
+  )
+}

@@ -5,10 +5,13 @@ import {
   ArrowLeft,
   CheckCircle2,
   ExternalLink,
+  MapPin,
+  MessageSquare,
   Package,
   ShieldCheck,
   Star,
   Truck,
+  XCircle,
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -16,19 +19,31 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
 
 import {
+  ChatsService,
   EscrowService,
   ListingsService,
   OrdersService,
   ReviewsService,
   UsersService,
+  WalletService,
 } from "@/client"
+import { useChat } from "@/hooks/ChatContext"
 import OpenDisputeDialog from "@/components/Escrow/OpenDisputeDialog"
 import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
+import ShippingTimeline from "@/components/Shipping/ShippingTimeline"
+import CreateShippingDialog from "@/components/Shipping/CreateShippingDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import useAuth from "@/hooks/useAuth"
 
 const ESCROW_STATUS_LABELS: Record<string, string> = {
@@ -88,9 +103,12 @@ function OrderDetailPage() {
   const { orderId } = Route.useParams()
   const { user } = useAuth()
   const queryClient = useQueryClient()
+  const { openConversation } = useChat()
 
   const [reviewOpen, setReviewOpen] = useState(false)
   const [disputeOpen, setDisputeOpen] = useState(false)
+  const [shippingDialogOpen, setShippingDialogOpen] = useState(false)
+  const [insufficientFund, setInsufficientFund] = useState(false)
 
   const { data, isLoading } = useQuery(getOrderDetailQueryOptions(orderId))
 
@@ -166,6 +184,55 @@ function OrderDetailPage() {
     onError: (error: any) =>
       toast.error(error?.body?.detail || "Không thể mở tranh chấp."),
   })
+
+  const { data: wallet } = useQuery({
+    queryKey: ["wallet"],
+    queryFn: () => WalletService.getMyWalletApiV1WalletMeGet(),
+    enabled: Boolean(user),
+  })
+
+  const fundMutation = useMutation({
+    mutationFn: () =>
+      EscrowService.fundEscrowApiV1EscrowsOrderIdFundPost({ orderId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet"] })
+      toast.success("Ký quỹ thành công! Đơn hàng đã được xác nhận.")
+    },
+    onError: (error: any) =>
+      toast.error(error?.body?.detail || "Không thể ký quỹ."),
+  })
+
+  const cancelMutation = useMutation({
+    mutationFn: () =>
+      OrdersService.cancelOrderApiV1OrdersOrderIdCancelPost({ orderId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      toast.success("Đã hủy đơn hàng.")
+    },
+    onError: (error: any) =>
+      toast.error(error?.body?.detail || "Không thể hủy đơn hàng."),
+  })
+
+  const chatMutation = useMutation({
+    mutationFn: () =>
+      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
+        { listingId: data?.order?.listing_id ?? "" },
+      ),
+    onSuccess: (conv: any) => {
+      openConversation(conv.id)
+    },
+  })
+
+  const handleFund = () => {
+    if (wallet && escrow && Number(wallet.balance) < Number(escrow.amount)) {
+      setInsufficientFund(true)
+      return
+    }
+    fundMutation.mutate()
+  }
 
   const reviewMutation = useMutation({
     mutationFn: ({ rating, comment }: { rating: number; comment?: string }) =>
@@ -362,6 +429,35 @@ function OrderDetailPage() {
         <div className="space-y-4">
           <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-[#102A43] text-lg">
+                <Truck className="size-4" />
+                Vận chuyển
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {order.shipping_name ? (
+                <div className="mb-3 rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm">
+                  <p className="font-medium text-gray-700">{order.shipping_name} - {order.shipping_phone}</p>
+                  <p className="mt-1 text-gray-500">
+                    <MapPin className="mr-1 inline size-3" />
+                    {order.shipping_address_detail}, {order.shipping_ward}, {order.shipping_district}, {order.shipping_province}
+                  </p>
+                </div>
+              ) : null}
+              <ShippingTimeline
+                trackingNumber={order.tracking_number}
+                shippingProvider={order.shipping_provider}
+                shippingFee={order.shipping_fee}
+                status={order.status}
+                deliveredAt={order.delivered_at}
+                expectedDeliveryAt={order.expected_delivery_at}
+                autoReleaseAt={escrow?.auto_release_at}
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="border-[#D8E2EF] bg-white">
+            <CardHeader className="pb-2">
               <CardTitle className="text-[#102A43] text-lg">
                 Trạng thái Escrow
               </CardTitle>
@@ -379,6 +475,18 @@ function OrderDetailPage() {
                   {ESCROW_STATUS_LABELS[escrow.status] ?? escrow.status}
                 </span>
               </div>
+              {escrow?.auto_release_at && escrow.status === "funded" ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                  Tự động giải ngân vào{" "}
+                  <span className="font-semibold">
+                    {new Date(escrow.auto_release_at).toLocaleDateString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>{" "}
+                  (sau {escrow.auto_release_at ? Math.ceil((new Date(escrow.auto_release_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0} ngày)
+                </div>
+              ) : null}
               <Button
                 className="w-full border-[#2563EB] text-[#2563EB]"
                 variant="outline"
@@ -478,15 +586,48 @@ function OrderDetailPage() {
               <CardTitle className="text-[#102A43] text-lg">Thao tác</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {isSeller && order.status === "confirmed" ? (
+              {isBuyer && order.status === "pending" && escrow?.status === "pending" ? (
                 <Button
                   className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-                  onClick={() => orderMutation.mutate("shipping")}
-                  disabled={orderMutation.isPending}
+                  onClick={handleFund}
+                  disabled={fundMutation.isPending}
                 >
-                  <Truck className="mr-2 size-4" />
-                  Đã giao hàng
+                  <ShieldCheck className="mr-2 size-4" />
+                  {fundMutation.isPending ? "Đang xử lý..." : "Ký quỹ ngay"}
                 </Button>
+              ) : null}
+
+              {order.status === "pending" && (isBuyer || isSeller) ? (
+                <Button
+                  variant="outline"
+                  className="w-full border-rose-200 text-rose-700"
+                  onClick={() => cancelMutation.mutate()}
+                  disabled={cancelMutation.isPending}
+                >
+                  <XCircle className="mr-2 size-4" />
+                  {cancelMutation.isPending ? "Đang hủy..." : "Hủy đơn hàng"}
+                </Button>
+              ) : null}
+
+              {isSeller && order.status === "confirmed" ? (
+                <>
+                  <Button
+                    className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+                    onClick={() => setShippingDialogOpen(true)}
+                  >
+                    <Package className="mr-2 size-4" />
+                    Tạo đơn GHN
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-gray-300 text-gray-500"
+                    onClick={() => orderMutation.mutate("shipping")}
+                    disabled={orderMutation.isPending}
+                    size="sm"
+                  >
+                    {orderMutation.isPending ? "Đang xử lý..." : "Đã giao hàng (không qua GHN)"}
+                  </Button>
+                </>
               ) : null}
 
               {isBuyer &&
@@ -503,7 +644,8 @@ function OrderDetailPage() {
 
               {(isBuyer || isSeller) &&
               order.status !== "completed" &&
-              order.status !== "cancelled" ? (
+              order.status !== "cancelled" &&
+              order.status !== "pending" ? (
                 <Button
                   variant="outline"
                   className="w-full border-rose-200 text-rose-700"
@@ -514,7 +656,7 @@ function OrderDetailPage() {
                 </Button>
               ) : null}
 
-              {order.status === "delivered" && (isBuyer || isSeller) ? (
+              {order.status === "delivered" && (isBuyer || isSeller) && !isBuyer ? (
                 <Button
                   variant="outline"
                   className="w-full border-[#D8E2EF] bg-white text-[#5B7083]"
@@ -536,10 +678,69 @@ function OrderDetailPage() {
                   Đánh giá
                 </Button>
               ) : null}
+
+              <Button
+                variant="outline"
+                className="w-full border-[#D8E2EF] text-[#2563EB]"
+                onClick={() => chatMutation.mutate()}
+                disabled={chatMutation.isPending}
+              >
+                <MessageSquare className="mr-2 size-4" />
+                {isBuyer ? "Chat với người bán" : "Chat với người mua"}
+              </Button>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <Dialog open={insufficientFund} onOpenChange={setInsufficientFund}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-700">
+              <AlertTriangle className="size-5" />
+              Số dư không đủ
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p className="text-[#5B7083]">
+              Số dư hiện tại:{" "}
+              <span className="font-bold text-[#102A43]">
+                {currency(wallet?.balance || 0)}
+              </span>
+            </p>
+            <p className="text-[#5B7083]">
+              Số tiền cần ký quỹ:{" "}
+              <span className="font-bold text-[#102A43]">
+                {currency(escrow?.amount || 0)}
+              </span>
+            </p>
+            <p className="text-xs text-[#8A99A8]">
+              Bạn cần nạp thêm{" "}
+              <span className="font-semibold text-rose-600">
+                {currency(
+                  Math.max(0, Number(escrow?.amount || 0) - Number(wallet?.balance || 0)),
+                )}
+              </span>{" "}
+              để thực hiện ký quỹ.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              className="border-[#D8E2EF]"
+              onClick={() => setInsufficientFund(false)}
+            >
+              Đóng
+            </Button>
+            <Button
+              className="bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
+              asChild
+            >
+              <Link to="/wallet">Nạp tiền ngay</Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <LeaveReviewDialog
         open={reviewOpen}
@@ -558,6 +759,15 @@ function OrderDetailPage() {
         onOpenChange={setDisputeOpen}
         isPending={disputeMutation.isPending}
         onSubmit={(reason) => disputeMutation.mutate(reason)}
+      />
+
+      <CreateShippingDialog
+        open={shippingDialogOpen}
+        onOpenChange={setShippingDialogOpen}
+        order={order}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+        }}
       />
     </div>
   )

@@ -11,6 +11,7 @@ import {
 import ChangePassword from "@/components/UserSettings/ChangePassword"
 import DeleteAccount from "@/components/UserSettings/DeleteAccount"
 import UserInformation from "@/components/UserSettings/UserInformation"
+import StripeConnectSettings from "@/components/Stripe/StripeConnectSettings"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,6 +20,7 @@ import useAuth from "@/hooks/useAuth"
 const tabsConfig = [
   { value: "my-profile", title: "Hồ sơ", component: UserInformation },
   { value: "password", title: "Mật khẩu", component: ChangePassword },
+  { value: "payment", title: "Thanh toán", component: StripeConnectSettings },
   { value: "danger-zone", title: "Vùng nguy hiểm", component: DeleteAccount },
 ]
 
@@ -45,7 +47,7 @@ function UserSettings() {
 
   const profile = currentUser
   const finalTabs =
-    profile.role === "admin" ? tabsConfig.slice(0, 3) : tabsConfig
+    profile.role === "admin" ? tabsConfig.slice(0, 4) : tabsConfig
 
   const trustRows = [
     {
@@ -83,7 +85,7 @@ function UserSettings() {
               Cài đặt tài khoản
             </h1>
             <p className="max-w-2xl text-sm text-[#5B7083] md:text-base">
-              Quản lý hồ sơ, thông tin đăng nhập và tín hiệu tin cậy.
+              Quản lý hồ sơ, thông tin đăng nhập và kết nối thanh toán.
             </p>
           </div>
           <div className="rounded-xl border border-[#D8E2EF] bg-[#EFF6FF] px-4 py-3 text-xs text-[#5B7083]">

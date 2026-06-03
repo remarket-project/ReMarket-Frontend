@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
+import { ChatGlobal } from "@/components/Chat/ChatGlobal"
 import { Footer } from "@/components/Common/Footer"
 import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader"
 
@@ -19,6 +20,7 @@ function Layout() {
       </main>
 
       <Footer />
+      <ChatGlobal />
     </div>
   )
 }

@@ -5,10 +5,9 @@
 } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
-  ArrowDown,
-  ArrowUp,
   ArrowUpRight,
   CheckCircle2,
+  CreditCard,
   Download,
   Lock,
   PlusCircle,
@@ -25,8 +24,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import WalletTopupDialog from "@/components/Wallet/WalletTopupDialog"
+import WithdrawDialog from "@/components/Wallet/WithdrawDialog"
 
 type TxFilter = "all" | "in" | "out"
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"
+
+function getToken() {
+  return localStorage.getItem("access_token")
+}
 
 function getWalletQueryOptions() {
   return {
@@ -68,13 +74,21 @@ function when(value: string) {
   })
 }
 
-function iconForType(type: string, positive: boolean) {
-  if (type.includes("topup")) return PlusCircle
-  if (type.includes("escrow_fund")) return Lock
-  if (type.includes("escrow_release")) return Unlock
-  if (type.includes("refund")) return RotateCcw
-  return positive ? ArrowDown : ArrowUp
+const TX_CONFIG: Record<string, { label: string; icon: any; color: string; bg: string }> = {
+  deposit: { label: "Nạp tiền", icon: PlusCircle, color: "text-emerald-600", bg: "bg-emerald-100" },
+  deposit_pending: { label: "Nạp (chờ)", icon: PlusCircle, color: "text-amber-600", bg: "bg-amber-100" },
+  withdraw: { label: "Rút tiền", icon: Wallet, color: "text-red-600", bg: "bg-red-100" },
+  withdraw_pending: { label: "Rút (chờ)", icon: Wallet, color: "text-amber-600", bg: "bg-amber-100" },
+  withdraw_completed: { label: "Rút hoàn tất", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100" },
+  withdraw_failed: { label: "Rút thất bại", icon: Wallet, color: "text-red-600", bg: "bg-red-100" },
+  escrow_lock: { label: "Ký quỹ", icon: Lock, color: "text-amber-600", bg: "bg-amber-100" },
+  escrow_fund: { label: "Ký quỹ", icon: Lock, color: "text-amber-600", bg: "bg-amber-100" },
+  escrow_release: { label: "Giải ngân", icon: Unlock, color: "text-blue-600", bg: "bg-blue-100" },
+  escrow_refund: { label: "Hoàn tiền", icon: RotateCcw, color: "text-violet-600", bg: "bg-violet-100" },
+  payment: { label: "Thanh toán", icon: CreditCard, color: "text-gray-600", bg: "bg-gray-100" },
 }
+
+const TX_TYPES = Object.keys(TX_CONFIG) as Array<keyof typeof TX_CONFIG>
 
 export const Route = createFileRoute("/_protected/wallet")({
   component: WalletPage,
@@ -87,25 +101,41 @@ function WalletPage() {
   const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(getWalletQueryOptions())
   const [topupOpen, setTopupOpen] = useState(false)
+  const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [txFilter, setTxFilter] = useState<TxFilter>("all")
+  const [txTypeFilter, setTxTypeFilter] = useState<string | undefined>(undefined)
   const [txQuery, setTxQuery] = useState("")
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
 
   const available = Number(data.wallet.balance) || 0
   const locked = Number(data.wallet.locked_balance) || 0
   const total = available + locked
 
-  const topupMutation = useMutation({
-    mutationFn: (amount: number) =>
-      WalletService.demoTopupApiV1WalletDemoTopupPost({
-        requestBody: { amount },
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
-      setTopupOpen(false)
-      toast.success("Đã nạp tiền vào ví thành công.")
+  const createPaymentIntent = useMutation({
+    mutationFn: async (amount: number) => {
+      const token = getToken()
+      const res = await fetch(
+        `${API_BASE}/api/v1/payment/create-deposit`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ amount }),
+        },
+      )
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.detail || "Tạo thanh toán thất bại")
+      }
+      return res.json() as Promise<{ client_secret: string; payment_intent_id: string; amount: number }>
+    },
+    onSuccess: (data) => {
+      setClientSecret(data.client_secret)
     },
     onError: (error: any) => {
-      toast.error(error?.body?.detail || "Không thể nạp tiền vào ví.")
+      toast.error(error?.message || "Không thể tạo thanh toán.")
     },
   })
 
@@ -116,6 +146,8 @@ function WalletPage() {
       const isIn = amount > 0
       const matchesFilter =
         txFilter === "all" || (txFilter === "in" ? isIn : !isIn)
+      const matchesType =
+        !txTypeFilter || tx.type === txTypeFilter
       const description = (tx.description || "").toLowerCase()
       const orderId = (tx.order_id || "").toLowerCase()
       const matchesQuery =
@@ -123,9 +155,9 @@ function WalletPage() {
         description.includes(normalized) ||
         orderId.includes(normalized) ||
         tx.type.toLowerCase().includes(normalized)
-      return matchesFilter && matchesQuery
+      return matchesFilter && matchesType && matchesQuery
     })
-  }, [data.transactions, txFilter, txQuery])
+  }, [data.transactions, txFilter, txTypeFilter, txQuery])
 
   const escrowOrderIds = Array.from(
     new Set(
@@ -192,7 +224,10 @@ function WalletPage() {
       <section className="mt-4 flex flex-wrap gap-3">
         <Button
           className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-          onClick={() => setTopupOpen(true)}
+          onClick={() => {
+            setClientSecret(null)
+            setTopupOpen(true)
+          }}
         >
           <PlusCircle className="mr-2 size-4" />
           Nạp tiền
@@ -200,11 +235,11 @@ function WalletPage() {
         <Button
           variant="outline"
           className="border-[#D8E2EF] bg-white text-[#5B7083]"
-          disabled
+          onClick={() => setWithdrawOpen(true)}
+          disabled={available <= 0}
         >
           <ArrowUpRight className="mr-2 size-4" />
           Rút tiền
-          <Badge className="ml-2 text-[10px]">Sớm</Badge>
         </Button>
         <Button
           variant="outline"
@@ -241,12 +276,30 @@ function WalletPage() {
                       : "Tiền ra"}
                 </Badge>
               ))}
-              <Input
-                value={txQuery}
-                onChange={(event) => setTxQuery(event.target.value)}
-                placeholder="Tìm mô tả hoặc mã đơn..."
-                className="ml-auto max-w-xs border-[#D8E2EF] bg-white"
-              />
+              <div className="ml-auto flex flex-wrap items-center gap-2">
+                <Input
+                  value={txQuery}
+                  onChange={(event) => setTxQuery(event.target.value)}
+                  placeholder="Tìm mã đơn..."
+                  className="max-w-36 sm:max-w-48 border-[#D8E2EF] bg-white"
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {TX_TYPES.map((type) => (
+                <Badge
+                  key={type}
+                  variant="outline"
+                  className={`cursor-pointer text-[10px] ${
+                    txTypeFilter === type
+                      ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
+                      : "border-[#D8E2EF] bg-white text-[#5B7083]"
+                  }`}
+                  onClick={() => setTxTypeFilter(txTypeFilter === type ? undefined : type)}
+                >
+                  {TX_CONFIG[type].label}
+                </Badge>
+              ))}
             </div>
 
             {filteredTx.length === 0 ? (
@@ -257,24 +310,27 @@ function WalletPage() {
               filteredTx.map((tx) => {
                 const amount = Number(tx.amount)
                 const positive = amount > 0
-                const Icon = iconForType(tx.type, positive)
+                const txType = tx.type as keyof typeof TX_CONFIG
+                const config = TX_CONFIG[txType] || {
+                  label: tx.type,
+                  icon: positive ? PlusCircle : Wallet,
+                  color: positive ? "text-emerald-600" : "text-red-600",
+                  bg: positive ? "bg-emerald-100" : "bg-red-100",
+                }
+                const Icon = config.icon
                 return (
                   <div
                     key={tx.id}
                     className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#D8E2EF] bg-white p-3 transition hover:border-[#2563EB]/30"
                   >
                     <div
-                      className={`flex size-10 items-center justify-center rounded-xl ${
-                        positive
-                          ? "bg-[#ECFDF5] text-[#059669]"
-                          : "bg-[#FEF2F2] text-[#DC2626]"
-                      }`}
+                      className={`flex size-10 items-center justify-center rounded-xl ${config.bg} ${config.color}`}
                     >
                       <Icon className="size-5" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-[#102A43]">
-                        {tx.description || tx.type}
+                        {config.label}
                       </p>
                       <p className="text-xs text-[#5B7083]">
                         {when(tx.created_at)}
@@ -356,10 +412,23 @@ function WalletPage() {
 
       <WalletTopupDialog
         open={topupOpen}
-        onOpenChange={setTopupOpen}
+        onOpenChange={(val) => {
+          if (!val) setClientSecret(null)
+          setTopupOpen(val)
+        }}
         currentBalance={available}
-        isPending={topupMutation.isPending}
-        onConfirm={(amount) => topupMutation.mutate(amount)}
+        clientSecret={clientSecret}
+        onCreatePaymentIntent={(amount) => createPaymentIntent.mutate(amount)}
+        isCreating={createPaymentIntent.isPending}
+      />
+
+      <WithdrawDialog
+        open={withdrawOpen}
+        onOpenChange={setWithdrawOpen}
+        currentBalance={available}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
+        }}
       />
     </div>
   )

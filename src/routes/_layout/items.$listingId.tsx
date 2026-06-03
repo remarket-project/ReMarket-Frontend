@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import {
   ArrowLeft,
   BadgeCheck,
@@ -12,6 +12,7 @@ import {
   Heart,
   Loader2,
   MapPin,
+  MessageSquare,
   Package,
   Pencil,
   ShieldCheck,
@@ -23,14 +24,15 @@ import { toast } from "sonner"
 
 import {
   CategoriesService,
+  ChatsService,
   ListingsService,
   type ListingWithImages,
   OffersService,
-  OrdersService,
   UsersService,
 } from "@/client"
 import { ImageGallery } from "@/components/Listings/ImageGallery"
 import { ListingCard } from "@/components/Listings/ListingCard"
+import CheckoutDialog from "@/components/Checkout/CheckoutDialog"
 import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -38,6 +40,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import useAuth from "@/hooks/useAuth"
 import { useAuthRequired } from "@/hooks/useAuthRequired" // trigger-hmr
+import { useChat } from "@/hooks/ChatContext"
 import { cn } from "@/lib/utils"
 import { getInitials } from "@/utils"
 
@@ -551,10 +554,25 @@ function SimilarListings({
 function ListingDetailPage() {
   const { listingId } = Route.useParams()
   const { user } = useAuth()
+  const { openConversation } = useChat()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [offerDialogOpen, setOfferDialogOpen] = useState(false)
   const [saved, setSaved] = useState(false)
   const { requireAuth, AuthModal } = useAuthRequired()
+
+  const startChatMutation = useMutation({
+    mutationFn: () =>
+      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
+        { listingId },
+      ),
+    onSuccess: (conv) => {
+      openConversation(conv.id)
+    },
+    onError: () => {
+      toast.error("Không thể tạo hội thoại. Vui lòng thử lại.")
+    },
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
@@ -593,22 +611,7 @@ function ListingDetailPage() {
     enabled: Boolean(data?.listing?.category_id),
   })
 
-  const buyNowMutation = useMutation({
-    mutationFn: () =>
-      OrdersService.createDirectOrderApiV1OrdersPost({
-        requestBody: { listing_id: listingId },
-      }),
-    onSuccess: () => {
-      toast.success("Đặt hàng thành công! Tiến hành nạp tiền vào escrow.")
-      queryClient.invalidateQueries({ queryKey: ["my-orders"] })
-    },
-    onError: (err: unknown) => {
-      const msg =
-        (err as { body?: { detail?: string } })?.body?.detail ||
-        "Đặt hàng thất bại. Vui lòng thử lại."
-      toast.error(msg)
-    },
-  })
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
 
   if (isLoading) return <DetailSkeleton />
 
@@ -779,6 +782,24 @@ function ListingDetailPage() {
                 </div>
               )}
 
+              {/* Chat with seller button */}
+              {canBuyNow && (
+                <Button
+                  id="btn-chat-seller"
+                  variant="outline"
+                  className="w-full border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
+                  disabled={startChatMutation.isPending}
+                  onClick={requireAuth(() => startChatMutation.mutate(), "để nhắn tin với người bán")}
+                >
+                  {startChatMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <MessageSquare className="size-4" />
+                  )}
+                  Nhắn tin với người bán
+                </Button>
+              )}
+
               {/* Make offer button */}
               {canMakeOffer && (
                 <Button
@@ -793,25 +814,28 @@ function ListingDetailPage() {
 
               {/* Buy now button — visible to ALL (guests see modal on click) */}
               {canBuyNow && (
-                <Button
-                  id="btn-buy-now"
-                  variant="outline"
-                  className="w-full border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
-                  disabled={buyNowMutation.isPending}
-                  onClick={requireAuth(() => buyNowMutation.mutate(), "để mua hàng qua Escrow")}
-                >
-                  {buyNowMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Đang xử lý...
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="size-4" />
-                      Mua ngay qua Escrow
-                    </>
-                  )}
-                </Button>
+                <>
+                  <Button
+                    id="btn-buy-now"
+                    variant="outline"
+                    className="w-full border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
+                    onClick={requireAuth(() => setCheckoutOpen(true), "để mua hàng")}
+                  >
+                    <ShieldCheck className="size-4" />
+                    Mua ngay
+                  </Button>
+                  <CheckoutDialog
+                    open={checkoutOpen}
+                    onOpenChange={setCheckoutOpen}
+                    listingId={listingId}
+                    price={listing.price}
+                    listingTitle={listing.title}
+                    onSuccess={(orderId) => {
+                      queryClient.invalidateQueries({ queryKey: ["my-orders"] })
+                      navigate({ to: "/orders/$orderId", params: { orderId } })
+                    }}
+                  />
+                </>
               )}
 
               {/* Save button — visible to ALL (guests see modal on click) */}

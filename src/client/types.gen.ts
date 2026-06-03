@@ -144,6 +144,9 @@ export type EscrowRead = {
     resolution_reason: (string | null);
     resolved_at: (string | null);
     dispute_status: (string | null);
+    delivered_at?: (string | null);
+    auto_release_at?: (string | null);
+    release_trigger?: (string | null);
     funded_at: (string | null);
     release_requested_at: (string | null);
     released_at: (string | null);
@@ -394,8 +397,30 @@ export type OpenDisputeRequest = {
     reason: string;
 };
 
+export type ShippingAddressInput = {
+    name: string;
+    phone: string;
+    province: string;
+    district: string;
+    ward: string;
+    address_detail: string;
+    note?: (string | null);
+    province_id?: (number | null);
+    district_id?: (number | null);
+    ward_code?: (string | null);
+};
+
+export type PaymentMethod = 'wallet' | 'cod';
+
+export const PaymentMethod = {
+    WALLET: 'wallet',
+    COD: 'cod',
+} as const;
+
 export type OrderDirectCreate = {
     listing_id: string;
+    payment_method?: PaymentMethod;
+    shipping_address?: (ShippingAddressInput | null);
 };
 
 export type OrderEventRead = {
@@ -414,6 +439,23 @@ export type OrderRead = {
     seller_id: string;
     listing_id: string;
     status: OrderStatus;
+    payment_method: PaymentMethod;
+    shipping_provider?: (string | null);
+    shipping_service_type?: (number | null);
+    shipping_fee?: (string | null);
+    tracking_number?: (string | null);
+    expected_delivery_at?: (string | null);
+    delivered_at?: (string | null);
+    shipping_name?: (string | null);
+    shipping_phone?: (string | null);
+    shipping_province?: (string | null);
+    shipping_district?: (string | null);
+    shipping_ward?: (string | null);
+    shipping_address_detail?: (string | null);
+    shipping_note?: (string | null);
+    shipping_province_id?: (number | null);
+    shipping_district_id?: (number | null);
+    shipping_ward_code?: (string | null);
     created_at: string;
     updated_at: string;
 };
@@ -567,9 +609,13 @@ export type TransactionRead = {
     wallet_id: string;
     amount: string;
     type: string;
-    description: (string | null);
-    order_id: (string | null);
-    escrow_id: (string | null);
+    description?: (string | null);
+    order_id?: (string | null);
+    escrow_id?: (string | null);
+    payment_gateway_ref?: (string | null);
+    bank_code?: (string | null);
+    bank_account?: (string | null);
+    status?: string;
     balance_before: string;
     balance_after: string;
     created_at: string;

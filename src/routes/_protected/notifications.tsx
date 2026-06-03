@@ -1,5 +1,5 @@
 ﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { Bell, CheckCheck } from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -83,6 +83,7 @@ export const Route = createFileRoute("/_protected/notifications")({
 
 function NotificationsPage() {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const { data } = useQuery(getNotificationsQueryOptions())
   const [filter, setFilter] = useState<FilterTab>("all")
 
@@ -127,6 +128,38 @@ function NotificationsPage() {
       return acc
     }, {})
   }, [filtered])
+
+  const handleNotificationClick = (item: NotificationRead) => {
+    if (!item.is_read) {
+      markReadMutation.mutate(item.id)
+    }
+
+    const notifData = item.data as Record<string, unknown> | null
+
+    if (item.type.includes("offer")) {
+      navigate({ to: "/offers" })
+    } else if (item.type.includes("order")) {
+      const orderId = notifData?.order_id as string | undefined
+      if (orderId) {
+        navigate({ to: "/orders/$orderId", params: { orderId } })
+      } else {
+        navigate({ to: "/orders" })
+      }
+    } else if (item.type.includes("escrow")) {
+      const orderId = notifData?.order_id as string | undefined
+      if (orderId) {
+        navigate({ to: "/escrow/$orderId", params: { orderId } })
+      }
+    } else if (item.type.includes("wallet")) {
+      navigate({ to: "/wallet" })
+    } else if (item.type.includes("listing")) {
+      navigate({ to: "/my-listings" })
+    } else if (item.type.includes("review")) {
+      navigate({ to: "/orders" })
+    } else {
+      navigate({ to: "/notifications" })
+    }
+  }
 
   return (
     <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
@@ -191,11 +224,7 @@ function NotificationsPage() {
                     ? "border-[#D8E2EF] bg-[#EFF6FF]"
                     : "border-[#D8E2EF]/40 bg-white"
                 }`}
-                onClick={() => {
-                  if (!item.is_read) {
-                    markReadMutation.mutate(item.id)
-                  }
-                }}
+                onClick={() => handleNotificationClick(item)}
               >
                 <div className="flex items-start gap-3">
                   <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF]">

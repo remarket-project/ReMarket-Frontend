@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
 
-import { OffersService } from "@/client"
+import { ChatsService, OffersService } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -41,6 +41,7 @@ interface MakeOfferDialogProps {
   listingId: string
   listingTitle: string
   listedPrice: string
+  conversationId?: string
 }
 
 export function MakeOfferDialog({
@@ -49,6 +50,7 @@ export function MakeOfferDialog({
   listingId,
   listingTitle,
   listedPrice,
+  conversationId,
 }: MakeOfferDialogProps) {
   const queryClient = useQueryClient()
   const listedNum = Number(listedPrice)
@@ -69,11 +71,29 @@ export function MakeOfferDialog({
           offer_price: data.offer_price,
         },
       }),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       toast.success(
         "Đã gửi đề nghị thành công! Người bán sẽ nhận được thông báo.",
       )
       queryClient.invalidateQueries({ queryKey: ["listing-offers", listingId] })
+      queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
+
+      if (conversationId) {
+        const formattedPrice = new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          maximumFractionDigits: 0,
+        }).format(variables.offer_price)
+        ChatsService.sendMessageApiV1ChatsConversationsConversationIdMessagesPost(
+          {
+            conversationId,
+            requestBody: {
+              content: `Mình đã gửi đề nghị ${formattedPrice} cho bạn.`,
+            },
+          },
+        )
+      }
+
       form.reset()
       onOpenChange(false)
     },

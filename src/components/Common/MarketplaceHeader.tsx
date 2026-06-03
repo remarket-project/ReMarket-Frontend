@@ -8,6 +8,7 @@ import {
   LogOut,
   MapPin,
   Menu,
+  MessageSquare,
   Package,
   Plus,
   Search,
@@ -31,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import useAuth from "@/hooks/useAuth"
+import { useChat } from "@/hooks/ChatContext"
 import { cn } from "@/lib/utils"
 import { getInitials } from "@/utils"
 
@@ -194,6 +196,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
 
 export function MarketplaceHeader() {
   const { user: currentUser, logout } = useAuth()
+  const { unreadCount: chatUnread, toggleChat } = useChat()
   const location = useLocation()
   const navigate = useNavigate()
   const isHome = location.pathname === "/"
@@ -537,6 +540,19 @@ export function MarketplaceHeader() {
                 <DropdownMenuLabel className="text-xs text-[#5B7083] font-medium px-3 py-1.5">
                   {currentUser.email}
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-[#D8E2EF]" />
+                <DropdownMenuItem
+                  className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors"
+                  onClick={() => toggleChat()}
+                >
+                  <MessageSquare className="mr-2 size-4" />
+                  <span className="flex-1">Tin nhắn</span>
+                  {chatUnread > 0 && (
+                    <span className="flex min-w-[20px] items-center justify-center rounded-full bg-[#2563EB] px-1.5 text-[10px] font-bold text-white">
+                      {chatUnread > 99 ? "99+" : chatUnread}
+                    </span>
+                  )}
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[#D8E2EF]" />
                 <Link to="/offers">
                   <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">

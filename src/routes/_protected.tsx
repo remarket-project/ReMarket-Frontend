@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { ApiError, UsersService } from "@/client";
+import { ChatGlobal } from "@/components/Chat/ChatGlobal";
 import { Footer } from "@/components/Common/Footer";
 import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader";
 import { isLoggedIn } from "@/hooks/useAuth";
@@ -55,6 +56,7 @@ function ProtectedLayout() {
       </main>
 
       <Footer />
+      <ChatGlobal />
     </div>
   );
 }

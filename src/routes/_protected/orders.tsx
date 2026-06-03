@@ -28,6 +28,7 @@ function getOrdersQueryOptions() {
       return { orders }
     },
     queryKey: ["orders-dashboard"],
+    refetchInterval: 30000,
   }
 }
 

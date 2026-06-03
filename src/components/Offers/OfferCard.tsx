@@ -1,16 +1,23 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 import {
   ArrowLeftRight,
   CheckCircle2,
   Clock3,
   ExternalLink,
+  MessageSquare,
   Package,
   Star,
   ThumbsUp,
   XCircle,
 } from "lucide-react"
-import { ListingsService, type OfferRead, UsersService } from "@/client"
+import {
+  ChatsService,
+  ListingsService,
+  type OfferRead,
+  UsersService,
+} from "@/client"
+import { useChat } from "@/hooks/ChatContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -79,7 +86,8 @@ export function OfferCard({
   onCounter,
   isPending,
 }: OfferCardProps) {
-  // Fetch Listing Details
+  const { openConversation } = useChat()
+
   const { data: listing, isLoading: isListingLoading } = useQuery({
     queryKey: ["listing-detail", offer.listing_id],
     queryFn: () =>
@@ -89,9 +97,6 @@ export function OfferCard({
     enabled: Boolean(offer.listing_id),
   })
 
-  // Fetch Participant Profile
-  // Received: Buyer details (offer.buyer_id)
-  // Sent: Seller details (listing.seller_id)
   const participantId =
     role === "received" ? offer.buyer_id : listing?.seller_id
   const { data: participant, isLoading: isParticipantLoading } = useQuery({
@@ -101,6 +106,16 @@ export function OfferCard({
         userId: participantId!,
       }),
     enabled: Boolean(participantId),
+  })
+
+  const chatMutation = useMutation({
+    mutationFn: () =>
+      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
+        { listingId: offer.listing_id },
+      ),
+    onSuccess: (conv: any) => {
+      openConversation(conv.id)
+    },
   })
 
   if (isListingLoading || isParticipantLoading) {
@@ -124,6 +139,7 @@ export function OfferCard({
   const ratio =
     listedPrice > 0 ? Math.round((offerPrice / listedPrice) * 100) : 0
   const isAccepted = offer.status === "accepted"
+  const orderId = (offer as any).order_id
 
   const primaryImage =
     listing?.images?.find((img) => img.is_primary) ??
@@ -136,7 +152,6 @@ export function OfferCard({
   return (
     <Card className="border-blue-200/80 bg-white/92 shadow-sm hover:shadow-md transition">
       <CardContent className="p-4 sm:p-5 space-y-4">
-        {/* Top Listing Row */}
         <div className="flex items-start gap-3 justify-between">
           <div className="flex gap-3">
             <div className="relative flex size-14 flex-shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 overflow-hidden">
@@ -179,7 +194,6 @@ export function OfferCard({
           </div>
         </div>
 
-        {/* Participant (Seller/Buyer) Info Card */}
         {participant && (
           <div className="bg-blue-50/40 border border-blue-100/50 rounded-xl p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -220,7 +234,6 @@ export function OfferCard({
           </div>
         )}
 
-        {/* Pricing context & ratio info */}
         <div className="flex flex-wrap items-center justify-between text-xs text-zinc-500 bg-zinc-50/50 border border-zinc-100 rounded-xl px-3 py-2 gap-2">
           <span>
             Giá niêm yết:{" "}
@@ -244,9 +257,17 @@ export function OfferCard({
           </span>
         </div>
 
-        {/* Action Controls */}
         {offer.status === "pending" && role === "received" && (
           <div className="flex flex-wrap gap-2 pt-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+              onClick={() => chatMutation.mutate()}
+              disabled={chatMutation.isPending}
+            >
+              <MessageSquare className="w-4 h-4 mr-1.5" /> Chat
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -309,16 +330,32 @@ export function OfferCard({
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
               <CheckCircle2 className="w-4 h-4" /> Đề nghị này đã được chấp nhận.
             </span>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
-              asChild
-            >
-              <Link to="/orders">
-                Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              {orderId && role === "received" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
+                  asChild
+                >
+                  <Link to="/orders/$orderId" params={{ orderId }}>
+                    Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                </Button>
+              )}
+              {!orderId && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
+                  asChild
+                >
+                  <Link to="/orders">
+                    Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </CardContent>

@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { ExternalLink, Package, Star } from "lucide-react"
-import { ListingsService, type OrderRead, UsersService } from "@/client"
+import { ExternalLink, MessageSquare, Package, Star, Truck } from "lucide-react"
+import { ChatsService, ListingsService, type OrderRead, UsersService } from "@/client"
+import { useChat } from "@/hooks/ChatContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -41,6 +42,18 @@ function shortDate(value: string) {
 }
 
 export function OrderRow({ order, role }: OrderRowProps) {
+  const { openConversation } = useChat()
+
+  const chatMutation = useMutation({
+    mutationFn: () =>
+      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
+        { listingId: order.listing_id },
+      ),
+    onSuccess: (conv: any) => {
+      openConversation(conv.id)
+    },
+  })
+
   // Fetch Listing Details
   const { data: listing, isLoading: isListingLoading } = useQuery({
     queryKey: ["listing-detail", order.listing_id],
@@ -131,15 +144,32 @@ export function OrderRow({ order, role }: OrderRowProps) {
               >
                 {ORDER_STATUS_LABELS[order.status] ?? order.status}
               </Badge>
+              {order.tracking_number && (
+                <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-gray-400">
+                  <Truck className="size-3" />
+                  {order.tracking_number.slice(0, 10)}...
+                </div>
+              )}
             </div>
-            <Button
-              className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-bold text-xs rounded-xl shadow-md cursor-pointer py-4"
-              asChild
-            >
-              <Link to="/orders/$orderId" params={{ orderId: order.id }}>
-                Xem chi tiết
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-[#D8E2EF] text-[#2563EB] font-bold text-xs rounded-xl cursor-pointer py-4"
+                onClick={() => chatMutation.mutate()}
+                disabled={chatMutation.isPending}
+              >
+                <MessageSquare className="size-3.5 mr-1" />
+                Chat
+              </Button>
+              <Button
+                className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-bold text-xs rounded-xl shadow-md cursor-pointer py-4"
+                asChild
+              >
+                <Link to="/orders/$orderId" params={{ orderId: order.id }}>
+                  Xem chi tiết
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 

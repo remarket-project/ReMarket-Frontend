@@ -1376,12 +1376,35 @@ export const OpenDisputeRequestSchema = {
     description: 'Request body for opening a dispute.'
 } as const;
 
+export const ShippingAddressInputSchema = {
+    properties: {
+        name: { type: 'string', title: 'Name' },
+        phone: { type: 'string', title: 'Phone' },
+        province: { type: 'string', title: 'Province' },
+        district: { type: 'string', title: 'District' },
+        ward: { type: 'string', title: 'Ward' },
+        address_detail: { type: 'string', title: 'Address Detail' },
+        note: { type: 'string', title: 'Note' },
+    },
+    type: 'object',
+    required: ['name', 'phone', 'province', 'district', 'ward', 'address_detail'],
+    title: 'ShippingAddressInput'
+} as const;
+
 export const OrderDirectCreateSchema = {
     properties: {
         listing_id: {
             type: 'string',
             format: 'uuid',
             title: 'Listing Id'
+        },
+        payment_method: {
+            type: 'string',
+            title: 'Payment Method'
+        },
+        shipping_address: {
+            '$ref': '#/components/schemas/ShippingAddressInput',
+            title: 'Shipping Address'
         }
     },
     type: 'object',

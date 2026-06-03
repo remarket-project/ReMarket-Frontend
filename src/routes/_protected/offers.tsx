@@ -3,7 +3,7 @@
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import {
   ArrowLeftRight,
   CheckCircle2,
@@ -47,6 +47,7 @@ function getOffersQueryOptions() {
       return { sent, received }
     },
     queryKey: ["offers-dashboard"],
+    refetchInterval: 30000,
   }
 }
 
@@ -67,6 +68,7 @@ const statusLabels: Record<OfferView, string> = {
 
 function OffersPage() {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const { data } = useSuspenseQuery(getOffersQueryOptions())
   const [activeTab, setActiveTab] = useState<"received" | "sent">("received")
   const [statusView, setStatusView] = useState<OfferView>("all")
@@ -92,13 +94,30 @@ function OffersPage() {
           offer_price: offerPrice,
         },
       }),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-      toast.success("Offer updated successfully.")
       setCounterTarget(null)
+
+      if (variables.status === "accepted") {
+        const orderId = (data as any)?.order_id
+        if (orderId) {
+          toast.success("Đề nghị đã được chấp nhận! Đơn hàng đã được tạo.", {
+            action: {
+              label: "Xem đơn hàng",
+              onClick: () => navigate({ to: "/orders/$orderId", params: { orderId } }),
+            },
+          })
+        } else {
+          toast.success("Đề nghị đã được chấp nhận! Đơn hàng đã được tạo.")
+        }
+      } else if (variables.status === "rejected") {
+        toast.success("Đã từ chối đề nghị.")
+      } else if (variables.status === "countered") {
+        toast.success("Đã gửi giá phản hồi.")
+      }
     },
     onError: (error: any) => {
-      toast.error(error?.body?.detail || "Unable to update offer.")
+      toast.error(error?.body?.detail || "Không thể cập nhật đề nghị.")
     },
   })
 
