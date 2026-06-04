@@ -32,6 +32,13 @@ export default function StripePaymentForm({
 
     setIsLoading(true)
 
+    const { error: submitError } = await elements.submit()
+    if (submitError) {
+      onError(submitError.message ?? "Thông tin thanh toán không hợp lệ")
+      setIsLoading(false)
+      return
+    }
+
     const { error } = await stripe.confirmPayment({
       elements,
       clientSecret,
