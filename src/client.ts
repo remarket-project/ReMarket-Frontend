@@ -20,6 +20,8 @@ import {
   ReviewsService,
   UtilsService,
   WalletService,
+  ShippingService,
+  ReturnsService,
 } from "./client/sdk.gen"
 
 export * from "./client/types.gen"
@@ -37,6 +39,8 @@ export {
   ReviewsService,
   UtilsService,
   WalletService,
+  ShippingService,
+  ReturnsService,
 }
 
 import type {

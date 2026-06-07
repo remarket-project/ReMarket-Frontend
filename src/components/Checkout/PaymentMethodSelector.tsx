@@ -1,4 +1,4 @@
-import { Banknote, Truck } from "lucide-react"
+import { Banknote, Info, Shield, Truck } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import type { PaymentMethod } from "@/client"
@@ -61,6 +61,36 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
           )
         })}
       </div>
+
+      {value === "cod" && (
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+          <div className="flex items-start gap-2">
+            <Info className="mt-0.5 size-4 shrink-0 text-yellow-600" />
+            <div>
+              <h4 className="text-sm font-medium text-yellow-800">Lưu ý về COD</h4>
+              <ul className="mt-1 space-y-1 text-xs text-yellow-700">
+                <li>Bạn có thể kiểm tra hàng trước khi thanh toán</li>
+                <li>Nếu không hài lòng, hãy từ chối nhận (miễn phí)</li>
+                <li>Sau khi đã nhận và thanh toán, giao dịch được xem là hoàn tất</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {value === "wallet" && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+          <div className="flex items-start gap-2">
+            <Shield className="mt-0.5 size-4 shrink-0 text-blue-600" />
+            <div>
+              <h4 className="text-sm font-medium text-blue-800">Bảo vệ bởi Escrow</h4>
+              <p className="mt-1 text-xs text-blue-700">
+                Tiền được giữ trong tài khoản ký quỹ. Được hỗ trợ trả hàng trong 7 ngày.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

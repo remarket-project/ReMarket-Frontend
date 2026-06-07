@@ -11,7 +11,7 @@ const normalizedApiBase = (apiUrl || "http://localhost:8000")
 
 const openApiInput =
   process.env.OPENAPI_JSON_URL?.trim() ||
-  `${normalizedApiBase}/api/v1/openapi.json`
+  "openapi.json" ||  "openapi.json"
 
 export default defineConfig({
   input: openApiInput,

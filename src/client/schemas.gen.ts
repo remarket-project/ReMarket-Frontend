@@ -87,6 +87,31 @@ export const AdminAuditTrailResponseSchema = {
     title: 'AdminAuditTrailResponse'
 } as const;
 
+export const AvailabilityOutSchema = {
+    properties: {
+        available: {
+            type: 'boolean',
+            title: 'Available'
+        },
+        message: {
+            type: 'string',
+            title: 'Message',
+            default: ''
+        },
+        services: {
+            items: {
+                '$ref': '#/components/schemas/ServiceOut'
+            },
+            type: 'array',
+            title: 'Services',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['available'],
+    title: 'AvailabilityOut'
+} as const;
+
 export const Body_login_api_v1_auth_login_postSchema = {
     properties: {
         grant_type: {
@@ -449,6 +474,86 @@ export const ConditionGradeSchema = {
     description: 'Condition grade of a product.'
 } as const;
 
+export const CreateAccountResponseSchema = {
+    properties: {
+        account_id: {
+            type: 'string',
+            title: 'Account Id'
+        },
+        onboarding_url: {
+            type: 'string',
+            title: 'Onboarding Url'
+        }
+    },
+    type: 'object',
+    required: ['account_id', 'onboarding_url'],
+    title: 'CreateAccountResponse'
+} as const;
+
+export const DeliveryAgainRequestSchema = {
+    properties: {
+        order_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Order Id'
+        }
+    },
+    type: 'object',
+    required: ['order_id'],
+    title: 'DeliveryAgainRequest'
+} as const;
+
+export const DepositRequestSchema = {
+    properties: {
+        amount: {
+            type: 'integer',
+            maximum: 50000000,
+            minimum: 10000,
+            title: 'Amount',
+            description: 'Amount in VND'
+        }
+    },
+    type: 'object',
+    required: ['amount'],
+    title: 'DepositRequest'
+} as const;
+
+export const DepositResponseSchema = {
+    properties: {
+        client_secret: {
+            type: 'string',
+            title: 'Client Secret'
+        },
+        payment_intent_id: {
+            type: 'string',
+            title: 'Payment Intent Id'
+        },
+        amount: {
+            type: 'integer',
+            title: 'Amount'
+        }
+    },
+    type: 'object',
+    required: ['client_secret', 'payment_intent_id', 'amount'],
+    title: 'DepositResponse'
+} as const;
+
+export const DistrictOutSchema = {
+    properties: {
+        district_id: {
+            type: 'integer',
+            title: 'District Id'
+        },
+        district_name: {
+            type: 'string',
+            title: 'District Name'
+        }
+    },
+    type: 'object',
+    required: ['district_id', 'district_name'],
+    title: 'DistrictOut'
+} as const;
+
 export const EscrowReadSchema = {
     properties: {
         id: {
@@ -572,6 +677,18 @@ export const EscrowReadSchema = {
             ],
             title: 'Funded At'
         },
+        delivered_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Delivered At'
+        },
         release_requested_at: {
             anyOf: [
                 {
@@ -596,6 +713,29 @@ export const EscrowReadSchema = {
             ],
             title: 'Released At'
         },
+        auto_release_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Auto Release At'
+        },
+        release_trigger: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Release Trigger'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -608,9 +748,59 @@ export const EscrowReadSchema = {
         }
     },
     type: 'object',
-    required: ['id', 'order_id', 'amount', 'status', 'buyer_wallet_id', 'seller_wallet_id', 'dispute_reason', 'dispute_opened_at', 'admin_resolved_by', 'admin_notes', 'resolution_reason', 'resolved_at', 'dispute_status', 'funded_at', 'release_requested_at', 'released_at', 'created_at', 'updated_at'],
+    required: ['id', 'order_id', 'amount', 'status', 'buyer_wallet_id', 'seller_wallet_id', 'dispute_reason', 'dispute_opened_at', 'admin_resolved_by', 'admin_notes', 'resolution_reason', 'resolved_at', 'dispute_status', 'funded_at', 'delivered_at', 'release_requested_at', 'released_at', 'auto_release_at', 'release_trigger', 'created_at', 'updated_at'],
     title: 'EscrowRead',
     description: 'Escrow information response.'
+} as const;
+
+export const FeeOutSchema = {
+    properties: {
+        total: {
+            type: 'integer',
+            title: 'Total'
+        },
+        service_fee: {
+            type: 'integer',
+            title: 'Service Fee'
+        },
+        insurance_fee: {
+            type: 'integer',
+            title: 'Insurance Fee'
+        },
+        vat: {
+            type: 'integer',
+            title: 'Vat'
+        }
+    },
+    type: 'object',
+    required: ['total', 'service_fee', 'insurance_fee', 'vat'],
+    title: 'FeeOut'
+} as const;
+
+export const FeeRequestSchema = {
+    properties: {
+        to_district_id: {
+            type: 'integer',
+            title: 'To District Id'
+        },
+        to_ward_code: {
+            type: 'string',
+            title: 'To Ward Code'
+        },
+        weight_grams: {
+            type: 'integer',
+            title: 'Weight Grams',
+            default: 500
+        },
+        insurance_value: {
+            type: 'integer',
+            title: 'Insurance Value',
+            default: 0
+        }
+    },
+    type: 'object',
+    required: ['to_district_id', 'to_ward_code'],
+    title: 'FeeRequest'
 } as const;
 
 export const FollowedSellerCollectionSchema = {
@@ -1318,6 +1508,18 @@ export const OfferReadSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Updated At'
+        },
+        order_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Order Id'
         }
     },
     type: 'object',
@@ -1360,6 +1562,48 @@ export const OfferStatusUpdateSchema = {
     title: 'OfferStatusUpdate'
 } as const;
 
+export const OnboardingStatusResponseSchema = {
+    properties: {
+        account_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Account Id'
+        },
+        onboarding_complete: {
+            type: 'boolean',
+            title: 'Onboarding Complete'
+        },
+        account_status: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Account Status'
+        },
+        charges_enabled: {
+            type: 'boolean',
+            title: 'Charges Enabled'
+        },
+        payouts_enabled: {
+            type: 'boolean',
+            title: 'Payouts Enabled'
+        }
+    },
+    type: 'object',
+    required: ['account_id', 'onboarding_complete', 'account_status', 'charges_enabled', 'payouts_enabled'],
+    title: 'OnboardingStatusResponse'
+} as const;
+
 export const OpenDisputeRequestSchema = {
     properties: {
         reason: {
@@ -1376,21 +1620,6 @@ export const OpenDisputeRequestSchema = {
     description: 'Request body for opening a dispute.'
 } as const;
 
-export const ShippingAddressInputSchema = {
-    properties: {
-        name: { type: 'string', title: 'Name' },
-        phone: { type: 'string', title: 'Phone' },
-        province: { type: 'string', title: 'Province' },
-        district: { type: 'string', title: 'District' },
-        ward: { type: 'string', title: 'Ward' },
-        address_detail: { type: 'string', title: 'Address Detail' },
-        note: { type: 'string', title: 'Note' },
-    },
-    type: 'object',
-    required: ['name', 'phone', 'province', 'district', 'ward', 'address_detail'],
-    title: 'ShippingAddressInput'
-} as const;
-
 export const OrderDirectCreateSchema = {
     properties: {
         listing_id: {
@@ -1399,12 +1628,18 @@ export const OrderDirectCreateSchema = {
             title: 'Listing Id'
         },
         payment_method: {
-            type: 'string',
-            title: 'Payment Method'
+            '$ref': '#/components/schemas/PaymentMethod',
+            default: 'wallet'
         },
         shipping_address: {
-            '$ref': '#/components/schemas/ShippingAddressInput',
-            title: 'Shipping Address'
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/ShippingAddressInput'
+                },
+                {
+                    type: 'null'
+                }
+            ]
         }
     },
     type: 'object',
@@ -1492,6 +1727,189 @@ export const OrderReadSchema = {
         status: {
             '$ref': '#/components/schemas/OrderStatus'
         },
+        payment_method: {
+            '$ref': '#/components/schemas/PaymentMethod',
+            default: 'wallet'
+        },
+        shipping_provider: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Provider'
+        },
+        shipping_service_type: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Service Type'
+        },
+        shipping_fee: {
+            anyOf: [
+                {
+                    type: 'string',
+                    pattern: '^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Fee'
+        },
+        tracking_number: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Tracking Number'
+        },
+        expected_delivery_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Expected Delivery At'
+        },
+        delivered_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Delivered At'
+        },
+        shipping_name: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Name'
+        },
+        shipping_phone: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Phone'
+        },
+        shipping_province: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Province'
+        },
+        shipping_district: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping District'
+        },
+        shipping_ward: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Ward'
+        },
+        shipping_address_detail: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Address Detail'
+        },
+        shipping_note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Note'
+        },
+        shipping_province_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Province Id'
+        },
+        shipping_district_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping District Id'
+        },
+        shipping_ward_code: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Ward Code'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -1510,7 +1928,7 @@ export const OrderReadSchema = {
 
 export const OrderStatusSchema = {
     type: 'string',
-    enum: ['pending', 'confirmed', 'shipping', 'delivered', 'completed', 'cancelled'],
+    enum: ['pending', 'confirmed', 'shipping', 'delivered', 'delivery_failed', 'returning', 'returned', 'completed', 'cancelled'],
     title: 'OrderStatus',
     description: 'Status of an order.'
 } as const;
@@ -1524,6 +1942,13 @@ export const OrderStatusUpdateSchema = {
     type: 'object',
     required: ['status'],
     title: 'OrderStatusUpdate'
+} as const;
+
+export const PaymentMethodSchema = {
+    type: 'string',
+    enum: ['wallet', 'cod'],
+    title: 'PaymentMethod',
+    description: 'Phương thức thanh toán.'
 } as const;
 
 export const PriceBandReadSchema = {
@@ -1562,6 +1987,22 @@ export const PriceBandReadSchema = {
     type: 'object',
     required: ['label', 'min_price', 'max_price', 'count'],
     title: 'PriceBandRead'
+} as const;
+
+export const ProvinceOutSchema = {
+    properties: {
+        province_id: {
+            type: 'integer',
+            title: 'Province Id'
+        },
+        province_name: {
+            type: 'string',
+            title: 'Province Name'
+        }
+    },
+    type: 'object',
+    required: ['province_id', 'province_name'],
+    title: 'ProvinceOut'
 } as const;
 
 export const RefreshTokenRequestSchema = {
@@ -1636,6 +2077,116 @@ export const ResolveEscrowRequestSchema = {
     required: ['result'],
     title: 'ResolveEscrowRequest',
     description: 'Admin resolution for disputed escrow.'
+} as const;
+
+export const ReturnOrderRequestSchema = {
+    properties: {
+        order_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Order Id'
+        },
+        reason: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Reason'
+        }
+    },
+    type: 'object',
+    required: ['order_id'],
+    title: 'ReturnOrderRequest'
+} as const;
+
+export const ReturnReasonSchema = {
+    type: 'string',
+    enum: ['wrong_item', 'defective', 'damaged', 'not_as_described', 'fake', 'no_longer_needed'],
+    title: 'ReturnReason'
+} as const;
+
+export const ReturnRequestCreateSchema = {
+    properties: {
+        order_id: {
+            type: 'string',
+            title: 'Order Id'
+        },
+        reason: {
+            '$ref': '#/components/schemas/ReturnReason'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        images: {
+            items: {
+                type: 'string'
+            },
+            type: 'array',
+            title: 'Images',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['order_id', 'reason'],
+    title: 'ReturnRequestCreate'
+} as const;
+
+export const ReturnRespondSchema = {
+    properties: {
+        approve: {
+            type: 'boolean',
+            title: 'Approve'
+        },
+        message: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Message'
+        }
+    },
+    type: 'object',
+    required: ['approve'],
+    title: 'ReturnRespond'
+} as const;
+
+export const ReturnShipInputSchema = {
+    properties: {
+        return_tracking_number: {
+            type: 'string',
+            title: 'Return Tracking Number'
+        },
+        return_carrier: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Return Carrier'
+        }
+    },
+    type: 'object',
+    required: ['return_tracking_number'],
+    title: 'ReturnShipInput'
 } as const;
 
 export const ReviewCreateSchema = {
@@ -1759,6 +2310,237 @@ export const SavedListingItemSchema = {
     type: 'object',
     required: ['saved_at', 'listing'],
     title: 'SavedListingItem'
+} as const;
+
+export const ServiceOutSchema = {
+    properties: {
+        service_id: {
+            type: 'integer',
+            title: 'Service Id'
+        },
+        short_name: {
+            type: 'string',
+            title: 'Short Name'
+        },
+        service_type_id: {
+            type: 'integer',
+            title: 'Service Type Id'
+        }
+    },
+    type: 'object',
+    required: ['service_id', 'short_name', 'service_type_id'],
+    title: 'ServiceOut'
+} as const;
+
+export const ShippingAddressInputSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 255,
+            title: 'Name'
+        },
+        phone: {
+            type: 'string',
+            maxLength: 20,
+            title: 'Phone'
+        },
+        province: {
+            type: 'string',
+            maxLength: 100,
+            title: 'Province'
+        },
+        district: {
+            type: 'string',
+            maxLength: 100,
+            title: 'District'
+        },
+        ward: {
+            type: 'string',
+            maxLength: 100,
+            title: 'Ward'
+        },
+        address_detail: {
+            type: 'string',
+            maxLength: 255,
+            title: 'Address Detail'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        province_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Province Id'
+        },
+        district_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'District Id'
+        },
+        ward_code: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Ward Code'
+        }
+    },
+    type: 'object',
+    required: ['name', 'phone', 'province', 'district', 'ward', 'address_detail'],
+    title: 'ShippingAddressInput'
+} as const;
+
+export const ShippingOrderOutSchema = {
+    properties: {
+        order_code: {
+            type: 'string',
+            title: 'Order Code'
+        },
+        expected_delivery_time: {
+            type: 'string',
+            title: 'Expected Delivery Time'
+        },
+        total_fee: {
+            type: 'integer',
+            title: 'Total Fee'
+        },
+        tracking_url: {
+            type: 'string',
+            title: 'Tracking Url',
+            default: ''
+        }
+    },
+    type: 'object',
+    required: ['order_code', 'expected_delivery_time', 'total_fee'],
+    title: 'ShippingOrderOut'
+} as const;
+
+export const ShippingOrderRequestSchema = {
+    properties: {
+        order_id: {
+            type: 'string',
+            title: 'Order Id'
+        },
+        to_name: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'To Name'
+        },
+        to_phone: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'To Phone'
+        },
+        to_address: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'To Address'
+        },
+        to_ward_code: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'To Ward Code'
+        },
+        to_district_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'To District Id'
+        },
+        to_province_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'To Province Id'
+        },
+        weight_grams: {
+            type: 'integer',
+            title: 'Weight Grams',
+            default: 500
+        },
+        insurance_value: {
+            type: 'integer',
+            title: 'Insurance Value',
+            default: 0
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        service_type_id: {
+            type: 'integer',
+            title: 'Service Type Id',
+            default: 2
+        }
+    },
+    type: 'object',
+    required: ['order_id'],
+    title: 'ShippingOrderRequest'
 } as const;
 
 export const StaticContentCollectionSchema = {
@@ -1918,6 +2700,44 @@ export const TransactionReadSchema = {
                 }
             ],
             title: 'Escrow Id'
+        },
+        payment_gateway_ref: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Payment Gateway Ref'
+        },
+        bank_code: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Bank Code'
+        },
+        bank_account: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Bank Account'
+        },
+        status: {
+            type: 'string',
+            title: 'Status',
+            default: 'completed'
         },
         balance_before: {
             type: 'string',
@@ -2687,4 +3507,66 @@ export const WalletTopupRequestSchema = {
     required: ['amount'],
     title: 'WalletTopupRequest',
     description: 'Request body for demo topup.'
+} as const;
+
+export const WardOutSchema = {
+    properties: {
+        ward_code: {
+            type: 'string',
+            title: 'Ward Code'
+        },
+        ward_name: {
+            type: 'string',
+            title: 'Ward Name'
+        }
+    },
+    type: 'object',
+    required: ['ward_code', 'ward_name'],
+    title: 'WardOut'
+} as const;
+
+export const WithdrawRequestSchema = {
+    properties: {
+        amount: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'string',
+                    pattern: '^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$'
+                }
+            ],
+            title: 'Amount'
+        }
+    },
+    type: 'object',
+    required: ['amount'],
+    title: 'WithdrawRequest'
+} as const;
+
+export const WithdrawResponseSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            title: 'Id'
+        },
+        amount: {
+            type: 'string',
+            pattern: '^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$',
+            title: 'Amount'
+        },
+        status: {
+            type: 'string',
+            title: 'Status'
+        },
+        message: {
+            type: 'string',
+            title: 'Message'
+        }
+    },
+    type: 'object',
+    required: ['id', 'amount', 'status', 'message'],
+    title: 'WithdrawResponse'
 } as const;

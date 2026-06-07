@@ -17,6 +17,12 @@ export type AdminAuditTrailResponse = {
     limit: number;
 };
 
+export type AvailabilityOut = {
+    available: boolean;
+    message?: string;
+    services?: Array<ServiceOut>;
+};
+
 export type Body_login_api_v1_auth_login_post = {
     grant_type?: (string | null);
     username: string;
@@ -127,6 +133,33 @@ export const ConditionGrade = {
     POOR: 'poor'
 } as const;
 
+export type CreateAccountResponse = {
+    account_id: string;
+    onboarding_url: string;
+};
+
+export type DeliveryAgainRequest = {
+    order_id: string;
+};
+
+export type DepositRequest = {
+    /**
+     * Amount in VND
+     */
+    amount: number;
+};
+
+export type DepositResponse = {
+    client_secret: string;
+    payment_intent_id: string;
+    amount: number;
+};
+
+export type DistrictOut = {
+    district_id: number;
+    district_name: string;
+};
+
 /**
  * Escrow information response.
  */
@@ -144,14 +177,28 @@ export type EscrowRead = {
     resolution_reason: (string | null);
     resolved_at: (string | null);
     dispute_status: (string | null);
-    delivered_at?: (string | null);
-    auto_release_at?: (string | null);
-    release_trigger?: (string | null);
     funded_at: (string | null);
+    delivered_at: (string | null);
     release_requested_at: (string | null);
     released_at: (string | null);
+    auto_release_at: (string | null);
+    release_trigger: (string | null);
     created_at: string;
     updated_at: string;
+};
+
+export type FeeOut = {
+    total: number;
+    service_fee: number;
+    insurance_fee: number;
+    vat: number;
+};
+
+export type FeeRequest = {
+    to_district_id: number;
+    to_ward_code: string;
+    weight_grams?: number;
+    insurance_value?: number;
 };
 
 export type FollowedSellerCollection = {
@@ -361,6 +408,7 @@ export type OfferRead = {
     status: OfferStatus;
     created_at: string;
     updated_at: string;
+    order_id?: (string | null);
 };
 
 /**
@@ -387,6 +435,14 @@ export type OfferStatusUpdate = {
     offer_price?: (number | string | null);
 };
 
+export type OnboardingStatusResponse = {
+    account_id: (string | null);
+    onboarding_complete: boolean;
+    account_status: (string | null);
+    charges_enabled: boolean;
+    payouts_enabled: boolean;
+};
+
 /**
  * Request body for opening a dispute.
  */
@@ -396,26 +452,6 @@ export type OpenDisputeRequest = {
      */
     reason: string;
 };
-
-export type ShippingAddressInput = {
-    name: string;
-    phone: string;
-    province: string;
-    district: string;
-    ward: string;
-    address_detail: string;
-    note?: (string | null);
-    province_id?: (number | null);
-    district_id?: (number | null);
-    ward_code?: (string | null);
-};
-
-export type PaymentMethod = 'wallet' | 'cod';
-
-export const PaymentMethod = {
-    WALLET: 'wallet',
-    COD: 'cod',
-} as const;
 
 export type OrderDirectCreate = {
     listing_id: string;
@@ -439,7 +475,7 @@ export type OrderRead = {
     seller_id: string;
     listing_id: string;
     status: OrderStatus;
-    payment_method: PaymentMethod;
+    payment_method?: PaymentMethod;
     shipping_provider?: (string | null);
     shipping_service_type?: (number | null);
     shipping_fee?: (string | null);
@@ -463,7 +499,7 @@ export type OrderRead = {
 /**
  * Status of an order.
  */
-export type OrderStatus = 'pending' | 'confirmed' | 'shipping' | 'delivered' | 'completed' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'shipping' | 'delivered' | 'delivery_failed' | 'returning' | 'returned' | 'completed' | 'cancelled';
 
 /**
  * Status of an order.
@@ -473,6 +509,9 @@ export const OrderStatus = {
     CONFIRMED: 'confirmed',
     SHIPPING: 'shipping',
     DELIVERED: 'delivered',
+    DELIVERY_FAILED: 'delivery_failed',
+    RETURNING: 'returning',
+    RETURNED: 'returned',
     COMPLETED: 'completed',
     CANCELLED: 'cancelled'
 } as const;
@@ -481,11 +520,29 @@ export type OrderStatusUpdate = {
     status: OrderStatus;
 };
 
+/**
+ * Phương thức thanh toán.
+ */
+export type PaymentMethod = 'wallet' | 'cod';
+
+/**
+ * Phương thức thanh toán.
+ */
+export const PaymentMethod = {
+    WALLET: 'wallet',
+    COD: 'cod'
+} as const;
+
 export type PriceBandRead = {
     label: string;
     min_price: (number | null);
     max_price: (number | null);
     count: number;
+};
+
+export type ProvinceOut = {
+    province_id: number;
+    province_name: string;
 };
 
 /**
@@ -540,6 +597,39 @@ export const result = {
     REFUND: 'refund'
 } as const;
 
+export type ReturnOrderRequest = {
+    order_id: string;
+    reason?: (string | null);
+};
+
+export type ReturnReason = 'wrong_item' | 'defective' | 'damaged' | 'not_as_described' | 'fake' | 'no_longer_needed';
+
+export const ReturnReason = {
+    WRONG_ITEM: 'wrong_item',
+    DEFECTIVE: 'defective',
+    DAMAGED: 'damaged',
+    NOT_AS_DESCRIBED: 'not_as_described',
+    FAKE: 'fake',
+    NO_LONGER_NEEDED: 'no_longer_needed'
+} as const;
+
+export type ReturnRequestCreate = {
+    order_id: string;
+    reason: ReturnReason;
+    description?: (string | null);
+    images?: Array<(string)>;
+};
+
+export type ReturnRespond = {
+    approve: boolean;
+    message?: (string | null);
+};
+
+export type ReturnShipInput = {
+    return_tracking_number: string;
+    return_carrier?: (string | null);
+};
+
 export type ReviewCreate = {
     order_id: string;
     rating: number;
@@ -566,6 +656,46 @@ export type SavedListingCollection = {
 export type SavedListingItem = {
     saved_at: string;
     listing: ListingWithImages;
+};
+
+export type ServiceOut = {
+    service_id: number;
+    short_name: string;
+    service_type_id: number;
+};
+
+export type ShippingAddressInput = {
+    name: string;
+    phone: string;
+    province: string;
+    district: string;
+    ward: string;
+    address_detail: string;
+    note?: (string | null);
+    province_id?: (number | null);
+    district_id?: (number | null);
+    ward_code?: (string | null);
+};
+
+export type ShippingOrderOut = {
+    order_code: string;
+    expected_delivery_time: string;
+    total_fee: number;
+    tracking_url?: string;
+};
+
+export type ShippingOrderRequest = {
+    order_id: string;
+    to_name?: (string | null);
+    to_phone?: (string | null);
+    to_address?: (string | null);
+    to_ward_code?: (string | null);
+    to_district_id?: (number | null);
+    to_province_id?: (number | null);
+    weight_grams?: number;
+    insurance_value?: number;
+    note?: (string | null);
+    service_type_id?: number;
 };
 
 export type StaticContentCollection = {
@@ -609,9 +739,9 @@ export type TransactionRead = {
     wallet_id: string;
     amount: string;
     type: string;
-    description?: (string | null);
-    order_id?: (string | null);
-    escrow_id?: (string | null);
+    description: (string | null);
+    order_id: (string | null);
+    escrow_id: (string | null);
     payment_gateway_ref?: (string | null);
     bank_code?: (string | null);
     bank_account?: (string | null);
@@ -793,6 +923,22 @@ export type WalletTopupRequest = {
      * Amount to add (max 10,000,000 VND)
      */
     amount: (number | string);
+};
+
+export type WardOut = {
+    ward_code: string;
+    ward_name: string;
+};
+
+export type WithdrawRequest = {
+    amount: (number | string);
+};
+
+export type WithdrawResponse = {
+    id: string;
+    amount: string;
+    status: string;
+    message: string;
 };
 
 export type GetDashboardStatsApiV1AdminDashboardGetResponse = (unknown);
@@ -1231,6 +1377,54 @@ export type UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData = {
 
 export type UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse = (OrderRead);
 
+export type CreateDepositApiV1PaymentCreateDepositPostData = {
+    requestBody: DepositRequest;
+};
+
+export type CreateDepositApiV1PaymentCreateDepositPostResponse = (DepositResponse);
+
+export type StripeWebhookApiV1PaymentWebhookPostResponse = (unknown);
+
+export type CreateReturnRequestApiV1ReturnsRequestPostData = {
+    requestBody: ReturnRequestCreate;
+};
+
+export type CreateReturnRequestApiV1ReturnsRequestPostResponse = (unknown);
+
+export type RespondReturnApiV1ReturnsReturnIdRespondPostData = {
+    requestBody: ReturnRespond;
+    returnId: string;
+};
+
+export type RespondReturnApiV1ReturnsReturnIdRespondPostResponse = (unknown);
+
+export type ShipReturnApiV1ReturnsReturnIdShipPostData = {
+    requestBody: ReturnShipInput;
+    returnId: string;
+};
+
+export type ShipReturnApiV1ReturnsReturnIdShipPostResponse = (unknown);
+
+export type ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostData = {
+    returnId: string;
+};
+
+export type ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostResponse = (unknown);
+
+export type GetMyReturnRequestsApiV1ReturnsMyRequestsGetData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type GetMyReturnRequestsApiV1ReturnsMyRequestsGetResponse = (unknown);
+
+export type GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetResponse = (unknown);
+
 export type CreateReviewApiV1ReviewsPostData = {
     requestBody: ReviewCreate;
 };
@@ -1248,6 +1442,59 @@ export type GetReviewApiV1ReviewsOrderIdGetData = {
 };
 
 export type GetReviewApiV1ReviewsOrderIdGetResponse = (Array<ReviewRead>);
+
+export type ListProvincesApiV1ShippingProvincesGetResponse = (Array<ProvinceOut>);
+
+export type ListDistrictsApiV1ShippingDistrictsGetData = {
+    provinceId: number;
+};
+
+export type ListDistrictsApiV1ShippingDistrictsGetResponse = (Array<DistrictOut>);
+
+export type ListWardsApiV1ShippingWardsGetData = {
+    districtId: number;
+};
+
+export type ListWardsApiV1ShippingWardsGetResponse = (Array<WardOut>);
+
+export type ListServicesApiV1ShippingServicesGetData = {
+    toDistrictId: number;
+};
+
+export type ListServicesApiV1ShippingServicesGetResponse = (Array<ServiceOut>);
+
+export type CalculateShippingFeeApiV1ShippingFeePostData = {
+    requestBody: FeeRequest;
+};
+
+export type CalculateShippingFeeApiV1ShippingFeePostResponse = (FeeOut);
+
+export type CheckAvailabilityApiV1ShippingAvailabilityPostData = {
+    toDistrictId: number;
+    toWardCode: string;
+};
+
+export type CheckAvailabilityApiV1ShippingAvailabilityPostResponse = (AvailabilityOut);
+
+export type CreateShippingOrderApiV1ShippingCreateOrderPostData = {
+    requestBody: ShippingOrderRequest;
+};
+
+export type CreateShippingOrderApiV1ShippingCreateOrderPostResponse = (ShippingOrderOut);
+
+export type ShippingWebhookApiV1ShippingWebhookPostResponse = (unknown);
+
+export type ReturnShippingOrderApiV1ShippingReturnOrderPostData = {
+    requestBody: ReturnOrderRequest;
+};
+
+export type ReturnShippingOrderApiV1ShippingReturnOrderPostResponse = (unknown);
+
+export type DeliveryAgainShippingApiV1ShippingDeliveryAgainPostData = {
+    requestBody: DeliveryAgainRequest;
+};
+
+export type DeliveryAgainShippingApiV1ShippingDeliveryAgainPostResponse = (unknown);
 
 export type ListSavedListingsApiV1SavedListingsGetData = {
     limit?: number;
@@ -1287,6 +1534,10 @@ export type UnfollowSellerApiV1FollowedSellersSellerIdDeleteData = {
 
 export type UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse = (void);
 
+export type StartOnboardingApiV1ConnectOnboardingPostResponse = (CreateAccountResponse);
+
+export type GetOnboardingStatusApiV1ConnectOnboardingStatusGetResponse = (OnboardingStatusResponse);
+
 export type GetCurrentUserInfoApiV1UsersMeGetResponse = (UserPrivate);
 
 export type UpdateMyProfileApiV1UsersMePutData = {
@@ -1323,6 +1574,12 @@ export type DemoTopupApiV1WalletDemoTopupPostData = {
 };
 
 export type DemoTopupApiV1WalletDemoTopupPostResponse = (WalletRead);
+
+export type WithdrawApiV1WalletWithdrawPostData = {
+    requestBody: WithdrawRequest;
+};
+
+export type WithdrawApiV1WalletWithdrawPostResponse = (WithdrawResponse);
 
 export type GetTransactionsApiV1WalletTransactionsGetData = {
     limit?: number;

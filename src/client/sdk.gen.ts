@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { GetDashboardStatsApiV1AdminDashboardGetResponse, ListUsersApiV1AdminUsersGetData, ListUsersApiV1AdminUsersGetResponse, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchData, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchResponse, GetPendingListingsRouteApiV1AdminListingsPendingGetData, GetPendingListingsRouteApiV1AdminListingsPendingGetResponse, ApproveListingApiV1AdminListingsListingIdApprovePostData, ApproveListingApiV1AdminListingsListingIdApprovePostResponse, RejectListingRouteApiV1AdminListingsListingIdRejectPostData, RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostData, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostResponse, ListAuditTrailApiV1AdminAuditTrailGetData, ListAuditTrailApiV1AdminAuditTrailGetResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RefreshAccessTokenApiV1AuthRefreshPostData, RefreshAccessTokenApiV1AuthRefreshPostResponse, LogoutApiV1AuthLogoutPostResponse, VerifyEmailApiV1AuthVerifyEmailPostData, VerifyEmailApiV1AuthVerifyEmailPostResponse, ResendVerificationApiV1AuthResendVerificationPostData, ResendVerificationApiV1AuthResendVerificationPostResponse, ForgotPasswordApiV1AuthForgotPasswordPostData, ForgotPasswordApiV1AuthForgotPasswordPostResponse, ResetPasswordApiV1AuthResetPasswordPostData, ResetPasswordApiV1AuthResetPasswordPostResponse, ListCategoriesApiV1CategoriesGetData, ListCategoriesApiV1CategoriesGetResponse, CreateCategoryApiV1CategoriesPostData, CreateCategoryApiV1CategoriesPostResponse, GetRootCategoriesApiV1CategoriesRootsGetResponse, GetCategoryBySlugApiV1CategoriesSlugGetData, GetCategoryBySlugApiV1CategoriesSlugGetResponse, GetCategoryByIdApiV1CategoriesIdCategoryIdGetData, GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse, UpdateCategoryApiV1CategoriesCategoryIdPutData, UpdateCategoryApiV1CategoriesCategoryIdPutResponse, DeleteCategoryApiV1CategoriesCategoryIdDeleteData, DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse, ListMyConversationsApiV1ChatsConversationsGetData, ListMyConversationsApiV1ChatsConversationsGetResponse, CreateListingConversationApiV1ChatsConversationsListingListingIdPostData, CreateListingConversationApiV1ChatsConversationsListingListingIdPostResponse, GetConversationDetailApiV1ChatsConversationsConversationIdGetData, GetConversationDetailApiV1ChatsConversationsConversationIdGetResponse, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse, SendMessageApiV1ChatsConversationsConversationIdMessagesPostData, SendMessageApiV1ChatsConversationsConversationIdMessagesPostResponse, GetHelpPagesApiV1ContentHelpGetData, GetHelpPagesApiV1ContentHelpGetResponse, GetLegalPagesApiV1ContentLegalGetData, GetLegalPagesApiV1ContentLegalGetResponse, GetContentApiV1ContentKeyGetData, GetContentApiV1ContentKeyGetResponse, RootGetResponse, GetEscrowApiV1EscrowsOrderIdGetData, GetEscrowApiV1EscrowsOrderIdGetResponse, FundEscrowApiV1EscrowsOrderIdFundPostData, FundEscrowApiV1EscrowsOrderIdFundPostResponse, RequestRefundApiV1EscrowsOrderIdRefundRequestPostData, RequestRefundApiV1EscrowsOrderIdRefundRequestPostResponse, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostData, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostResponse, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostData, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostResponse, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostData, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostResponse, GetDisputedEscrowsApiV1EscrowsDisputedGetData, GetDisputedEscrowsApiV1EscrowsDisputedGetResponse, ListListingsApiV1ListingsGetData, ListListingsApiV1ListingsGetResponse, CreateListingApiV1ListingsPostData, CreateListingApiV1ListingsPostResponse, GetFeaturedListingsApiV1ListingsFeaturedGetData, GetFeaturedListingsApiV1ListingsFeaturedGetResponse, GetTrendingListingsApiV1ListingsTrendingGetData, GetTrendingListingsApiV1ListingsTrendingGetResponse, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetData, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetResponse, GetPriceBandSummaryApiV1ListingsPriceBandsGetData, GetPriceBandSummaryApiV1ListingsPriceBandsGetResponse, GetMyListingsApiV1ListingsMeGetData, GetMyListingsApiV1ListingsMeGetResponse, GetRelatedListingsApiV1ListingsListingIdRelatedGetData, GetRelatedListingsApiV1ListingsListingIdRelatedGetResponse, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteData, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteResponse, GetListingApiV1ListingsListingIdGetData, GetListingApiV1ListingsListingIdGetResponse, UpdateListingApiV1ListingsListingIdPatchData, UpdateListingApiV1ListingsListingIdPatchResponse, DeleteListingApiV1ListingsListingIdDeleteData, DeleteListingApiV1ListingsListingIdDeleteResponse, UploadListingImageApiV1ListingsListingIdImagesPostData, UploadListingImageApiV1ListingsListingIdImagesPostResponse, GetMyNotificationsApiV1NotificationsGetData, GetMyNotificationsApiV1NotificationsGetResponse, GetUnreadNotificationsCountApiV1NotificationsUnreadCountGetResponse, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutData, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutResponse, MarkAllNotificationsAsReadApiV1NotificationsReadAllPutResponse, CreateOfferApiV1OffersPostData, CreateOfferApiV1OffersPostResponse, GetMySentOffersApiV1OffersMeSentGetData, GetMySentOffersApiV1OffersMeSentGetResponse, GetMyReceivedOffersApiV1OffersMeReceivedGetData, GetMyReceivedOffersApiV1OffersMeReceivedGetResponse, GetOffersForListingApiV1OffersListingListingIdGetData, GetOffersForListingApiV1OffersListingListingIdGetResponse, UpdateOfferStatusApiV1OffersOfferIdStatusPatchData, UpdateOfferStatusApiV1OffersOfferIdStatusPatchResponse, GetOfferApiV1OffersOfferIdGetData, GetOfferApiV1OffersOfferIdGetResponse, GetMyOrdersApiV1OrdersGetResponse, CreateDirectOrderApiV1OrdersPostData, CreateDirectOrderApiV1OrdersPostResponse, GetMyOrdersApiV1OrdersMeGetResponse, GetOrderApiV1OrdersOrderIdGetData, GetOrderApiV1OrdersOrderIdGetResponse, GetOrderTimelineApiV1OrdersOrderIdTimelineGetData, GetOrderTimelineApiV1OrdersOrderIdTimelineGetResponse, CompleteOrderApiV1OrdersOrderIdCompletePostData, CompleteOrderApiV1OrdersOrderIdCompletePostResponse, CancelOrderApiV1OrdersOrderIdCancelPostData, CancelOrderApiV1OrdersOrderIdCancelPostResponse, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse, CreateReviewApiV1ReviewsPostData, CreateReviewApiV1ReviewsPostResponse, GetUserReviewsApiV1ReviewsUserUserIdGetData, GetUserReviewsApiV1ReviewsUserUserIdGetResponse, GetReviewApiV1ReviewsOrderIdGetData, GetReviewApiV1ReviewsOrderIdGetResponse, ListSavedListingsApiV1SavedListingsGetData, ListSavedListingsApiV1SavedListingsGetResponse, SaveListingApiV1SavedListingsListingIdPostData, SaveListingApiV1SavedListingsListingIdPostResponse, UnsaveListingApiV1SavedListingsListingIdDeleteData, UnsaveListingApiV1SavedListingsListingIdDeleteResponse, ListFollowedSellersApiV1FollowedSellersGetData, ListFollowedSellersApiV1FollowedSellersGetResponse, FollowSellerApiV1FollowedSellersSellerIdPostData, FollowSellerApiV1FollowedSellersSellerIdPostResponse, UnfollowSellerApiV1FollowedSellersSellerIdDeleteData, UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse, GetCurrentUserInfoApiV1UsersMeGetResponse, UpdateMyProfileApiV1UsersMePutData, UpdateMyProfileApiV1UsersMePutResponse, ChangePasswordApiV1UsersMePasswordPutData, ChangePasswordApiV1UsersMePasswordPutResponse, GetUserProfileApiV1UsersUserIdGetData, GetUserProfileApiV1UsersUserIdGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, HealthCheckApiV1UtilsHealthCheckGetResponse, GetMyWalletApiV1WalletMeGetResponse, DemoTopupApiV1WalletDemoTopupPostData, DemoTopupApiV1WalletDemoTopupPostResponse, GetTransactionsApiV1WalletTransactionsGetData, GetTransactionsApiV1WalletTransactionsGetResponse } from './types.gen';
+import type { GetDashboardStatsApiV1AdminDashboardGetResponse, ListUsersApiV1AdminUsersGetData, ListUsersApiV1AdminUsersGetResponse, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchData, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchResponse, GetPendingListingsRouteApiV1AdminListingsPendingGetData, GetPendingListingsRouteApiV1AdminListingsPendingGetResponse, ApproveListingApiV1AdminListingsListingIdApprovePostData, ApproveListingApiV1AdminListingsListingIdApprovePostResponse, RejectListingRouteApiV1AdminListingsListingIdRejectPostData, RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostData, ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostResponse, ListAuditTrailApiV1AdminAuditTrailGetData, ListAuditTrailApiV1AdminAuditTrailGetResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RefreshAccessTokenApiV1AuthRefreshPostData, RefreshAccessTokenApiV1AuthRefreshPostResponse, LogoutApiV1AuthLogoutPostResponse, VerifyEmailApiV1AuthVerifyEmailPostData, VerifyEmailApiV1AuthVerifyEmailPostResponse, ResendVerificationApiV1AuthResendVerificationPostData, ResendVerificationApiV1AuthResendVerificationPostResponse, ForgotPasswordApiV1AuthForgotPasswordPostData, ForgotPasswordApiV1AuthForgotPasswordPostResponse, ResetPasswordApiV1AuthResetPasswordPostData, ResetPasswordApiV1AuthResetPasswordPostResponse, ListCategoriesApiV1CategoriesGetData, ListCategoriesApiV1CategoriesGetResponse, CreateCategoryApiV1CategoriesPostData, CreateCategoryApiV1CategoriesPostResponse, GetRootCategoriesApiV1CategoriesRootsGetResponse, GetCategoryBySlugApiV1CategoriesSlugGetData, GetCategoryBySlugApiV1CategoriesSlugGetResponse, GetCategoryByIdApiV1CategoriesIdCategoryIdGetData, GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse, UpdateCategoryApiV1CategoriesCategoryIdPutData, UpdateCategoryApiV1CategoriesCategoryIdPutResponse, DeleteCategoryApiV1CategoriesCategoryIdDeleteData, DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse, ListMyConversationsApiV1ChatsConversationsGetData, ListMyConversationsApiV1ChatsConversationsGetResponse, CreateListingConversationApiV1ChatsConversationsListingListingIdPostData, CreateListingConversationApiV1ChatsConversationsListingListingIdPostResponse, GetConversationDetailApiV1ChatsConversationsConversationIdGetData, GetConversationDetailApiV1ChatsConversationsConversationIdGetResponse, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse, SendMessageApiV1ChatsConversationsConversationIdMessagesPostData, SendMessageApiV1ChatsConversationsConversationIdMessagesPostResponse, GetHelpPagesApiV1ContentHelpGetData, GetHelpPagesApiV1ContentHelpGetResponse, GetLegalPagesApiV1ContentLegalGetData, GetLegalPagesApiV1ContentLegalGetResponse, GetContentApiV1ContentKeyGetData, GetContentApiV1ContentKeyGetResponse, RootGetResponse, GetEscrowApiV1EscrowsOrderIdGetData, GetEscrowApiV1EscrowsOrderIdGetResponse, FundEscrowApiV1EscrowsOrderIdFundPostData, FundEscrowApiV1EscrowsOrderIdFundPostResponse, RequestRefundApiV1EscrowsOrderIdRefundRequestPostData, RequestRefundApiV1EscrowsOrderIdRefundRequestPostResponse, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostData, RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostResponse, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostData, ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostResponse, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostData, OpenDisputeApiV1EscrowsOrderIdOpenDisputePostResponse, GetDisputedEscrowsApiV1EscrowsDisputedGetData, GetDisputedEscrowsApiV1EscrowsDisputedGetResponse, ListListingsApiV1ListingsGetData, ListListingsApiV1ListingsGetResponse, CreateListingApiV1ListingsPostData, CreateListingApiV1ListingsPostResponse, GetFeaturedListingsApiV1ListingsFeaturedGetData, GetFeaturedListingsApiV1ListingsFeaturedGetResponse, GetTrendingListingsApiV1ListingsTrendingGetData, GetTrendingListingsApiV1ListingsTrendingGetResponse, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetData, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetResponse, GetPriceBandSummaryApiV1ListingsPriceBandsGetData, GetPriceBandSummaryApiV1ListingsPriceBandsGetResponse, GetMyListingsApiV1ListingsMeGetData, GetMyListingsApiV1ListingsMeGetResponse, GetRelatedListingsApiV1ListingsListingIdRelatedGetData, GetRelatedListingsApiV1ListingsListingIdRelatedGetResponse, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteData, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteResponse, GetListingApiV1ListingsListingIdGetData, GetListingApiV1ListingsListingIdGetResponse, UpdateListingApiV1ListingsListingIdPatchData, UpdateListingApiV1ListingsListingIdPatchResponse, DeleteListingApiV1ListingsListingIdDeleteData, DeleteListingApiV1ListingsListingIdDeleteResponse, UploadListingImageApiV1ListingsListingIdImagesPostData, UploadListingImageApiV1ListingsListingIdImagesPostResponse, GetMyNotificationsApiV1NotificationsGetData, GetMyNotificationsApiV1NotificationsGetResponse, GetUnreadNotificationsCountApiV1NotificationsUnreadCountGetResponse, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutData, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutResponse, MarkAllNotificationsAsReadApiV1NotificationsReadAllPutResponse, CreateOfferApiV1OffersPostData, CreateOfferApiV1OffersPostResponse, GetMySentOffersApiV1OffersMeSentGetData, GetMySentOffersApiV1OffersMeSentGetResponse, GetMyReceivedOffersApiV1OffersMeReceivedGetData, GetMyReceivedOffersApiV1OffersMeReceivedGetResponse, GetOffersForListingApiV1OffersListingListingIdGetData, GetOffersForListingApiV1OffersListingListingIdGetResponse, UpdateOfferStatusApiV1OffersOfferIdStatusPatchData, UpdateOfferStatusApiV1OffersOfferIdStatusPatchResponse, GetOfferApiV1OffersOfferIdGetData, GetOfferApiV1OffersOfferIdGetResponse, GetMyOrdersApiV1OrdersGetResponse, CreateDirectOrderApiV1OrdersPostData, CreateDirectOrderApiV1OrdersPostResponse, GetMyOrdersApiV1OrdersMeGetResponse, GetOrderApiV1OrdersOrderIdGetData, GetOrderApiV1OrdersOrderIdGetResponse, GetOrderTimelineApiV1OrdersOrderIdTimelineGetData, GetOrderTimelineApiV1OrdersOrderIdTimelineGetResponse, CompleteOrderApiV1OrdersOrderIdCompletePostData, CompleteOrderApiV1OrdersOrderIdCompletePostResponse, CancelOrderApiV1OrdersOrderIdCancelPostData, CancelOrderApiV1OrdersOrderIdCancelPostResponse, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse, CreateDepositApiV1PaymentCreateDepositPostData, CreateDepositApiV1PaymentCreateDepositPostResponse, StripeWebhookApiV1PaymentWebhookPostResponse, CreateReturnRequestApiV1ReturnsRequestPostData, CreateReturnRequestApiV1ReturnsRequestPostResponse, RespondReturnApiV1ReturnsReturnIdRespondPostData, RespondReturnApiV1ReturnsReturnIdRespondPostResponse, ShipReturnApiV1ReturnsReturnIdShipPostData, ShipReturnApiV1ReturnsReturnIdShipPostResponse, ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostData, ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostResponse, GetMyReturnRequestsApiV1ReturnsMyRequestsGetData, GetMyReturnRequestsApiV1ReturnsMyRequestsGetResponse, GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetData, GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetResponse, CreateReviewApiV1ReviewsPostData, CreateReviewApiV1ReviewsPostResponse, GetUserReviewsApiV1ReviewsUserUserIdGetData, GetUserReviewsApiV1ReviewsUserUserIdGetResponse, GetReviewApiV1ReviewsOrderIdGetData, GetReviewApiV1ReviewsOrderIdGetResponse, ListProvincesApiV1ShippingProvincesGetResponse, ListDistrictsApiV1ShippingDistrictsGetData, ListDistrictsApiV1ShippingDistrictsGetResponse, ListWardsApiV1ShippingWardsGetData, ListWardsApiV1ShippingWardsGetResponse, ListServicesApiV1ShippingServicesGetData, ListServicesApiV1ShippingServicesGetResponse, CalculateShippingFeeApiV1ShippingFeePostData, CalculateShippingFeeApiV1ShippingFeePostResponse, CheckAvailabilityApiV1ShippingAvailabilityPostData, CheckAvailabilityApiV1ShippingAvailabilityPostResponse, CreateShippingOrderApiV1ShippingCreateOrderPostData, CreateShippingOrderApiV1ShippingCreateOrderPostResponse, ShippingWebhookApiV1ShippingWebhookPostResponse, ReturnShippingOrderApiV1ShippingReturnOrderPostData, ReturnShippingOrderApiV1ShippingReturnOrderPostResponse, DeliveryAgainShippingApiV1ShippingDeliveryAgainPostData, DeliveryAgainShippingApiV1ShippingDeliveryAgainPostResponse, ListSavedListingsApiV1SavedListingsGetData, ListSavedListingsApiV1SavedListingsGetResponse, SaveListingApiV1SavedListingsListingIdPostData, SaveListingApiV1SavedListingsListingIdPostResponse, UnsaveListingApiV1SavedListingsListingIdDeleteData, UnsaveListingApiV1SavedListingsListingIdDeleteResponse, ListFollowedSellersApiV1FollowedSellersGetData, ListFollowedSellersApiV1FollowedSellersGetResponse, FollowSellerApiV1FollowedSellersSellerIdPostData, FollowSellerApiV1FollowedSellersSellerIdPostResponse, UnfollowSellerApiV1FollowedSellersSellerIdDeleteData, UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse, StartOnboardingApiV1ConnectOnboardingPostResponse, GetOnboardingStatusApiV1ConnectOnboardingStatusGetResponse, GetCurrentUserInfoApiV1UsersMeGetResponse, UpdateMyProfileApiV1UsersMePutData, UpdateMyProfileApiV1UsersMePutResponse, ChangePasswordApiV1UsersMePasswordPutData, ChangePasswordApiV1UsersMePasswordPutResponse, GetUserProfileApiV1UsersUserIdGetData, GetUserProfileApiV1UsersUserIdGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, HealthCheckApiV1UtilsHealthCheckGetResponse, GetMyWalletApiV1WalletMeGetResponse, DemoTopupApiV1WalletDemoTopupPostData, DemoTopupApiV1WalletDemoTopupPostResponse, WithdrawApiV1WalletWithdrawPostData, WithdrawApiV1WalletWithdrawPostResponse, GetTransactionsApiV1WalletTransactionsGetData, GetTransactionsApiV1WalletTransactionsGetResponse } from './types.gen';
 
 export class AdminService {
     /**
@@ -137,6 +137,10 @@ export class AdminService {
     /**
      * Resolve Escrow Dispute
      * Admin: resolve disputed escrow by releasing to seller or refunding buyer.
+     *
+     * If releasing to seller and seller has a Stripe account, a Stripe Transfer
+     * is also created. If refunding and escrow was already released, a Stripe
+     * Transfer reversal is attempted.
      * @param data The data for the request.
      * @param data.orderId
      * @param data.requestBody
@@ -1182,7 +1186,7 @@ export class ListingsService {
     
     /**
      * Delete Listing
-     * Xóa bài đăng (ẩn)
+     * Xóa bài đăng (vĩnh viễn)
      * @param data The data for the request.
      * @param data.listingId
      * @returns void Successful Response
@@ -1597,6 +1601,180 @@ export class OrdersService {
     }
 }
 
+export class PaymentService {
+    /**
+     * Create Deposit
+     * Create a Stripe PaymentIntent for wallet deposit.
+     *
+     * Returns client_secret for frontend to confirm with Stripe Elements.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns DepositResponse Successful Response
+     * @throws ApiError
+     */
+    public static createDepositApiV1PaymentCreateDepositPost(data: CreateDepositApiV1PaymentCreateDepositPostData): CancelablePromise<CreateDepositApiV1PaymentCreateDepositPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/payment/create-deposit',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Stripe Webhook
+     * Receive Stripe webhook events (payment_intent, payout, etc.).
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static stripeWebhookApiV1PaymentWebhookPost(): CancelablePromise<StripeWebhookApiV1PaymentWebhookPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/payment/webhook'
+        });
+    }
+}
+
+export class ReturnsService {
+    /**
+     * Create Return Request
+     * Buyer gửi yêu cầu hoàn hàng (chỉ wallet, trong 7 ngày).
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static createReturnRequestApiV1ReturnsRequestPost(data: CreateReturnRequestApiV1ReturnsRequestPostData): CancelablePromise<CreateReturnRequestApiV1ReturnsRequestPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/returns/request',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Respond Return
+     * Seller phản hồi yêu cầu hoàn.
+     * @param data The data for the request.
+     * @param data.returnId
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static respondReturnApiV1ReturnsReturnIdRespondPost(data: RespondReturnApiV1ReturnsReturnIdRespondPostData): CancelablePromise<RespondReturnApiV1ReturnsReturnIdRespondPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/returns/{return_id}/respond',
+            path: {
+                return_id: data.returnId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Ship Return
+     * Buyer gửi tracking hàng hoàn.
+     * @param data The data for the request.
+     * @param data.returnId
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static shipReturnApiV1ReturnsReturnIdShipPost(data: ShipReturnApiV1ReturnsReturnIdShipPostData): CancelablePromise<ShipReturnApiV1ReturnsReturnIdShipPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/returns/{return_id}/ship',
+            path: {
+                return_id: data.returnId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Confirm Return Received
+     * Seller xác nhận đã nhận hàng hoàn -> trigger refund.
+     * @param data The data for the request.
+     * @param data.returnId
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static confirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPost(data: ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostData): CancelablePromise<ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/returns/{return_id}/confirm-received',
+            path: {
+                return_id: data.returnId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get My Return Requests
+     * Lấy danh sách yêu cầu hoàn của user (buyer).
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static getMyReturnRequestsApiV1ReturnsMyRequestsGet(data: GetMyReturnRequestsApiV1ReturnsMyRequestsGetData = {}): CancelablePromise<GetMyReturnRequestsApiV1ReturnsMyRequestsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/returns/my-requests',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Seller Return Requests
+     * Lấy danh sách yêu cầu hoàn cho seller.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static getSellerReturnRequestsApiV1ReturnsMySellerRequestsGet(data: GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetData = {}): CancelablePromise<GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/returns/my-seller-requests',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
 export class ReviewsService {
     /**
      * Create Review
@@ -1654,6 +1832,200 @@ export class ReviewsService {
             path: {
                 order_id: data.orderId
             },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class ShippingService {
+    /**
+     * List Provinces
+     * Lấy danh sách tỉnh/thành phố từ GHN.
+     * @returns ProvinceOut Successful Response
+     * @throws ApiError
+     */
+    public static listProvincesApiV1ShippingProvincesGet(): CancelablePromise<ListProvincesApiV1ShippingProvincesGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/shipping/provinces'
+        });
+    }
+    
+    /**
+     * List Districts
+     * Lấy danh sách quận/huyện theo tỉnh.
+     * @param data The data for the request.
+     * @param data.provinceId
+     * @returns DistrictOut Successful Response
+     * @throws ApiError
+     */
+    public static listDistrictsApiV1ShippingDistrictsGet(data: ListDistrictsApiV1ShippingDistrictsGetData): CancelablePromise<ListDistrictsApiV1ShippingDistrictsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/shipping/districts',
+            query: {
+                province_id: data.provinceId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Wards
+     * Lấy danh sách phường/xã theo quận.
+     * @param data The data for the request.
+     * @param data.districtId
+     * @returns WardOut Successful Response
+     * @throws ApiError
+     */
+    public static listWardsApiV1ShippingWardsGet(data: ListWardsApiV1ShippingWardsGetData): CancelablePromise<ListWardsApiV1ShippingWardsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/shipping/wards',
+            query: {
+                district_id: data.districtId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Services
+     * Lấy danh sách dịch vụ giao hàng khả dụng.
+     * @param data The data for the request.
+     * @param data.toDistrictId
+     * @returns ServiceOut Successful Response
+     * @throws ApiError
+     */
+    public static listServicesApiV1ShippingServicesGet(data: ListServicesApiV1ShippingServicesGetData): CancelablePromise<ListServicesApiV1ShippingServicesGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/shipping/services',
+            query: {
+                to_district_id: data.toDistrictId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Calculate Shipping Fee
+     * Tính phí vận chuyển.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns FeeOut Successful Response
+     * @throws ApiError
+     */
+    public static calculateShippingFeeApiV1ShippingFeePost(data: CalculateShippingFeeApiV1ShippingFeePostData): CancelablePromise<CalculateShippingFeeApiV1ShippingFeePostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/shipping/fee',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Check Availability
+     * Kiểm tra GHN có phục vụ khu vực này không.
+     * @param data The data for the request.
+     * @param data.toDistrictId
+     * @param data.toWardCode
+     * @returns AvailabilityOut Successful Response
+     * @throws ApiError
+     */
+    public static checkAvailabilityApiV1ShippingAvailabilityPost(data: CheckAvailabilityApiV1ShippingAvailabilityPostData): CancelablePromise<CheckAvailabilityApiV1ShippingAvailabilityPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/shipping/availability',
+            query: {
+                to_district_id: data.toDistrictId,
+                to_ward_code: data.toWardCode
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Shipping Order
+     * Tạo đơn vận chuyển GHN cho order.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ShippingOrderOut Successful Response
+     * @throws ApiError
+     */
+    public static createShippingOrderApiV1ShippingCreateOrderPost(data: CreateShippingOrderApiV1ShippingCreateOrderPostData): CancelablePromise<CreateShippingOrderApiV1ShippingCreateOrderPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/shipping/create-order',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Shipping Webhook
+     * GHN webhook: nhận cập nhật trạng thái giao hàng.
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static webhookApiV1ShippingWebhookPost(): CancelablePromise<ShippingWebhookApiV1ShippingWebhookPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/shipping/webhook'
+        });
+    }
+    
+    /**
+     * Return Shipping Order
+     * Seller yêu cầu GHN trả hàng về.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static returnShippingOrderApiV1ShippingReturnOrderPost(data: ReturnShippingOrderApiV1ShippingReturnOrderPostData): CancelablePromise<ReturnShippingOrderApiV1ShippingReturnOrderPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/shipping/return-order',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delivery Again Shipping
+     * Seller yêu cầu GHN giao lại.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static deliveryAgainShippingApiV1ShippingDeliveryAgainPost(data: DeliveryAgainShippingApiV1ShippingDeliveryAgainPostData): CancelablePromise<DeliveryAgainShippingApiV1ShippingDeliveryAgainPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/shipping/delivery-again',
+            body: data.requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: 'Validation Error'
             }
@@ -1787,6 +2159,40 @@ export class SocialService {
     }
 }
 
+export class StripeConnectService {
+    /**
+     * Start Onboarding
+     * Create a Stripe Connect Express account and return onboarding link.
+     *
+     * Seller is redirected to Stripe-hosted onboarding to complete KYC.
+     * In test mode, use test values:
+     * - DOB: 01/01/1901
+     * - SSN: 000-00-0000
+     * - Address: any valid US address
+     * @returns CreateAccountResponse Successful Response
+     * @throws ApiError
+     */
+    public static startOnboardingApiV1ConnectOnboardingPost(): CancelablePromise<StartOnboardingApiV1ConnectOnboardingPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/connect/onboarding'
+        });
+    }
+    
+    /**
+     * Get Onboarding Status
+     * Check the Stripe onboarding status of the current user.
+     * @returns OnboardingStatusResponse Successful Response
+     * @throws ApiError
+     */
+    public static getOnboardingStatusApiV1ConnectOnboardingStatusGet(): CancelablePromise<GetOnboardingStatusApiV1ConnectOnboardingStatusGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/connect/onboarding/status'
+        });
+    }
+}
+
 export class UsersService {
     /**
      * Get my profile
@@ -1906,12 +2312,6 @@ export class WalletService {
      * Get my wallet information.
      *
      * Auto-creates wallet if it doesn't exist.
-     *
-     * **Response:**
-     * - Wallet with balance and locked_balance
-     *
-     * **Errors:**
-     * - 401: Unauthorized
      * @returns WalletRead Successful Response
      * @throws ApiError
      */
@@ -1925,17 +2325,6 @@ export class WalletService {
     /**
      * Demo Topup
      * Demo: Add funds to wallet (for testing purposes).
-     *
-     * **Request body:**
-     * - amount: Amount to add (max 10,000,000 VND)
-     *
-     * **Response:**
-     * - Updated wallet
-     *
-     * **Errors:**
-     * - 400: Invalid amount
-     * - 401: Unauthorized
-     * - 429: Rate limit exceeded
      * @param data The data for the request.
      * @param data.requestBody
      * @returns WalletRead Successful Response
@@ -1954,18 +2343,32 @@ export class WalletService {
     }
     
     /**
+     * Withdraw
+     * Yêu cầu rút tiền từ ví về tài khoản ngân hàng (Stripe Payout).
+     *
+     * Yêu cầu người dùng đã hoàn tất Stripe Connect onboarding.
+     * Số tiền được gửi trực tiếp qua Stripe Payouts API đến tài khoản ngân hàng
+     * đã đăng ký trong Stripe.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns WithdrawResponse Successful Response
+     * @throws ApiError
+     */
+    public static withdrawApiV1WalletWithdrawPost(data: WithdrawApiV1WalletWithdrawPostData): CancelablePromise<WithdrawApiV1WalletWithdrawPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/wallet/withdraw',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
      * Get Transactions
      * Get wallet transaction history.
-     *
-     * **Query parameters:**
-     * - skip: Number of records to skip (default: 0)
-     * - limit: Maximum records to return (default: 20, max: 100)
-     *
-     * **Response:**
-     * - List of transactions and total count
-     *
-     * **Errors:**
-     * - 401: Unauthorized
      * @param data The data for the request.
      * @param data.skip
      * @param data.limit

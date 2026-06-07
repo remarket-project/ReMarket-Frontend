@@ -8,6 +8,8 @@ import {
   MapPin,
   MessageSquare,
   Package,
+  RotateCcw,
+  Send,
   ShieldCheck,
   Star,
   Truck,
@@ -17,6 +19,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
+import { canRequestReturn } from "@/lib/shipping-utils"
 
 import {
   ChatsService,
@@ -33,6 +36,8 @@ import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
 import ShippingTimeline from "@/components/Shipping/ShippingTimeline"
 import CreateShippingDialog from "@/components/Shipping/CreateShippingDialog"
+import { ReturnRequestDialog } from "@/components/Shipping/ReturnRequestDialog"
+import { ReturnStatusCard } from "@/components/Shipping/ReturnStatusCard"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -44,6 +49,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import useAuth from "@/hooks/useAuth"
 
 const ESCROW_STATUS_LABELS: Record<string, string> = {
@@ -109,6 +115,23 @@ function OrderDetailPage() {
   const [disputeOpen, setDisputeOpen] = useState(false)
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false)
   const [insufficientFund, setInsufficientFund] = useState(false)
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false)
+
+  // Fetch return request
+  const { data: returnRequest } = useQuery({
+    queryKey: ["return-request", orderId],
+    queryFn: async () => {
+      const token = localStorage.getItem("access_token")
+      const res = await fetch(`/api/v1/returns/my-requests?limit=1`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return null
+      const data = await res.json()
+      const found = data?.items?.find((r: any) => r.order_id === orderId)
+      return found || null
+    },
+    enabled: Boolean(orderId),
+  })
 
   const { data, isLoading } = useQuery(getOrderDetailQueryOptions(orderId))
 
@@ -214,6 +237,48 @@ function OrderDetailPage() {
     },
     onError: (error: any) =>
       toast.error(error?.body?.detail || "Không thể hủy đơn hàng."),
+  })
+
+  const returnOrderMutation = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem("access_token")
+      const res = await fetch("/api/v1/shipping/return-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ order_id: orderId }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.detail || "Failed to request return")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      toast.success("Đã gửi yêu cầu trả hàng thành công")
+    },
+    onError: (error: any) => toast.error(error?.message || "Không thể yêu cầu trả hàng"),
+  })
+
+  const deliveryAgainMutation = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem("access_token")
+      const res = await fetch("/api/v1/shipping/delivery-again", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ order_id: orderId }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.detail || "Failed to request delivery again")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      toast.success("Đã yêu cầu giao lại thành công")
+    },
+    onError: (error: any) => toast.error(error?.message || "Không thể yêu cầu giao lại"),
   })
 
   const chatMutation = useMutation({
@@ -356,6 +421,37 @@ function OrderDetailPage() {
         </Badge>
       </section>
 
+      {/* Status alerts */}
+      {(order.status as string) === "returning" && (
+        <Alert variant="default" className="mb-4 border-yellow-200 bg-yellow-50 text-yellow-800">
+          <RotateCcw className="size-4" />
+          <AlertDescription>Đơn hàng đang được hoàn trả về người bán...</AlertDescription>
+        </Alert>
+      )}
+
+      {(order.status as string) === "returned" && (
+        <Alert variant="default" className="mb-4 border-green-200 bg-green-50 text-green-800">
+          <CheckCircle2 className="size-4" />
+          <AlertDescription>
+            Đã hoàn trả.
+            {order.payment_method === "wallet" ? " Tiền đã được hoàn lại vào ví của bạn." : ""}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {(order.status as string) === "delivery_failed" && (
+        <Alert variant="default" className="mb-4 border-red-200 bg-red-50 text-red-800">
+          <XCircle className="size-4" />
+          <AlertDescription>
+            Giao hàng thất bại.
+            {isSeller ? " Bạn có thể giao lại hoặc trả hàng." : " Người bán sẽ xử lý."}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Return Request Card */}
+      {returnRequest && <ReturnStatusCard request={returnRequest} />}
+
       <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
         <div className="space-y-4">
           <Card className="border-[#D8E2EF] bg-white">
@@ -451,7 +547,7 @@ function OrderDetailPage() {
                 status={order.status}
                 deliveredAt={order.delivered_at}
                 expectedDeliveryAt={order.expected_delivery_at}
-                autoReleaseAt={escrow?.auto_release_at}
+                autoReleaseAt={(escrow as any)?.auto_release_at}
               />
             </CardContent>
           </Card>
@@ -475,16 +571,16 @@ function OrderDetailPage() {
                   {ESCROW_STATUS_LABELS[escrow.status] ?? escrow.status}
                 </span>
               </div>
-              {escrow?.auto_release_at && escrow.status === "funded" ? (
+              {(escrow as any)?.auto_release_at && escrow.status === "funded" ? (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
                   Tự động giải ngân vào{" "}
                   <span className="font-semibold">
-                    {new Date(escrow.auto_release_at).toLocaleDateString("vi-VN", {
+                    {new Date((escrow as any).auto_release_at).toLocaleDateString("vi-VN", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </span>{" "}
-                  (sau {escrow.auto_release_at ? Math.ceil((new Date(escrow.auto_release_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0} ngày)
+                  (sau {(escrow as any).auto_release_at ? Math.ceil((new Date((escrow as any).auto_release_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0} ngày)
                 </div>
               ) : null}
               <Button
@@ -609,6 +705,18 @@ function OrderDetailPage() {
                 </Button>
               ) : null}
 
+              {/* Buyer: Yêu cầu trả hàng (wallet, delivered, within 7 days) */}
+              {isBuyer && canRequestReturn(order) && !returnRequest && (
+                <Button
+                  variant="outline"
+                  className="w-full border-amber-200 text-amber-700"
+                  onClick={() => setReturnDialogOpen(true)}
+                >
+                  <RotateCcw className="mr-2 size-4" />
+                  Yêu cầu trả hàng / Hoàn tiền
+                </Button>
+              )}
+
               {isSeller && order.status === "confirmed" ? (
                 <>
                   <Button
@@ -629,6 +737,30 @@ function OrderDetailPage() {
                   </Button>
                 </>
               ) : null}
+
+              {/* Seller: Giao lại / Trả hàng khi DELIVERY_FAILED */}
+              {isSeller && (order.status as string) === "delivery_failed" && (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 border-blue-200 text-blue-700"
+                    onClick={() => deliveryAgainMutation.mutate()}
+                    disabled={deliveryAgainMutation.isPending}
+                  >
+                    <Send className="mr-2 size-4" />
+                    Giao lại
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 border-red-200 text-red-700"
+                    onClick={() => returnOrderMutation.mutate()}
+                    disabled={returnOrderMutation.isPending}
+                  >
+                    <RotateCcw className="mr-2 size-4" />
+                    Trả hàng
+                  </Button>
+                </div>
+              )}
 
               {isBuyer &&
               (order.status === "shipping" || order.status === "delivered") ? (
@@ -767,6 +899,16 @@ function OrderDetailPage() {
         order={order}
         onSuccess={() => {
           queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+        }}
+      />
+
+      <ReturnRequestDialog
+        order={order}
+        open={returnDialogOpen}
+        onClose={() => setReturnDialogOpen(false)}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+          queryClient.invalidateQueries({ queryKey: ["return-request", orderId] })
         }}
       />
     </div>
