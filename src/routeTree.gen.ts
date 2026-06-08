@@ -23,6 +23,7 @@ import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminModerationRouteImport } from './routes/admin/moderation'
 import { Route as AdminEscrowRouteImport } from './routes/admin/escrow'
+import { Route as AdminDisputesRouteImport } from './routes/admin/disputes'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
@@ -117,6 +118,11 @@ const AdminModerationRoute = AdminModerationRouteImport.update({
 const AdminEscrowRoute = AdminEscrowRouteImport.update({
   id: '/escrow',
   path: '/escrow',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDisputesRoute = AdminDisputesRouteImport.update({
+  id: '/disputes',
+  path: '/disputes',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
@@ -277,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/disputes': typeof AdminDisputesRoute
   '/admin/escrow': typeof AdminEscrowRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/disputes': typeof AdminDisputesRoute
   '/admin/escrow': typeof AdminEscrowRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -359,6 +367,7 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/disputes': typeof AdminDisputesRoute
   '/admin/escrow': typeof AdminEscrowRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/categories'
     | '/admin/dashboard'
+    | '/admin/disputes'
     | '/admin/escrow'
     | '/admin/moderation'
     | '/admin/orders'
@@ -443,6 +453,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/categories'
     | '/admin/dashboard'
+    | '/admin/disputes'
     | '/admin/escrow'
     | '/admin/moderation'
     | '/admin/orders'
@@ -484,6 +495,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/categories'
     | '/admin/dashboard'
+    | '/admin/disputes'
     | '/admin/escrow'
     | '/admin/moderation'
     | '/admin/orders'
@@ -616,6 +628,13 @@ declare module '@tanstack/react-router' {
       path: '/escrow'
       fullPath: '/admin/escrow'
       preLoaderRoute: typeof AdminEscrowRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/disputes': {
+      id: '/admin/disputes'
+      path: '/disputes'
+      fullPath: '/admin/disputes'
+      preLoaderRoute: typeof AdminDisputesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/dashboard': {
@@ -922,6 +941,7 @@ interface AdminRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminDisputesRoute: typeof AdminDisputesRoute
   AdminEscrowRoute: typeof AdminEscrowRoute
   AdminModerationRoute: typeof AdminModerationRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -932,6 +952,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminDisputesRoute: AdminDisputesRoute,
   AdminEscrowRoute: AdminEscrowRoute,
   AdminModerationRoute: AdminModerationRoute,
   AdminOrdersRoute: AdminOrdersRoute,

@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ReturnsService } from "@/client"
 
 interface ReturnRequestDialogProps {
   order: { id: string }
@@ -36,30 +37,18 @@ export function ReturnRequestDialog({ order, open, onClose, onSuccess }: ReturnR
   const handleSubmit = async () => {
     setSubmitting(true)
     try {
-      const token = localStorage.getItem("access_token")
-      const res = await fetch("/api/v1/returns/request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      await ReturnsService.createReturnRequestApiV1ReturnsRequestPost({
+        requestBody: {
           order_id: order.id,
-          reason,
+          reason: reason as any,
           description: description || null,
-        }),
+        },
       })
-
-      if (res.ok) {
-        toast.success("Yêu cầu hoàn hàng đã được gửi!")
-        onClose()
-        onSuccess?.()
-      } else {
-        const err = await res.json()
-        toast.error(err?.detail || "Không thể gửi yêu cầu")
-      }
-    } catch {
-      toast.error("Lỗi kết nối")
+      toast.success("Yêu cầu hoàn hàng đã được gửi!")
+      onClose()
+      onSuccess?.()
+    } catch (err: any) {
+      toast.error(err?.body?.detail || err?.message || "Không thể gửi yêu cầu")
     } finally {
       setSubmitting(false)
     }

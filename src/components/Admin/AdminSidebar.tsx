@@ -48,7 +48,7 @@ const navItems = [
   },
   {
     label: "Tranh chấp",
-    path: "/admin/escrow",
+    path: "/admin/disputes",
     icon: Scale,
     badgeKey: "disputes",
     badgeVariant: "warning",

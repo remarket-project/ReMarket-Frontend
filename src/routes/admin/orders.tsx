@@ -1,109 +1,142 @@
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { ArrowRightLeft, Clock, DollarSign, Eye, RefreshCw } from "lucide-react"
+import {
+  ArrowLeftRight,
+  CheckCircle2,
+  Package,
+  RefreshCw,
+  RotateCcw,
+  Truck,
+  XCircle,
+} from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 
-import { EscrowService } from "@/client"
-import { OrderTimelineDialog } from "@/components/Admin/OrderTimelineDialog"
+import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
+
+const API_BASE = "/api/v1/admin"
+
+const statusTabs = [
+  { key: "", label: "Tất cả" },
+  { key: "pending", label: "Chờ giao" },
+  { key: "shipping", label: "Đang VC" },
+  { key: "delivered", label: "Đã giao" },
+  { key: "returning", label: "Hoàn trả" },
+  { key: "disputed", label: "Khiếu nại" },
+] as const
+
+function getAdminActions(status: string) {
+  switch (status) {
+    case "pending":
+      return [
+        { label: "Nhận đơn → SHIPPING", action: "ship", icon: Truck },
+        { label: "Hủy đơn", action: "cancel", icon: XCircle },
+      ]
+    case "shipping":
+      return [
+        { label: "Đã giao → DELIVERED", action: "deliver", icon: CheckCircle2 },
+        { label: "Hoàn đơn → RETURNING", action: "return", icon: RotateCcw },
+      ]
+    case "returning":
+      return [
+        { label: "Đã nhận lại → RETURNED", action: "returned", icon: Package },
+      ]
+    case "delivered":
+      return [
+        { label: "Hoàn tất (force)", action: "force-complete", icon: CheckCircle2 },
+        { label: "Hủy (force)", action: "force-cancel", icon: XCircle },
+      ]
+    default:
+      return []
+  }
+}
 
 export const Route = createFileRoute("/admin/orders")({
-  component: TrangQuanLyDonHang,
+  component: AdminOrdersPage,
   head: () => ({
     meta: [{ title: "Quản lý đơn hàng - ReMarket Admin" }],
   }),
 })
 
-function TrangQuanLyDonHang() {
-  const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
+function AdminOrdersPage() {
+  const queryClient = useQueryClient()
+  const [statusFilter, setStatusFilter] = useState("")
 
-  const { data: disputesData, isLoading, refetch: refetchDisputes } = useQuery({
-    queryKey: ["adminDisputedEscrows"],
-    queryFn: () => EscrowService.getDisputedEscrowsApiV1EscrowsDisputedGet({ skip: 0, limit: 50 }),
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["adminOrders", statusFilter],
+    queryFn: async () => {
+      const params = new URLSearchParams({ skip: "0", limit: "50" })
+      if (statusFilter) params.set("status", statusFilter)
+      const res = await fetch(`${API_BASE}/orders?${params}`)
+      if (!res.ok) throw new Error("Failed to fetch orders")
+      return res.json()
+    },
   })
 
-  const danhSachTranh_chap = Array.isArray(disputesData)
-    ? disputesData
-    : (disputesData as any)?.data ?? (disputesData as any)?.items ?? [];
+  const actionMutation = useMutation({
+    mutationFn: async ({ orderId, action }: { orderId: string; action: string }) => {
+      const res = await fetch(`${API_BASE}/orders/${orderId}/${action}`, { method: "POST" })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.detail || "Action failed")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
+      toast.success("Thao tác thành công.")
+    },
+    onError: (error: Error) => toast.error(error.message),
+  })
 
-  const tongTienTamGiu = danhSachTranh_chap.reduce(
-    (acc: number, curr: any) => acc + Number(curr.amount || 0), 0
-  )
+  const orders = Array.isArray(data?.items) ? data.items : data?.items ?? []
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-100 sm:text-3xl">
-          Quản lý Giao dịch &amp; Đơn hàng
-        </h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Giám sát các dòng tiền Escrow trung gian và xử lý hỗ trợ giao dịch
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100 sm:text-3xl">
+            Quản lý đơn hàng
+          </h1>
+          <p className="mt-1 text-sm text-slate-400">
+            Theo dõi và xử lý đơn hàng trên hệ thống
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          disabled={isLoading}
+          className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#1A2233] px-3 py-1.5 text-sm font-medium text-slate-400 transition-colors hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 disabled:opacity-50"
+        >
+          <RefreshCw className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
+          Làm mới
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-[#111827] p-5 transition-all hover:-translate-y-0.5 hover:border-blue-500/20 hover:shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
-            <ArrowRightLeft className="size-5" />
-          </div>
-          <div>
-            <span className="block text-xs font-medium text-slate-400">
-              Số giao dịch tranh chấp
-            </span>
-            <span className="text-2xl font-bold text-slate-100">
-              {danhSachTranh_chap.length} vụ việc
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-[#111827] p-5 transition-all hover:-translate-y-0.5 hover:border-blue-500/20 hover:shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-            <DollarSign className="size-5" />
-          </div>
-          <div>
-            <span className="block text-xs font-medium text-slate-400">
-              Tổng tiền đang tạm giữ
-            </span>
-            <span className="text-2xl font-bold text-emerald-400">
-              {tongTienTamGiu.toLocaleString("vi-VN")}₫
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-[#111827] p-5 transition-all hover:-translate-y-0.5 hover:border-blue-500/20 hover:shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-red-500/10 text-red-400">
-            <Clock className="size-5" />
-          </div>
-          <div>
-            <span className="block text-xs font-medium text-slate-400">
-              Hạn xử lý trung bình
-            </span>
-            <span className="text-2xl font-bold text-red-400">
-              Trong 24h
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-[#111827]">
-        <div className="flex items-center justify-between border-b border-white/[0.06] bg-[#0B0F1A]/50 px-5 py-4">
-          <h3 className="font-bold text-slate-200">
-            Các giao dịch Escrow đang có tranh chấp
-          </h3>
+      {/* Status tabs */}
+      <div className="flex flex-wrap gap-2">
+        {statusTabs.map((tab) => (
           <button
+            key={tab.key}
             type="button"
-            onClick={() => refetchDisputes()}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#1A2233] px-3 py-1.5 text-sm font-medium text-slate-400 transition-colors hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 disabled:opacity-50"
+            onClick={() => setStatusFilter(tab.key)}
+            className={`rounded-xl border px-4 py-1.5 text-sm font-medium transition-colors ${
+              statusFilter === tab.key
+                ? "border-blue-500/40 bg-blue-500/20 text-blue-400"
+                : "border-white/[0.08] bg-[#1A2233] text-slate-400 hover:bg-white/[0.06]"
+            }`}
           >
-            <RefreshCw className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
-            Làm mới
+            {tab.label}
           </button>
-        </div>
+        ))}
+      </div>
 
+      {/* Orders table */}
+      <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-[#111827]">
         {isLoading ? (
           <div className="space-y-3 p-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 animate-pulse rounded-xl bg-slate-800" />
+              <div key={i} className="h-14 animate-pulse rounded-xl bg-slate-800" />
             ))}
           </div>
         ) : (
@@ -111,68 +144,84 @@ function TrangQuanLyDonHang() {
             <table className="w-full border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-[#0B0F1A]/30 text-xs font-bold uppercase tracking-wider text-slate-500">
-                  <th className="p-4">Mã đơn hàng</th>
-                  <th className="p-4">Số tiền Escrow</th>
-                  <th className="p-4">Ví người mua</th>
-                  <th className="p-4">Ví người bán</th>
+                  <th className="p-4">Mã đơn</th>
+                  <th className="p-4">Giá</th>
+                  <th className="p-4">Người mua</th>
+                  <th className="p-4">Người bán</th>
+                  <th className="p-4">Thanh toán</th>
                   <th className="p-4">Trạng thái</th>
-                  <th className="p-4 text-right">Chi tiết</th>
+                  <th className="p-4 text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
-                {danhSachTranh_chap.map((escrow: any) => (
-                  <tr key={escrow.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                    <td className="p-4 font-mono font-semibold text-blue-400">
-                      #{escrow.order_id?.slice(0, 8)}...
-                    </td>
-                    <td className="p-4 font-bold text-slate-100">
-                      {Number(escrow.amount).toLocaleString("vi-VN")}₫
-                    </td>
-                    <td className="p-4 text-xs text-slate-500">
-                      Ví: {escrow.buyer_wallet_id?.slice(0, 8)}...
-                    </td>
-                    <td className="p-4 text-xs text-slate-500">
-                      Ví: {escrow.seller_wallet_id?.slice(0, 8)}...
-                    </td>
-                    <td className="p-4">
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-400">
-                        <span className="size-1.5 rounded-full bg-amber-400" />
-                        Đang tranh chấp
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedOrder(escrow)}
-                        title="Xem chi tiết"
-                        className="ml-auto flex size-8 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-blue-500/10 hover:text-blue-400"
-                      >
-                        <Eye className="size-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {orders.map((order: any) => {
+                  const actions = getAdminActions(order.status)
+                  return (
+                    <tr key={order.id} className="hover:bg-white/[0.02]">
+                      <td className="p-4 font-mono font-semibold text-blue-400">
+                        #{order.id?.slice(0, 8)}
+                      </td>
+                      <td className="p-4 font-bold text-slate-100">
+                        {formatVND(order.final_price)}
+                      </td>
+                      <td className="p-4 text-xs text-slate-400">
+                        {order.buyer_id?.slice(0, 8)}...
+                      </td>
+                      <td className="p-4 text-xs text-slate-400">
+                        {order.seller_id?.slice(0, 8)}...
+                      </td>
+                      <td className="p-4">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-xs font-medium text-slate-400">
+                          <ArrowLeftRight className="size-3" />
+                          {order.payment_method === "wallet" ? "Ví" : "COD"}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold ${
+                          ORDER_STATUS_COLORS[order.status] ?? "border-white/[0.08] bg-white/[0.04] text-slate-400"
+                        }`}>
+                          {ORDER_STATUS_LABELS[order.status] ?? order.status}
+                        </span>
+                      </td>
+                      <td className="p-4 text-right">
+                        <div className="flex justify-end gap-1.5">
+                          {actions.map((act) => (
+                            <button
+                              key={act.action}
+                              type="button"
+                              onClick={() => actionMutation.mutate({ orderId: order.id, action: act.action })}
+                              disabled={actionMutation.isPending}
+                              title={act.label}
+                              className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-[#1A2233] px-2 py-1 text-xs font-medium text-slate-400 transition-colors hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 disabled:opacity-50"
+                            >
+                              <act.icon className="size-3" />
+                              {act.label}
+                            </button>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         )}
 
-        {danhSachTranh_chap.length === 0 && !isLoading && (
+        {orders.length === 0 && !isLoading && (
           <div className="flex flex-col items-center py-12 text-center">
-            <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
-              <DollarSign className="size-6" />
+            <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-slate-500/10 text-slate-400">
+              <Package className="size-6" />
             </div>
-            <p className="font-semibold text-slate-200">Không có tranh chấp nào</p>
+            <p className="font-semibold text-slate-200">Không có đơn hàng</p>
             <p className="mt-1 text-sm text-slate-500">
-              Hiện không có giao dịch ký quỹ nào bị tranh chấp hoặc khiếu nại.
+              {statusFilter
+                ? `Không có đơn hàng nào ở trạng thái "${statusFilter}".`
+                : "Chưa có đơn hàng nào trên hệ thống."}
             </p>
           </div>
         )}
       </div>
-
-      {selectedOrder && (
-        <OrderTimelineDialog escrow={selectedOrder} onClose={() => setSelectedOrder(null)} />
-      )}
     </div>
   )
 }

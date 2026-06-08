@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { formatVND } from "@/lib/order-utils"
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"
+import { ShippingService } from "@/client"
 
 interface CreateShippingDialogProps {
   open: boolean
@@ -50,33 +50,22 @@ export default function CreateShippingDialog({
   const [note, setNote] = useState(order.shipping_note || "")
 
   const createMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`${API_BASE}/api/v1/shipping/create-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({
+    mutationFn: () =>
+      ShippingService.createShippingOrderApiV1ShippingCreateOrderPost({
+        requestBody: {
           order_id: order.id,
           weight_grams: weight,
           insurance_value: Number(order.final_price),
           note,
-        }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Tạo đơn vận chuyển thất bại")
-      }
-      return res.json()
-    },
+        },
+      }),
     onSuccess: (data) => {
       toast.success("Đã tạo đơn vận chuyển GHN!")
       onOpenChange(false)
-      if (onSuccess) onSuccess(data.order_code)
+      if (onSuccess && data.order_code) onSuccess(data.order_code)
     },
-    onError: (err: Error) => {
-      toast.error(err.message)
+    onError: (err: any) => {
+      toast.error(err?.body?.detail || err.message || "Tạo đơn vận chuyển thất bại")
     },
   })
 

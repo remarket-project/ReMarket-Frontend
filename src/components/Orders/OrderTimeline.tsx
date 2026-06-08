@@ -1,74 +1,72 @@
-import {
-  BadgeCheck,
-  Clock3,
-  Package,
-  ShoppingCart,
-  Truck,
-  Wallet,
-} from "lucide-react"
+import { AlertTriangle, BadgeCheck, Package, RotateCcw, ShoppingCart, Truck, XCircle } from "lucide-react"
 
 import type { OrderRead } from "@/client"
 
-const stages = [
-  { key: "pending", label: "Đã tạo đơn", icon: ShoppingCart },
-  { key: "confirmed", label: "Đã xác nhận", icon: Wallet },
-  { key: "shipping", label: "Đang vận chuyển", icon: Truck },
-  { key: "delivered", label: "Đã giao hàng", icon: Package },
-  { key: "completed", label: "Hoàn tất", icon: BadgeCheck },
-]
-
-function getStageIndex(status: OrderRead["status"]) {
-  const statusOrder: OrderRead["status"][] = [
-    "pending",
-    "confirmed",
-    "shipping",
-    "delivered",
-    "completed",
-    "cancelled",
+function getStages(order: OrderRead) {
+  if (order.status === "cancelled") {
+    return [
+      { key: "pending", label: "Chờ giao hàng", icon: ShoppingCart },
+      { key: "cancelled", label: "Đã hủy", icon: XCircle },
+    ]
+  }
+  if (order.status === "returning" || order.status === "returned") {
+    return [
+      { key: "pending", label: "Chờ giao hàng", icon: ShoppingCart },
+      { key: "shipping", label: "Đang vận chuyển", icon: Truck },
+      { key: "returning", label: "Đang hoàn trả", icon: RotateCcw },
+      { key: "returned", label: "Đã hoàn trả", icon: Package },
+    ]
+  }
+  if (["disputed", "completed", "shipping", "delivered"].includes(order.status)) {
+    const stages = [
+      { key: "pending", label: "Chờ giao hàng", icon: ShoppingCart },
+      { key: "shipping", label: "Đang vận chuyển", icon: Truck },
+      { key: "delivered", label: "Đã giao hàng", icon: Package },
+    ]
+    if ((order.status as string) === "disputed") {
+      stages.push({ key: "disputed", label: "Đang khiếu nại", icon: AlertTriangle })
+    } else if (order.status === "completed") {
+      stages.push({ key: "completed", label: "Hoàn tất", icon: BadgeCheck })
+    }
+    return stages
+  }
+  return [
+    { key: "pending", label: "Chờ giao hàng", icon: ShoppingCart },
+    { key: "shipping", label: "Đang vận chuyển", icon: Truck },
+    { key: "delivered", label: "Đã giao hàng", icon: Package },
+    { key: "completed", label: "Hoàn tất", icon: BadgeCheck },
   ]
-  return statusOrder.indexOf(status)
 }
 
 export default function OrderTimeline({ order }: { order: OrderRead }) {
-  const current = getStageIndex(order.status)
-  const isCancelled = order.status === "cancelled"
-
-  const description = (key: string) => {
-    if (key === "confirmed") return "Người bán đã xác nhận đơn hàng"
-    return undefined
-  }
+  const stages = getStages(order)
+  const currentKey = order.status
+  const currentIdx = stages.findIndex((s) => s.key === currentKey)
 
   return (
     <div className="space-y-0">
       {stages.map((stage, idx) => {
-        const reached = !isCancelled ? idx <= current : false
-        const isCancelStep = idx > current && isCancelled
+        const isLast = idx === stages.length - 1
+        const reached = idx <= currentIdx
+        const isCancelled = stage.key === "cancelled"
         return (
           <div key={stage.key} className="flex gap-4">
             <div className="flex flex-col items-center">
               <div
                 className={`flex size-8 items-center justify-center rounded-full ${
-                  isCancelStep
+                  isCancelled
                     ? "bg-rose-100 text-rose-500"
                     : reached
                       ? "bg-blue-600 text-white"
                       : "bg-gray-100 text-gray-400"
                 }`}
               >
-                {isCancelStep ? (
-                  <Clock3 className="size-4" />
-                ) : (
-                  <stage.icon className="size-4" />
-                )}
+                <stage.icon className="size-4" />
               </div>
-              {idx < stages.length - 1 ? (
+              {!isLast ? (
                 <div
                   className={`my-1 w-px flex-1 ${
-                    isCancelStep
-                      ? "bg-rose-200"
-                      : idx < current
-                        ? "bg-blue-400"
-                        : "bg-gray-200"
+                    idx < currentIdx ? "bg-blue-400" : "bg-gray-200"
                   }`}
                 />
               ) : null}
@@ -76,7 +74,7 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
             <div className="pb-6">
               <p
                 className={`text-sm font-semibold ${
-                  isCancelStep
+                  isCancelled
                     ? "text-gray-400 line-through"
                     : reached
                       ? "text-blue-950"
@@ -85,23 +83,18 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
               >
                 {stage.label}
               </p>
-              {idx === current && !isCancelled ? (
+              {idx === currentIdx && !isCancelled ? (
                 <p className="text-xs font-semibold text-blue-700 mt-0.5">
                   Trạng thái hiện tại
-                </p>
-              ) : null}
-              {reached && description(stage.key) ? (
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {description(stage.key)}
                 </p>
               ) : null}
             </div>
           </div>
         )
       })}
-      {isCancelled ? (
+      {order.status === "cancelled" ? (
         <div className="mt-3 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 font-bold">
-          <Clock3 className="size-4" />
+          <XCircle className="size-4" />
           Đơn hàng đã bị hủy
         </div>
       ) : null}

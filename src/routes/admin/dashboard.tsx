@@ -219,7 +219,7 @@ function TrangTongQuan() {
               {
                 label: "Xử lý tranh chấp",
                 sub: "Ra phán quyết cho các vụ khiếu nại",
-                href: "/admin/escrow",
+                href: "/admin/disputes",
                 color: soTranh_chap > 0 ? "text-red-400 group-hover:text-red-300" : "text-blue-400 group-hover:text-blue-300",
                 bg: soTranh_chap > 0 ? "bg-[#1A2233] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20" : "bg-[#1A2233] hover:bg-blue-500/10 border border-white/[0.06] hover:border-blue-500/20",
               },

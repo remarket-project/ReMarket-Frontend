@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   AlertTriangle,
@@ -9,8 +9,6 @@ import {
   MessageSquare,
   Package,
   RotateCcw,
-  Send,
-  ShieldCheck,
   Star,
   Truck,
   XCircle,
@@ -19,7 +17,6 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
-import { canRequestReturn } from "@/lib/shipping-utils"
 
 import {
   ChatsService,
@@ -28,27 +25,15 @@ import {
   OrdersService,
   ReviewsService,
   UsersService,
-  WalletService,
 } from "@/client"
 import { useChat } from "@/hooks/ChatContext"
-import OpenDisputeDialog from "@/components/Escrow/OpenDisputeDialog"
+import { DisputeDialog } from "@/components/Dispute/DisputeDialog"
 import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
-import ShippingTimeline from "@/components/Shipping/ShippingTimeline"
-import CreateShippingDialog from "@/components/Shipping/CreateShippingDialog"
-import { ReturnRequestDialog } from "@/components/Shipping/ReturnRequestDialog"
-import { ReturnStatusCard } from "@/components/Shipping/ReturnStatusCard"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import useAuth from "@/hooks/useAuth"
 
@@ -57,7 +42,6 @@ const ESCROW_STATUS_LABELS: Record<string, string> = {
   funded: "Đã nạp tiền (Bảo chứng)",
   released: "Đã giải ngân",
   refunded: "Đã hoàn tiền",
-  disputed: "Đang tranh chấp",
 }
 
 const conditionLabels: Record<string, string> = {
@@ -113,29 +97,10 @@ function OrderDetailPage() {
 
   const [reviewOpen, setReviewOpen] = useState(false)
   const [disputeOpen, setDisputeOpen] = useState(false)
-  const [shippingDialogOpen, setShippingDialogOpen] = useState(false)
-  const [insufficientFund, setInsufficientFund] = useState(false)
-  const [returnDialogOpen, setReturnDialogOpen] = useState(false)
-
-  // Fetch return request
-  const { data: returnRequest } = useQuery({
-    queryKey: ["return-request", orderId],
-    queryFn: async () => {
-      const token = localStorage.getItem("access_token")
-      const res = await fetch(`/api/v1/returns/my-requests?limit=1`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (!res.ok) return null
-      const data = await res.json()
-      const found = data?.items?.find((r: any) => r.order_id === orderId)
-      return found || null
-    },
-    enabled: Boolean(orderId),
-  })
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
 
   const { data, isLoading } = useQuery(getOrderDetailQueryOptions(orderId))
 
-  // Fetch listing details
   const { data: listing, isLoading: isListingLoading } = useQuery({
     queryKey: ["listing-detail", data?.order?.listing_id],
     queryFn: () =>
@@ -145,7 +110,6 @@ function OrderDetailPage() {
     enabled: Boolean(data?.order?.listing_id),
   })
 
-  // Fetch buyer public profile
   const { data: buyerProfile } = useQuery({
     queryKey: ["user-public", data?.order?.buyer_id],
     queryFn: () =>
@@ -155,7 +119,6 @@ function OrderDetailPage() {
     enabled: Boolean(data?.order?.buyer_id),
   })
 
-  // Fetch seller public profile
   const { data: sellerProfile } = useQuery({
     queryKey: ["user-public", data?.order?.seller_id],
     queryFn: () =>
@@ -163,96 +126,6 @@ function OrderDetailPage() {
         userId: data!.order.seller_id,
       }),
     enabled: Boolean(data?.order?.seller_id),
-  })
-
-  const orderMutation = useMutation({
-    mutationFn: (status: "shipping" | "delivered" | "completed") =>
-      OrdersService.updateOrderStatusApiV1OrdersOrderIdStatusPatch({
-        orderId,
-        requestBody: { status },
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-      toast.success("Đã cập nhật trạng thái đơn hàng thành công.")
-    },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể cập nhật đơn hàng."),
-  })
-
-  // FE-BE-01: Buyer completes order (also releases escrow)
-  const completeOrderMutation = useMutation({
-    mutationFn: () =>
-      OrdersService.completeOrderApiV1OrdersOrderIdCompletePost({ orderId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-      queryClient.invalidateQueries({ queryKey: ["wallet"] })
-      toast.success("Đã xác nhận hoàn tất đơn hàng.")
-    },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể hoàn tất đơn hàng."),
-  })
-
-  // FE-BE-02: Seller confirms escrow release
-  const sellerConfirmReleaseMutation = useMutation({
-    mutationFn: () =>
-      EscrowService.confirmReleaseApiV1EscrowsOrderIdConfirmReleasePost({ orderId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-      queryClient.invalidateQueries({ queryKey: ["wallet"] })
-      toast.success("Đã xác nhận giải ngân thành công!")
-    },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể xác nhận giải ngân."),
-  })
-
-  const releaseMutation = useMutation({
-    mutationFn: () =>
-      EscrowService.requestReleaseApiV1EscrowsOrderIdReleaseRequestPost({
-        orderId,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Đã gửi yêu cầu giải ngân thành công.")
-    },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể gửi yêu cầu giải ngân."),
-  })
-
-  const disputeMutation = useMutation({
-    mutationFn: (reason: string) =>
-      EscrowService.openDisputeApiV1EscrowsOrderIdOpenDisputePost({
-        orderId,
-        requestBody: { reason },
-      }),
-    onSuccess: () => {
-      setDisputeOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Đã gửi yêu cầu tranh chấp thành công.")
-    },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể mở tranh chấp."),
-  })
-
-  const { data: wallet } = useQuery({
-    queryKey: ["wallet"],
-    queryFn: () => WalletService.getMyWalletApiV1WalletMeGet(),
-    enabled: Boolean(user),
-  })
-
-  const fundMutation = useMutation({
-    mutationFn: () =>
-      EscrowService.fundEscrowApiV1EscrowsOrderIdFundPost({ orderId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-      queryClient.invalidateQueries({ queryKey: ["wallet"] })
-      toast.success("Ký quỹ thành công! Đơn hàng đã được xác nhận.")
-    },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể ký quỹ."),
   })
 
   const cancelMutation = useMutation({
@@ -267,66 +140,7 @@ function OrderDetailPage() {
       toast.error(error?.body?.detail || "Không thể hủy đơn hàng."),
   })
 
-  const returnOrderMutation = useMutation({
-    mutationFn: async () => {
-      const token = localStorage.getItem("access_token")
-      const res = await fetch("/api/v1/shipping/return-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ order_id: orderId }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Failed to request return")
-      }
-      return res.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Đã gửi yêu cầu trả hàng thành công")
-    },
-    onError: (error: any) => toast.error(error?.message || "Không thể yêu cầu trả hàng"),
-  })
-
-  const deliveryAgainMutation = useMutation({
-    mutationFn: async () => {
-      const token = localStorage.getItem("access_token")
-      const res = await fetch("/api/v1/shipping/delivery-again", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ order_id: orderId }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Failed to request delivery again")
-      }
-      return res.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-      toast.success("Đã yêu cầu giao lại thành công")
-    },
-    onError: (error: any) => toast.error(error?.message || "Không thể yêu cầu giao lại"),
-  })
-
-  const chatMutation = useMutation({
-    mutationFn: () =>
-      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
-        { listingId: data?.order?.listing_id ?? "" },
-      ),
-    onSuccess: (conv: any) => {
-      openConversation(conv.id)
-    },
-  })
-
-  const handleFund = () => {
-    if (wallet && escrow && Number(wallet.balance) < Number(escrow.amount)) {
-      setInsufficientFund(true)
-      return
-    }
-    fundMutation.mutate()
-  }
-
+  // acceptMutation is handled inside DisputeDialog via fetch
   const reviewMutation = useMutation({
     mutationFn: ({ rating, comment }: { rating: number; comment?: string }) =>
       ReviewsService.createReviewApiV1ReviewsPost({
@@ -343,6 +157,16 @@ function OrderDetailPage() {
     },
     onError: (error: any) =>
       toast.error(error?.body?.detail || "Không thể gửi đánh giá."),
+  })
+
+  const chatMutation = useMutation({
+    mutationFn: () =>
+      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
+        { listingId: data?.order?.listing_id ?? "" },
+      ),
+    onSuccess: (conv: any) => {
+      openConversation(conv.id)
+    },
   })
 
   if (isLoading || isListingLoading) {
@@ -449,7 +273,6 @@ function OrderDetailPage() {
         </Badge>
       </section>
 
-      {/* Status alerts */}
       {(order.status as string) === "returning" && (
         <Alert variant="default" className="mb-4 border-yellow-200 bg-yellow-50 text-yellow-800">
           <RotateCcw className="size-4" />
@@ -467,18 +290,14 @@ function OrderDetailPage() {
         </Alert>
       )}
 
-      {(order.status as string) === "delivery_failed" && (
-        <Alert variant="default" className="mb-4 border-red-200 bg-red-50 text-red-800">
-          <XCircle className="size-4" />
+      {(order.status as string) === "disputed" && (
+        <Alert variant="default" className="mb-4 border-amber-200 bg-amber-50 text-amber-800">
+          <AlertTriangle className="size-4" />
           <AlertDescription>
-            Giao hàng thất bại.
-            {isSeller ? " Bạn có thể giao lại hoặc trả hàng." : " Người bán sẽ xử lý."}
+            Đơn hàng đang bị khiếu nại. Admin sẽ xử lý trong thời gian sớm nhất.
           </AlertDescription>
         </Alert>
       )}
-
-      {/* Return Request Card */}
-      {returnRequest && <ReturnStatusCard request={returnRequest} />}
 
       <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
         <div className="space-y-4">
@@ -568,62 +387,39 @@ function OrderDetailPage() {
                   </p>
                 </div>
               ) : null}
-              <ShippingTimeline
-                trackingNumber={order.tracking_number}
-                shippingProvider={order.shipping_provider}
-                shippingFee={order.shipping_fee}
-                status={order.status}
-                deliveredAt={order.delivered_at}
-                expectedDeliveryAt={order.expected_delivery_at}
-                autoReleaseAt={(escrow as any)?.auto_release_at}
-              />
             </CardContent>
           </Card>
 
-          <Card className="border-[#D8E2EF] bg-white">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-[#102A43] text-lg">
-                Trạng thái Escrow
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="rounded-xl border border-[#D8E2EF] bg-white px-3 py-2 text-[#5B7083]">
-                Số tiền khóa:{" "}
-                <span className="font-semibold text-[#102A43]">
-                  {currency(escrow.amount)}
-                </span>
-              </div>
-              <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] px-3 py-2 text-[#5B7083]">
-                Trạng thái escrow:{" "}
-                <span className="font-bold text-[#102A43]">
-                  {ESCROW_STATUS_LABELS[escrow.status] ?? escrow.status}
-                </span>
-              </div>
-              {(escrow as any)?.auto_release_at && escrow.status === "funded" ? (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-                  Tự động giải ngân vào{" "}
-                  <span className="font-semibold">
-                    {new Date((escrow as any).auto_release_at).toLocaleDateString("vi-VN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>{" "}
-                  (sau {(escrow as any).auto_release_at ? Math.ceil((new Date((escrow as any).auto_release_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0} ngày)
+          {escrow ? (
+            <Card className="border-[#D8E2EF] bg-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-[#102A43] text-lg">
+                  Thanh toán
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="rounded-xl border border-[#D8E2EF] bg-white px-3 py-2 text-[#5B7083]">
+                  Số tiền:{" "}
+                  <span className="font-semibold text-[#102A43]">
+                    {currency(escrow.amount)}
+                  </span>
                 </div>
-              ) : null}
-              <Button
-                className="w-full border-[#2563EB] text-[#2563EB]"
-                variant="outline"
-                asChild
-              >
-                <Link to="/escrow/$orderId" params={{ orderId }}>
-                  Xem chi tiết Escrow
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+                <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] px-3 py-2 text-[#5B7083]">
+                  Trạng thái:{" "}
+                  <span className="font-bold text-[#102A43]">
+                    {ESCROW_STATUS_LABELS[escrow.status] ?? escrow.status}
+                  </span>
+                </div>
+                <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] px-3 py-2 text-[#5B7083]">
+                  Phương thức thanh toán:{" "}
+                  <span className="font-bold text-[#102A43]">
+                    {order.payment_method === "wallet" ? "Ví" : "COD"}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ) : null}
 
-          {/* Participants Card */}
           <Card className="border-[#D8E2EF] bg-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-[#102A43] text-lg">
@@ -710,17 +506,7 @@ function OrderDetailPage() {
               <CardTitle className="text-[#102A43] text-lg">Thao tác</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {isBuyer && order.status === "pending" && escrow?.status === "pending" ? (
-                <Button
-                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-                  onClick={handleFund}
-                  disabled={fundMutation.isPending}
-                >
-                  <ShieldCheck className="mr-2 size-4" />
-                  {fundMutation.isPending ? "Đang xử lý..." : "Ký quỹ ngay"}
-                </Button>
-              ) : null}
-
+              {/* Cancel (PENDING only) */}
               {order.status === "pending" && (isBuyer || isSeller) ? (
                 <Button
                   variant="outline"
@@ -733,120 +519,37 @@ function OrderDetailPage() {
                 </Button>
               ) : null}
 
-              {/* Buyer: Yêu cầu trả hàng (wallet, delivered, within 7 days) */}
-              {isBuyer && canRequestReturn(order) && !returnRequest && (
+              {/* Buyer + DELIVERED: Đã nhận hàng */}
+              {isBuyer && order.status === "delivered" ? (
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => setAcceptDialogOpen(true)}
+                >
+                  <CheckCircle2 className="mr-2 size-4" />
+                  Đã nhận hàng
+                </Button>
+              ) : null}
+
+              {/* Buyer/Seller + DELIVERED: Khiếu nại */}
+              {order.status === "delivered" && (isBuyer || isSeller) ? (
                 <Button
                   variant="outline"
                   className="w-full border-amber-200 text-amber-700"
-                  onClick={() => setReturnDialogOpen(true)}
-                >
-                  <RotateCcw className="mr-2 size-4" />
-                  Yêu cầu trả hàng / Hoàn tiền
-                </Button>
-              )}
-
-              {isSeller && order.status === "confirmed" ? (
-                <>
-                  <Button
-                    className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-                    onClick={() => setShippingDialogOpen(true)}
-                  >
-                    <Package className="mr-2 size-4" />
-                    Tạo đơn GHN
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-gray-300 text-gray-500"
-                    onClick={() => orderMutation.mutate("shipping")}
-                    disabled={orderMutation.isPending}
-                    size="sm"
-                  >
-                    {orderMutation.isPending ? "Đang xử lý..." : "Đã giao hàng (không qua GHN)"}
-                  </Button>
-                </>
-              ) : null}
-
-              {/* Seller: Giao lại / Trả hàng khi DELIVERY_FAILED */}
-              {isSeller && (order.status as string) === "delivery_failed" && (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-blue-200 text-blue-700"
-                    onClick={() => deliveryAgainMutation.mutate()}
-                    disabled={deliveryAgainMutation.isPending}
-                  >
-                    <Send className="mr-2 size-4" />
-                    Giao lại
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-red-200 text-red-700"
-                    onClick={() => returnOrderMutation.mutate()}
-                    disabled={returnOrderMutation.isPending}
-                  >
-                    <RotateCcw className="mr-2 size-4" />
-                    Trả hàng
-                  </Button>
-                </div>
-              )}
-
-              {isBuyer &&
-              (order.status === "shipping" || order.status === "delivered") ? (
-                <Button
-                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-                  onClick={() => releaseMutation.mutate()}
-                  disabled={releaseMutation.isPending}
-                >
-                  <CheckCircle2 className="mr-2 size-4" />
-                  Xác nhận nhận hàng
-                </Button>
-              ) : null}
-
-              {(isBuyer || isSeller) &&
-              order.status !== "completed" &&
-              order.status !== "cancelled" &&
-              order.status !== "pending" ? (
-                <Button
-                  variant="outline"
-                  className="w-full border-rose-200 text-rose-700"
                   onClick={() => setDisputeOpen(true)}
                 >
                   <AlertTriangle className="mr-2 size-4" />
-                  Báo cáo vấn đề
+                  Khiếu nại
                 </Button>
               ) : null}
 
-              {/* FE-BE-01: Buyer xác nhận hoàn tất (cũng release escrow) */}
-              {order.status === "delivered" && isBuyer ? (
-                <Button
-                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-                  onClick={() => completeOrderMutation.mutate()}
-                  disabled={completeOrderMutation.isPending}
-                >
-                  <CheckCircle2 className="mr-2 size-4" />
-                  {completeOrderMutation.isPending ? "Đang xử lý..." : "Xác nhận hoàn tất"}
-                </Button>
-              ) : null}
-
-              {/* FE-BE-02: Seller xác nhận giải ngân (khi buyer đã request release) */}
-              {isSeller && escrow?.status === "release_requested" ? (
-                <Button
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                  onClick={() => sellerConfirmReleaseMutation.mutate()}
-                  disabled={sellerConfirmReleaseMutation.isPending}
-                >
-                  <CheckCircle2 className="mr-2 size-4" />
-                  {sellerConfirmReleaseMutation.isPending ? "Đang xử lý..." : "Xác nhận giải ngân (Nhận tiền)"}
-                </Button>
-              ) : null}
-
+              {/* COMPLETED + chưa review: Đánh giá */}
               {order.status === "completed" && !hasReviewed ? (
                 <Button
                   variant="outline"
                   className="w-full border-[#A7F3D0] text-[#059669]"
                   onClick={() => setReviewOpen(true)}
                 >
-                  <ShieldCheck className="mr-2 size-4" />
+                  <Star className="mr-2 size-4" />
                   Đánh giá
                 </Button>
               ) : null}
@@ -865,54 +568,21 @@ function OrderDetailPage() {
         </div>
       </div>
 
-      <Dialog open={insufficientFund} onOpenChange={setInsufficientFund}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-700">
-              <AlertTriangle className="size-5" />
-              Số dư không đủ
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 text-sm">
-            <p className="text-[#5B7083]">
-              Số dư hiện tại:{" "}
-              <span className="font-bold text-[#102A43]">
-                {currency(wallet?.balance || 0)}
-              </span>
-            </p>
-            <p className="text-[#5B7083]">
-              Số tiền cần ký quỹ:{" "}
-              <span className="font-bold text-[#102A43]">
-                {currency(escrow?.amount || 0)}
-              </span>
-            </p>
-            <p className="text-xs text-[#8A99A8]">
-              Bạn cần nạp thêm{" "}
-              <span className="font-semibold text-rose-600">
-                {currency(
-                  Math.max(0, Number(escrow?.amount || 0) - Number(wallet?.balance || 0)),
-                )}
-              </span>{" "}
-              để thực hiện ký quỹ.
-            </p>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              className="border-[#D8E2EF]"
-              onClick={() => setInsufficientFund(false)}
-            >
-              Đóng
-            </Button>
-            <Button
-              className="bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
-              asChild
-            >
-              <Link to="/wallet">Nạp tiền ngay</Link>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Accept Dialog (buyer confirms delivery) */}
+      <DisputeDialog
+        orderId={orderId}
+        open={acceptDialogOpen}
+        onOpenChange={setAcceptDialogOpen}
+      />
+
+      {/* Standalone Dispute Dialog (for 'Khiếu nại' button on DELIVERED) */}
+      {disputeOpen && !acceptDialogOpen ? (
+        <DisputeDialog
+          orderId={orderId}
+          open={disputeOpen}
+          onOpenChange={setDisputeOpen}
+        />
+      ) : null}
 
       <LeaveReviewDialog
         open={reviewOpen}
@@ -924,32 +594,6 @@ function OrderDetailPage() {
             comment: values.comment,
           })
         }
-      />
-
-      <OpenDisputeDialog
-        open={disputeOpen}
-        onOpenChange={setDisputeOpen}
-        isPending={disputeMutation.isPending}
-        onSubmit={(reason) => disputeMutation.mutate(reason)}
-      />
-
-      <CreateShippingDialog
-        open={shippingDialogOpen}
-        onOpenChange={setShippingDialogOpen}
-        order={order}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-        }}
-      />
-
-      <ReturnRequestDialog
-        order={order}
-        open={returnDialogOpen}
-        onClose={() => setReturnDialogOpen(false)}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
-          queryClient.invalidateQueries({ queryKey: ["return-request", orderId] })
-        }}
       />
     </div>
   )
