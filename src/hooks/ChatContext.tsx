@@ -9,8 +9,6 @@ import {
 } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 
-import { toast } from "sonner"
-
 import { ChatsService } from "@/client"
 import useAuth from "@/hooks/useAuth"
 import { useWebSocket } from "@/hooks/useWebSocket"
@@ -98,62 +96,17 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   useWebSocket({
     chat_message: useCallback(
-      (data) => {
-        queryClient.invalidateQueries({
-          queryKey: ["conversation-messages", data.conversation_id as string],
-        })
+      (data: Record<string, unknown>) => {
+        const conversationId = data.conversation_id as string | undefined
+        if (conversationId) {
+          queryClient.invalidateQueries({
+            queryKey: ["conversation-messages", conversationId],
+          })
+        }
         queryClient.invalidateQueries({ queryKey: ["conversations"] })
         computeUnread()
       },
       [queryClient, computeUnread],
-    ),
-    notification: useCallback(
-      (data) => {
-        queryClient.invalidateQueries({
-          queryKey: ["notifications-header"],
-        })
-        queryClient.invalidateQueries({
-          queryKey: ["notifications-unread-count"],
-        })
-        if (document.visibilityState === "visible") {
-          toast(data.title as string, {
-            description: data.message as string,
-            duration: 5000,
-          })
-        }
-      },
-      [queryClient],
-    ),
-    offer_accepted: useCallback(
-      (data) => {
-        queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-        queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-        if (document.visibilityState === "visible") {
-          toast("Đề nghị đã được chấp nhận!", {
-            description: (data.message || "Đơn hàng đã được tạo.") as string,
-            duration: 5000,
-          })
-        }
-      },
-      [queryClient],
-    ),
-    offer_rejected: useCallback(
-      () => {
-        queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-      },
-      [queryClient],
-    ),
-    offer_countered: useCallback(
-      () => {
-        queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-      },
-      [queryClient],
-    ),
-    offer_expired: useCallback(
-      () => {
-        queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-      },
-      [queryClient],
     ),
   })
 

@@ -492,6 +492,7 @@ export type OrderRead = {
     shipping_province_id?: (number | null);
     shipping_district_id?: (number | null);
     shipping_ward_code?: (string | null);
+    offer_id?: (string | null);
     created_at: string;
     updated_at: string;
 };

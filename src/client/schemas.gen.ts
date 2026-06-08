@@ -1910,6 +1910,18 @@ export const OrderReadSchema = {
             ],
             title: 'Shipping Ward Code'
         },
+        offer_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Offer Id'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',

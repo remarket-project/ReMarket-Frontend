@@ -180,6 +180,34 @@ function OrderDetailPage() {
       toast.error(error?.body?.detail || "Không thể cập nhật đơn hàng."),
   })
 
+  // FE-BE-01: Buyer completes order (also releases escrow)
+  const completeOrderMutation = useMutation({
+    mutationFn: () =>
+      OrdersService.completeOrderApiV1OrdersOrderIdCompletePost({ orderId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet"] })
+      toast.success("Đã xác nhận hoàn tất đơn hàng.")
+    },
+    onError: (error: any) =>
+      toast.error(error?.body?.detail || "Không thể hoàn tất đơn hàng."),
+  })
+
+  // FE-BE-02: Seller confirms escrow release
+  const sellerConfirmReleaseMutation = useMutation({
+    mutationFn: () =>
+      EscrowService.confirmReleaseApiV1EscrowsOrderIdConfirmReleasePost({ orderId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet"] })
+      toast.success("Đã xác nhận giải ngân thành công!")
+    },
+    onError: (error: any) =>
+      toast.error(error?.body?.detail || "Không thể xác nhận giải ngân."),
+  })
+
   const releaseMutation = useMutation({
     mutationFn: () =>
       EscrowService.requestReleaseApiV1EscrowsOrderIdReleaseRequestPost({
@@ -788,15 +816,27 @@ function OrderDetailPage() {
                 </Button>
               ) : null}
 
-              {order.status === "delivered" && (isBuyer || isSeller) && !isBuyer ? (
+              {/* FE-BE-01: Buyer xác nhận hoàn tất (cũng release escrow) */}
+              {order.status === "delivered" && isBuyer ? (
                 <Button
-                  variant="outline"
-                  className="w-full border-[#D8E2EF] bg-white text-[#5B7083]"
-                  onClick={() => orderMutation.mutate("completed")}
-                  disabled={orderMutation.isPending}
+                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+                  onClick={() => completeOrderMutation.mutate()}
+                  disabled={completeOrderMutation.isPending}
                 >
                   <CheckCircle2 className="mr-2 size-4" />
-                  Đánh dấu hoàn tất
+                  {completeOrderMutation.isPending ? "Đang xử lý..." : "Xác nhận hoàn tất"}
+                </Button>
+              ) : null}
+
+              {/* FE-BE-02: Seller xác nhận giải ngân (khi buyer đã request release) */}
+              {isSeller && escrow?.status === "release_requested" ? (
+                <Button
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={() => sellerConfirmReleaseMutation.mutate()}
+                  disabled={sellerConfirmReleaseMutation.isPending}
+                >
+                  <CheckCircle2 className="mr-2 size-4" />
+                  {sellerConfirmReleaseMutation.isPending ? "Đang xử lý..." : "Xác nhận giải ngân (Nhận tiền)"}
                 </Button>
               ) : null}
 

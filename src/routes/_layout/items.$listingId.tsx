@@ -857,8 +857,8 @@ function ListingDetailPage() {
                 </Button>
               )}
 
-              {/* Edit button for seller */}
-              {isSeller && (
+              {/* Edit button for seller (ẩn nếu đã bán) */}
+              {isSeller && !isSold && (
                 <Button
                   variant="outline"
                   size="sm"

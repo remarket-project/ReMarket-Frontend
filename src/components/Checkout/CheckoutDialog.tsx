@@ -77,9 +77,11 @@ export default function CheckoutDialog({
 
   const handleConfirm = () => {
     if (step === "address") {
-      if (!address.name || !address.phone || !address.province || !address.district || !address.ward || !address.address_detail) {
-        toast.error("Vui lòng điền đầy đủ thông tin giao hàng")
-        return
+      if (paymentMethod === "cod") {
+        if (!address.name || !address.phone || !address.province || !address.district || !address.ward || !address.address_detail) {
+          toast.error("Vui lòng điền đầy đủ thông tin giao hàng")
+          return
+        }
       }
       setStep("payment")
       return

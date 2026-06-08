@@ -11,7 +11,7 @@ import type { OrderRead } from "@/client"
 
 const stages = [
   { key: "pending", label: "Đã tạo đơn", icon: ShoppingCart },
-  { key: "confirmed", label: "Đã ký quỹ", icon: Wallet },
+  { key: "confirmed", label: "Đã xác nhận", icon: Wallet },
   { key: "shipping", label: "Đang vận chuyển", icon: Truck },
   { key: "delivered", label: "Đã giao hàng", icon: Package },
   { key: "completed", label: "Hoàn tất", icon: BadgeCheck },
@@ -34,7 +34,7 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
   const isCancelled = order.status === "cancelled"
 
   const description = (key: string) => {
-    if (key === "confirmed") return "Tiền đã ký quỹ vào tài khoản bảo chứng"
+    if (key === "confirmed") return "Người bán đã xác nhận đơn hàng"
     return undefined
   }
 

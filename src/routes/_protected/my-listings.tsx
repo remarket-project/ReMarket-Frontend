@@ -137,27 +137,6 @@ function MyListingsPage() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
 
   // ─── Mutations ────────────────────────────────────────────────────────────────
-  const updateStatusMutation = useMutation({
-    mutationFn: ({
-      listingId,
-      status,
-    }: {
-      listingId: string
-      status: ListingStatus
-    }) =>
-      ListingsService.updateListingApiV1ListingsListingIdPatch({
-        listingId,
-        requestBody: { status },
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-listings"] })
-      toast.success("Cập nhật trạng thái sản phẩm thành công.")
-    },
-    onError: (error: any) => {
-      toast.error(error?.body?.detail || "Không thể cập nhật trạng thái sản phẩm.")
-    },
-  })
-
   const deleteMutation = useMutation({
     mutationFn: (listingId: string) =>
       ListingsService.deleteListingApiV1ListingsListingIdDelete({ listingId }),
@@ -421,49 +400,34 @@ function MyListingsPage() {
                     </Link>
                   </Button>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
-                    asChild
-                  >
-                    <Link to="/items/$listingId/edit" params={{ listingId: item.id }}>
-                      <Pencil className="size-3.5" />
-                      Sửa tin
-                    </Link>
-                  </Button>
-
-                  {/* Complete Action buttons depending on state */}
-                  {item.status === "active" && (
-                    <>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="bg-[#EFF6FF] text-[#2563EB] hover:bg-[#DBEAFE] h-8 text-[11px] rounded-lg font-bold gap-1.5 cursor-pointer border border-blue-100"
-                        disabled={updateStatusMutation.isPending}
-                        onClick={() =>
-                          updateStatusMutation.mutate({
-                            listingId: item.id,
-                            status: "sold",
-                          })
-                        }
-                      >
-                        <CheckCircle2 className="size-3.5" />
-                        Đã bán
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
-                        onClick={() => setDeleteTargetId(item.id)}
-                      >
-                        <Trash2 className="size-3.5" />
-                        Xóa tin
-                      </Button>
-                    </>
+                  {item.status !== "sold" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                      asChild
+                    >
+                      <Link to="/items/$listingId/edit" params={{ listingId: item.id }}>
+                        <Pencil className="size-3.5" />
+                        Sửa tin
+                      </Link>
+                    </Button>
                   )}
 
-                  {item.status !== "active" && (
+                  {/* Action buttons depending on state */}
+                  {item.status === "active" && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                      onClick={() => setDeleteTargetId(item.id)}
+                    >
+                      <Trash2 className="size-3.5" />
+                      Xóa tin
+                    </Button>
+                  )}
+
+                  {item.status !== "active" && item.status !== "sold" && (
                     <Button
                       variant="destructive"
                       size="sm"

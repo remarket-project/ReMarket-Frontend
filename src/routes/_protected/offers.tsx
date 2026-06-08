@@ -1,5 +1,6 @@
 ﻿import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
@@ -15,7 +16,7 @@ import {
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { type OfferRead, OffersService } from "@/client"
+import { type OfferRead, ListingsService, OffersService } from "@/client"
 import CounterOfferDialog from "@/components/Offers/CounterOfferDialog"
 import { OfferCard } from "@/components/Offers/OfferCard"
 import { Badge } from "@/components/ui/badge"
@@ -74,6 +75,15 @@ function OffersPage() {
   const [statusView, setStatusView] = useState<OfferView>("all")
   const [query, setQuery] = useState("")
   const [counterTarget, setCounterTarget] = useState<OfferRead | null>(null)
+
+  const { data: listingForCounter } = useQuery({
+    queryKey: ["listing-detail", counterTarget?.listing_id],
+    queryFn: () =>
+      ListingsService.getListingApiV1ListingsListingIdGet({
+        listingId: counterTarget!.listing_id,
+      }),
+    enabled: Boolean(counterTarget),
+  })
 
   const pool = activeTab === "received" ? data.received : data.sent
 
@@ -283,7 +293,7 @@ function OffersPage() {
         onOpenChange={(open) => {
           if (!open) setCounterTarget(null)
         }}
-        listedPrice={Number(counterTarget?.offer_price || 0) * 1.2}
+        listedPrice={Number(listingForCounter?.price || counterTarget?.offer_price || 0)}
         buyerOffer={Number(counterTarget?.offer_price || 0)}
         isPending={mutation.isPending}
         onSubmit={(value) => {
