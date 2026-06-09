@@ -47,12 +47,10 @@ export const SHIPPING_STATUS_LABELS: Record<string, string> = {
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   pending: "Chờ xác nhận",
-  confirmed: "Đã xác nhận",
   shipping: "Đang vận chuyển",
   delivered: "Đã giao",
   completed: "Hoàn tất",
   cancelled: "Đã hủy",
-  delivery_failed: "Giao thất bại",
   returning: "Đang hoàn trả",
   returned: "Đã hoàn trả",
 }

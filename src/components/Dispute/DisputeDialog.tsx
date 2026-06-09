@@ -1,9 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle, CheckCircle2, Upload } from "lucide-react"
 import { toast } from "sonner"
 
-import { OrdersService } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,17 +19,21 @@ interface DisputeDialogProps {
   orderId: string
   open: boolean
   onOpenChange: (open: boolean) => void
+  defaultStep?: "confirm" | "form"
 }
 
-export function DisputeDialog({ orderId, open, onOpenChange }: DisputeDialogProps) {
+export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "confirm" }: DisputeDialogProps) {
   const queryClient = useQueryClient()
-  const [step, setStep] = useState<"confirm" | "form">("confirm")
+  const [step, setStep] = useState<"confirm" | "form">(defaultStep)
+
+  useEffect(() => {
+    if (open) setStep(defaultStep)
+  }, [open, defaultStep])
   const [reason, setReason] = useState("")
   const [files, setFiles] = useState<File[]>([])
 
   const acceptMutation = useMutation({
     mutationFn: () =>
-      (OrdersService as any).acceptOrderApiV1OrdersOrderIdAcceptPost?.({ orderId }) ??
       fetch(`/api/v1/orders/${orderId}/accept`, { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
@@ -78,7 +81,7 @@ export function DisputeDialog({ orderId, open, onOpenChange }: DisputeDialogProp
       open={open}
       onOpenChange={(val) => {
         if (!val) {
-          setStep("confirm")
+          setStep(defaultStep)
           setReason("")
           setFiles([])
         }

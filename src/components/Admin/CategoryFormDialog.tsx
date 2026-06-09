@@ -23,8 +23,6 @@ export function CategoryFormDialog({ mode, category, onClose, onSuccess }: Categ
   const createMutation = useMutation({
     mutationFn: () =>
       CategoriesService.createCategoryApiV1CategoriesPost({
-        args: undefined as any,
-        kwargs: undefined as any,
         requestBody: { name, slug, icon_url: iconUrl || null },
       }),
     onSuccess: () => {
@@ -38,8 +36,6 @@ export function CategoryFormDialog({ mode, category, onClose, onSuccess }: Categ
     mutationFn: () =>
       CategoriesService.updateCategoryApiV1CategoriesCategoryIdPut({
         categoryId: category.id,
-        args: undefined as any,
-        kwargs: undefined as any,
         requestBody: { name, slug, icon_url: iconUrl || null },
       }),
     onSuccess: () => {

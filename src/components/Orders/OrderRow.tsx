@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { ExternalLink, MessageSquare, Package, Star, Truck } from "lucide-react"
-import { ChatsService, ListingsService, type OrderRead, UsersService } from "@/client"
+import { AlertTriangle, CheckCircle2, ExternalLink, MessageSquare, Package, Star, Truck, XCircle } from "lucide-react"
+import { ChatsService, ListingsService, type OrderRead, OrdersService, UsersService } from "@/client"
 import { useChat } from "@/hooks/ChatContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -21,7 +21,6 @@ interface OrderRowProps {
 
 const stages: OrderRead["status"][] = [
   "pending",
-  "confirmed",
   "shipping",
   "delivered",
   "completed",
@@ -43,6 +42,7 @@ function shortDate(value: string) {
 
 export function OrderRow({ order, role }: OrderRowProps) {
   const { openConversation } = useChat()
+  const queryClient = useQueryClient()
 
   const chatMutation = useMutation({
     mutationFn: () =>
@@ -51,6 +51,22 @@ export function OrderRow({ order, role }: OrderRowProps) {
       ),
     onSuccess: (conv: any) => {
       openConversation(conv.id)
+    },
+  })
+
+  const cancelMutation = useMutation({
+    mutationFn: () =>
+      OrdersService.cancelOrderApiV1OrdersOrderIdCancelPost({ orderId: order.id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+    },
+  })
+
+  const acceptMutation = useMutation({
+    mutationFn: () =>
+      OrdersService.acceptOrderApiV1OrdersOrderIdAcceptPost({ orderId: order.id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
     },
   })
 
@@ -152,6 +168,47 @@ export function OrderRow({ order, role }: OrderRowProps) {
               )}
             </div>
             <div className="flex gap-2">
+              {order.status === "pending" && role === "buying" ? (
+                <Button
+                  variant="outline"
+                  className="border-rose-200 text-rose-700 font-bold text-xs rounded-xl cursor-pointer py-4"
+                  onClick={() => {
+                    if (window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
+                      cancelMutation.mutate()
+                    }
+                  }}
+                  disabled={cancelMutation.isPending}
+                >
+                  <XCircle className="size-3.5 mr-1" />
+                  {cancelMutation.isPending ? "Đang hủy..." : "Hủy đơn"}
+                </Button>
+              ) : null}
+              {order.status === "delivered" && role === "buying" ? (
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer py-4"
+                  onClick={() => {
+                    if (window.confirm("Xác nhận đã nhận hàng? Tiền sẽ được chuyển cho người bán.")) {
+                      acceptMutation.mutate()
+                    }
+                  }}
+                  disabled={acceptMutation.isPending}
+                >
+                  <CheckCircle2 className="size-3.5 mr-1" />
+                  {acceptMutation.isPending ? "Đang xử lý..." : "Đã nhận hàng"}
+                </Button>
+              ) : null}
+              {order.status === "delivered" && role === "buying" ? (
+                <Button
+                  variant="outline"
+                  className="border-amber-200 text-amber-700 font-bold text-xs rounded-xl cursor-pointer py-4"
+                  asChild
+                >
+                  <Link to="/orders/$orderId" params={{ orderId: order.id }}>
+                    <AlertTriangle className="size-3.5 mr-1" />
+                    Khiếu nại
+                  </Link>
+                </Button>
+              ) : null}
               <Button
                 variant="outline"
                 className="border-[#D8E2EF] text-[#2563EB] font-bold text-xs rounded-xl cursor-pointer py-4"

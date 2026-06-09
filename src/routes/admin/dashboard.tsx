@@ -188,7 +188,7 @@ function TrangTongQuan() {
           mauSoLieu={soTranh_chap > 0 ? "text-red-400" : "text-emerald-400"}
           trend={soTranh_chap > 0 ? "⚠ Cần xử lý ngay" : "✓ Hệ thống an toàn"}
           loaiTrend={soTranh_chap > 0 ? "canh_bao" : "an_toan"}
-          khi_click={soTranh_chap > 0 ? () => window.location.href = "/admin/escrow" : undefined}
+          khi_click={soTranh_chap > 0 ? () => window.location.href = "/admin/disputes" : undefined}
         />
       </div>
 

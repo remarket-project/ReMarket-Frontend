@@ -17,18 +17,13 @@ function getStages(order: OrderRead) {
       { key: "returned", label: "Đã hoàn trả", icon: Package },
     ]
   }
-  if (["disputed", "completed", "shipping", "delivered"].includes(order.status)) {
-    const stages = [
+  if (order.status === "disputed") {
+    return [
       { key: "pending", label: "Chờ giao hàng", icon: ShoppingCart },
       { key: "shipping", label: "Đang vận chuyển", icon: Truck },
       { key: "delivered", label: "Đã giao hàng", icon: Package },
+      { key: "disputed", label: "Đang khiếu nại", icon: AlertTriangle },
     ]
-    if ((order.status as string) === "disputed") {
-      stages.push({ key: "disputed", label: "Đang khiếu nại", icon: AlertTriangle })
-    } else if (order.status === "completed") {
-      stages.push({ key: "completed", label: "Hoàn tất", icon: BadgeCheck })
-    }
-    return stages
   }
   return [
     { key: "pending", label: "Chờ giao hàng", icon: ShoppingCart },

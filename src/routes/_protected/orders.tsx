@@ -1,4 +1,4 @@
-﻿import { useSuspenseQuery } from "@tanstack/react-query"
+﻿import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   BadgeCheck,
@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useAuth from "@/hooks/useAuth"
+import { useWebSocket } from "@/hooks/useWebSocket"
 import { formatVND, ORDER_STATUS_LABELS } from "@/lib/order-utils"
 
 type RoleTab = "buying" | "selling"
@@ -45,7 +46,17 @@ export const Route = createFileRoute("/_protected/orders")({
 
 function OrdersPage() {
   const { user } = useAuth()
+  const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(getOrdersQueryOptions())
+
+  useWebSocket({
+    order_status_updated: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+    },
+    order_cancelled: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+    },
+  })
 
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<"all" | OrderRead["status"]>(
@@ -81,7 +92,7 @@ function OrdersPage() {
   const stats = useMemo(() => {
     const total = ordersByRole.length
     const open = ordersByRole.filter((item) =>
-      ["pending", "confirmed", "shipping", "delivered"].includes(item.status),
+      ["pending", "shipping", "delivered"].includes(item.status),
     ).length
     const completed = ordersByRole.filter(
       (item) => item.status === "completed",
@@ -181,6 +192,7 @@ function OrdersPage() {
                 "delivered",
                 "completed",
                 "cancelled",
+                "disputed",
               ] as const
             ).map((status) => (
               <Badge

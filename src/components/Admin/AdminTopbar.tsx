@@ -23,10 +23,10 @@ const pageMeta = [
     breadcrumb: ["Đơn hàng"],
   },
   {
-    match: "/admin/escrow",
-    title: "Xử lý tranh chấp",
-    description: "Ra phán quyết giải ngân hoặc hoàn trả tiền ký quỹ trung gian.",
-    breadcrumb: ["Tranh chấp"],
+    match: "/admin/disputes",
+    title: "Xử lý khiếu nại",
+    description: "Ra phán quyết giải ngân hoặc hoàn trả tiền cho các đơn hàng khiếu nại.",
+    breadcrumb: ["Khiếu nại"],
   },
   {
     match: "/admin/categories",

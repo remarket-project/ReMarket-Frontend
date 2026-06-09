@@ -49,8 +49,6 @@ function TrangQuanLyDanhMuc() {
     mutationFn: (categoryId: string) =>
       CategoriesService.deleteCategoryApiV1CategoriesCategoryIdDelete({
         categoryId,
-        args: undefined as any,
-        kwargs: undefined as any,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminCategories"] })

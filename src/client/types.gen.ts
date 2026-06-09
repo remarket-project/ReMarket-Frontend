@@ -155,13 +155,44 @@ export type DepositResponse = {
     amount: number;
 };
 
+/**
+ * Create dispute request.
+ */
+export type DisputeCreate = {
+    order_id: string;
+    reason: string;
+    evidence_images?: Array<(string)>;
+};
+
+export type DisputeEvidenceRead = {
+    id: string;
+    dispute_id: string;
+    uploaded_by: string;
+    image_url: string;
+    created_at: string;
+};
+
+export type DisputeRead = {
+    id: string;
+    order_id: string;
+    raised_by: string;
+    reason: string;
+    status: string;
+    resolved_by: (string | null);
+    resolution: (string | null);
+    admin_notes: (string | null);
+    created_at: string;
+    resolved_at: (string | null);
+    evidence?: Array<DisputeEvidenceRead>;
+};
+
 export type DistrictOut = {
     district_id: number;
     district_name: string;
 };
 
 /**
- * Escrow information response.
+ * Escrow information response (simplified).
  */
 export type EscrowRead = {
     id: string;
@@ -170,19 +201,8 @@ export type EscrowRead = {
     status: string;
     buyer_wallet_id: string;
     seller_wallet_id: string;
-    dispute_reason: (string | null);
-    dispute_opened_at: (string | null);
-    admin_resolved_by: (string | null);
-    admin_notes: (string | null);
-    resolution_reason: (string | null);
-    resolved_at: (string | null);
-    dispute_status: (string | null);
     funded_at: (string | null);
-    delivered_at: (string | null);
-    release_requested_at: (string | null);
     released_at: (string | null);
-    auto_release_at: (string | null);
-    release_trigger: (string | null);
     created_at: string;
     updated_at: string;
 };
@@ -360,7 +380,7 @@ export type NotificationsPaginated = {
 /**
  * Type of notification.
  */
-export type NotificationType = 'listing_approved' | 'listing_rejected' | 'offer_received' | 'offer_accepted' | 'offer_rejected' | 'offer_countered' | 'offer_expired' | 'order_created' | 'order_confirmed' | 'order_shipping' | 'order_delivered' | 'order_completed' | 'order_cancelled' | 'order_status_updated' | 'review_received' | 'wallet_balance_updated' | 'wallet_locked' | 'wallet_released';
+export type NotificationType = 'listing_approved' | 'listing_rejected' | 'offer_received' | 'offer_accepted' | 'offer_rejected' | 'offer_countered' | 'offer_expired' | 'order_created' | 'order_shipping' | 'order_delivered' | 'order_completed' | 'order_accepted' | 'order_auto_completed' | 'order_cancelled' | 'order_status_updated' | 'dispute_opened' | 'dispute_resolved' | 'shipping_created' | 'shipping_delivered' | 'return_requested' | 'return_confirmed' | 'review_received' | 'wallet_balance_updated' | 'wallet_locked' | 'wallet_released';
 
 /**
  * Type of notification.
@@ -374,12 +394,19 @@ export const NotificationType = {
     OFFER_COUNTERED: 'offer_countered',
     OFFER_EXPIRED: 'offer_expired',
     ORDER_CREATED: 'order_created',
-    ORDER_CONFIRMED: 'order_confirmed',
     ORDER_SHIPPING: 'order_shipping',
     ORDER_DELIVERED: 'order_delivered',
     ORDER_COMPLETED: 'order_completed',
+    ORDER_ACCEPTED: 'order_accepted',
+    ORDER_AUTO_COMPLETED: 'order_auto_completed',
     ORDER_CANCELLED: 'order_cancelled',
     ORDER_STATUS_UPDATED: 'order_status_updated',
+    DISPUTE_OPENED: 'dispute_opened',
+    DISPUTE_RESOLVED: 'dispute_resolved',
+    SHIPPING_CREATED: 'shipping_created',
+    SHIPPING_DELIVERED: 'shipping_delivered',
+    RETURN_REQUESTED: 'return_requested',
+    RETURN_CONFIRMED: 'return_confirmed',
     REVIEW_RECEIVED: 'review_received',
     WALLET_BALANCE_UPDATED: 'wallet_balance_updated',
     WALLET_LOCKED: 'wallet_locked',
@@ -443,16 +470,6 @@ export type OnboardingStatusResponse = {
     payouts_enabled: boolean;
 };
 
-/**
- * Request body for opening a dispute.
- */
-export type OpenDisputeRequest = {
-    /**
-     * Reason for dispute
-     */
-    reason: string;
-};
-
 export type OrderDirectCreate = {
     listing_id: string;
     payment_method?: PaymentMethod;
@@ -492,6 +509,7 @@ export type OrderRead = {
     shipping_province_id?: (number | null);
     shipping_district_id?: (number | null);
     shipping_ward_code?: (string | null);
+    offer_id?: (string | null);
     created_at: string;
     updated_at: string;
 };
@@ -499,21 +517,20 @@ export type OrderRead = {
 /**
  * Status of an order.
  */
-export type OrderStatus = 'pending' | 'confirmed' | 'shipping' | 'delivered' | 'delivery_failed' | 'returning' | 'returned' | 'completed' | 'cancelled';
+export type OrderStatus = 'pending' | 'shipping' | 'delivered' | 'returning' | 'returned' | 'completed' | 'cancelled' | 'disputed';
 
 /**
  * Status of an order.
  */
 export const OrderStatus = {
     PENDING: 'pending',
-    CONFIRMED: 'confirmed',
     SHIPPING: 'shipping',
     DELIVERED: 'delivered',
-    DELIVERY_FAILED: 'delivery_failed',
     RETURNING: 'returning',
     RETURNED: 'returned',
     COMPLETED: 'completed',
-    CANCELLED: 'cancelled'
+    CANCELLED: 'cancelled',
+    DISPUTED: 'disputed'
 } as const;
 
 export type OrderStatusUpdate = {
@@ -646,6 +663,23 @@ export type ReviewRead = {
     created_at: string;
 };
 
+export type ReviewSummaryOnlyRead = {
+    user_id: string;
+    average_rating: string;
+    total_reviews: number;
+    rating_breakdown: {
+        [key: string]: (number);
+    };
+};
+
+export type ReviewSummaryRead = {
+    average_rating: string;
+    total_reviews: number;
+    rating_breakdown: {
+        [key: string]: (number);
+    };
+};
+
 export type SavedListingCollection = {
     items: Array<SavedListingItem>;
     total: number;
@@ -658,10 +692,22 @@ export type SavedListingItem = {
     listing: ListingWithImages;
 };
 
+export type SellerShopProfileRead = {
+    seller: UserPublic;
+    total_active_listings: number;
+    recent_listings: Array<ListingWithImages>;
+    review_summary: ReviewSummaryRead;
+};
+
 export type ServiceOut = {
     service_id: number;
     short_name: string;
     service_type_id: number;
+};
+
+export type ShipOrderInput = {
+    tracking_number?: (string | null);
+    shipping_provider?: (string | null);
 };
 
 export type ShippingAddressInput = {
@@ -977,12 +1023,70 @@ export type RejectListingRouteApiV1AdminListingsListingIdRejectPostData = {
 
 export type RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse = (ListingRead);
 
-export type ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostData = {
-    orderId: string;
+export type ResolveDisputeApiV1AdminDisputesDisputeIdResolvePostData = {
+    disputeId: string;
     requestBody: ResolveEscrowRequest;
 };
 
-export type ResolveEscrowDisputeApiV1AdminEscrowsOrderIdResolvePostResponse = (unknown);
+export type ResolveDisputeApiV1AdminDisputesDisputeIdResolvePostResponse = (unknown);
+
+export type AdminListOrdersApiV1AdminOrdersGetData = {
+    limit?: number;
+    skip?: number;
+    status?: (string | null);
+};
+
+export type AdminListOrdersApiV1AdminOrdersGetResponse = (unknown);
+
+export type AdminShipOrderApiV1AdminOrdersOrderIdShipPostData = {
+    orderId: string;
+};
+
+export type AdminShipOrderApiV1AdminOrdersOrderIdShipPostResponse = (unknown);
+
+export type AdminDeliverOrderApiV1AdminOrdersOrderIdDeliverPostData = {
+    orderId: string;
+};
+
+export type AdminDeliverOrderApiV1AdminOrdersOrderIdDeliverPostResponse = (unknown);
+
+export type AdminReturnOrderApiV1AdminOrdersOrderIdReturnPostData = {
+    orderId: string;
+};
+
+export type AdminReturnOrderApiV1AdminOrdersOrderIdReturnPostResponse = (unknown);
+
+export type AdminReturnedOrderApiV1AdminOrdersOrderIdReturnedPostData = {
+    orderId: string;
+};
+
+export type AdminReturnedOrderApiV1AdminOrdersOrderIdReturnedPostResponse = (unknown);
+
+export type AdminForceCompleteApiV1AdminOrdersOrderIdForceCompletePostData = {
+    orderId: string;
+};
+
+export type AdminForceCompleteApiV1AdminOrdersOrderIdForceCompletePostResponse = (unknown);
+
+export type AdminForceCancelApiV1AdminOrdersOrderIdForceCancelPostData = {
+    orderId: string;
+};
+
+export type AdminForceCancelApiV1AdminOrdersOrderIdForceCancelPostResponse = (unknown);
+
+export type AdminListDisputesApiV1AdminDisputesGetData = {
+    limit?: number;
+    skip?: number;
+    status?: (string | null);
+};
+
+export type AdminListDisputesApiV1AdminDisputesGetResponse = (unknown);
+
+export type AdminGetDisputeApiV1AdminDisputesDisputeIdGetData = {
+    disputeId: string;
+};
+
+export type AdminGetDisputeApiV1AdminDisputesDisputeIdGetResponse = (DisputeRead);
 
 export type ListAuditTrailApiV1AdminAuditTrailGetData = {
     action?: (string | null);
@@ -1045,8 +1149,6 @@ export type ListCategoriesApiV1CategoriesGetData = {
 export type ListCategoriesApiV1CategoriesGetResponse = (CategoriesPublic);
 
 export type CreateCategoryApiV1CategoriesPostData = {
-    args: unknown;
-    kwargs: unknown;
     requestBody: CategoryCreate;
 };
 
@@ -1067,18 +1169,14 @@ export type GetCategoryByIdApiV1CategoriesIdCategoryIdGetData = {
 export type GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse = (CategoryPublic);
 
 export type UpdateCategoryApiV1CategoriesCategoryIdPutData = {
-    args: unknown;
     categoryId: string;
-    kwargs: unknown;
     requestBody: CategoryUpdate;
 };
 
 export type UpdateCategoryApiV1CategoriesCategoryIdPutResponse = (CategoryPublic);
 
 export type DeleteCategoryApiV1CategoriesCategoryIdDeleteData = {
-    args: unknown;
     categoryId: string;
-    kwargs: unknown;
 };
 
 export type DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse = (void);
@@ -1135,52 +1233,29 @@ export type GetContentApiV1ContentKeyGetResponse = (unknown);
 
 export type RootGetResponse = (unknown);
 
+export type CreateDisputeApiV1DisputesPostData = {
+    requestBody: DisputeCreate;
+};
+
+export type CreateDisputeApiV1DisputesPostResponse = (DisputeRead);
+
+export type GetDisputeByOrderApiV1DisputesOrderOrderIdGetData = {
+    orderId: string;
+};
+
+export type GetDisputeByOrderApiV1DisputesOrderOrderIdGetResponse = ((DisputeRead | null));
+
+export type GetDisputeApiV1DisputesDisputeIdGetData = {
+    disputeId: string;
+};
+
+export type GetDisputeApiV1DisputesDisputeIdGetResponse = (DisputeRead);
+
 export type GetEscrowApiV1EscrowsOrderIdGetData = {
     orderId: string;
 };
 
 export type GetEscrowApiV1EscrowsOrderIdGetResponse = (EscrowRead);
-
-export type FundEscrowApiV1EscrowsOrderIdFundPostData = {
-    orderId: string;
-};
-
-export type FundEscrowApiV1EscrowsOrderIdFundPostResponse = (EscrowRead);
-
-export type RequestRefundApiV1EscrowsOrderIdRefundRequestPostData = {
-    orderId: string;
-    requestBody: OpenDisputeRequest;
-};
-
-export type RequestRefundApiV1EscrowsOrderIdRefundRequestPostResponse = (EscrowRead);
-
-export type RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostData = {
-    orderId: string;
-};
-
-export type RequestReleaseApiV1EscrowsOrderIdReleaseRequestPostResponse = (EscrowRead);
-
-export type ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostData = {
-    orderId: string;
-};
-
-export type ConfirmReleaseApiV1EscrowsOrderIdConfirmReleasePostResponse = (EscrowRead);
-
-export type OpenDisputeApiV1EscrowsOrderIdOpenDisputePostData = {
-    orderId: string;
-    requestBody: OpenDisputeRequest;
-};
-
-export type OpenDisputeApiV1EscrowsOrderIdOpenDisputePostResponse = (EscrowRead);
-
-export type GetDisputedEscrowsApiV1EscrowsDisputedGetData = {
-    limit?: number;
-    skip?: number;
-};
-
-export type GetDisputedEscrowsApiV1EscrowsDisputedGetResponse = ({
-    [key: string]: unknown;
-});
 
 export type ListListingsApiV1ListingsGetData = {
     categoryId?: (string | null);
@@ -1363,6 +1438,19 @@ export type CompleteOrderApiV1OrdersOrderIdCompletePostData = {
 };
 
 export type CompleteOrderApiV1OrdersOrderIdCompletePostResponse = (OrderRead);
+
+export type AcceptOrderApiV1OrdersOrderIdAcceptPostData = {
+    orderId: string;
+};
+
+export type AcceptOrderApiV1OrdersOrderIdAcceptPostResponse = (OrderRead);
+
+export type ShipOrderApiV1OrdersOrderIdShipPostData = {
+    orderId: string;
+    requestBody?: ShipOrderInput;
+};
+
+export type ShipOrderApiV1OrdersOrderIdShipPostResponse = (OrderRead);
 
 export type CancelOrderApiV1OrdersOrderIdCancelPostData = {
     orderId: string;
@@ -1557,6 +1645,18 @@ export type GetUserProfileApiV1UsersUserIdGetData = {
 };
 
 export type GetUserProfileApiV1UsersUserIdGetResponse = (UserPublic);
+
+export type GetUserReviewSummaryApiV1UsersUserIdReviewsSummaryGetData = {
+    userId: string;
+};
+
+export type GetUserReviewSummaryApiV1UsersUserIdReviewsSummaryGetResponse = (ReviewSummaryOnlyRead);
+
+export type GetSellerShopProfileApiV1UsersUserIdShopGetData = {
+    userId: string;
+};
+
+export type GetSellerShopProfileApiV1UsersUserIdShopGetResponse = (SellerShopProfileRead);
 
 export type ListUsersApiV1UsersGetData = {
     limit?: number;

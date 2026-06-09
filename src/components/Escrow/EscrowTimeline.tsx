@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock3, Lock, ShieldCheck, Unlock } from "lucide-react"
+import { CheckCircle2, Lock, ShieldCheck, Unlock } from "lucide-react"
 import type { EscrowRead } from "@/client"
 
 interface EscrowTimelineProps {
@@ -35,13 +35,6 @@ export default function EscrowTimeline({ escrow }: EscrowTimelineProps) {
       time: formatDate(escrow.funded_at),
     },
     {
-      key: "release_requested",
-      label: "Release Requested",
-      description: "Seller has filed for release",
-      icon: Clock3,
-      time: formatDate(escrow.release_requested_at),
-    },
-    {
       key: "released",
       label: "Funds Released",
       description: "Cash paid out to Seller",
@@ -53,8 +46,6 @@ export default function EscrowTimeline({ escrow }: EscrowTimelineProps) {
   // Determine current active step
   let currentActiveIndex = 0
   if (escrow.released_at) {
-    currentActiveIndex = 3
-  } else if (escrow.release_requested_at) {
     currentActiveIndex = 2
   } else if (escrow.funded_at) {
     currentActiveIndex = 1

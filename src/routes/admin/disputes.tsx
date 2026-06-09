@@ -27,6 +27,11 @@ import { Textarea } from "@/components/ui/textarea"
 
 const API_BASE = "/api/v1/admin"
 
+function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem("access_token")
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 export const Route = createFileRoute("/admin/disputes")({
   component: AdminDisputesPage,
   head: () => ({
@@ -47,7 +52,7 @@ function AdminDisputesPage() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["adminDisputes"],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE}/disputes?status=open`)
+      const res = await fetch(`${API_BASE}/disputes?status=open`, { headers: getAuthHeaders() })
       if (!res.ok) throw new Error("Failed to fetch disputes")
       return res.json()
     },
@@ -55,7 +60,7 @@ function AdminDisputesPage() {
 
   const resolveMutation = useMutation({
     mutationFn: async ({
-      orderId,
+      disputeId,
       result,
       note,
     }: {
@@ -64,9 +69,9 @@ function AdminDisputesPage() {
       result: "release" | "refund"
       note: string
     }) => {
-      const res = await fetch(`${API_BASE}/escrows/${orderId}/resolve`, {
+      const res = await fetch(`${API_BASE}/disputes/${disputeId}/resolve`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify({ result, note }),
       })
       if (!res.ok) {

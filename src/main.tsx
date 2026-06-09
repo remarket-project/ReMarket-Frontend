@@ -16,9 +16,11 @@ import { routeTree } from "./routeTree.gen"
 
 import { refreshAccessToken } from "./lib/tokenRefresh"
 
-const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:8000")
-  .replace(/\/+$/, "")
-  .replace(/\/api\/v1$/i, "")
+const apiBase = import.meta.env.VITE_API_URL
+  ? (import.meta.env.VITE_API_URL as string)
+    .replace(/\/+$/, "")
+    .replace(/\/api\/v1$/i, "")
+  : ""
 
 OpenAPI.BASE = apiBase
 OpenAPI.TOKEN = async () => {

@@ -35,6 +35,15 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import useAuth from "@/hooks/useAuth"
 
 const ESCROW_STATUS_LABELS: Record<string, string> = {
@@ -98,6 +107,10 @@ function OrderDetailPage() {
   const [reviewOpen, setReviewOpen] = useState(false)
   const [disputeOpen, setDisputeOpen] = useState(false)
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
+  const [shipDialogOpen, setShipDialogOpen] = useState(false)
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [trackingNumber, setTrackingNumber] = useState("")
+  const [shippingProvider, setShippingProvider] = useState("")
 
   const { data, isLoading } = useQuery(getOrderDetailQueryOptions(orderId))
 
@@ -138,6 +151,37 @@ function OrderDetailPage() {
     },
     onError: (error: any) =>
       toast.error(error?.body?.detail || "Không thể hủy đơn hàng."),
+  })
+
+  const acceptMutation = useMutation({
+    mutationFn: () =>
+      OrdersService.acceptOrderApiV1OrdersOrderIdAcceptPost({ orderId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      setAcceptDialogOpen(false)
+      toast.success("Đã xác nhận nhận hàng. Đơn hàng hoàn tất.")
+    },
+    onError: (error: any) =>
+      toast.error(error?.body?.detail || "Không thể xác nhận nhận hàng."),
+  })
+
+  const shipMutation = useMutation({
+    mutationFn: () =>
+      OrdersService.shipOrderApiV1OrdersOrderIdShipPost({
+        orderId,
+        requestBody: { tracking_number: trackingNumber || null, shipping_provider: shippingProvider || null },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      setShipDialogOpen(false)
+      setTrackingNumber("")
+      setShippingProvider("")
+      toast.success("Đã xác nhận gửi hàng.")
+    },
+    onError: (error: any) =>
+      toast.error(error?.body?.detail || "Không thể xác nhận gửi hàng."),
   })
 
   // acceptMutation is handled inside DisputeDialog via fetch
@@ -387,6 +431,14 @@ function OrderDetailPage() {
                   </p>
                 </div>
               ) : null}
+              {order.tracking_number ? (
+                <div className="rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm">
+                  <p className="font-medium text-gray-700">Mã vận đơn: {order.tracking_number}</p>
+                  {order.shipping_provider ? (
+                    <p className="mt-1 text-gray-500">Đơn vị VC: {order.shipping_provider}</p>
+                  ) : null}
+                </div>
+              ) : null}
             </CardContent>
           </Card>
 
@@ -511,11 +563,21 @@ function OrderDetailPage() {
                 <Button
                   variant="outline"
                   className="w-full border-rose-200 text-rose-700"
-                  onClick={() => cancelMutation.mutate()}
-                  disabled={cancelMutation.isPending}
+                  onClick={() => setCancelDialogOpen(true)}
                 >
                   <XCircle className="mr-2 size-4" />
-                  {cancelMutation.isPending ? "Đang hủy..." : "Hủy đơn hàng"}
+                  Hủy đơn hàng
+                </Button>
+              ) : null}
+
+              {/* Seller + PENDING: Đã gửi hàng */}
+              {isSeller && order.status === "pending" ? (
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => setShipDialogOpen(true)}
+                >
+                  <Truck className="mr-2 size-4" />
+                  Đã gửi hàng
                 </Button>
               ) : null}
 
@@ -569,11 +631,33 @@ function OrderDetailPage() {
       </div>
 
       {/* Accept Dialog (buyer confirms delivery) */}
-      <DisputeDialog
-        orderId={orderId}
-        open={acceptDialogOpen}
-        onOpenChange={setAcceptDialogOpen}
-      />
+      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-blue-700">
+              <CheckCircle2 className="size-5" />
+              Xác nhận đã nhận hàng
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Bạn xác nhận đã nhận được hàng? Tiền sẽ được chuyển cho người bán.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setAcceptDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => acceptMutation.mutate()}
+              disabled={acceptMutation.isPending}
+            >
+              {acceptMutation.isPending ? "Đang xử lý..." : "Xác nhận đã nhận hàng"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Standalone Dispute Dialog (for 'Khiếu nại' button on DELIVERED) */}
       {disputeOpen && !acceptDialogOpen ? (
@@ -581,6 +665,7 @@ function OrderDetailPage() {
           orderId={orderId}
           open={disputeOpen}
           onOpenChange={setDisputeOpen}
+          defaultStep="form"
         />
       ) : null}
 
@@ -595,6 +680,82 @@ function OrderDetailPage() {
           })
         }
       />
+
+      {/* Ship Dialog (seller confirms shipped) */}
+      <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#102A43]">
+              <Truck className="size-5 text-blue-600" />
+              Xác nhận đã gửi hàng
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="tracking">Mã vận đơn (tùy chọn)</Label>
+              <Input
+                id="tracking"
+                placeholder="Nhập mã vận đơn..."
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="provider">Đơn vị vận chuyển (tùy chọn)</Label>
+              <Input
+                id="provider"
+                placeholder="VD: GHN, VNPost, Grab..."
+                value={shippingProvider}
+                onChange={(e) => setShippingProvider(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShipDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => shipMutation.mutate()}
+              disabled={shipMutation.isPending}
+            >
+              {shipMutation.isPending ? "Đang xử lý..." : "Xác nhận đã gửi"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Confirmation Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-700">
+              <XCircle className="size-5" />
+              Xác nhận hủy đơn hàng
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
+              Không, giữ đơn
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                cancelMutation.mutate()
+                setCancelDialogOpen(false)
+              }}
+              disabled={cancelMutation.isPending}
+            >
+              {cancelMutation.isPending ? "Đang hủy..." : "Xác nhận hủy đơn"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

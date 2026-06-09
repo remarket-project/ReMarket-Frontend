@@ -7,12 +7,16 @@ import {
   RefreshCw,
   RotateCcw,
   Truck,
-  XCircle,
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
 import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
+
+function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem("access_token")
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 const API_BASE = "/api/v1/admin"
 
@@ -30,7 +34,6 @@ function getAdminActions(status: string) {
     case "pending":
       return [
         { label: "Nhận đơn → SHIPPING", action: "ship", icon: Truck },
-        { label: "Hủy đơn", action: "cancel", icon: XCircle },
       ]
     case "shipping":
       return [
@@ -42,10 +45,7 @@ function getAdminActions(status: string) {
         { label: "Đã nhận lại → RETURNED", action: "returned", icon: Package },
       ]
     case "delivered":
-      return [
-        { label: "Hoàn tất (force)", action: "force-complete", icon: CheckCircle2 },
-        { label: "Hủy (force)", action: "force-cancel", icon: XCircle },
-      ]
+      return []
     default:
       return []
   }
@@ -67,7 +67,7 @@ function AdminOrdersPage() {
     queryFn: async () => {
       const params = new URLSearchParams({ skip: "0", limit: "50" })
       if (statusFilter) params.set("status", statusFilter)
-      const res = await fetch(`${API_BASE}/orders?${params}`)
+      const res = await fetch(`${API_BASE}/orders?${params}`, { headers: getAuthHeaders() })
       if (!res.ok) throw new Error("Failed to fetch orders")
       return res.json()
     },
@@ -75,7 +75,7 @@ function AdminOrdersPage() {
 
   const actionMutation = useMutation({
     mutationFn: async ({ orderId, action }: { orderId: string; action: string }) => {
-      const res = await fetch(`${API_BASE}/orders/${orderId}/${action}`, { method: "POST" })
+      const res = await fetch(`${API_BASE}/orders/${orderId}/${action}`, { method: "POST", headers: getAuthHeaders() })
       if (!res.ok) {
         const err = await res.json()
         throw new Error(err.detail || "Action failed")

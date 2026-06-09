@@ -538,6 +538,157 @@ export const DepositResponseSchema = {
     title: 'DepositResponse'
 } as const;
 
+export const DisputeCreateSchema = {
+    properties: {
+        order_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Order Id'
+        },
+        reason: {
+            type: 'string',
+            maxLength: 2000,
+            minLength: 10,
+            title: 'Reason'
+        },
+        evidence_images: {
+            items: {
+                type: 'string'
+            },
+            type: 'array',
+            maxItems: 5,
+            title: 'Evidence Images',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['order_id', 'reason'],
+    title: 'DisputeCreate',
+    description: 'Create dispute request.'
+} as const;
+
+export const DisputeEvidenceReadSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        dispute_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Dispute Id'
+        },
+        uploaded_by: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Uploaded By'
+        },
+        image_url: {
+            type: 'string',
+            title: 'Image Url'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'dispute_id', 'uploaded_by', 'image_url', 'created_at'],
+    title: 'DisputeEvidenceRead'
+} as const;
+
+export const DisputeReadSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        order_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Order Id'
+        },
+        raised_by: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Raised By'
+        },
+        reason: {
+            type: 'string',
+            title: 'Reason'
+        },
+        status: {
+            type: 'string',
+            title: 'Status'
+        },
+        resolved_by: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Resolved By'
+        },
+        resolution: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Resolution'
+        },
+        admin_notes: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Admin Notes'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
+        resolved_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Resolved At'
+        },
+        evidence: {
+            items: {
+                '$ref': '#/components/schemas/DisputeEvidenceRead'
+            },
+            type: 'array',
+            title: 'Evidence',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['id', 'order_id', 'raised_by', 'reason', 'status', 'resolved_by', 'resolution', 'admin_notes', 'created_at', 'resolved_at'],
+    title: 'DisputeRead'
+} as const;
+
 export const DistrictOutSchema = {
     properties: {
         district_id: {
@@ -585,86 +736,6 @@ export const EscrowReadSchema = {
             format: 'uuid',
             title: 'Seller Wallet Id'
         },
-        dispute_reason: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Dispute Reason'
-        },
-        dispute_opened_at: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date-time'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Dispute Opened At'
-        },
-        admin_resolved_by: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'uuid'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Admin Resolved By'
-        },
-        admin_notes: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Admin Notes'
-        },
-        resolution_reason: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Resolution Reason'
-        },
-        resolved_at: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date-time'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Resolved At'
-        },
-        dispute_status: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Dispute Status'
-        },
         funded_at: {
             anyOf: [
                 {
@@ -676,30 +747,6 @@ export const EscrowReadSchema = {
                 }
             ],
             title: 'Funded At'
-        },
-        delivered_at: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date-time'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Delivered At'
-        },
-        release_requested_at: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date-time'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Release Requested At'
         },
         released_at: {
             anyOf: [
@@ -713,29 +760,6 @@ export const EscrowReadSchema = {
             ],
             title: 'Released At'
         },
-        auto_release_at: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date-time'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Auto Release At'
-        },
-        release_trigger: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Release Trigger'
-        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -748,9 +772,9 @@ export const EscrowReadSchema = {
         }
     },
     type: 'object',
-    required: ['id', 'order_id', 'amount', 'status', 'buyer_wallet_id', 'seller_wallet_id', 'dispute_reason', 'dispute_opened_at', 'admin_resolved_by', 'admin_notes', 'resolution_reason', 'resolved_at', 'dispute_status', 'funded_at', 'delivered_at', 'release_requested_at', 'released_at', 'auto_release_at', 'release_trigger', 'created_at', 'updated_at'],
+    required: ['id', 'order_id', 'amount', 'status', 'buyer_wallet_id', 'seller_wallet_id', 'funded_at', 'released_at', 'created_at', 'updated_at'],
     title: 'EscrowRead',
-    description: 'Escrow information response.'
+    description: 'Escrow information response (simplified).'
 } as const;
 
 export const FeeOutSchema = {
@@ -1408,7 +1432,7 @@ export const NotificationReadSchema = {
 
 export const NotificationTypeSchema = {
     type: 'string',
-    enum: ['listing_approved', 'listing_rejected', 'offer_received', 'offer_accepted', 'offer_rejected', 'offer_countered', 'offer_expired', 'order_created', 'order_confirmed', 'order_shipping', 'order_delivered', 'order_completed', 'order_cancelled', 'order_status_updated', 'review_received', 'wallet_balance_updated', 'wallet_locked', 'wallet_released'],
+    enum: ['listing_approved', 'listing_rejected', 'offer_received', 'offer_accepted', 'offer_rejected', 'offer_countered', 'offer_expired', 'order_created', 'order_shipping', 'order_delivered', 'order_completed', 'order_accepted', 'order_auto_completed', 'order_cancelled', 'order_status_updated', 'dispute_opened', 'dispute_resolved', 'shipping_created', 'shipping_delivered', 'return_requested', 'return_confirmed', 'review_received', 'wallet_balance_updated', 'wallet_locked', 'wallet_released'],
     title: 'NotificationType',
     description: 'Type of notification.'
 } as const;
@@ -1602,22 +1626,6 @@ export const OnboardingStatusResponseSchema = {
     type: 'object',
     required: ['account_id', 'onboarding_complete', 'account_status', 'charges_enabled', 'payouts_enabled'],
     title: 'OnboardingStatusResponse'
-} as const;
-
-export const OpenDisputeRequestSchema = {
-    properties: {
-        reason: {
-            type: 'string',
-            maxLength: 500,
-            minLength: 10,
-            title: 'Reason',
-            description: 'Reason for dispute'
-        }
-    },
-    type: 'object',
-    required: ['reason'],
-    title: 'OpenDisputeRequest',
-    description: 'Request body for opening a dispute.'
 } as const;
 
 export const OrderDirectCreateSchema = {
@@ -1910,6 +1918,18 @@ export const OrderReadSchema = {
             ],
             title: 'Shipping Ward Code'
         },
+        offer_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Offer Id'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -1928,7 +1948,7 @@ export const OrderReadSchema = {
 
 export const OrderStatusSchema = {
     type: 'string',
-    enum: ['pending', 'confirmed', 'shipping', 'delivered', 'delivery_failed', 'returning', 'returned', 'completed', 'cancelled'],
+    enum: ['pending', 'shipping', 'delivered', 'returning', 'returned', 'completed', 'cancelled', 'disputed'],
     title: 'OrderStatus',
     description: 'Status of an order.'
 } as const;
@@ -2269,6 +2289,59 @@ export const ReviewReadSchema = {
     title: 'ReviewRead'
 } as const;
 
+export const ReviewSummaryOnlyReadSchema = {
+    properties: {
+        user_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'User Id'
+        },
+        average_rating: {
+            type: 'string',
+            pattern: '^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$',
+            title: 'Average Rating'
+        },
+        total_reviews: {
+            type: 'integer',
+            title: 'Total Reviews'
+        },
+        rating_breakdown: {
+            additionalProperties: {
+                type: 'integer'
+            },
+            type: 'object',
+            title: 'Rating Breakdown'
+        }
+    },
+    type: 'object',
+    required: ['user_id', 'average_rating', 'total_reviews', 'rating_breakdown'],
+    title: 'ReviewSummaryOnlyRead'
+} as const;
+
+export const ReviewSummaryReadSchema = {
+    properties: {
+        average_rating: {
+            type: 'string',
+            pattern: '^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$',
+            title: 'Average Rating'
+        },
+        total_reviews: {
+            type: 'integer',
+            title: 'Total Reviews'
+        },
+        rating_breakdown: {
+            additionalProperties: {
+                type: 'integer'
+            },
+            type: 'object',
+            title: 'Rating Breakdown'
+        }
+    },
+    type: 'object',
+    required: ['average_rating', 'total_reviews', 'rating_breakdown'],
+    title: 'ReviewSummaryRead'
+} as const;
+
 export const SavedListingCollectionSchema = {
     properties: {
         items: {
@@ -2312,6 +2385,31 @@ export const SavedListingItemSchema = {
     title: 'SavedListingItem'
 } as const;
 
+export const SellerShopProfileReadSchema = {
+    properties: {
+        seller: {
+            '$ref': '#/components/schemas/UserPublic'
+        },
+        total_active_listings: {
+            type: 'integer',
+            title: 'Total Active Listings'
+        },
+        recent_listings: {
+            items: {
+                '$ref': '#/components/schemas/ListingWithImages'
+            },
+            type: 'array',
+            title: 'Recent Listings'
+        },
+        review_summary: {
+            '$ref': '#/components/schemas/ReviewSummaryRead'
+        }
+    },
+    type: 'object',
+    required: ['seller', 'total_active_listings', 'recent_listings', 'review_summary'],
+    title: 'SellerShopProfileRead'
+} as const;
+
 export const ServiceOutSchema = {
     properties: {
         service_id: {
@@ -2330,6 +2428,35 @@ export const ServiceOutSchema = {
     type: 'object',
     required: ['service_id', 'short_name', 'service_type_id'],
     title: 'ServiceOut'
+} as const;
+
+export const ShipOrderInputSchema = {
+    properties: {
+        tracking_number: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Tracking Number'
+        },
+        shipping_provider: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Provider'
+        }
+    },
+    type: 'object',
+    title: 'ShipOrderInput'
 } as const;
 
 export const ShippingAddressInputSchema = {
