@@ -36,6 +36,7 @@ export function DisputeDialog({ orderId, open, onOpenChange }: DisputeDialogProp
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
       queryClient.invalidateQueries({ queryKey: ["wallet"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
       toast.success("Đã xác nhận hoàn tất đơn hàng.")
       onOpenChange(false)
     },

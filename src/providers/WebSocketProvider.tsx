@@ -11,6 +11,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     wallet_balance: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] })
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
     }, [queryClient]),
 
     // ─── Notifications (invalidation only) ─────────────────────
@@ -68,6 +69,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       if (data.order_id)
         queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
       queryClient.invalidateQueries({ queryKey: ["wallet"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
     }, [queryClient]),
 
     escrow_release_requested: useCallback((data: Record<string, unknown>) => {
@@ -80,6 +82,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       if (data.order_id)
         queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
       queryClient.invalidateQueries({ queryKey: ["wallet"] })
+      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
     }, [queryClient]),
 
