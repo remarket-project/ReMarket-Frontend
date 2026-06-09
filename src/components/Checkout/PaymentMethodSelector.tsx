@@ -12,23 +12,23 @@ const options: { value: PaymentMethod; label: string; desc: string; icon: typeof
   {
     value: "wallet",
     label: "Thanh toán từ ví",
-    desc: "Trừ tiền từ ví ReMarket. Tiền được giữ trong escrow đến khi nhận hàng.",
+    desc: "Tiền được giữ an toàn trong ví ký quỹ (Escrow).",
     icon: Banknote,
   },
   {
     value: "cod",
     label: "Thanh toán khi nhận hàng (COD)",
-    desc: "Thanh toán bằng tiền mặt khi nhận hàng từ shipper.",
+    desc: "Thanh toán tiền mặt cho shipper khi nhận hàng.",
     icon: Truck,
   },
 ]
 
 export default function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
-        Phương thức thanh toán
-      </h3>
+    <div className="space-y-2.5">
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1">
+        💳 Phương thức thanh toán
+      </h4>
       <div className="grid gap-2">
         {options.map((opt) => {
           const Icon = opt.icon
@@ -39,23 +39,23 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
               type="button"
               onClick={() => onChange(opt.value)}
               className={cn(
-                "flex items-start gap-3 rounded-lg border p-3 text-left transition-all",
+                "flex items-start gap-2.5 rounded-xl border p-2.5 text-left transition-all cursor-pointer",
                 selected
-                  ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
-                  : "border-gray-200 hover:border-gray-300",
+                  ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500 dark:bg-blue-950/20"
+                  : "border-gray-200 hover:border-gray-300 dark:border-gray-800",
               )}
             >
               <Icon
                 className={cn(
-                  "mt-0.5 size-5 shrink-0",
-                  selected ? "text-blue-600" : "text-gray-400",
+                  "mt-0.5 size-4.5 shrink-0",
+                  selected ? "text-blue-600 dark:text-blue-400" : "text-gray-400",
                 )}
               />
               <div>
-                <p className={cn("text-sm font-medium", selected ? "text-blue-700" : "text-gray-900")}>
+                <p className={cn("text-xs font-semibold", selected ? "text-blue-700 dark:text-blue-300" : "text-gray-900 dark:text-gray-100")}>
                   {opt.label}
                 </p>
-                <p className="mt-0.5 text-xs text-gray-500">{opt.desc}</p>
+                <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 leading-snug">{opt.desc}</p>
               </div>
             </button>
           )
@@ -63,29 +63,27 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
       </div>
 
       {value === "cod" && (
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+        <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-2.5 dark:border-amber-950/30 dark:bg-amber-950/20">
           <div className="flex items-start gap-2">
-            <Info className="mt-0.5 size-4 shrink-0 text-yellow-600" />
+            <Info className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
-              <h4 className="text-sm font-medium text-yellow-800">Lưu ý về COD</h4>
-              <ul className="mt-1 space-y-1 text-xs text-yellow-700">
-                <li>Bạn có thể kiểm tra hàng trước khi thanh toán</li>
-                <li>Nếu không hài lòng, hãy từ chối nhận (miễn phí)</li>
-                <li>Sau khi đã nhận và thanh toán, giao dịch được xem là hoàn tất</li>
-              </ul>
+              <h5 className="text-[11px] font-semibold text-amber-900 dark:text-amber-300">Lưu ý về COD</h5>
+              <p className="text-[10px] text-amber-700 dark:text-amber-455 mt-0.5 leading-relaxed">
+                Đồng kiểm hàng cùng shipper. Khi đã nhận và thanh toán, đơn hàng hoàn tất và không hỗ trợ khiếu nại.
+              </p>
             </div>
           </div>
         </div>
       )}
 
       {value === "wallet" && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+        <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-2.5 dark:border-blue-950/30 dark:bg-blue-950/20">
           <div className="flex items-start gap-2">
-            <Shield className="mt-0.5 size-4 shrink-0 text-blue-600" />
+            <Shield className="mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400" />
             <div>
-              <h4 className="text-sm font-medium text-blue-800">Bảo vệ bởi Escrow</h4>
-              <p className="mt-1 text-xs text-blue-700">
-                Tiền được giữ trong tài khoản ký quỹ. Được hỗ trợ trả hàng trong 7 ngày.
+              <h5 className="text-[11px] font-semibold text-blue-900 dark:text-blue-300">Bảo vệ ký quỹ (Escrow)</h5>
+              <p className="text-[10px] text-blue-700 dark:text-blue-455 mt-0.5 leading-relaxed">
+                ReMarket giữ tiền an toàn cho đến khi bạn nhận được hàng và hỗ trợ trả hàng hoàn tiền trong 7 ngày.
               </p>
             </div>
           </div>
