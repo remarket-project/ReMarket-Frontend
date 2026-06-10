@@ -33,6 +33,7 @@ export function ChatWidget() {
     queryFn: () =>
       ChatsService.listMyConversationsApiV1ChatsConversationsGet({ limit: 50 }),
     enabled: isOpen && Boolean(user),
+    staleTime: 0,
   })
 
   const { data: currentConversation } = useQuery({
@@ -42,7 +43,7 @@ export function ChatWidget() {
         { conversationId: currentConversationId! },
       ),
     enabled: Boolean(currentConversationId) && isOpen,
-    refetchInterval: false,
+    staleTime: 0,
   })
 
   const unreadCounts: Record<string, number> = {}

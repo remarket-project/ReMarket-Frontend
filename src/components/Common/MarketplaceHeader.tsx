@@ -229,6 +229,7 @@ export function MarketplaceHeader() {
         limit: 5,
       }),
     enabled: Boolean(currentUser),
+    staleTime: 0,
   })
 
   const { data: unreadData } = useQuery({
@@ -236,6 +237,7 @@ export function MarketplaceHeader() {
     queryFn: () =>
       NotificationsService.getUnreadNotificationsCountApiV1NotificationsUnreadCountGet(),
     enabled: Boolean(currentUser),
+    staleTime: 0,
   })
 
   const markAllRead = useMutation({

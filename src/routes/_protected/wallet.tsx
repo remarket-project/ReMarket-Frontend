@@ -50,6 +50,7 @@ function getWalletQueryOptions() {
       }
     },
     queryKey: ["wallet-dashboard"],
+    staleTime: 0,
   }
 }
 
@@ -316,7 +317,7 @@ function WalletPage() {
           <CardHeader>
             <CardTitle className="text-[#102A43]">Giao dịch</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
             <div className="flex flex-wrap items-center gap-2">
               {(["all", "in", "out"] as TxFilter[]).map((filter) => (
                 <Badge
@@ -434,7 +435,7 @@ function WalletPage() {
               Escrow đang hoạt động
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
             {escrowOrderIds.length === 0 ? (
               <div className="rounded-xl border border-dashed border-[#D8E2EF] bg-white p-6 text-sm text-[#5B7083]">
                 Không có giao dịch escrow nào.

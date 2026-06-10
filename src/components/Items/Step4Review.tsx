@@ -53,6 +53,7 @@ function CreateListingStep4({ form }: Step4Props) {
       return res.json()
     },
     enabled: Boolean(data.province),
+    staleTime: 86400000,
   })
 
   const { data: districtObj } = useQuery({
@@ -66,6 +67,7 @@ function CreateListingStep4({ form }: Step4Props) {
       return res.json()
     },
     enabled: Boolean(data.district),
+    staleTime: 86400000,
   })
 
   const { data: wardObj } = useQuery({
@@ -79,6 +81,7 @@ function CreateListingStep4({ form }: Step4Props) {
       return res.json()
     },
     enabled: Boolean(data.ward),
+    staleTime: 86400000,
   })
 
   const provinceName = provinceObj?.name || "—"

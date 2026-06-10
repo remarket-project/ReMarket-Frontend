@@ -79,6 +79,7 @@ function getOrderDetailQueryOptions(orderId: string) {
       return { order, escrow, reviews }
     },
     queryKey: ["order-detail", orderId],
+    staleTime: 0,
   }
 }
 
@@ -132,6 +133,7 @@ function OrderDetailPage() {
         orderId,
       }).catch(() => null),
     enabled: Boolean(orderId),
+    staleTime: 0,
   })
 
   const { data: listing, isLoading: isListingLoading } = useQuery({
@@ -141,6 +143,7 @@ function OrderDetailPage() {
         listingId: data!.order.listing_id,
       }),
     enabled: Boolean(data?.order?.listing_id),
+    staleTime: 0,
   })
 
   const { data: buyerProfile } = useQuery({

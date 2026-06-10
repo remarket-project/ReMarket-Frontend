@@ -57,6 +57,7 @@ export default function StripeConnectSettings() {
   const { data: status, isLoading } = useQuery<OnboardingStatus>({
     queryKey: ["stripe-onboarding-status"],
     queryFn: fetchOnboardingStatus,
+    staleTime: 0,
   })
 
   const onboardingMutation = useMutation({

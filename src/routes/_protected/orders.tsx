@@ -29,6 +29,7 @@ function getOrdersQueryOptions() {
       return { orders }
     },
     queryKey: ["orders-dashboard"],
+    staleTime: 0,
   }
 }
 
@@ -225,7 +226,7 @@ function OrdersPage() {
         </div>
       </section>
 
-      <section className="mt-4 grid gap-3">
+      <section className="mt-4 max-h-[800px] overflow-y-auto space-y-3 pr-1">
         {filtered.length === 0 ? (
           <Card className="border-dashed border-[#D8E2EF] bg-white shadow-sm rounded-2xl">
             <CardContent className="flex flex-col items-center gap-3 p-10 text-center">

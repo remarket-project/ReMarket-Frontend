@@ -46,7 +46,7 @@ export function ConversationThread({
       ChatsService.listMessagesApiV1ChatsConversationsConversationIdMessagesGet(
         { conversationId: conversation.id },
       ),
-    refetchInterval: false,
+    staleTime: 0,
   })
 
   const sendMutation = useMutation({

@@ -34,6 +34,7 @@ export function ConversationList({
     queryFn: () =>
       ChatsService.listMyConversationsApiV1ChatsConversationsGet({ limit: 50 }),
     enabled: Boolean(user),
+    staleTime: 0,
   })
 
   if (isLoading) {

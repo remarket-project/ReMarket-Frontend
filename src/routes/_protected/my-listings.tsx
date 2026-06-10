@@ -308,7 +308,7 @@ function MyListingsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 animate-in fade-in duration-300">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 animate-in fade-in duration-300 max-h-[600px] overflow-y-auto pr-1">
           {filtered.map((item) => {
             const statusInfo = statusConfig[item.status]
             const condition = conditionConfig[item.condition_grade] ?? {

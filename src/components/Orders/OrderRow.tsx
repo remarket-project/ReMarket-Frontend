@@ -11,6 +11,7 @@ import {
   Truck,
   XCircle,
 } from "lucide-react"
+import { useState } from "react"
 import {
   ChatsService,
   ListingsService,
@@ -22,6 +23,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useChat } from "@/hooks/ChatContext"
 import {
@@ -59,6 +67,7 @@ function shortDate(value: string) {
 export function OrderRow({ order, role }: OrderRowProps) {
   const { openConversation } = useChat()
   const queryClient = useQueryClient()
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
 
   const chatMutation = useMutation({
     mutationFn: () =>
@@ -138,6 +147,7 @@ export function OrderRow({ order, role }: OrderRowProps) {
   const isCancelled = order.status === "cancelled"
 
   return (
+    <>
     <Card className="border-blue-200/80 bg-white/92 shadow-sm hover:shadow-md transition">
       <CardContent className="p-4 sm:p-5 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -201,13 +211,7 @@ export function OrderRow({ order, role }: OrderRowProps) {
                 <Button
                   variant="outline"
                   className="border-rose-200 text-rose-700 font-bold text-xs rounded-xl cursor-pointer py-4"
-                  onClick={() => {
-                    if (
-                      window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")
-                    ) {
-                      cancelMutation.mutate()
-                    }
-                  }}
+                  onClick={() => setCancelDialogOpen(true)}
                   disabled={cancelMutation.isPending}
                 >
                   <XCircle className="size-3.5 mr-1" />
@@ -340,5 +344,42 @@ export function OrderRow({ order, role }: OrderRowProps) {
         )}
       </CardContent>
     </Card>
+
+    {/* Cancel Confirmation Dialog */}
+    <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-rose-700">
+            <XCircle className="size-5" />
+            Xác nhận hủy đơn hàng
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn
+            tác.
+          </p>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setCancelDialogOpen(false)}
+          >
+            Không, giữ đơn
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              cancelMutation.mutate()
+              setCancelDialogOpen(false)
+            }}
+            disabled={cancelMutation.isPending}
+          >
+            {cancelMutation.isPending ? "Đang hủy..." : "Xác nhận hủy đơn"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

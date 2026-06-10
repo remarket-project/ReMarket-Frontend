@@ -38,6 +38,7 @@ function getNotificationsQueryOptions() {
       return { notifications, unread: unreadFromApi }
     },
     queryKey: ["notifications-center"],
+    staleTime: 0,
   }
 }
 

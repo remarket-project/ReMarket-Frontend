@@ -268,7 +268,7 @@ function OffersPage() {
         </div>
       </section>
 
-      <section className="mt-4 grid gap-3">
+      <section className="mt-4 max-h-[600px] overflow-y-auto space-y-3 pr-1">
         {filtered.length === 0 ? (
           <Card className="border-dashed border-[#D8E2EF] bg-white">
             <CardContent className="flex items-center gap-2 p-6 text-sm text-[#5B7083]">
