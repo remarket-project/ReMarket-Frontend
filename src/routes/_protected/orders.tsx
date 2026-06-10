@@ -54,7 +54,7 @@ function OrdersPage() {
 
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<
-    "all" | OrderRead["status"] | "return"
+    "all" | OrderRead["status"] | "return" | "disputed"
   >("all")
   const [role, setRole] = useState<RoleTab>("buying")
 
@@ -77,7 +77,8 @@ function OrdersPage() {
         statusFilter === "all" ||
         order.status === statusFilter ||
         (statusFilter === "return" &&
-          ["returning", "returned"].includes(order.status))
+          ["returning", "returned"].includes(order.status)) ||
+        (statusFilter === "disputed" && order.has_dispute)
       const matchesQuery =
         normalized.length === 0 ||
         id.includes(normalized) ||

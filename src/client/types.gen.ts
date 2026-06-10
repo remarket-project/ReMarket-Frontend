@@ -512,6 +512,7 @@ export type OrderRead = {
     offer_id?: (string | null);
     created_at: string;
     updated_at: string;
+    has_dispute: boolean;
 };
 
 /**

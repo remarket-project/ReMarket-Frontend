@@ -62,7 +62,7 @@ function AdminDisputesPage() {
     }) => {
       return AdminService.resolveDisputeApiV1AdminDisputesDisputeIdResolvePost({
         disputeId,
-        requestBody: { result, note: note || null },
+        requestBody: { result, note },
       })
     },
     onSuccess: (data: any) => {
@@ -191,19 +191,19 @@ function AdminDisputesPage() {
                             Ảnh minh chứng ({dispute.evidence.length})
                           </p>
                           <div className="flex flex-wrap gap-2">
-                            {dispute.evidence.map((ev: any) => (
+                              {dispute.evidence.map((ev: any) => (
                               <a
                                 key={ev.id}
-                                href={ev.image_url}
+                                href={ev.serve_url || ev.image_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="group relative flex size-20 items-center justify-center overflow-hidden rounded-xl border border-white/[0.08] bg-[#1A2233]"
                               >
-                                {ev.image_url?.match(
-                                  /\.(jpg|jpeg|png|gif|webp)$/i,
+                                {(ev.serve_url || ev.image_url)?.match(
+                                  /\.(jpg|jpeg|png|gif|webp)(\?|$)/i,
                                 ) ? (
                                   <img
-                                    src={ev.image_url}
+                                    src={ev.serve_url || ev.image_url}
                                     alt="Evidence"
                                     className="h-full w-full object-cover"
                                   />
@@ -313,16 +313,21 @@ function AdminDisputesPage() {
             </p>
             <div className="space-y-2">
               <Label htmlFor="adminNote" className="text-slate-400">
-                Ghi chú admin
+                Ghi chú admin <span className="text-red-400">*</span>
               </Label>
               <Textarea
                 id="adminNote"
-                placeholder="Ghi chú lý do phán quyết..."
+                placeholder="Ghi chú lý do phán quyết (tối thiểu 10 ký tự)..."
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}
                 rows={3}
                 className="border-white/[0.08] bg-[#1A2233] text-slate-200"
               />
+              {adminNote.trim().length > 0 && adminNote.trim().length < 10 && (
+                <p className="text-xs text-amber-400">
+                  Cần ít nhất 10 ký tự (hiện tại: {adminNote.trim().length})
+                </p>
+              )}
             </div>
           </div>
           <DialogFooter className="gap-2">
@@ -351,7 +356,7 @@ function AdminDisputesPage() {
                   note: adminNote,
                 })
               }}
-              disabled={resolveMutation.isPending}
+              disabled={resolveMutation.isPending || !adminNote.trim() || adminNote.trim().length < 10}
             >
               {resolveMutation.isPending
                 ? "Đang xử lý..."

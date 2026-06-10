@@ -7,7 +7,7 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
   return: "Hoàn trả",
   completed: "Hoàn tất",
   cancelled: "Đã hủy",
-  disputed: "Đang khiếu nại",
+  disputed: "Khiếu nại",
 }
 
 export const ORDER_STATUS_COLORS: Record<string, string> = {

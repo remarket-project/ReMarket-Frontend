@@ -17,6 +17,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import {
   ChatsService,
+  DisputesService,
   EscrowService,
   ListingsService,
   OrdersService,
@@ -123,6 +124,15 @@ function OrderDetailPage() {
   const [shippingProvider, setShippingProvider] = useState("")
 
   const { data, isLoading } = useQuery(getOrderDetailQueryOptions(orderId))
+
+  const { data: dispute } = useQuery({
+    queryKey: ["order-dispute", orderId],
+    queryFn: () =>
+      DisputesService.getDisputeByOrderApiV1DisputesOrderOrderIdGet({
+        orderId,
+      }).catch(() => null),
+    enabled: Boolean(orderId),
+  })
 
   const { data: listing, isLoading: isListingLoading } = useQuery({
     queryKey: ["listing-detail", data?.order?.listing_id],
@@ -367,6 +377,36 @@ function OrderDetailPage() {
           <AlertTriangle className="size-4" />
           <AlertDescription>
             Đơn hàng đang bị khiếu nại. Admin sẽ xử lý trong thời gian sớm nhất.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {dispute && dispute.status === "resolved" && (
+        <Alert
+          variant="default"
+          className={`mb-4 ${dispute.resolution === "release" ? "border-red-200 bg-red-50 text-red-800" : "border-green-200 bg-green-50 text-green-800"}`}
+        >
+          {dispute.resolution === "release" ? (
+            <XCircle className="size-4" />
+          ) : (
+            <CheckCircle2 className="size-4" />
+          )}
+          <AlertDescription>
+            <span className="font-semibold">
+              Đơn hàng đã bị khiếu nại.
+            </span>{" "}
+            Kết quả:{" "}
+            {dispute.resolution === "release"
+              ? "Không được hoàn tiền"
+              : "Đã hoàn tiền"}
+            {dispute.admin_notes && (
+              <>
+                <br />
+                <span className="text-sm opacity-80">
+                  Lý do: {dispute.admin_notes}
+                </span>
+              </>
+            )}
           </AlertDescription>
         </Alert>
       )}

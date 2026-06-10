@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   ExternalLink,
+  Gavel,
   MessageSquare,
   Package,
   Star,
@@ -179,6 +180,15 @@ export function OrderRow({ order, role }: OrderRowProps) {
               >
                 {ORDER_STATUS_LABELS[order.status] ?? order.status}
               </Badge>
+              {order.has_dispute && (
+                <Badge
+                  variant="outline"
+                  className="mt-1 border-amber-200 bg-amber-50 text-amber-700 font-semibold"
+                >
+                  <Gavel className="size-3 mr-1" />
+                  Đã khiếu nại
+                </Badge>
+              )}
               {order.tracking_number && (
                 <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-gray-400">
                   <Truck className="size-3" />
