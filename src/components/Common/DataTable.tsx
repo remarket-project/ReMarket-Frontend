@@ -125,9 +125,16 @@ export function DataTable<TData, TValue>({
                     placeholder={table.getState().pagination.pageSize}
                   />
                 </SelectTrigger>
-                <SelectContent side="top" className="bg-[#111827] border-white/[0.08] text-slate-200">
+                <SelectContent
+                  side="top"
+                  className="bg-[#111827] border-white/[0.08] text-slate-200"
+                >
                   {[5, 10, 25, 50].map((pageSize) => (
-                    <SelectItem key={pageSize} value={`${pageSize}`} className="hover:bg-blue-500/10 focus:bg-blue-500/10 cursor-pointer">
+                    <SelectItem
+                      key={pageSize}
+                      value={`${pageSize}`}
+                      className="hover:bg-blue-500/10 focus:bg-blue-500/10 cursor-pointer"
+                    >
                       {pageSize}
                     </SelectItem>
                   ))}

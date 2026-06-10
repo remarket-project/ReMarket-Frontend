@@ -1,7 +1,7 @@
-import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Edit, Folder, Plus, Search, Trash2 } from "lucide-react"
+import { useState } from "react"
 
 import { CategoriesService } from "@/client"
 import { CategoryFormDialog } from "@/components/Admin/CategoryFormDialog"
@@ -23,7 +23,9 @@ function CategoryIcon({ url, name }: { url?: string | null; name: string }) {
         src={url}
         alt={name}
         className="size-full object-cover"
-        onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
+        onError={(e) => {
+          ;(e.target as HTMLImageElement).style.display = "none"
+        }}
       />
     )
   }
@@ -42,8 +44,11 @@ function TrangQuanLyDanhMuc() {
 
   const { data: categoriesData, isLoading } = useQuery({
     queryKey: ["adminCategories"],
-    queryFn: () => CategoriesService.listCategoriesApiV1CategoriesGet({ skip: 0, limit: 100 }),
-    staleTime: 2 * 60 * 1000,
+    queryFn: () =>
+      CategoriesService.listCategoriesApiV1CategoriesGet({
+        skip: 0,
+        limit: 100,
+      }),
   })
 
   const deleteMutation = useMutation({
@@ -59,15 +64,20 @@ function TrangQuanLyDanhMuc() {
   })
 
   const handleDelete = (id: string, name: string) => {
-    if (confirm(`Bạn có chắc chắn muốn xóa danh mục "${name}" không?\nHành động này không thể hoàn tác.`)) {
+    if (
+      confirm(
+        `Bạn có chắc chắn muốn xóa danh mục "${name}" không?\nHành động này không thể hoàn tác.`,
+      )
+    ) {
       deleteMutation.mutate(id)
     }
   }
 
   const danhSach = (categoriesData as any)?.data ?? []
-  const danhSachLoc = danhSach.filter((cat: any) =>
-    cat.name.toLowerCase().includes(tuKhoa.toLowerCase()) ||
-    cat.slug.toLowerCase().includes(tuKhoa.toLowerCase())
+  const danhSachLoc = danhSach.filter(
+    (cat: any) =>
+      cat.name.toLowerCase().includes(tuKhoa.toLowerCase()) ||
+      cat.slug.toLowerCase().includes(tuKhoa.toLowerCase()),
   )
 
   return (
@@ -104,7 +114,9 @@ function TrangQuanLyDanhMuc() {
         </div>
         {tuKhoa && (
           <span className="text-sm text-slate-400">
-            Tìm thấy <strong className="text-slate-200">{danhSachLoc.length}</strong> danh mục
+            Tìm thấy{" "}
+            <strong className="text-slate-200">{danhSachLoc.length}</strong>{" "}
+            danh mục
           </span>
         )}
       </div>
@@ -112,7 +124,10 @@ function TrangQuanLyDanhMuc() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-24 animate-pulse rounded-2xl border border-white/[0.06] bg-[#111827]" />
+            <div
+              key={i}
+              className="h-24 animate-pulse rounded-2xl border border-white/[0.06] bg-[#111827]"
+            />
           ))}
         </div>
       ) : danhSachLoc.length === 0 ? (
@@ -122,14 +137,18 @@ function TrangQuanLyDanhMuc() {
           </div>
           {tuKhoa ? (
             <>
-              <p className="font-semibold text-slate-200">Không tìm thấy danh mục</p>
+              <p className="font-semibold text-slate-200">
+                Không tìm thấy danh mục
+              </p>
               <p className="mt-1 text-sm text-slate-500">
                 Không có danh mục nào khớp với từ khóa "{tuKhoa}".
               </p>
             </>
           ) : (
             <>
-              <p className="font-semibold text-slate-200">Chưa có danh mục nào</p>
+              <p className="font-semibold text-slate-200">
+                Chưa có danh mục nào
+              </p>
               <p className="mt-1 text-sm text-slate-500">
                 Bắt đầu bằng cách thêm danh mục sản phẩm đầu tiên.
               </p>
@@ -168,7 +187,9 @@ function TrangQuanLyDanhMuc() {
               <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <button
                   type="button"
-                  onClick={() => setActiveFormDialog({ mode: "edit", category: cat })}
+                  onClick={() =>
+                    setActiveFormDialog({ mode: "edit", category: cat })
+                  }
                   title="Chỉnh sửa danh mục"
                   className="flex size-8 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-blue-500/10 hover:text-blue-400"
                 >

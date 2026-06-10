@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react"
-import { Loader2, ShieldCheck } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
+import { Loader2, ShieldCheck } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-
+import type { PaymentMethod, ShippingAddressInput } from "@/client"
+import { OrdersService } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,12 +15,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import ShippingAddressForm from "./ShippingAddressForm"
-import PaymentMethodSelector from "./PaymentMethodSelector"
-import { OrdersService } from "@/client"
-import type { PaymentMethod, ShippingAddressInput } from "@/client"
-import { formatVND } from "@/lib/order-utils"
 import useAuth from "@/hooks/useAuth"
+import { formatVND } from "@/lib/order-utils"
+import PaymentMethodSelector from "./PaymentMethodSelector"
+import ShippingAddressForm from "./ShippingAddressForm"
 
 interface CheckoutDialogProps {
   open: boolean
@@ -72,9 +72,10 @@ export default function CheckoutDialog({
         requestBody: {
           listing_id: listingId,
           payment_method: paymentMethod,
-          shipping_address: paymentMethod === "cod" || Object.values(address).some((v) => v)
-            ? address
-            : null,
+          shipping_address:
+            paymentMethod === "cod" || Object.values(address).some((v) => v)
+              ? address
+              : null,
         },
       }),
     onSuccess: (order) => {
@@ -85,10 +86,7 @@ export default function CheckoutDialog({
       if (onSuccess) onSuccess(order.id)
     },
     onError: (err: unknown) => {
-      const msg =
-        (err as { body?: { detail?: string } })?.body?.detail ||
-        "Đặt hàng thất bại. Vui lòng thử lại."
-      toast.error(msg)
+      toast.error(extractErrorMessage(err as any, "Đặt hàng thất bại. Vui lòng thử lại."))
     },
   })
 
@@ -117,7 +115,9 @@ export default function CheckoutDialog({
       <DialogContent className="sm:max-w-[640px] p-0 overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 shadow-2xl">
         <DialogHeader className="bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4 border-b border-gray-100 dark:border-gray-850">
           <DialogTitle className="text-base font-bold text-gray-900 dark:text-gray-100">
-            {step === "address" ? "📍 Thông tin giao hàng" : "🛍️ Xác nhận đặt hàng"}
+            {step === "address"
+              ? "📍 Thông tin giao hàng"
+              : "🛍️ Xác nhận đặt hàng"}
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
             {step === "address"
@@ -139,10 +139,14 @@ export default function CheckoutDialog({
                   </h4>
                   <div className="space-y-1 text-gray-600 dark:text-gray-400">
                     <p className="font-semibold text-gray-900 dark:text-gray-200">
-                      {address.name} — <span className="text-blue-600 dark:text-blue-400">{address.phone}</span>
+                      {address.name} —{" "}
+                      <span className="text-blue-600 dark:text-blue-400">
+                        {address.phone}
+                      </span>
                     </p>
                     <p className="leading-relaxed">
-                      {address.address_detail}, {address.ward}, {address.district}, {address.province}
+                      {address.address_detail}, {address.ward},{" "}
+                      {address.district}, {address.province}
                     </p>
                     {address.note && (
                       <p className="mt-1 text-gray-500 dark:text-gray-500 italic bg-white dark:bg-gray-950 px-2 py-1 rounded border border-gray-100 dark:border-gray-800">
@@ -152,7 +156,10 @@ export default function CheckoutDialog({
                   </div>
                 </div>
 
-                <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+                <PaymentMethodSelector
+                  value={paymentMethod}
+                  onChange={setPaymentMethod}
+                />
               </div>
 
               {/* Right Column: Order Summary & Details */}
@@ -164,16 +171,22 @@ export default function CheckoutDialog({
                   <div className="space-y-2">
                     <div className="flex justify-between text-gray-600 dark:text-gray-400">
                       <span>Sản phẩm</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">{formatVND(price)}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {formatVND(price)}
+                      </span>
                     </div>
                     <div className="flex justify-between text-gray-600 dark:text-gray-400">
                       <span>Phí giao hàng</span>
-                      <span className="text-gray-500 dark:text-gray-500 font-medium">Miễn phí</span>
+                      <span className="text-gray-500 dark:text-gray-500 font-medium">
+                        Miễn phí
+                      </span>
                     </div>
                     <Separator className="my-2 bg-blue-100 dark:bg-blue-900/40" />
                     <div className="flex justify-between text-xs font-bold text-gray-900 dark:text-gray-100">
                       <span>Tổng cộng</span>
-                      <span className="text-blue-600 dark:text-blue-400 text-sm font-extrabold">{formatVND(price)}</span>
+                      <span className="text-blue-600 dark:text-blue-400 text-sm font-extrabold">
+                        {formatVND(price)}
+                      </span>
                     </div>
                   </div>
                 </div>

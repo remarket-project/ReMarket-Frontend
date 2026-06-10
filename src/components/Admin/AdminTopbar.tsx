@@ -1,7 +1,7 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { ArrowUpRight, ChevronRight, Home, Menu } from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router"
+import { ArrowUpRight, ChevronRight, Home, Menu } from "lucide-react"
 
-import useAuth from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth"
 
 const pageMeta = [
   {
@@ -25,7 +25,8 @@ const pageMeta = [
   {
     match: "/admin/disputes",
     title: "Xử lý khiếu nại",
-    description: "Ra phán quyết giải ngân hoặc hoàn trả tiền cho các đơn hàng khiếu nại.",
+    description:
+      "Ra phán quyết giải ngân hoặc hoàn trả tiền cho các đơn hàng khiếu nại.",
     breadcrumb: ["Khiếu nại"],
   },
   {
@@ -46,25 +47,25 @@ const pageMeta = [
     description: "Quản lý tài khoản, trạng thái và quyền truy cập.",
     breadcrumb: ["Người dùng"],
   },
-] as const;
+] as const
 
 interface AdminTopbarProps {
-  onOpenSidebar: () => void;
+  onOpenSidebar: () => void
 }
 
 export function AdminTopbar({ onOpenSidebar }: AdminTopbarProps) {
-  const { user } = useAuth();
-  const router = useRouterState();
-  const pathname = router.location.pathname;
+  const { user } = useAuth()
+  const router = useRouterState()
+  const pathname = router.location.pathname
 
   const meta = pageMeta.find((item) => pathname.startsWith(item.match)) ?? {
     title: "Bảng điều khiển Admin",
     description: "Quản lý tổng quan và vận hành hệ thống.",
     breadcrumb: ["Admin"],
-  };
+  }
 
-  const displayName = user?.full_name || user?.email || "Admin";
-  const avatarInitial = displayName.charAt(0).toUpperCase();
+  const displayName = user?.full_name || user?.email || "Admin"
+  const avatarInitial = displayName.charAt(0).toUpperCase()
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#0B0F1A]/90 px-4 py-3 backdrop-blur-xl sm:px-6">
@@ -113,5 +114,5 @@ export function AdminTopbar({ onOpenSidebar }: AdminTopbarProps) {
         </div>
       </div>
     </header>
-  );
+  )
 }

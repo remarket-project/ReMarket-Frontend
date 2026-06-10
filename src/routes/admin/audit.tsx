@@ -1,7 +1,7 @@
-import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Clock, RefreshCw, ScrollText } from "lucide-react"
+import { useState } from "react"
 
 import { AdminAuditService } from "@/client/sdk.gen"
 
@@ -38,14 +38,20 @@ function TrangNhatKyHoatDong() {
   const [boLocHanhDong, setBoLocHanhDong] = useState("")
   const [boLocDoiTuong, setBoLocDoiTuong] = useState("")
 
-  const { data: auditData, isLoading, refetch, isRefetching } = useQuery({
+  const {
+    data: auditData,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery({
     queryKey: ["adminAuditTrail", skip, limit, boLocHanhDong, boLocDoiTuong],
-    queryFn: () => AdminAuditService.listAuditTrailApiV1AdminAuditTrailGet({
-      skip,
-      limit,
-      action: boLocHanhDong || undefined,
-      targetType: boLocDoiTuong || undefined,
-    }),
+    queryFn: () =>
+      AdminAuditService.listAuditTrailApiV1AdminAuditTrailGet({
+        skip,
+        limit,
+        action: boLocHanhDong || undefined,
+        targetType: boLocDoiTuong || undefined,
+      }),
   })
 
   const formatNgayGio = (dateStr: string) => {
@@ -69,7 +75,8 @@ function TrangNhatKyHoatDong() {
             Nhật ký hoạt động Admin
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            Ghi nhận các thao tác cấu hình hệ thống, quản lý người dùng và duyệt giao dịch
+            Ghi nhận các thao tác cấu hình hệ thống, quản lý người dùng và duyệt
+            giao dịch
           </p>
         </div>
         <button
@@ -78,7 +85,9 @@ function TrangNhatKyHoatDong() {
           disabled={isLoading || isRefetching}
           className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#1A2233] px-3 py-2 text-sm font-medium text-slate-400 transition-all hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 disabled:opacity-50"
         >
-          <RefreshCw className={`size-4 ${isRefetching ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`size-4 ${isRefetching ? "animate-spin" : ""}`}
+          />
           {isRefetching ? "Đang làm mới..." : "Làm mới"}
         </button>
       </div>
@@ -90,15 +99,24 @@ function TrangNhatKyHoatDong() {
           </label>
           <select
             value={boLocHanhDong}
-            onChange={(e) => { setBoLocHanhDong(e.target.value); setSkip(0) }}
+            onChange={(e) => {
+              setBoLocHanhDong(e.target.value)
+              setSkip(0)
+            }}
             className="rounded-xl border border-white/[0.08] bg-[#1A2233] px-3 py-2.5 text-sm text-slate-100 focus:border-blue-500/40 focus:outline-none"
           >
             <option value="">-- Tất cả hành động --</option>
-            <option value="user_status_updated">Khóa / Mở khóa người dùng</option>
+            <option value="user_status_updated">
+              Khóa / Mở khóa người dùng
+            </option>
             <option value="listing_approved">Duyệt bài đăng</option>
             <option value="listing_rejected">Từ chối bài đăng</option>
-            <option value="escrow_resolved_release">Giải ngân cho người bán</option>
-            <option value="escrow_resolved_refund">Hoàn tiền cho người mua</option>
+            <option value="escrow_resolved_release">
+              Giải ngân cho người bán
+            </option>
+            <option value="escrow_resolved_refund">
+              Hoàn tiền cho người mua
+            </option>
           </select>
         </div>
         <div className="flex flex-col gap-2">
@@ -107,7 +125,10 @@ function TrangNhatKyHoatDong() {
           </label>
           <select
             value={boLocDoiTuong}
-            onChange={(e) => { setBoLocDoiTuong(e.target.value); setSkip(0) }}
+            onChange={(e) => {
+              setBoLocDoiTuong(e.target.value)
+              setSkip(0)
+            }}
             className="rounded-xl border border-white/[0.08] bg-[#1A2233] px-3 py-2.5 text-sm text-slate-100 focus:border-blue-500/40 focus:outline-none"
           >
             <option value="">-- Tất cả đối tượng --</option>
@@ -121,7 +142,10 @@ function TrangNhatKyHoatDong() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-xl border border-white/[0.06] bg-[#111827]" />
+            <div
+              key={i}
+              className="h-14 animate-pulse rounded-xl border border-white/[0.06] bg-[#111827]"
+            />
           ))}
         </div>
       ) : (
@@ -139,7 +163,10 @@ function TrangNhatKyHoatDong() {
               </thead>
               <tbody className="divide-y divide-white/[0.04] text-sm">
                 {danhSachLog.map((log: any) => (
-                  <tr key={log.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <tr
+                    key={log.id}
+                    className="border-b border-white/[0.04] hover:bg-white/[0.02]"
+                  >
                     <td className="p-4">
                       <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
                         <Clock className="size-3.5 shrink-0 text-slate-600" />
@@ -158,14 +185,17 @@ function TrangNhatKyHoatDong() {
                     </td>
 
                     <td className="p-4">
-                      <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[11px] font-bold uppercase border ${
-                        log.target_type === "user"
-                          ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                          : log.target_type === "listing"
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-orange-500/10 text-orange-400 border-orange-500/20"
-                      }`}>
-                        {dich_LoaiDoiTuong(log.target_type || "")}: {log.target_id?.slice(0, 8)}...
+                      <span
+                        className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[11px] font-bold uppercase border ${
+                          log.target_type === "user"
+                            ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                            : log.target_type === "listing"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-orange-500/10 text-orange-400 border-orange-500/20"
+                        }`}
+                      >
+                        {dich_LoaiDoiTuong(log.target_type || "")}:{" "}
+                        {log.target_id?.slice(0, 8)}...
                       </span>
                     </td>
 
@@ -183,7 +213,9 @@ function TrangNhatKyHoatDong() {
               <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
                 <ScrollText className="size-6" />
               </div>
-              <p className="font-semibold text-slate-200">Không có bản ghi nào</p>
+              <p className="font-semibold text-slate-200">
+                Không có bản ghi nào
+              </p>
               <p className="mt-1 text-sm text-slate-500">
                 Không tìm thấy nhật ký hoạt động nào khớp với các điều kiện lọc.
               </p>

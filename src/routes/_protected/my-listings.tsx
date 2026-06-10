@@ -5,25 +5,25 @@ import {
 } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
+  AlertCircle,
+  CheckCircle2,
   Clock,
   Eye,
-  CheckCircle2,
-  Trash2,
   Package,
   Pencil,
   Plus,
   Search,
   Sparkles,
-  AlertCircle
+  Trash2,
 } from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { ListingsService, type ListingStatus } from "@/client"
+import { type ListingStatus, ListingsService } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 // ─── Query Options ────────────────────────────────────────────────────────────
 function getMyListingsQueryOptions() {
@@ -44,7 +45,6 @@ function getMyListingsQueryOptions() {
       return response.items ?? []
     },
     queryKey: ["my-listings"],
-    staleTime: 30 * 1000,
   }
 }
 
@@ -147,7 +147,7 @@ function MyListingsPage() {
       setDeleteTargetId(null)
     },
     onError: (error: any) => {
-      toast.error(error?.body?.detail || "Không thể xóa sản phẩm.")
+      toast.error(extractErrorMessage(error, "Không thể xóa sản phẩm."))
     },
   })
 
@@ -155,7 +155,8 @@ function MyListingsPage() {
   const filtered = useMemo(() => {
     const q = keyword.trim().toLowerCase()
     return listings.filter((item) => {
-      const matchesStatus = statusFilter === "all" || item.status === statusFilter
+      const matchesStatus =
+        statusFilter === "all" || item.status === statusFilter
       const matchesKeyword =
         q.length === 0 ||
         item.title.toLowerCase().includes(q) ||
@@ -298,9 +299,12 @@ function MyListingsPage() {
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-slate-50 shadow-inner">
             <Search className="size-8 text-slate-300" />
           </div>
-          <h3 className="text-lg font-bold text-[#102A43]">Không tìm thấy tin đăng nào</h3>
+          <h3 className="text-lg font-bold text-[#102A43]">
+            Không tìm thấy tin đăng nào
+          </h3>
           <p className="mt-1.5 max-w-xs mx-auto text-sm text-[#5B7083]">
-            Bạn không có sản phẩm nào thuộc bộ lọc này hoặc hãy thử đổi từ khóa tìm kiếm.
+            Bạn không có sản phẩm nào thuộc bộ lọc này hoặc hãy thử đổi từ khóa
+            tìm kiếm.
           </p>
         </div>
       ) : (
@@ -340,7 +344,9 @@ function MyListingsPage() {
                     <span
                       className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold shadow-sm backdrop-blur-md ${statusInfo.className}`}
                     >
-                      <span className={`size-1.5 rounded-full ${statusInfo.bg}`} />
+                      <span
+                        className={`size-1.5 rounded-full ${statusInfo.bg}`}
+                      />
                       {statusInfo.label}
                     </span>
                   </div>
@@ -395,7 +401,10 @@ function MyListingsPage() {
                     className="border-[#D8E2EF] text-[#5B7083] hover:text-[#102A43] hover:bg-slate-100 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
                     asChild
                   >
-                    <Link to="/items/$listingId" params={{ listingId: item.id }}>
+                    <Link
+                      to="/items/$listingId"
+                      params={{ listingId: item.id }}
+                    >
                       <Eye className="size-3.5" />
                       Xem tin
                     </Link>
@@ -408,7 +417,10 @@ function MyListingsPage() {
                       className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
                       asChild
                     >
-                      <Link to="/items/$listingId/edit" params={{ listingId: item.id }}>
+                      <Link
+                        to="/items/$listingId/edit"
+                        params={{ listingId: item.id }}
+                      >
                         <Pencil className="size-3.5" />
                         Sửa tin
                       </Link>

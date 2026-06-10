@@ -27,10 +27,9 @@ interface OnboardingStatus {
 
 async function fetchOnboardingStatus(): Promise<OnboardingStatus> {
   const token = getToken()
-  const res = await fetch(
-    `${API_BASE}/api/v1/connect/onboarding/status`,
-    { headers: { Authorization: `Bearer ${token}` } },
-  )
+  const res = await fetch(`${API_BASE}/api/v1/connect/onboarding/status`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
   if (!res.ok) {
     const err = await res.json()
     throw new Error(err.detail || "Không thể lấy trạng thái Stripe")
@@ -38,15 +37,15 @@ async function fetchOnboardingStatus(): Promise<OnboardingStatus> {
   return res.json()
 }
 
-async function startOnboarding(): Promise<{ account_id: string; onboarding_url: string }> {
+async function startOnboarding(): Promise<{
+  account_id: string
+  onboarding_url: string
+}> {
   const token = getToken()
-  const res = await fetch(
-    `${API_BASE}/api/v1/connect/onboarding`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    },
-  )
+  const res = await fetch(`${API_BASE}/api/v1/connect/onboarding`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  })
   if (!res.ok) {
     const err = await res.json()
     throw new Error(err.detail || "Không thể tạo tài khoản Stripe")
@@ -89,7 +88,8 @@ export default function StripeConnectSettings() {
       <CardHeader>
         <CardTitle>Kết nối Stripe để nhận thanh toán</CardTitle>
         <CardDescription>
-          Kết nối tài khoản Stripe để nhận tiền từ escrow và rút tiền về tài khoản ngân hàng.
+          Kết nối tài khoản Stripe để nhận tiền từ escrow và rút tiền về tài
+          khoản ngân hàng.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">

@@ -20,7 +20,6 @@ export default function ShippingTimeline({
   expectedDeliveryAt,
   autoReleaseAt,
 }: ShippingTimelineProps) {
-
   if (!trackingNumber) {
     return (
       <div className="rounded-lg border border-dashed p-4 text-center text-sm text-gray-400">
@@ -51,7 +50,9 @@ export default function ShippingTimeline({
         {expectedDeliveryAt && (
           <div className="mt-1 flex items-center justify-between">
             <span className="text-gray-500">Dự kiến giao:</span>
-            <span>{new Date(expectedDeliveryAt).toLocaleDateString("vi-VN")}</span>
+            <span>
+              {new Date(expectedDeliveryAt).toLocaleDateString("vi-VN")}
+            </span>
           </div>
         )}
         {deliveredAt && (

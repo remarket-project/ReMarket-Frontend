@@ -1,16 +1,15 @@
-import type { ReactNode } from "react";
-import { useState } from "react";
-
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { AdminSidebar } from "@/components/Admin/AdminSidebar";
-import { AdminTopbar } from "@/components/Admin/AdminTopbar";
+import type { ReactNode } from "react"
+import { useState } from "react"
+import { AdminSidebar } from "@/components/Admin/AdminSidebar"
+import { AdminTopbar } from "@/components/Admin/AdminTopbar"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 
 interface AdminShellProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function AdminShell({ children }: AdminShellProps) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <div
@@ -34,5 +33,5 @@ export function AdminShell({ children }: AdminShellProps) {
         </SheetContent>
       </Sheet>
     </div>
-  );
+  )
 }

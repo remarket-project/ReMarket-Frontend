@@ -1,13 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { AlertTriangle, CheckCircle2, ExternalLink, MessageSquare, Package, Star, Truck, XCircle } from "lucide-react"
-import { ChatsService, ListingsService, type OrderRead, OrdersService, UsersService } from "@/client"
-import { useChat } from "@/hooks/ChatContext"
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  MessageSquare,
+  Package,
+  Star,
+  Truck,
+  XCircle,
+} from "lucide-react"
+import {
+  ChatsService,
+  ListingsService,
+  type OrderRead,
+  OrdersService,
+  UsersService,
+} from "@/client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useChat } from "@/hooks/ChatContext"
 import {
   formatVND,
   ORDER_STATUS_COLORS,
@@ -56,7 +71,9 @@ export function OrderRow({ order, role }: OrderRowProps) {
 
   const cancelMutation = useMutation({
     mutationFn: () =>
-      OrdersService.cancelOrderApiV1OrdersOrderIdCancelPost({ orderId: order.id }),
+      OrdersService.cancelOrderApiV1OrdersOrderIdCancelPost({
+        orderId: order.id,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
     },
@@ -64,7 +81,9 @@ export function OrderRow({ order, role }: OrderRowProps) {
 
   const acceptMutation = useMutation({
     mutationFn: () =>
-      OrdersService.acceptOrderApiV1OrdersOrderIdAcceptPost({ orderId: order.id }),
+      OrdersService.acceptOrderApiV1OrdersOrderIdAcceptPost({
+        orderId: order.id,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
     },
@@ -173,7 +192,9 @@ export function OrderRow({ order, role }: OrderRowProps) {
                   variant="outline"
                   className="border-rose-200 text-rose-700 font-bold text-xs rounded-xl cursor-pointer py-4"
                   onClick={() => {
-                    if (window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
+                    if (
+                      window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")
+                    ) {
                       cancelMutation.mutate()
                     }
                   }}
@@ -187,7 +208,11 @@ export function OrderRow({ order, role }: OrderRowProps) {
                 <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer py-4"
                   onClick={() => {
-                    if (window.confirm("Xác nhận đã nhận hàng? Tiền sẽ được chuyển cho người bán.")) {
+                    if (
+                      window.confirm(
+                        "Xác nhận đã nhận hàng? Tiền sẽ được chuyển cho người bán.",
+                      )
+                    ) {
                       acceptMutation.mutate()
                     }
                   }}

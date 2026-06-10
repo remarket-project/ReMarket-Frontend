@@ -2,7 +2,7 @@ import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
-
+import StripePaymentForm from "@/components/Stripe/StripePaymentForm"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,7 +12,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import StripePaymentForm from "@/components/Stripe/StripePaymentForm"
 
 const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "",

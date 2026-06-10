@@ -1,16 +1,17 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import useAuth from "@/hooks/useAuth"
 
 type WSEventHandler = (data: Record<string, unknown>) => void
 
 const WS_BASE =
-  import.meta.env.VITE_WS_URL ||
-  `ws://${window.location.hostname}:8000/api/v1`
+  import.meta.env.VITE_WS_URL || `ws://${window.location.hostname}:8000/api/v1`
 
 export function useWebSocket(handlers: Record<string, WSEventHandler>) {
   const { user } = useAuth()
   const wsRef = useRef<WebSocket | null>(null)
-  const reconnectRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const reconnectRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  )
   const attemptRef = useRef(0)
   const handlersRef = useRef(handlers)
   handlersRef.current = handlers

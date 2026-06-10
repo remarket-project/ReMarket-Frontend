@@ -1,4 +1,4 @@
-import { type ChatMessageRead } from "@/client"
+import type { ChatMessageRead } from "@/client"
 
 interface ChatMessageBubbleProps {
   message: ChatMessageRead

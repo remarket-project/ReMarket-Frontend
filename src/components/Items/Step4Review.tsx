@@ -89,7 +89,8 @@ function CreateListingStep4({ form }: Step4Props) {
     <div className="space-y-6">
       <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg p-4">
         <p className="text-sm text-green-900 dark:text-green-100">
-          ✅ Mọi thông tin đã đầy đủ! Vui lòng xem lại bên dưới và bấm đăng tin khi đã sẵn sàng.
+          ✅ Mọi thông tin đã đầy đủ! Vui lòng xem lại bên dưới và bấm đăng tin
+          khi đã sẵn sàng.
         </p>
       </div>
 
@@ -189,7 +190,9 @@ function CreateListingStep4({ form }: Step4Props) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Ảnh sản phẩm</CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              Ảnh sản phẩm
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -239,7 +242,8 @@ function CreateListingStep4({ form }: Step4Props) {
                   />
                 </FormControl>
                 <span>
-                  Tôi xác nhận sản phẩm này được mô tả chính xác và thuộc sở hữu hợp pháp của tôi.
+                  Tôi xác nhận sản phẩm này được mô tả chính xác và thuộc sở hữu
+                  hợp pháp của tôi.
                 </span>
               </label>
               <FormMessage />
@@ -261,7 +265,8 @@ function CreateListingStep4({ form }: Step4Props) {
                   />
                 </FormControl>
                 <span>
-                  Tôi đồng ý với các điều khoản của người bán và chính sách chợ mua bán của ReMarket.
+                  Tôi đồng ý với các điều khoản của người bán và chính sách chợ
+                  mua bán của ReMarket.
                 </span>
               </label>
               <FormMessage />

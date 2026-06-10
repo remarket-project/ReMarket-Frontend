@@ -1,10 +1,6 @@
-import { useState } from "react"
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js"
+import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Loader2 } from "lucide-react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 

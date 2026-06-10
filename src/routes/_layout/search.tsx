@@ -1,6 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
-import { LayoutGrid, List, Search, SlidersHorizontal, X, ChevronRight } from "lucide-react"
+import {
+  ChevronRight,
+  LayoutGrid,
+  List,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { z } from "zod"
 
@@ -193,7 +200,6 @@ function SearchResultsPage() {
         slug: search.categorySlug,
       }),
     enabled: Boolean(search.categorySlug && !search.categoryId),
-    staleTime: 1000 * 60 * 5,
   })
 
   const effectiveCategoryId = search.categoryId || resolvedCategory?.id || ""
@@ -262,7 +268,9 @@ function SearchResultsPage() {
   // Client-side condition filter
   const listings = useMemo(() => {
     if (!search.condition) return rawListings
-    return rawListings.filter((item) => item.condition_grade === search.condition)
+    return rawListings.filter(
+      (item) => item.condition_grade === search.condition,
+    )
   }, [rawListings, search.condition])
 
   const total = listingsData?.total ?? 0
@@ -275,7 +283,8 @@ function SearchResultsPage() {
   )
 
   const matchingCat = useMemo(() => {
-    const categoryName = categoryMap.get(effectiveCategoryId) || resolvedCategory?.name
+    const categoryName =
+      categoryMap.get(effectiveCategoryId) || resolvedCategory?.name
     return hardcodedCategories.find(
       (c) => c.slug === search.categorySlug || c.name === categoryName,
     )
@@ -290,10 +299,16 @@ function SearchResultsPage() {
         }
       : null,
     search.minPrice
-      ? { label: `Giá tối thiểu: ${formatCurrency(search.minPrice)}`, key: "minPrice" as const }
+      ? {
+          label: `Giá tối thiểu: ${formatCurrency(search.minPrice)}`,
+          key: "minPrice" as const,
+        }
       : null,
     search.maxPrice
-      ? { label: `Giá tối đa: ${formatCurrency(search.maxPrice)}`, key: "maxPrice" as const }
+      ? {
+          label: `Giá tối đa: ${formatCurrency(search.maxPrice)}`,
+          key: "maxPrice" as const,
+        }
       : null,
     search.condition
       ? {
@@ -387,7 +402,9 @@ function SearchResultsPage() {
           <>
             <ChevronRight className="size-3 text-slate-300" />
             <span className="text-[#102A43]">
-              {categoryMap.get(effectiveCategoryId) ?? resolvedCategory?.name ?? "Danh mục"}
+              {categoryMap.get(effectiveCategoryId) ??
+                resolvedCategory?.name ??
+                "Danh mục"}
             </span>
           </>
         )}
@@ -397,9 +414,11 @@ function SearchResultsPage() {
       <section className="rounded-[26px] border border-[#D8E2EF] bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <span className={`flex size-14 items-center justify-center rounded-2xl text-3xl shadow-inner ${
-              matchingCat ? matchingCat.color : "bg-slate-50 text-slate-500"
-            }`}>
+            <span
+              className={`flex size-14 items-center justify-center rounded-2xl text-3xl shadow-inner ${
+                matchingCat ? matchingCat.color : "bg-slate-50 text-slate-500"
+              }`}
+            >
               {matchingCat ? matchingCat.icon : search.q ? "🔍" : "📦"}
             </span>
             <div>
@@ -536,7 +555,9 @@ function SearchResultsPage() {
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setDraft((prev) => ({ ...prev, condition: opt.value }))}
+                    onClick={() =>
+                      setDraft((prev) => ({ ...prev, condition: opt.value }))
+                    }
                     className={`rounded-xl py-2 px-1 text-[11px] font-semibold border text-center transition cursor-pointer ${
                       draft.condition === opt.value
                         ? "bg-[#EFF6FF] border-[#2563EB] text-[#2563EB] shadow-sm"
@@ -621,7 +642,7 @@ function SearchResultsPage() {
                           nextSearch.categoryId = ""
                           nextSearch.categorySlug = ""
                         } else {
-                          (nextSearch as any)[filter.key] = ""
+                          ;(nextSearch as any)[filter.key] = ""
                         }
                         navigate({
                           to: "/search",
@@ -641,7 +662,10 @@ function SearchResultsPage() {
           {isLoading ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="rounded-[22px] border border-[#D8E2EF] overflow-hidden bg-white shadow-sm">
+                <div
+                  key={i}
+                  className="rounded-[22px] border border-[#D8E2EF] overflow-hidden bg-white shadow-sm"
+                >
                   <div className="aspect-[4/3] animate-pulse bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE]" />
                   <div className="p-4 space-y-2.5">
                     <div className="h-4 w-3/4 rounded animate-pulse bg-[#EFF6FF]" />
@@ -668,7 +692,9 @@ function SearchResultsPage() {
               <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-slate-50 shadow-inner">
                 <Search className="size-8 text-slate-300" />
               </div>
-              <h3 className="text-lg font-bold text-[#102A43]">Không tìm thấy kết quả</h3>
+              <h3 className="text-lg font-bold text-[#102A43]">
+                Không tìm thấy kết quả
+              </h3>
               <p className="mt-1.5 max-w-xs mx-auto text-sm text-[#5B7083]">
                 Hãy thử thay đổi bộ lọc, khoảng giá, hoặc từ khóa tìm kiếm.
               </p>

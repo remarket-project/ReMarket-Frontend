@@ -26,11 +26,18 @@ export const UserActionsMenu = ({ user }: UserActionsMenuProps) => {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
+        >
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-[#111827] border-white/[0.08] text-slate-100">
+      <DropdownMenuContent
+        align="end"
+        className="bg-[#111827] border-white/[0.08] text-slate-100"
+      >
         <EditUser user={user} onSuccess={() => setOpen(false)} />
         <DeleteUser id={user.id} onSuccess={() => setOpen(false)} />
       </DropdownMenuContent>

@@ -110,7 +110,9 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle className="text-slate-100">Sửa người dùng</DialogTitle>
+              <DialogTitle className="text-slate-100">
+                Sửa người dùng
+              </DialogTitle>
               <DialogDescription className="text-slate-400">
                 Cập nhật thông tin chi tiết người dùng dưới đây.
               </DialogDescription>
@@ -162,7 +164,9 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-300">Mật khẩu mới</FormLabel>
+                    <FormLabel className="text-slate-300">
+                      Mật khẩu mới
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Mật khẩu mới (tuỳ chọn)"
@@ -181,7 +185,9 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                 name="confirm_password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-300">Xác nhận mật khẩu mới</FormLabel>
+                    <FormLabel className="text-slate-300">
+                      Xác nhận mật khẩu mới
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Nhập lại mật khẩu mới"
@@ -207,7 +213,9 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                         className="border-white/[0.2] data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                     </FormControl>
-                    <FormLabel className="font-normal text-slate-300">Là quản trị viên?</FormLabel>
+                    <FormLabel className="font-normal text-slate-300">
+                      Là quản trị viên?
+                    </FormLabel>
                   </FormItem>
                 )}
               />
@@ -224,7 +232,9 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                         className="border-white/[0.2] data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                     </FormControl>
-                    <FormLabel className="font-normal text-slate-300">Tài khoản hoạt động?</FormLabel>
+                    <FormLabel className="font-normal text-slate-300">
+                      Tài khoản hoạt động?
+                    </FormLabel>
                   </FormItem>
                 )}
               />

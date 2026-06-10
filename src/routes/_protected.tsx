@@ -1,10 +1,11 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
-import { ApiError, UsersService } from "@/client";
-import { ChatGlobal } from "@/components/Chat/ChatGlobal";
-import { Footer } from "@/components/Common/Footer";
-import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader";
-import { isLoggedIn } from "@/hooks/useAuth";
+import { ApiError, UsersService } from "@/client"
+import { ChatGlobal } from "@/components/Chat/ChatGlobal"
+import { Footer } from "@/components/Common/Footer"
+import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader"
+import { isLoggedIn } from "@/hooks/useAuth"
+import { queryClient } from "@/lib/query-client"
 
 /**
  * _protected layout — bắt buộc đăng nhập.
@@ -20,31 +21,34 @@ export const Route = createFileRoute("/_protected")({
         search: {
           redirect: location.href,
         },
-      });
+      })
     }
 
     try {
-      const currentUser = await UsersService.readUserMe();
+      const currentUser = await queryClient.fetchQuery({
+        queryKey: ["currentUser"],
+        queryFn: UsersService.readUserMe,
+      })
       if (currentUser.role === "admin") {
-        throw redirect({ to: "/admin/dashboard" });
+        throw redirect({ to: "/admin/dashboard" })
       }
     } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("refresh_token")
         throw redirect({
           to: "/login",
           search: {
             redirect: location.href,
           },
-        });
+        })
       }
     }
   },
-});
+})
 
 function ProtectedLayout() {
   return (
@@ -58,5 +62,5 @@ function ProtectedLayout() {
       <Footer />
       <ChatGlobal />
     </div>
-  );
+  )
 }

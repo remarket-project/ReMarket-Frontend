@@ -1,11 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
 import { useEffect, useRef } from "react"
 
 import {
-  ChatsService,
   type ChatConversationRead,
   type ChatMessageRead,
+  ChatsService,
 } from "@/client"
 import useAuth from "@/hooks/useAuth"
 import { ChatComposer } from "./ChatComposer"
@@ -68,7 +68,7 @@ export function ConversationThread({
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  }, [])
 
   if (isLoading) {
     return (
@@ -80,11 +80,7 @@ export function ConversationThread({
 
   return (
     <div className="flex flex-1 flex-col">
-      <ChatHeader
-        fullName={displayName}
-        showBack={showBack}
-        onBack={onBack}
-      />
+      <ChatHeader fullName={displayName} showBack={showBack} onBack={onBack} />
 
       <div className="flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
         {!messages || messages.length === 0 ? (
@@ -94,15 +90,13 @@ export function ConversationThread({
             </p>
           </div>
         ) : (
-          <>
-            {messages.map((msg: ChatMessageRead) => (
-              <ChatMessageBubble
-                key={msg.id}
-                message={msg}
-                isOwn={msg.sender_id === user?.id}
-              />
-            ))}
-          </>
+          messages.map((msg: ChatMessageRead) => (
+            <ChatMessageBubble
+              key={msg.id}
+              message={msg}
+              isOwn={msg.sender_id === user?.id}
+            />
+          ))
         )}
         <div ref={messagesEndRef} />
       </div>

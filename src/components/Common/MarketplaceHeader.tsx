@@ -31,8 +31,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import useAuth from "@/hooks/useAuth"
 import { useChat } from "@/hooks/ChatContext"
+import useAuth from "@/hooks/useAuth"
 import { cn } from "@/lib/utils"
 import { getInitials } from "@/utils"
 
@@ -50,7 +50,15 @@ const categories = [
   { name: "Xem tất cả", slug: "", icon: "→" },
 ] as const
 
-function SearchShell({ compact, hero, onSearch }: { compact: boolean; hero?: boolean; onSearch?: (q: string) => void }) {
+function SearchShell({
+  compact,
+  hero,
+  onSearch,
+}: {
+  compact: boolean
+  hero?: boolean
+  onSearch?: (q: string) => void
+}) {
   const submitTone = hero
     ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
     : "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
@@ -221,7 +229,6 @@ export function MarketplaceHeader() {
         limit: 5,
       }),
     enabled: Boolean(currentUser),
-    staleTime: 15 * 1000,
   })
 
   const { data: unreadData } = useQuery({
@@ -229,7 +236,6 @@ export function MarketplaceHeader() {
     queryFn: () =>
       NotificationsService.getUnreadNotificationsCountApiV1NotificationsUnreadCountGet(),
     enabled: Boolean(currentUser),
-    staleTime: 15 * 1000,
   })
 
   const markAllRead = useMutation({
@@ -336,9 +342,16 @@ export function MarketplaceHeader() {
           </span>
         </Link>
 
-          <div className="hidden flex-1 justify-center md:flex">
+        <div className="hidden flex-1 justify-center md:flex">
           <div className="w-full max-w-3xl">
-            {showSearch && <SearchShell compact onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })} />}
+            {showSearch && (
+              <SearchShell
+                compact
+                onSearch={(q) =>
+                  navigate({ to: "/items", search: q ? { q } : {} })
+                }
+              />
+            )}
           </div>
         </div>
 
@@ -641,7 +654,10 @@ export function MarketplaceHeader() {
 
       {showSearch && (
         <div className="mt-3 md:hidden">
-          <SearchShell compact onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })} />
+          <SearchShell
+            compact
+            onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })}
+          />
         </div>
       )}
     </div>
@@ -691,7 +707,13 @@ export function MarketplaceHeader() {
           </section>
           <div className="relative z-20 -mt-6 flex justify-center px-4 sm:-mt-7 sm:px-6">
             <div className="w-full max-w-4xl">
-              <SearchShell compact={false} hero onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })} />
+              <SearchShell
+                compact={false}
+                hero
+                onSearch={(q) =>
+                  navigate({ to: "/items", search: q ? { q } : {} })
+                }
+              />
             </div>
           </div>
         </>

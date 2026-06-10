@@ -1,5 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   AlertTriangle,
   ClipboardCheck,
@@ -7,29 +7,31 @@ import {
   ShieldCheck,
   UserCheck,
   Users,
-} from "lucide-react";
-import { Suspense, useMemo, useState } from "react";
+} from "lucide-react"
+import { Suspense, useMemo, useState } from "react"
 
-import { AdminService } from "@/client";
-import AddUser from "@/components/Admin/AddUser";
-import { columns, type UserTableData } from "@/components/Admin/columns";
-import { DataTable } from "@/components/Common/DataTable";
-import PendingUsers from "@/components/Pending/PendingUsers";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import useAuth from "@/hooks/useAuth";
+import { AdminService } from "@/client"
+import AddUser from "@/components/Admin/AddUser"
+import { columns, type UserTableData } from "@/components/Admin/columns"
+import { DataTable } from "@/components/Common/DataTable"
+import PendingUsers from "@/components/Pending/PendingUsers"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import useAuth from "@/hooks/useAuth"
 
 function layQueryNguoiDung() {
   return {
     queryFn: async () => {
-      const users = await AdminService.listUsersApiV1AdminUsersGet({ skip: 0, limit: 500 });
+      const users = await AdminService.listUsersApiV1AdminUsersGet({
+        skip: 0,
+        limit: 500,
+      })
       return {
         data: Array.isArray(users) ? users : [],
-      };
+      }
     },
     queryKey: ["adminUsers"],
-    staleTime: 30 * 1000,
-  };
+  }
 }
 
 export const Route = createFileRoute("/admin/")({
@@ -41,41 +43,41 @@ export const Route = createFileRoute("/admin/")({
       },
     ],
   }),
-});
+})
 
 function NoiDungBangNguoiDung() {
-  const { user: currentUser } = useAuth();
-  const { data: users } = useSuspenseQuery(layQueryNguoiDung());
-  const [query, setQuery] = useState("");
+  const { user: currentUser } = useAuth()
+  const { data: users } = useSuspenseQuery(layQueryNguoiDung())
+  const [query, setQuery] = useState("")
 
   const tableData: UserTableData[] = users.data.map((user: any) => ({
     ...user,
     isCurrentUser: currentUser?.id === user.id,
-  }));
+  }))
 
   const nguoiDungLoc = useMemo(() => {
-    const chuanHoa = query.trim().toLowerCase();
-    if (!chuanHoa) return tableData;
+    const chuanHoa = query.trim().toLowerCase()
+    if (!chuanHoa) return tableData
 
     return tableData.filter((user) => {
-      const tenDayDu = (user.full_name || "").toLowerCase();
-      const email = (user.email || "").toLowerCase();
-      const trangThai = user.is_active ? "đang hoạt động" : "không hoạt động";
+      const tenDayDu = (user.full_name || "").toLowerCase()
+      const email = (user.email || "").toLowerCase()
+      const trangThai = user.is_active ? "đang hoạt động" : "không hoạt động"
       return (
         tenDayDu.includes(chuanHoa) ||
         email.includes(chuanHoa) ||
         trangThai.includes(chuanHoa)
-      );
-    });
-  }, [query, tableData]);
+      )
+    })
+  }, [query, tableData])
 
   const thongKe = useMemo(() => {
-    const tongSo = tableData.length;
-    const dangHoatDong = tableData.filter((u) => u.is_active).length;
-    const khongHoatDong = tongSo - dangHoatDong;
-    const quanTriVien = tableData.filter((u) => u.role === "admin").length;
-    return { tongSo, dangHoatDong, khongHoatDong, quanTriVien };
-  }, [tableData]);
+    const tongSo = tableData.length
+    const dangHoatDong = tableData.filter((u) => u.is_active).length
+    const khongHoatDong = tongSo - dangHoatDong
+    const quanTriVien = tableData.filter((u) => u.role === "admin").length
+    return { tongSo, dangHoatDong, khongHoatDong, quanTriVien }
+  }, [tableData])
 
   return (
     <div className="flex flex-col gap-5">
@@ -85,8 +87,12 @@ function NoiDungBangNguoiDung() {
             <Users className="size-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-400">Tổng người dùng</p>
-            <p className="text-2xl font-bold text-slate-100">{thongKe.tongSo}</p>
+            <p className="text-xs font-medium text-slate-400">
+              Tổng người dùng
+            </p>
+            <p className="text-2xl font-bold text-slate-100">
+              {thongKe.tongSo}
+            </p>
           </div>
         </div>
 
@@ -96,7 +102,9 @@ function NoiDungBangNguoiDung() {
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Đang hoạt động</p>
-            <p className="text-2xl font-bold text-emerald-400">{thongKe.dangHoatDong}</p>
+            <p className="text-2xl font-bold text-emerald-400">
+              {thongKe.dangHoatDong}
+            </p>
           </div>
         </div>
 
@@ -105,8 +113,12 @@ function NoiDungBangNguoiDung() {
             <AlertTriangle className="size-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-400">Không hoạt động</p>
-            <p className="text-2xl font-bold text-orange-400">{thongKe.khongHoatDong}</p>
+            <p className="text-xs font-medium text-slate-400">
+              Không hoạt động
+            </p>
+            <p className="text-2xl font-bold text-orange-400">
+              {thongKe.khongHoatDong}
+            </p>
           </div>
         </div>
 
@@ -116,7 +128,9 @@ function NoiDungBangNguoiDung() {
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Quản trị viên</p>
-            <p className="text-2xl font-bold text-slate-100">{thongKe.quanTriVien}</p>
+            <p className="text-2xl font-bold text-slate-100">
+              {thongKe.quanTriVien}
+            </p>
           </div>
         </div>
       </section>
@@ -135,12 +149,17 @@ function NoiDungBangNguoiDung() {
 
           {query && (
             <span className="text-sm text-slate-400">
-              Tìm thấy <strong className="text-slate-200">{nguoiDungLoc.length}</strong> kết quả
+              Tìm thấy{" "}
+              <strong className="text-slate-200">{nguoiDungLoc.length}</strong>{" "}
+              kết quả
             </span>
           )}
         </div>
         <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-          <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-blue-400">
+          <Badge
+            variant="outline"
+            className="border-blue-500/30 bg-blue-500/10 text-blue-400"
+          >
             Vận hành
           </Badge>
           <span>
@@ -153,7 +172,7 @@ function NoiDungBangNguoiDung() {
         <DataTable columns={columns} data={nguoiDungLoc} />
       </div>
     </div>
-  );
+  )
 }
 
 function BangNguoiDung() {
@@ -161,7 +180,7 @@ function BangNguoiDung() {
     <Suspense fallback={<PendingUsers />}>
       <NoiDungBangNguoiDung />
     </Suspense>
-  );
+  )
 }
 
 function TrangQuanLyNguoiDung() {
@@ -197,5 +216,5 @@ function TrangQuanLyNguoiDung() {
 
       <BangNguoiDung />
     </div>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-﻿import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router"
 import {
   BadgeCheck,
@@ -29,7 +29,6 @@ function getOrdersQueryOptions() {
       return { orders }
     },
     queryKey: ["orders-dashboard"],
-    staleTime: 30 * 1000,
   }
 }
 
@@ -49,7 +48,9 @@ function OrdersPage() {
   const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(getOrdersQueryOptions())
   const matches = useMatches()
-  const isDetailPage = matches.some(m => m.routeId === '/_protected/orders/$orderId')
+  const isDetailPage = matches.some(
+    (m) => m.routeId === "/_protected/orders/$orderId",
+  )
 
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<

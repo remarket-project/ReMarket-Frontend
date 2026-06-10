@@ -7,11 +7,10 @@ import {
   Star,
   Wallet,
 } from "lucide-react"
-
+import StripeConnectSettings from "@/components/Stripe/StripeConnectSettings"
 import ChangePassword from "@/components/UserSettings/ChangePassword"
 import DeleteAccount from "@/components/UserSettings/DeleteAccount"
 import UserInformation from "@/components/UserSettings/UserInformation"
-import StripeConnectSettings from "@/components/Stripe/StripeConnectSettings"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"

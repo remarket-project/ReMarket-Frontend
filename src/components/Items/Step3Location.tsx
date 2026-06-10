@@ -89,7 +89,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
               📍 Địa điểm bán hàng
             </p>
             <p className="text-xs text-blue-800 dark:text-blue-200 mt-1">
-              Điều này giúp người mua ở gần dễ dàng tìm thấy sản phẩm của bạn và hỗ trợ tính toán phí vận chuyển.
+              Điều này giúp người mua ở gần dễ dàng tìm thấy sản phẩm của bạn và
+              hỗ trợ tính toán phí vận chuyển.
             </p>
           </div>
         </div>
@@ -113,7 +114,13 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={loadingProvinces ? "Đang tải Tỉnh / Thành phố..." : "Chọn Tỉnh / Thành phố"} />
+                  <SelectValue
+                    placeholder={
+                      loadingProvinces
+                        ? "Đang tải Tỉnh / Thành phố..."
+                        : "Chọn Tỉnh / Thành phố"
+                    }
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -151,8 +158,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
                       loadingDistricts
                         ? "Đang tải Quận / Huyện..."
                         : province
-                        ? "Chọn Quận / Huyện"
-                        : "Vui lòng chọn Tỉnh / Thành phố trước"
+                          ? "Chọn Quận / Huyện"
+                          : "Vui lòng chọn Tỉnh / Thành phố trước"
                     }
                   />
                 </SelectTrigger>
@@ -189,8 +196,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
                       loadingWards
                         ? "Đang tải Phường / Xã..."
                         : district
-                        ? "Chọn Phường / Xã"
-                        : "Vui lòng chọn Quận / Huyện trước"
+                          ? "Chọn Phường / Xã"
+                          : "Vui lòng chọn Quận / Huyện trước"
                     }
                   />
                 </SelectTrigger>
@@ -223,7 +230,8 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
               />
             </FormControl>
             <FormDescription>
-              Giúp người mua biết chính xác địa điểm nhận hàng hoặc hình dung rõ hơn về khu vực giao dịch
+              Giúp người mua biết chính xác địa điểm nhận hàng hoặc hình dung rõ
+              hơn về khu vực giao dịch
             </FormDescription>
             <FormMessage />
           </FormItem>

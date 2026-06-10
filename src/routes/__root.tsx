@@ -15,7 +15,9 @@ export const Route = createRootRoute({
       <ChatProvider>
         <HeadContent />
         <Outlet />
-        {showDevtools ? <TanStackRouterDevtools position="bottom-right" /> : null}
+        {showDevtools ? (
+          <TanStackRouterDevtools position="bottom-right" />
+        ) : null}
         {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
       </ChatProvider>
     </WebSocketProvider>

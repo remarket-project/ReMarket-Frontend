@@ -5,13 +5,12 @@ import * as dotenv from "dotenv"
 const _envResult = dotenv.config({ path: path.resolve(process.cwd(), ".env") })
 
 const apiUrl = process.env.VITE_API_URL?.trim()
-const normalizedApiBase = (apiUrl || "http://localhost:8000")
+const _normalizedApiBase = (apiUrl || "http://localhost:8000")
   .replace(/\/+$/, "")
   .replace(/\/api\/v1$/i, "")
 
 const openApiInput =
-  process.env.OPENAPI_JSON_URL?.trim() ||
-  "openapi.json" ||  "openapi.json"
+  process.env.OPENAPI_JSON_URL?.trim() || "openapi.json" || "openapi.json"
 
 export default defineConfig({
   input: openApiInput,

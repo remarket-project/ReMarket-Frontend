@@ -104,7 +104,9 @@ const AddUser = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-[#111827] border-white/[0.08] text-slate-100">
         <DialogHeader>
-          <DialogTitle className="text-slate-100">Thêm người dùng mới</DialogTitle>
+          <DialogTitle className="text-slate-100">
+            Thêm người dùng mới
+          </DialogTitle>
           <DialogDescription className="text-slate-400">
             Điền vào mẫu dưới đây để tạo tài khoản mới trong hệ thống.
           </DialogDescription>
@@ -209,7 +211,9 @@ const AddUser = () => {
                         className="border-white/[0.2] data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                     </FormControl>
-                    <FormLabel className="font-normal text-slate-300">Là quản trị viên?</FormLabel>
+                    <FormLabel className="font-normal text-slate-300">
+                      Là quản trị viên?
+                    </FormLabel>
                   </FormItem>
                 )}
               />
@@ -226,7 +230,9 @@ const AddUser = () => {
                         className="border-white/[0.2] data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                     </FormControl>
-                    <FormLabel className="font-normal text-slate-300">Tài khoản hoạt động?</FormLabel>
+                    <FormLabel className="font-normal text-slate-300">
+                      Tài khoản hoạt động?
+                    </FormLabel>
                   </FormItem>
                 )}
               />

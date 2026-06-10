@@ -15,9 +15,6 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
-import { Skeleton } from "@/components/ui/skeleton"
-import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
-
 import {
   ChatsService,
   EscrowService,
@@ -26,15 +23,15 @@ import {
   ReviewsService,
   UsersService,
 } from "@/client"
-import { useChat } from "@/hooks/ChatContext"
+import { extractErrorMessage } from "@/utils"
 import { DisputeDialog } from "@/components/Dispute/DisputeDialog"
 import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Dialog,
   DialogContent,
@@ -44,7 +41,14 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useChat } from "@/hooks/ChatContext"
 import useAuth from "@/hooks/useAuth"
+import {
+  formatVND,
+  ORDER_STATUS_COLORS,
+  ORDER_STATUS_LABELS,
+} from "@/lib/order-utils"
 
 const ESCROW_STATUS_LABELS: Record<string, string> = {
   pending: "Chờ thanh toán",
@@ -67,12 +71,13 @@ function getOrderDetailQueryOptions(orderId: string) {
       const [order, escrow, reviews] = await Promise.all([
         OrdersService.getOrderApiV1OrdersOrderIdGet({ orderId }),
         EscrowService.getEscrowApiV1EscrowsOrderIdGet({ orderId }),
-        ReviewsService.getReviewApiV1ReviewsOrderIdGet({ orderId }).catch(() => []),
+        ReviewsService.getReviewApiV1ReviewsOrderIdGet({ orderId }).catch(
+          () => [],
+        ),
       ])
       return { order, escrow, reviews }
     },
     queryKey: ["order-detail", orderId],
-    staleTime: 30 * 1000,
   }
 }
 
@@ -95,7 +100,11 @@ function dateTime(value: string) {
 export const Route = createFileRoute("/_protected/orders/$orderId")({
   component: OrderDetailPage,
   head: ({ params }) => ({
-    meta: [{ title: `Chi tiết đơn #${params.orderId?.slice(0, 8) || ""} - ReMarket` }],
+    meta: [
+      {
+        title: `Chi tiết đơn #${params.orderId?.slice(0, 8) || ""} - ReMarket`,
+      },
+    ],
   }),
 })
 
@@ -122,7 +131,6 @@ function OrderDetailPage() {
         listingId: data!.order.listing_id,
       }),
     enabled: Boolean(data?.order?.listing_id),
-    staleTime: 2 * 60 * 1000,
   })
 
   const { data: buyerProfile } = useQuery({
@@ -132,7 +140,6 @@ function OrderDetailPage() {
         userId: data!.order.buyer_id,
       }),
     enabled: Boolean(data?.order?.buyer_id),
-    staleTime: 5 * 60 * 1000,
   })
 
   const { data: sellerProfile } = useQuery({
@@ -142,7 +149,6 @@ function OrderDetailPage() {
         userId: data!.order.seller_id,
       }),
     enabled: Boolean(data?.order?.seller_id),
-    staleTime: 5 * 60 * 1000,
   })
 
   const cancelMutation = useMutation({
@@ -154,7 +160,7 @@ function OrderDetailPage() {
       toast.success("Đã hủy đơn hàng.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể hủy đơn hàng."),
+      toast.error(extractErrorMessage(error, "Không thể hủy đơn hàng.")),
   })
 
   const acceptMutation = useMutation({
@@ -167,14 +173,17 @@ function OrderDetailPage() {
       toast.success("Đã xác nhận nhận hàng. Đơn hàng hoàn tất.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể xác nhận nhận hàng."),
+      toast.error(extractErrorMessage(error, "Không thể xác nhận nhận hàng.")),
   })
 
   const shipMutation = useMutation({
     mutationFn: () =>
       OrdersService.shipOrderApiV1OrdersOrderIdShipPost({
         orderId,
-        requestBody: { tracking_number: trackingNumber || null, shipping_provider: shippingProvider || null },
+        requestBody: {
+          tracking_number: trackingNumber || null,
+          shipping_provider: shippingProvider || null,
+        },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
@@ -185,7 +194,7 @@ function OrderDetailPage() {
       toast.success("Đã xác nhận gửi hàng.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể xác nhận gửi hàng."),
+      toast.error(extractErrorMessage(error, "Không thể xác nhận gửi hàng.")),
   })
 
   // acceptMutation is handled inside DisputeDialog via fetch
@@ -204,7 +213,7 @@ function OrderDetailPage() {
       toast.success("Đã gửi đánh giá thành công.")
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể gửi đánh giá."),
+      toast.error(extractErrorMessage(error, "Không thể gửi đánh giá.")),
   })
 
   const chatMutation = useMutation({
@@ -316,30 +325,45 @@ function OrderDetailPage() {
         >
           Đơn #{order.id.slice(0, 8)}
         </Badge>
-        <Badge className={`capitalize border ${ORDER_STATUS_COLORS[order.status] ?? "border-[#D8E2EF] bg-white text-[#2563EB]"}`}>
+        <Badge
+          className={`capitalize border ${ORDER_STATUS_COLORS[order.status] ?? "border-[#D8E2EF] bg-white text-[#2563EB]"}`}
+        >
           {ORDER_STATUS_LABELS[order.status] ?? order.status}
         </Badge>
       </section>
 
       {(order.status as string) === "returning" && (
-        <Alert variant="default" className="mb-4 border-yellow-200 bg-yellow-50 text-yellow-800">
+        <Alert
+          variant="default"
+          className="mb-4 border-yellow-200 bg-yellow-50 text-yellow-800"
+        >
           <RotateCcw className="size-4" />
-          <AlertDescription>Đơn hàng đang được hoàn trả về người bán...</AlertDescription>
+          <AlertDescription>
+            Đơn hàng đang được hoàn trả về người bán...
+          </AlertDescription>
         </Alert>
       )}
 
       {(order.status as string) === "returned" && (
-        <Alert variant="default" className="mb-4 border-green-200 bg-green-50 text-green-800">
+        <Alert
+          variant="default"
+          className="mb-4 border-green-200 bg-green-50 text-green-800"
+        >
           <CheckCircle2 className="size-4" />
           <AlertDescription>
             Đã hoàn trả.
-            {order.payment_method === "wallet" ? " Tiền đã được hoàn lại vào ví của bạn." : ""}
+            {order.payment_method === "wallet"
+              ? " Tiền đã được hoàn lại vào ví của bạn."
+              : ""}
           </AlertDescription>
         </Alert>
       )}
 
       {(order.status as string) === "disputed" && (
-        <Alert variant="default" className="mb-4 border-amber-200 bg-amber-50 text-amber-800">
+        <Alert
+          variant="default"
+          className="mb-4 border-amber-200 bg-amber-50 text-amber-800"
+        >
           <AlertTriangle className="size-4" />
           <AlertDescription>
             Đơn hàng đang bị khiếu nại. Admin sẽ xử lý trong thời gian sớm nhất.
@@ -380,7 +404,9 @@ function OrderDetailPage() {
                       variant="outline"
                       className="text-[10px] uppercase font-bold border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] mt-1 px-2.5 py-0.5 rounded-full"
                     >
-                      Độ mới: {conditionLabels[listing.condition_grade] ?? listing.condition_grade.replace("_", " ")}
+                      Độ mới:{" "}
+                      {conditionLabels[listing.condition_grade] ??
+                        listing.condition_grade.replace("_", " ")}
                     </Badge>
                   )}
                 </div>
@@ -428,18 +454,25 @@ function OrderDetailPage() {
             <CardContent>
               {order.shipping_name ? (
                 <div className="mb-3 rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm">
-                  <p className="font-medium text-gray-700">{order.shipping_name} - {order.shipping_phone}</p>
+                  <p className="font-medium text-gray-700">
+                    {order.shipping_name} - {order.shipping_phone}
+                  </p>
                   <p className="mt-1 text-gray-500">
                     <MapPin className="mr-1 inline size-3" />
-                    {order.shipping_address_detail}, {order.shipping_ward}, {order.shipping_district}, {order.shipping_province}
+                    {order.shipping_address_detail}, {order.shipping_ward},{" "}
+                    {order.shipping_district}, {order.shipping_province}
                   </p>
                 </div>
               ) : null}
               {order.tracking_number ? (
                 <div className="rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm">
-                  <p className="font-medium text-gray-700">Mã vận đơn: {order.tracking_number}</p>
+                  <p className="font-medium text-gray-700">
+                    Mã vận đơn: {order.tracking_number}
+                  </p>
                   {order.shipping_provider ? (
-                    <p className="mt-1 text-gray-500">Đơn vị VC: {order.shipping_provider}</p>
+                    <p className="mt-1 text-gray-500">
+                      Đơn vị VC: {order.shipping_provider}
+                    </p>
                   ) : null}
                 </div>
               ) : null}
@@ -649,7 +682,10 @@ function OrderDetailPage() {
             </p>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setAcceptDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setAcceptDialogOpen(false)}
+            >
               Hủy
             </Button>
             <Button
@@ -657,7 +693,9 @@ function OrderDetailPage() {
               onClick={() => acceptMutation.mutate()}
               disabled={acceptMutation.isPending}
             >
-              {acceptMutation.isPending ? "Đang xử lý..." : "Xác nhận đã nhận hàng"}
+              {acceptMutation.isPending
+                ? "Đang xử lý..."
+                : "Xác nhận đã nhận hàng"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -737,11 +775,15 @@ function OrderDetailPage() {
           </DialogHeader>
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể
+              hoàn tác.
             </p>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setCancelDialogOpen(false)}
+            >
               Không, giữ đơn
             </Button>
             <Button

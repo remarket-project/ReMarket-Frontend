@@ -1,14 +1,18 @@
 import { Banknote, Info, Shield, Truck } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 import type { PaymentMethod } from "@/client"
+import { cn } from "@/lib/utils"
 
 interface PaymentMethodSelectorProps {
   value: PaymentMethod
   onChange: (value: PaymentMethod) => void
 }
 
-const options: { value: PaymentMethod; label: string; desc: string; icon: typeof Banknote }[] = [
+const options: {
+  value: PaymentMethod
+  label: string
+  desc: string
+  icon: typeof Banknote
+}[] = [
   {
     value: "wallet",
     label: "Thanh toán từ ví",
@@ -23,7 +27,10 @@ const options: { value: PaymentMethod; label: string; desc: string; icon: typeof
   },
 ]
 
-export default function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) {
+export default function PaymentMethodSelector({
+  value,
+  onChange,
+}: PaymentMethodSelectorProps) {
   return (
     <div className="space-y-2.5">
       <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1">
@@ -48,14 +55,25 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
               <Icon
                 className={cn(
                   "mt-0.5 size-4.5 shrink-0",
-                  selected ? "text-blue-600 dark:text-blue-400" : "text-gray-400",
+                  selected
+                    ? "text-blue-600 dark:text-blue-400"
+                    : "text-gray-400",
                 )}
               />
               <div>
-                <p className={cn("text-xs font-semibold", selected ? "text-blue-700 dark:text-blue-300" : "text-gray-900 dark:text-gray-100")}>
+                <p
+                  className={cn(
+                    "text-xs font-semibold",
+                    selected
+                      ? "text-blue-700 dark:text-blue-300"
+                      : "text-gray-900 dark:text-gray-100",
+                  )}
+                >
                   {opt.label}
                 </p>
-                <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 leading-snug">{opt.desc}</p>
+                <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 leading-snug">
+                  {opt.desc}
+                </p>
               </div>
             </button>
           )
@@ -67,9 +85,12 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
           <div className="flex items-start gap-2">
             <Info className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
-              <h5 className="text-[11px] font-semibold text-amber-900 dark:text-amber-300">Lưu ý về COD</h5>
+              <h5 className="text-[11px] font-semibold text-amber-900 dark:text-amber-300">
+                Lưu ý về COD
+              </h5>
               <p className="text-[10px] text-amber-700 dark:text-amber-455 mt-0.5 leading-relaxed">
-                Đồng kiểm hàng cùng shipper. Khi đã nhận và thanh toán, đơn hàng hoàn tất và không hỗ trợ khiếu nại.
+                Đồng kiểm hàng cùng shipper. Khi đã nhận và thanh toán, đơn hàng
+                hoàn tất và không hỗ trợ khiếu nại.
               </p>
             </div>
           </div>
@@ -81,9 +102,12 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
           <div className="flex items-start gap-2">
             <Shield className="mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400" />
             <div>
-              <h5 className="text-[11px] font-semibold text-blue-900 dark:text-blue-300">Bảo vệ ký quỹ (Escrow)</h5>
+              <h5 className="text-[11px] font-semibold text-blue-900 dark:text-blue-300">
+                Bảo vệ ký quỹ (Escrow)
+              </h5>
               <p className="text-[10px] text-blue-700 dark:text-blue-455 mt-0.5 leading-relaxed">
-                ReMarket giữ tiền an toàn cho đến khi bạn nhận được hàng và hỗ trợ trả hàng hoàn tiền trong 7 ngày.
+                ReMarket giữ tiền an toàn cho đến khi bạn nhận được hàng và hỗ
+                trợ trả hàng hoàn tiền trong 7 ngày.
               </p>
             </div>
           </div>

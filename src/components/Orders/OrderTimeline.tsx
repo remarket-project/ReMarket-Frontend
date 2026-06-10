@@ -1,4 +1,12 @@
-import { AlertTriangle, BadgeCheck, Package, RotateCcw, ShoppingCart, Truck, XCircle } from "lucide-react"
+import {
+  AlertTriangle,
+  BadgeCheck,
+  Package,
+  RotateCcw,
+  ShoppingCart,
+  Truck,
+  XCircle,
+} from "lucide-react"
 
 import type { OrderRead } from "@/client"
 

@@ -206,7 +206,9 @@ function CreateListingStep1({ form }: Step1Props) {
                     </span>
                   </div>
                 </FormControl>
-                <FormDescription>Đặt mức giá mong muốn của bạn theo VNĐ</FormDescription>
+                <FormDescription>
+                  Đặt mức giá mong muốn của bạn theo VNĐ
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -223,9 +225,9 @@ function CreateListingStep1({ form }: Step1Props) {
               <FormControl>
                 <div className="flex items-center space-x-2 mt-2">
                   <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:bg-green-600"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="data-[state=checked]:bg-green-600"
                   />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     {field.value ? "Có" : "Không"}

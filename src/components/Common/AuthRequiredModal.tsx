@@ -44,7 +44,9 @@ export function AuthRequiredModal({
 
   if (!open) return null
 
-  const loginSearch = redirectAfter ? `?redirect=${encodeURIComponent(redirectAfter)}` : ""
+  const loginSearch = redirectAfter
+    ? `?redirect=${encodeURIComponent(redirectAfter)}`
+    : ""
   const loginHref = `/login${loginSearch}`
   const signupHref = "/signup"
 

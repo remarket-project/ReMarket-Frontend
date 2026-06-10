@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import * as z from "zod"
 
 import { ListingsService } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import CreateListingStep1 from "@/components/Items/Step1BasicInfo"
 import CreateListingStep2 from "@/components/Items/Step2Description"
 import CreateListingStep3 from "@/components/Items/Step3Images"
@@ -32,8 +33,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Progress } from "@/components/ui/progress"
 import { Form } from "@/components/ui/form"
+import { Progress } from "@/components/ui/progress"
 
 function formatVND(value: number) {
   if (!value || Number.isNaN(value) || value <= 0) return "0 ₫"
@@ -68,7 +69,10 @@ const listingFormSchema = z.object({
     .min(1, "Yêu cầu ít nhất 1 ảnh"),
   confirmAccuracy: z
     .boolean()
-    .refine((value) => value, "Vui lòng xác nhận tính chính xác của thông tin đăng bán."),
+    .refine(
+      (value) => value,
+      "Vui lòng xác nhận tính chính xác của thông tin đăng bán.",
+    ),
   agreeTerms: z
     .boolean()
     .refine(
@@ -309,7 +313,7 @@ function CreateListingPage() {
       setCreatedListingId(created.id)
       setShowSuccessModal(true)
     } catch (error: any) {
-      toast.error(error?.body?.detail || "Đăng tin thất bại. Vui lòng thử lại.")
+      toast.error(extractErrorMessage(error, "Đăng tin thất bại. Vui lòng thử lại."))
     } finally {
       setIsSubmitting(false)
     }
@@ -350,165 +354,169 @@ function CreateListingPage() {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]"
-        onKeyDown={(event) => {
-          if (
-            event.key === "Enter" &&
-            !event.shiftKey &&
-            event.currentTarget instanceof HTMLFormElement &&
-            event.target instanceof HTMLElement &&
-            event.target.tagName !== "TEXTAREA" &&
-            currentStep < totalSteps
-          ) {
-            event.preventDefault()
-            void handleNextStep()
-          }
-        }}
-      >
-        <Card className="border-border bg-card shadow-sm rounded-2xl text-card-foreground">
-          <CardHeader>
-            <CardTitle className="text-foreground">
-              {steps[currentStep - 1].label}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {currentStep === 1 && <CreateListingStep1 form={form} />}
-            {currentStep === 2 && <CreateListingStep2 form={form} />}
-            {currentStep === 3 && <CreateListingStep3 form={form} />}
-            {currentStep === 4 && <CreateListingStep3Location form={form} />}
-            {currentStep === 5 && <CreateListingStep4 form={form} />}
+          onKeyDown={(event) => {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              event.currentTarget instanceof HTMLFormElement &&
+              event.target instanceof HTMLElement &&
+              event.target.tagName !== "TEXTAREA" &&
+              currentStep < totalSteps
+            ) {
+              event.preventDefault()
+              void handleNextStep()
+            }
+          }}
+        >
+          <Card className="border-border bg-card shadow-sm rounded-2xl text-card-foreground">
+            <CardHeader>
+              <CardTitle className="text-foreground">
+                {steps[currentStep - 1].label}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {currentStep === 1 && <CreateListingStep1 form={form} />}
+              {currentStep === 2 && <CreateListingStep2 form={form} />}
+              {currentStep === 3 && <CreateListingStep3 form={form} />}
+              {currentStep === 4 && <CreateListingStep3Location form={form} />}
+              {currentStep === 5 && <CreateListingStep4 form={form} />}
 
-            <div className="mt-8 flex justify-between border-t border-border pt-6">
-              <Button
-                variant="outline"
-                className="border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                onClick={handlePreviousStep}
-                disabled={currentStep === 1}
-                type="button"
-              >
-                <ArrowLeft className="mr-1.5 size-4" />
-                Quay lại
-              </Button>
-
-              {currentStep < totalSteps ? (
+              <div className="mt-8 flex justify-between border-t border-border pt-6">
                 <Button
-                  className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] cursor-pointer"
-                  onClick={handleNextStep}
+                  variant="outline"
+                  className="border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                  onClick={handlePreviousStep}
+                  disabled={currentStep === 1}
                   type="button"
                 >
-                  Tiếp theo
-                  <ChevronRight className="ml-1.5 size-4" />
+                  <ArrowLeft className="mr-1.5 size-4" />
+                  Quay lại
                 </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-[#059669] text-white hover:bg-[#047857] font-semibold min-w-[140px] cursor-pointer"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Đang đăng...
-                    </>
-                  ) : (
-                    <>
-                      <Rocket className="mr-2 size-4" />
-                      Đăng tin ngay
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card className="sticky top-20 h-fit border-border bg-card shadow-sm rounded-2xl text-card-foreground">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base font-bold text-foreground">
-              Xem trước
-            </CardTitle>
-            {/* Auto-save badge */}
-            <span className="flex items-center gap-1 text-[10px] text-[#059669] font-semibold bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full">
-              <CheckCircle2 className="size-3" />
-              Đã lưu nháp
-            </span>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4 border-t border-border">
-            {/* Image preview */}
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-muted">
-              {images[0]?.url ? (
-                <img
-                  src={images[0].url}
-                  className="h-full w-full object-cover"
-                  alt="Ảnh chính"
-                />
+                {currentStep < totalSteps ? (
+                  <Button
+                    className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] cursor-pointer"
+                    onClick={handleNextStep}
+                    type="button"
+                  >
+                    Tiếp theo
+                    <ChevronRight className="ml-1.5 size-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-[#059669] text-white hover:bg-[#047857] font-semibold min-w-[140px] cursor-pointer"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                        Đang đăng...
+                      </>
+                    ) : (
+                      <>
+                        <Rocket className="mr-2 size-4" />
+                        Đăng tin ngay
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="sticky top-20 h-fit border-border bg-card shadow-sm rounded-2xl text-card-foreground">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-base font-bold text-foreground">
+                Xem trước
+              </CardTitle>
+              {/* Auto-save badge */}
+              <span className="flex items-center gap-1 text-[10px] text-[#059669] font-semibold bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full">
+                <CheckCircle2 className="size-3" />
+                Đã lưu nháp
+              </span>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-4 border-t border-border">
+              {/* Image preview */}
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-muted">
+                {images[0]?.url ? (
+                  <img
+                    src={images[0].url}
+                    className="h-full w-full object-cover"
+                    alt="Ảnh chính"
+                  />
+                ) : (
+                  <div className="flex h-full flex-col items-center justify-center gap-2">
+                    <Package className="size-10 text-[#D8E2EF]" />
+                    <span className="text-xs text-muted-foreground font-medium">
+                      Chưa có ảnh
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              {title ? (
+                <p className="font-bold text-foreground text-sm line-clamp-2 leading-relaxed">
+                  {title}
+                </p>
               ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-2">
-                  <Package className="size-10 text-[#D8E2EF]" />
-                  <span className="text-xs text-muted-foreground font-medium">
-                    Chưa có ảnh
+                <p className="text-muted-foreground/60 text-xs italic">
+                  Chưa nhập tiêu đề
+                </p>
+              )}
+
+              {price > 0 ? (
+                <p className="text-base font-extrabold text-[#2563EB]">
+                  {formatVND(price)}{" "}
+                  {isNegotiable && (
+                    <span className="text-xs font-normal text-muted-foreground">
+                      (Có thương lượng)
+                    </span>
+                  )}
+                </p>
+              ) : (
+                <p className="text-muted-foreground/60 text-xs italic">
+                  Chưa nhập giá
+                </p>
+              )}
+
+              {condition && (
+                <span className="inline-flex rounded-full bg-[#EFF6FF] dark:bg-[#EFF6FF]/10 px-2.5 py-0.5 text-[10px] font-bold text-[#2563EB] dark:text-blue-400 uppercase tracking-wider">
+                  {conditionLabel[condition]}
+                </span>
+              )}
+              {province && (
+                <p className="text-xs text-muted-foreground font-medium">
+                  📍 {province}
+                </p>
+              )}
+
+              {/* Completeness */}
+              <div className="space-y-2 border-t border-border pt-3 mt-4">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground font-medium">
+                    Mức độ hoàn thiện
+                  </span>
+                  <span
+                    className={`font-bold ${completeness >= 80 ? "text-[#059669]" : "text-[#D97706]"}`}
+                  >
+                    {completeness}%
                   </span>
                 </div>
-              )}
-            </div>
-
-            {/* Info */}
-            {title ? (
-              <p className="font-bold text-foreground text-sm line-clamp-2 leading-relaxed">
-                {title}
-              </p>
-            ) : (
-              <p className="text-muted-foreground/60 text-xs italic">Chưa nhập tiêu đề</p>
-            )}
-
-            {price > 0 ? (
-              <p className="text-base font-extrabold text-[#2563EB]">
-                {formatVND(price)}{" "}
-                {isNegotiable && (
-                  <span className="text-xs font-normal text-muted-foreground">
-                    (Có thương lượng)
-                  </span>
-                )}
-              </p>
-            ) : (
-              <p className="text-muted-foreground/60 text-xs italic">Chưa nhập giá</p>
-            )}
-
-            {condition && (
-              <span className="inline-flex rounded-full bg-[#EFF6FF] dark:bg-[#EFF6FF]/10 px-2.5 py-0.5 text-[10px] font-bold text-[#2563EB] dark:text-blue-400 uppercase tracking-wider">
-                {conditionLabel[condition]}
-              </span>
-            )}
-            {province && (
-              <p className="text-xs text-muted-foreground font-medium">
-                📍 {province}
-              </p>
-            )}
-
-            {/* Completeness */}
-            <div className="space-y-2 border-t border-border pt-3 mt-4">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground font-medium">
-                  Mức độ hoàn thiện
-                </span>
-                <span
-                  className={`font-bold ${completeness >= 80 ? "text-[#059669]" : "text-[#D97706]"}`}
-                >
-                  {completeness}%
-                </span>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      completeness >= 80 ? "bg-[#059669]" : "bg-[#2563EB]"
+                    }`}
+                    style={{ width: `${completeness}%` }}
+                  />
+                </div>
               </div>
-              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    completeness >= 80 ? "bg-[#059669]" : "bg-[#2563EB]"
-                  }`}
-                  style={{ width: `${completeness}%` }}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </form>
-    </Form>
+            </CardContent>
+          </Card>
+        </form>
+      </Form>
 
       {/* Success Dialog */}
       <Dialog

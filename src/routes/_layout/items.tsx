@@ -27,7 +27,6 @@ import { DataTable } from "@/components/Common/DataTable"
 import { columns } from "@/components/Items/columns"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import { Badge } from "@/components/ui/badge"
-import useAuth from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -44,6 +43,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import useAuth from "@/hooks/useAuth"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type SortMode = "newest" | "oldest" | "price_asc" | "price_desc" | "a-z"
@@ -73,9 +73,13 @@ const itemsSearchSchema = z.object({
   categoryId: z.string().catch(""),
   minPrice: z.string().catch(""),
   maxPrice: z.string().catch(""),
-  condition: z.enum(["all","brand_new","like_new","good","fair","poor"]).catch("all"),
-  sort: z.enum(["newest","oldest","price_asc","price_desc","a-z"]).catch("newest"),
-  view: z.enum(["grid","table"]).catch("grid"),
+  condition: z
+    .enum(["all", "brand_new", "like_new", "good", "fair", "poor"])
+    .catch("all"),
+  sort: z
+    .enum(["newest", "oldest", "price_asc", "price_desc", "a-z"])
+    .catch("newest"),
+  view: z.enum(["grid", "table"]).catch("grid"),
   page: z.string().catch("1"),
 })
 
@@ -93,7 +97,6 @@ function getItemsQueryOptions() {
       }
     },
     queryKey: ["items"],
-    staleTime: 2 * 60 * 1000,
   }
 }
 
@@ -101,13 +104,14 @@ function getCategoriesQueryOptions() {
   return {
     queryFn: async () => {
       try {
-        return await CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 100 })
+        return await CategoriesService.listCategoriesApiV1CategoriesGet({
+          limit: 100,
+        })
       } catch {
         return { data: [] }
       }
     },
     queryKey: ["categories"],
-    staleTime: 5 * 60 * 1000,
   }
 }
 
@@ -290,7 +294,10 @@ function ItemsSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="rounded-[22px] border border-[#D8E2EF] overflow-hidden bg-white shadow-sm">
+        <div
+          key={i}
+          className="rounded-[22px] border border-[#D8E2EF] overflow-hidden bg-white shadow-sm"
+        >
           <div className="aspect-[4/3] animate-pulse bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE]" />
           <div className="p-4 space-y-2.5">
             <div className="h-4 w-3/4 rounded animate-pulse bg-[#EFF6FF]" />
@@ -310,7 +317,9 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-slate-50 shadow-inner">
         <Search className="size-8 text-slate-300" />
       </div>
-      <h3 className="text-lg font-bold text-[#102A43]">Không tìm thấy kết quả</h3>
+      <h3 className="text-lg font-bold text-[#102A43]">
+        Không tìm thấy kết quả
+      </h3>
       <p className="mt-1.5 max-w-xs mx-auto text-sm text-[#5B7083]">
         Hãy thử bỏ bớt bộ lọc hoặc thay đổi từ khóa tìm kiếm.
       </p>
@@ -325,20 +334,86 @@ function EmptyState({ onReset }: { onReset: () => void }) {
 }
 
 const hardcodedCategories = [
-  { name: "Công nghệ", slug: "cong-nghe", icon: "📱", color: "bg-blue-50 text-blue-600", desc: "Điện thoại, laptop, máy tính bảng & phụ kiện" },
-  { name: "Gia dụng", slug: "gia-dung", icon: "🏠", color: "bg-amber-50 text-amber-600", desc: "Đồ dùng nhà bếp, nội thất & thiết bị gia đình" },
-  { name: "Thời trang", slug: "thoi-trang", icon: "👕", color: "bg-rose-50 text-rose-600", desc: "Quần áo, giày dép, túi xách & phụ kiện" },
-  { name: "Máy ảnh", slug: "may-anh", icon: "📷", color: "bg-purple-50 text-purple-600", desc: "Máy ảnh, ống kính & thiết bị nhiếp ảnh" },
-  { name: "Gaming", slug: "gaming", icon: "🎮", color: "bg-green-50 text-green-600", desc: "Console, game & phụ kiện chơi game" },
-  { name: "Đời sống", slug: "doi-song", icon: "🌿", color: "bg-emerald-50 text-emerald-600", desc: "Đồ dùng cá nhân, làm đẹp & sức khỏe" },
-  { name: "Thể thao", slug: "the-thao", icon: "⚽", color: "bg-orange-50 text-orange-600", desc: "Dụng cụ thể thao, xe đạp & thiết bị ngoài trời" },
-  { name: "Xe cộ", slug: "xe-co", icon: "🚗", color: "bg-cyan-50 text-cyan-600", desc: "Xe máy, ô tô & phụ tùng" },
-  { name: "Sách", slug: "sach", icon: "📚", color: "bg-yellow-50 text-yellow-600", desc: "Sách các loại, truyện & tài liệu học tập" },
-  { name: "Âm nhạc", slug: "am-nhac", icon: "🎵", color: "bg-indigo-50 text-indigo-600", desc: "Nhạc cụ, thiết bị âm thanh & phụ kiện" },
+  {
+    name: "Công nghệ",
+    slug: "cong-nghe",
+    icon: "📱",
+    color: "bg-blue-50 text-blue-600",
+    desc: "Điện thoại, laptop, máy tính bảng & phụ kiện",
+  },
+  {
+    name: "Gia dụng",
+    slug: "gia-dung",
+    icon: "🏠",
+    color: "bg-amber-50 text-amber-600",
+    desc: "Đồ dùng nhà bếp, nội thất & thiết bị gia đình",
+  },
+  {
+    name: "Thời trang",
+    slug: "thoi-trang",
+    icon: "👕",
+    color: "bg-rose-50 text-rose-600",
+    desc: "Quần áo, giày dép, túi xách & phụ kiện",
+  },
+  {
+    name: "Máy ảnh",
+    slug: "may-anh",
+    icon: "📷",
+    color: "bg-purple-50 text-purple-600",
+    desc: "Máy ảnh, ống kính & thiết bị nhiếp ảnh",
+  },
+  {
+    name: "Gaming",
+    slug: "gaming",
+    icon: "🎮",
+    color: "bg-green-50 text-green-600",
+    desc: "Console, game & phụ kiện chơi game",
+  },
+  {
+    name: "Đời sống",
+    slug: "doi-song",
+    icon: "🌿",
+    color: "bg-emerald-50 text-emerald-600",
+    desc: "Đồ dùng cá nhân, làm đẹp & sức khỏe",
+  },
+  {
+    name: "Thể thao",
+    slug: "the-thao",
+    icon: "⚽",
+    color: "bg-orange-50 text-orange-600",
+    desc: "Dụng cụ thể thao, xe đạp & thiết bị ngoài trời",
+  },
+  {
+    name: "Xe cộ",
+    slug: "xe-co",
+    icon: "🚗",
+    color: "bg-cyan-50 text-cyan-600",
+    desc: "Xe máy, ô tô & phụ tùng",
+  },
+  {
+    name: "Sách",
+    slug: "sach",
+    icon: "📚",
+    color: "bg-yellow-50 text-yellow-600",
+    desc: "Sách các loại, truyện & tài liệu học tập",
+  },
+  {
+    name: "Âm nhạc",
+    slug: "am-nhac",
+    icon: "🎵",
+    color: "bg-indigo-50 text-indigo-600",
+    desc: "Nhạc cụ, thiết bị âm thanh & phụ kiện",
+  },
 ]
 
 function conditionLabel(condition: string) {
-  const labels: Record<string, string> = { brand_new: "Mới nguyên", like_new: "Như mới", good: "Tốt", fair: "Khá", poor: "Kém" }
+  const labels: Record<string, string> = {
+    brand_new: "Mới nguyên",
+    like_new: "Như mới",
+    good: "Tốt",
+    fair: "Khá",
+    poor: "Kém",
+  }
   return labels[condition] ?? condition.split("_").join(" ")
 }
 
@@ -365,11 +440,11 @@ function resolveCategorySlugToDbSlug(slug: string): string {
     "gia-dung": "do-gia-dung",
     "thoi-trang": "thoi-trang",
     "may-anh": "dien-tu-cong-nghe",
-    "gaming": "dien-tu-cong-nghe",
+    gaming: "dien-tu-cong-nghe",
     "doi-song": "khac",
     "the-thao": "do-the-thao",
     "xe-co": "xe-co",
-    "sach": "sach-hoc-lieu",
+    sach: "sach-hoc-lieu",
     "am-nhac": "khac",
   }
   return mapping[slug] ?? slug
@@ -384,7 +459,7 @@ function resolveDbSlugToFrontendSlug(dbSlug: string): string {
     "xe-co": "xe-co",
     "do-the-thao": "the-thao",
     "sach-hoc-lieu": "sach",
-    "khac": "doi-song",
+    khac: "doi-song",
   }
   return mapping[dbSlug] ?? dbSlug
 }
@@ -412,14 +487,18 @@ function ItemsContent() {
     () => allCategories.find((cat: any) => cat.slug === resolvedDbSlug),
     [allCategories, resolvedDbSlug],
   )
-  const effectiveCategoryId = (search.categoryId === "all" ? "" : search.categoryId) || (slugCategory?.id as string) || ""
+  const effectiveCategoryId =
+    (search.categoryId === "all" ? "" : search.categoryId) ||
+    (slugCategory?.id as string) ||
+    ""
 
   // 2. Compute derived values
   const query = search.q?.trim() ?? ""
   const categoryId = effectiveCategoryId
   const minPrice = search.minPrice ?? ""
   const maxPrice = search.maxPrice ?? ""
-  const conditionMode: ConditionMode = (search.condition as ConditionMode) ?? "all"
+  const conditionMode: ConditionMode =
+    (search.condition as ConditionMode) ?? "all"
   const sortMode: SortMode = (search.sort as SortMode) ?? "newest"
   const viewMode: ViewMode = (search.view as ViewMode) ?? "grid"
   const currentPage = Math.max(1, Number(search.page) || 1)
@@ -431,9 +510,16 @@ function ItemsContent() {
     const maxP = maxPrice ? Number(maxPrice) : Infinity
 
     const list = allListings.filter((item: ListingRead) => {
-      if (q && !item.title.toLowerCase().includes(q) && !item.description?.toLowerCase().includes(q)) return false
-      if (conditionMode !== "all" && item.condition_grade !== conditionMode) return false
-      if (categoryId && categoryId !== "all" && item.category_id !== categoryId) return false
+      if (
+        q &&
+        !item.title.toLowerCase().includes(q) &&
+        !item.description?.toLowerCase().includes(q)
+      )
+        return false
+      if (conditionMode !== "all" && item.condition_grade !== conditionMode)
+        return false
+      if (categoryId && categoryId !== "all" && item.category_id !== categoryId)
+        return false
       const price = Number(item.price) || 0
       if (price < minP || price > maxP) return false
       return true
@@ -441,13 +527,23 @@ function ItemsContent() {
 
     return list.sort((a: ListingRead, b: ListingRead) => {
       if (sortMode === "a-z") return a.title.localeCompare(b.title)
-      if (sortMode === "price_asc") return (Number(a.price) || 0) - (Number(b.price) || 0)
-      if (sortMode === "price_desc") return (Number(b.price) || 0) - (Number(a.price) || 0)
+      if (sortMode === "price_asc")
+        return (Number(a.price) || 0) - (Number(b.price) || 0)
+      if (sortMode === "price_desc")
+        return (Number(b.price) || 0) - (Number(a.price) || 0)
       const aTime = a.created_at ? new Date(a.created_at).getTime() : 0
       const bTime = b.created_at ? new Date(b.created_at).getTime() : 0
       return sortMode === "newest" ? bTime - aTime : aTime - bTime
     })
-  }, [allListings, query, conditionMode, categoryId, minPrice, maxPrice, sortMode])
+  }, [
+    allListings,
+    query,
+    conditionMode,
+    categoryId,
+    minPrice,
+    maxPrice,
+    sortMode,
+  ])
 
   const now = Date.now()
   const weekMs = 7 * 24 * 60 * 60 * 1000
@@ -507,15 +603,24 @@ function ItemsContent() {
   }
 
   const matchingCat = useMemo(() => {
-    const slug = search.categorySlug || (effectiveCategoryId ? resolveDbSlugToFrontendSlug(allCategories.find((cat: any) => cat.id === effectiveCategoryId)?.slug || "") : "")
+    const slug =
+      search.categorySlug ||
+      (effectiveCategoryId
+        ? resolveDbSlugToFrontendSlug(
+            allCategories.find((cat: any) => cat.id === effectiveCategoryId)
+              ?.slug || "",
+          )
+        : "")
     return hardcodedCategories.find((c) => c.slug === slug)
   }, [search.categorySlug, effectiveCategoryId, allCategories])
 
   const setQuery = (v: string) => goTo({ q: v, page: "1" })
-  const setCategoryId = (v: string) => goTo({ categoryId: v, categorySlug: "", page: "1" })
+  const setCategoryId = (v: string) =>
+    goTo({ categoryId: v, categorySlug: "", page: "1" })
   const setMinPrice = (v: string) => goTo({ minPrice: v, page: "1" })
   const setMaxPrice = (v: string) => goTo({ maxPrice: v, page: "1" })
-  const setConditionMode = (v: ConditionMode) => goTo({ condition: v, page: "1" })
+  const setConditionMode = (v: ConditionMode) =>
+    goTo({ condition: v, page: "1" })
   const setSortMode = (v: SortMode) => goTo({ sort: v, page: "1" })
   const setViewMode = (v: ViewMode) => goTo({ view: v })
   const setPage = (p: number) => goTo({ page: String(p) })
@@ -557,9 +662,13 @@ function ItemsContent() {
     <div className="space-y-6">
       {/* ── Breadcrumb ── */}
       <div className="flex items-center gap-2 text-xs font-medium text-[#5B7083] px-1 pt-1">
-        <Link to="/" className="hover:text-[#2563EB] transition-colors">Trang chủ</Link>
+        <Link to="/" className="hover:text-[#2563EB] transition-colors">
+          Trang chủ
+        </Link>
         <ChevronRight className="size-3 text-slate-300" />
-        <Link to="/items" className="hover:text-[#2563EB] transition-colors">Tất cả sản phẩm</Link>
+        <Link to="/items" className="hover:text-[#2563EB] transition-colors">
+          Tất cả sản phẩm
+        </Link>
         {matchingCat && (
           <>
             <ChevronRight className="size-3 text-slate-300" />
@@ -572,17 +681,37 @@ function ItemsContent() {
       <section className="rounded-[26px] border border-[#D8E2EF] bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <span className={`flex size-14 items-center justify-center rounded-2xl text-3xl shadow-inner ${
-              matchingCat ? matchingCat.color : "bg-slate-50 text-slate-500"
-            }`}>
-              {matchingCat ? matchingCat.icon : effectiveCategoryId ? "📁" : query ? "🔍" : "📦"}
+            <span
+              className={`flex size-14 items-center justify-center rounded-2xl text-3xl shadow-inner ${
+                matchingCat ? matchingCat.color : "bg-slate-50 text-slate-500"
+              }`}
+            >
+              {matchingCat
+                ? matchingCat.icon
+                : effectiveCategoryId
+                  ? "📁"
+                  : query
+                    ? "🔍"
+                    : "📦"}
             </span>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-[#102A43]">
-                {matchingCat ? matchingCat.name : effectiveCategoryId ? (categoryMap.get(effectiveCategoryId) || "Danh mục") : query ? `Kết quả cho "${query}"` : "Tất cả sản phẩm"}
+                {matchingCat
+                  ? matchingCat.name
+                  : effectiveCategoryId
+                    ? categoryMap.get(effectiveCategoryId) || "Danh mục"
+                    : query
+                      ? `Kết quả cho "${query}"`
+                      : "Tất cả sản phẩm"}
               </h1>
               <p className="mt-1 text-sm text-[#5B7083]">
-                {matchingCat ? matchingCat.desc : effectiveCategoryId ? `Khám phá các tin đăng thuộc danh mục ${categoryMap.get(effectiveCategoryId) || ""}` : query ? "Tin đăng phù hợp với tìm kiếm của bạn" : `Khám phá ${stats.total} tin đăng với escrow bảo chứng`}
+                {matchingCat
+                  ? matchingCat.desc
+                  : effectiveCategoryId
+                    ? `Khám phá các tin đăng thuộc danh mục ${categoryMap.get(effectiveCategoryId) || ""}`
+                    : query
+                      ? "Tin đăng phù hợp với tìm kiếm của bạn"
+                      : `Khám phá ${stats.total} tin đăng với escrow bảo chứng`}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium text-[#5B7083]">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF6FF] px-3 py-1 text-[#2563EB]">
@@ -730,15 +859,28 @@ function ItemsContent() {
               {query && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
                   Từ khóa: "{query}"
-                  <button type="button" onClick={() => setQuery("")} className="hover:text-slate-900 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
                     <X className="size-3 shrink-0" />
                   </button>
                 </span>
               )}
               {effectiveCategoryId && effectiveCategoryId !== "all" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
-                  Danh mục: {categoryMap.get(effectiveCategoryId) ?? slugCategory?.name ?? "Đang tải..."}
-                  <button type="button" onClick={() => goTo({ categoryId: "", categorySlug: "", page: "1" })} className="hover:text-slate-900 cursor-pointer">
+                  Danh mục:{" "}
+                  {categoryMap.get(effectiveCategoryId) ??
+                    slugCategory?.name ??
+                    "Đang tải..."}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goTo({ categoryId: "", categorySlug: "", page: "1" })
+                    }
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
                     <X className="size-3 shrink-0" />
                   </button>
                 </span>
@@ -746,15 +888,32 @@ function ItemsContent() {
               {conditionMode !== "all" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
                   Tình trạng: {conditionLabel(conditionMode)}
-                  <button type="button" onClick={() => setConditionMode("all")} className="hover:text-slate-900 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => setConditionMode("all")}
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
                     <X className="size-3 shrink-0" />
                   </button>
                 </span>
               )}
               {(minPrice || maxPrice) && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
-                  Giá: {minPrice ? `${Number(minPrice).toLocaleString("vi-VN")}₫` : "0₫"} – {maxPrice ? `${Number(maxPrice).toLocaleString("vi-VN")}₫` : "∞"}
-                  <button type="button" onClick={() => goTo({ minPrice: "", maxPrice: "", page: "1" })} className="hover:text-slate-900 cursor-pointer">
+                  Giá:{" "}
+                  {minPrice
+                    ? `${Number(minPrice).toLocaleString("vi-VN")}₫`
+                    : "0₫"}{" "}
+                  –{" "}
+                  {maxPrice
+                    ? `${Number(maxPrice).toLocaleString("vi-VN")}₫`
+                    : "∞"}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goTo({ minPrice: "", maxPrice: "", page: "1" })
+                    }
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
                     <X className="size-3 shrink-0" />
                   </button>
                 </span>

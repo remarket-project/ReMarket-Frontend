@@ -43,7 +43,10 @@ const formSchema = z.object({
     .optional(),
   email: z.string().email("Địa chỉ email không hợp lệ"),
   phone: z.string().max(15, "Số điện thoại quá dài").optional(),
-  bio: z.string().max(200, "Mô tả bản thân không được vượt quá 200 ký tự").optional(),
+  bio: z
+    .string()
+    .max(200, "Mô tả bản thân không được vượt quá 200 ký tự")
+    .optional(),
   avatar_url: z.string().optional(),
   province: z.string().optional(),
   district: z.string().optional(),
@@ -131,7 +134,8 @@ const UserInformation = () => {
             Hồ sơ cá nhân
           </h3>
           <p className="text-xs text-blue-900/60">
-            Cập nhật ảnh đại diện, tiểu sử, địa điểm giao dịch và thông tin cá nhân.
+            Cập nhật ảnh đại diện, tiểu sử, địa điểm giao dịch và thông tin cá
+            nhân.
           </p>
         </div>
         {!editMode && (
@@ -183,7 +187,8 @@ const UserInformation = () => {
                 )}
               </div>
               <p className="text-xs text-blue-900/60">
-                Chọn một ảnh đại diện mẫu đẹp mắt hoặc cung cấp URL ảnh tùy chỉnh của bạn.
+                Chọn một ảnh đại diện mẫu đẹp mắt hoặc cung cấp URL ảnh tùy
+                chỉnh của bạn.
               </p>
 
               {editMode && (

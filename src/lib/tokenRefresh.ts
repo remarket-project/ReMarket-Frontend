@@ -33,7 +33,7 @@ export async function refreshAccessToken(): Promise<string | null> {
     pendingRequests.forEach((callback) => callback(newAccessToken))
     pendingRequests = []
     return newAccessToken
-  } catch (error) {
+  } catch (_error) {
     // Refresh failed or token expired
     localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")

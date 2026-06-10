@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { Loader2, MessageSquare } from "lucide-react"
 
-import { ChatsService, type ChatConversationRead } from "@/client"
+import { type ChatConversationRead, ChatsService } from "@/client"
 import useAuth from "@/hooks/useAuth"
 import { ConversationListItem } from "./ConversationListItem"
 
@@ -34,7 +34,6 @@ export function ConversationList({
     queryFn: () =>
       ChatsService.listMyConversationsApiV1ChatsConversationsGet({ limit: 50 }),
     enabled: Boolean(user),
-    staleTime: 30 * 1000,
   })
 
   if (isLoading) {

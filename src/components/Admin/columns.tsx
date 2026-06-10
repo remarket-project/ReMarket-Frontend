@@ -21,13 +21,14 @@ export const columns: ColumnDef<UserTableData>[] = [
       const fullName = row.original.full_name
       return (
         <div className="flex items-center gap-2">
-          <span
-            className={cn("font-medium", !fullName && "text-slate-400")}
-          >
+          <span className={cn("font-medium", !fullName && "text-slate-400")}>
             {fullName || "N/A"}
           </span>
           {row.original.isCurrentUser && (
-            <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs">
+            <Badge
+              variant="outline"
+              className="border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs"
+            >
               Bạn
             </Badge>
           )}
@@ -46,8 +47,8 @@ export const columns: ColumnDef<UserTableData>[] = [
     accessorKey: "role",
     header: "Vai trò",
     cell: ({ row }) => {
-      const role = row.getValue("role") as string;
-      const isAdmin = role === "admin";
+      const role = row.getValue("role") as string
+      const isAdmin = role === "admin"
       return (
         <span
           className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${
@@ -58,14 +59,14 @@ export const columns: ColumnDef<UserTableData>[] = [
         >
           {isAdmin ? "Admin" : "Người dùng"}
         </span>
-      );
+      )
     },
   },
   {
     accessorKey: "is_active",
     header: "Trạng thái",
     cell: ({ row }) => {
-      const isActive = row.getValue("is_active") as boolean;
+      const isActive = row.getValue("is_active") as boolean
       return (
         <div className="flex items-center gap-1.5">
           <span
@@ -73,13 +74,15 @@ export const columns: ColumnDef<UserTableData>[] = [
               isActive ? "bg-emerald-500" : "bg-amber-500"
             }`}
           />
-          <span className={`text-xs font-medium ${
-            isActive ? "text-emerald-400" : "text-amber-400"
-          }`}>
+          <span
+            className={`text-xs font-medium ${
+              isActive ? "text-emerald-400" : "text-amber-400"
+            }`}
+          >
             {isActive ? "Đang hoạt động" : "Không hoạt động"}
           </span>
         </div>
-      );
+      )
     },
   },
   {

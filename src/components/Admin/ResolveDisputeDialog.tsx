@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { ShieldAlert, X } from "lucide-react"
+import { useState } from "react"
 
 interface ResolveDisputeProps {
   orderId: string
@@ -8,7 +8,12 @@ interface ResolveDisputeProps {
   onSubmit: (note: string) => void
 }
 
-export function ResolveDisputeDialog({ orderId, result, onClose, onSubmit }: ResolveDisputeProps) {
+export function ResolveDisputeDialog({
+  orderId,
+  result,
+  onClose,
+  onSubmit,
+}: ResolveDisputeProps) {
   const [note, setNote] = useState("")
   const isRelease = result === "release"
 
@@ -26,9 +31,13 @@ export function ResolveDisputeDialog({ orderId, result, onClose, onSubmit }: Res
       >
         <div className="flex items-center justify-between border-b border-white/[0.08] p-5">
           <div className="flex items-center gap-2">
-            <ShieldAlert className={`size-5 ${isRelease ? "text-emerald-400" : "text-red-400"}`} />
+            <ShieldAlert
+              className={`size-5 ${isRelease ? "text-emerald-400" : "text-red-400"}`}
+            />
             <h3 className="font-bold text-slate-100">
-              {isRelease ? "Xác nhận giải ngân cho Người bán" : "Xác nhận hoàn tiền cho Người mua"}
+              {isRelease
+                ? "Xác nhận giải ngân cho Người bán"
+                : "Xác nhận hoàn tiền cho Người mua"}
             </h3>
           </div>
           <button
@@ -43,21 +52,27 @@ export function ResolveDisputeDialog({ orderId, result, onClose, onSubmit }: Res
         <div className="space-y-4 p-6 text-sm leading-relaxed">
           <p className="text-slate-400">
             Bạn đang đưa ra phán quyết cho đơn hàng{" "}
-            <span className="font-mono font-bold text-slate-200">#{orderId.slice(0, 8)}</span>:
+            <span className="font-mono font-bold text-slate-200">
+              #{orderId.slice(0, 8)}
+            </span>
+            :
           </p>
-          <div className={`rounded-[12px] border p-4 font-semibold ${
-            isRelease
-              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-              : "border-red-500/30 bg-red-500/10 text-red-400"
-          }`}>
+          <div
+            className={`rounded-[12px] border p-4 font-semibold ${
+              isRelease
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                : "border-red-500/30 bg-red-500/10 text-red-400"
+            }`}
+          >
             {isRelease
               ? "Tiền sẽ được mở khóa và gửi trực tiếp vào ví của Người bán."
-              : "Tiền sẽ được hoàn trả lại ngay lập tức vào ví của Người mua."
-            }
+              : "Tiền sẽ được hoàn trả lại ngay lập tức vào ví của Người mua."}
           </div>
 
           <div className="space-y-2">
-            <label className="block font-bold text-slate-300">Lý do đưa ra phán quyết (Bắt buộc):</label>
+            <label className="block font-bold text-slate-300">
+              Lý do đưa ra phán quyết (Bắt buộc):
+            </label>
             <textarea
               required
               rows={3}
@@ -81,7 +96,9 @@ export function ResolveDisputeDialog({ orderId, result, onClose, onSubmit }: Res
             type="submit"
             disabled={!note.trim()}
             className={`rounded-[10px] px-4 py-2 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-              isRelease ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+              isRelease
+                ? "bg-emerald-600 hover:bg-emerald-700"
+                : "bg-red-600 hover:bg-red-700"
             }`}
           >
             Xác nhận phán xử

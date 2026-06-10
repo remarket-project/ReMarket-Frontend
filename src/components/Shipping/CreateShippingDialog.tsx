@@ -1,8 +1,9 @@
-import { useState } from "react"
-import { Loader2, Package, MapPin } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
+import { Loader2, MapPin, Package } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
-
+import { ShippingService } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,8 +17,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { formatVND } from "@/lib/order-utils"
-
-import { ShippingService } from "@/client"
 
 interface CreateShippingDialogProps {
   open: boolean
@@ -65,7 +64,7 @@ export default function CreateShippingDialog({
       if (onSuccess && data.order_code) onSuccess(data.order_code)
     },
     onError: (err: any) => {
-      toast.error(err?.body?.detail || err.message || "Tạo đơn vận chuyển thất bại")
+      toast.error(extractErrorMessage(err, "Tạo đơn vận chuyển thất bại"))
     },
   })
 
@@ -84,7 +83,8 @@ export default function CreateShippingDialog({
         <DialogHeader>
           <DialogTitle>Tạo đơn vận chuyển GHN</DialogTitle>
           <DialogDescription>
-            Xác nhận thông tin và tạo đơn giao hàng. Địa chỉ đã được lấy từ thông tin đặt hàng.
+            Xác nhận thông tin và tạo đơn giao hàng. Địa chỉ đã được lấy từ
+            thông tin đặt hàng.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,9 +94,15 @@ export default function CreateShippingDialog({
               <MapPin className="size-3.5" />
               Thông tin người nhận
             </p>
-            <p className="text-gray-700">{order.shipping_name} - {order.shipping_phone}</p>
+            <p className="text-gray-700">
+              {order.shipping_name} - {order.shipping_phone}
+            </p>
             <p className="mt-1 text-gray-600">{fullAddress}</p>
-            {order.shipping_note && <p className="mt-1 text-gray-500">Ghi chú: {order.shipping_note}</p>}
+            {order.shipping_note && (
+              <p className="mt-1 text-gray-500">
+                Ghi chú: {order.shipping_note}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">

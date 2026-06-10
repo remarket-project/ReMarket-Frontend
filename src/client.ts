@@ -18,11 +18,11 @@ import {
   NotificationsService,
   OffersService,
   OrdersService,
+  ReturnsService,
   ReviewsService,
+  ShippingService,
   UtilsService,
   WalletService,
-  ShippingService,
-  ReturnsService,
 } from "./client/sdk.gen"
 
 export * from "./client/types.gen"
@@ -38,11 +38,11 @@ export {
   NotificationsService,
   OffersService,
   OrdersService,
+  ReturnsService,
   ReviewsService,
+  ShippingService,
   UtilsService,
   WalletService,
-  ShippingService,
-  ReturnsService,
 }
 
 import type {

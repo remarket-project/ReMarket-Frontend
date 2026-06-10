@@ -56,15 +56,18 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 }
 
 export function canRequestReturn(order: {
-  status: string;
-  payment_method?: string | null;
-  delivered_at?: string | null;
+  status: string
+  payment_method?: string | null
+  delivered_at?: string | null
 }): boolean {
-  if (order.payment_method !== "wallet") return false;
-  if (order.status !== "delivered") return false;
-  if (!order.delivered_at) return false;
-  const daysSinceDelivery = differenceInDays(new Date(), new Date(order.delivered_at));
-  return daysSinceDelivery <= 7;
+  if (order.payment_method !== "wallet") return false
+  if (order.status !== "delivered") return false
+  if (!order.delivered_at) return false
+  const daysSinceDelivery = differenceInDays(
+    new Date(),
+    new Date(order.delivered_at),
+  )
+  return daysSinceDelivery <= 7
 }
 
 export function formatShippingFee(amount: number): string {

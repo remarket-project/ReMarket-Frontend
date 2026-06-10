@@ -1,6 +1,6 @@
-import { useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { Check, X } from "lucide-react"
+import { useState } from "react"
 
 import { CategoriesService } from "@/client"
 import useCustomToast from "@/hooks/useCustomToast"
@@ -13,7 +13,12 @@ interface CategoryFormProps {
   onSuccess: () => void
 }
 
-export function CategoryFormDialog({ mode, category, onClose, onSuccess }: CategoryFormProps) {
+export function CategoryFormDialog({
+  mode,
+  category,
+  onClose,
+  onSuccess,
+}: CategoryFormProps) {
   const { showSuccessToast, showErrorToast } = useCustomToast()
   const [name, setName] = useState(category?.name || "")
   const [slug, setSlug] = useState(category?.slug || "")
@@ -76,7 +81,9 @@ export function CategoryFormDialog({ mode, category, onClose, onSuccess }: Categ
       >
         <div className="flex items-center justify-between border-b border-white/[0.08] p-5">
           <h3 className="text-lg font-bold text-slate-100">
-            {isEdit ? "Chỉnh sửa danh mục sản phẩm" : "Tạo danh mục sản phẩm mới"}
+            {isEdit
+              ? "Chỉnh sửa danh mục sản phẩm"
+              : "Tạo danh mục sản phẩm mới"}
           </h3>
           <button
             type="button"
@@ -89,7 +96,9 @@ export function CategoryFormDialog({ mode, category, onClose, onSuccess }: Categ
 
         <div className="space-y-4 p-6 text-sm">
           <div className="space-y-1.5">
-            <label className="font-semibold text-slate-300">Tên danh mục:</label>
+            <label className="font-semibold text-slate-300">
+              Tên danh mục:
+            </label>
             <input
               required
               type="text"
@@ -100,7 +109,9 @@ export function CategoryFormDialog({ mode, category, onClose, onSuccess }: Categ
             />
           </div>
           <div className="space-y-1.5">
-            <label className="font-semibold text-slate-300">Đường dẫn URL (Slug):</label>
+            <label className="font-semibold text-slate-300">
+              Đường dẫn URL (Slug):
+            </label>
             <input
               required
               type="text"
@@ -110,11 +121,14 @@ export function CategoryFormDialog({ mode, category, onClose, onSuccess }: Categ
               className="w-full rounded-[12px] border border-white/[0.08] bg-[#1A2233] p-2.5 font-mono text-xs text-slate-100 focus:border-blue-500/40 focus:outline-none"
             />
             <span className="text-[10px] text-slate-500">
-              Slug dùng làm định danh trên URL, không chứa ký tự tiếng Việt hoặc dấu cách.
+              Slug dùng làm định danh trên URL, không chứa ký tự tiếng Việt hoặc
+              dấu cách.
             </span>
           </div>
           <div className="space-y-1.5">
-            <label className="font-semibold text-slate-300">Đường dẫn ảnh Icon (Tùy chọn):</label>
+            <label className="font-semibold text-slate-300">
+              Đường dẫn ảnh Icon (Tùy chọn):
+            </label>
             <input
               type="url"
               value={iconUrl}

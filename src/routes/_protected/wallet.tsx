@@ -50,7 +50,6 @@ function getWalletQueryOptions() {
       }
     },
     queryKey: ["wallet-dashboard"],
-    staleTime: 15 * 1000,
   }
 }
 
@@ -75,18 +74,76 @@ function when(value: string) {
   })
 }
 
-const TX_CONFIG: Record<string, { label: string; icon: any; color: string; bg: string }> = {
-  deposit: { label: "Nạp tiền", icon: PlusCircle, color: "text-emerald-600", bg: "bg-emerald-100" },
-  deposit_pending: { label: "Nạp (chờ)", icon: PlusCircle, color: "text-amber-600", bg: "bg-amber-100" },
-  withdraw: { label: "Rút tiền", icon: Wallet, color: "text-red-600", bg: "bg-red-100" },
-  withdraw_pending: { label: "Rút (chờ)", icon: Wallet, color: "text-amber-600", bg: "bg-amber-100" },
-  withdraw_completed: { label: "Rút hoàn tất", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100" },
-  withdraw_failed: { label: "Rút thất bại", icon: Wallet, color: "text-red-600", bg: "bg-red-100" },
-  escrow_lock: { label: "Ký quỹ", icon: Lock, color: "text-amber-600", bg: "bg-amber-100" },
-  escrow_fund: { label: "Ký quỹ", icon: Lock, color: "text-amber-600", bg: "bg-amber-100" },
-  escrow_release: { label: "Giải ngân", icon: Unlock, color: "text-blue-600", bg: "bg-blue-100" },
-  escrow_refund: { label: "Hoàn tiền", icon: RotateCcw, color: "text-violet-600", bg: "bg-violet-100" },
-  payment: { label: "Thanh toán", icon: CreditCard, color: "text-gray-600", bg: "bg-gray-100" },
+const TX_CONFIG: Record<
+  string,
+  { label: string; icon: any; color: string; bg: string }
+> = {
+  deposit: {
+    label: "Nạp tiền",
+    icon: PlusCircle,
+    color: "text-emerald-600",
+    bg: "bg-emerald-100",
+  },
+  deposit_pending: {
+    label: "Nạp (chờ)",
+    icon: PlusCircle,
+    color: "text-amber-600",
+    bg: "bg-amber-100",
+  },
+  withdraw: {
+    label: "Rút tiền",
+    icon: Wallet,
+    color: "text-red-600",
+    bg: "bg-red-100",
+  },
+  withdraw_pending: {
+    label: "Rút (chờ)",
+    icon: Wallet,
+    color: "text-amber-600",
+    bg: "bg-amber-100",
+  },
+  withdraw_completed: {
+    label: "Rút hoàn tất",
+    icon: CheckCircle2,
+    color: "text-emerald-600",
+    bg: "bg-emerald-100",
+  },
+  withdraw_failed: {
+    label: "Rút thất bại",
+    icon: Wallet,
+    color: "text-red-600",
+    bg: "bg-red-100",
+  },
+  escrow_lock: {
+    label: "Ký quỹ",
+    icon: Lock,
+    color: "text-amber-600",
+    bg: "bg-amber-100",
+  },
+  escrow_fund: {
+    label: "Ký quỹ",
+    icon: Lock,
+    color: "text-amber-600",
+    bg: "bg-amber-100",
+  },
+  escrow_release: {
+    label: "Giải ngân",
+    icon: Unlock,
+    color: "text-blue-600",
+    bg: "bg-blue-100",
+  },
+  escrow_refund: {
+    label: "Hoàn tiền",
+    icon: RotateCcw,
+    color: "text-violet-600",
+    bg: "bg-violet-100",
+  },
+  payment: {
+    label: "Thanh toán",
+    icon: CreditCard,
+    color: "text-gray-600",
+    bg: "bg-gray-100",
+  },
 }
 
 const TX_TYPES = Object.keys(TX_CONFIG) as Array<keyof typeof TX_CONFIG>
@@ -104,7 +161,9 @@ function WalletPage() {
   const [topupOpen, setTopupOpen] = useState(false)
   const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [txFilter, setTxFilter] = useState<TxFilter>("all")
-  const [txTypeFilter, setTxTypeFilter] = useState<string | undefined>(undefined)
+  const [txTypeFilter, setTxTypeFilter] = useState<string | undefined>(
+    undefined,
+  )
   const [txQuery, setTxQuery] = useState("")
   const [clientSecret, setClientSecret] = useState<string | null>(null)
 
@@ -115,22 +174,23 @@ function WalletPage() {
   const createPaymentIntent = useMutation({
     mutationFn: async (amount: number) => {
       const token = getToken()
-      const res = await fetch(
-        `${API_BASE}/api/v1/payment/create-deposit`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ amount }),
+      const res = await fetch(`${API_BASE}/api/v1/payment/create-deposit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify({ amount }),
+      })
       if (!res.ok) {
         const err = await res.json()
         throw new Error(err.detail || "Tạo thanh toán thất bại")
       }
-      return res.json() as Promise<{ client_secret: string; payment_intent_id: string; amount: number }>
+      return res.json() as Promise<{
+        client_secret: string
+        payment_intent_id: string
+        amount: number
+      }>
     },
     onSuccess: (data) => {
       setClientSecret(data.client_secret)
@@ -147,8 +207,7 @@ function WalletPage() {
       const isIn = amount > 0
       const matchesFilter =
         txFilter === "all" || (txFilter === "in" ? isIn : !isIn)
-      const matchesType =
-        !txTypeFilter || tx.type === txTypeFilter
+      const matchesType = !txTypeFilter || tx.type === txTypeFilter
       const description = (tx.description || "").toLowerCase()
       const orderId = (tx.order_id || "").toLowerCase()
       const matchesQuery =
@@ -296,7 +355,9 @@ function WalletPage() {
                       ? "border-[#2563EB] bg-[#DBEAFE] text-[#1D4ED8]"
                       : "border-[#D8E2EF] bg-white text-[#5B7083]"
                   }`}
-                  onClick={() => setTxTypeFilter(txTypeFilter === type ? undefined : type)}
+                  onClick={() =>
+                    setTxTypeFilter(txTypeFilter === type ? undefined : type)
+                  }
                 >
                   {TX_CONFIG[type].label}
                 </Badge>

@@ -30,7 +30,7 @@ export function useAuthRequired() {
   function requireAuth<T extends (...args: any[]) => any>(
     fn: T,
     actionLabel?: string,
-  ): (...args: Parameters<T>) => ReturnType<T> | void {
+  ): (...args: Parameters<T>) => ReturnType<T> | undefined {
     return (...args: Parameters<T>) => {
       if (!isLoggedIn()) {
         setLabel(actionLabel ?? "để sử dụng tính năng này")
@@ -57,7 +57,9 @@ export function useAuthRequired() {
         open={open}
         onClose={() => setOpen(false)}
         actionLabel={label}
-        redirectAfter={typeof window !== "undefined" ? window.location.pathname : undefined}
+        redirectAfter={
+          typeof window !== "undefined" ? window.location.pathname : undefined
+        }
       />
     )
   }

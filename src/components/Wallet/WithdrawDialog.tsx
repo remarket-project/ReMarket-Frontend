@@ -61,7 +61,8 @@ export default function WithdrawDialog({
     },
   })
 
-  const canSubmit = amount >= 50000 && amount <= 50000000 && amount <= currentBalance
+  const canSubmit =
+    amount >= 50000 && amount <= 50000000 && amount <= currentBalance
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,10 +70,9 @@ export default function WithdrawDialog({
         <DialogHeader>
           <DialogTitle>Rút tiền về tài khoản ngân hàng</DialogTitle>
           <DialogDescription>
-            Tiền được chuyển vào tài khoản Stripe Connect của bạn.
-            Sau đó bạn có thể rút về ngân hàng qua Stripe Express Dashboard.
-            Vui lòng hoàn tất Stripe Connect trong Cài đặt &gt; Thanh toán
-            trước khi rút tiền.
+            Tiền được chuyển vào tài khoản Stripe Connect của bạn. Sau đó bạn có
+            thể rút về ngân hàng qua Stripe Express Dashboard. Vui lòng hoàn tất
+            Stripe Connect trong Cài đặt &gt; Thanh toán trước khi rút tiền.
           </DialogDescription>
         </DialogHeader>
 

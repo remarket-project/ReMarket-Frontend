@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { AlertCircle, X } from "lucide-react"
+import { useState } from "react"
 
 interface RejectReasonProps {
   onClose: () => void
@@ -37,7 +37,8 @@ export function RejectReasonDialog({ onClose, onSubmit }: RejectReasonProps) {
 
         <div className="space-y-4 p-6">
           <label className="text-sm font-medium text-slate-400">
-            Vui lòng ghi rõ lý do để người bán hiểu và có thể chỉnh sửa lại bài đăng cho hợp lệ:
+            Vui lòng ghi rõ lý do để người bán hiểu và có thể chỉnh sửa lại bài
+            đăng cho hợp lệ:
           </label>
           <textarea
             required
@@ -48,7 +49,9 @@ export function RejectReasonDialog({ onClose, onSubmit }: RejectReasonProps) {
             className="w-full rounded-xl border border-white/[0.08] bg-[#1A2233] p-3.5 text-sm leading-relaxed text-slate-100 placeholder:text-slate-600 focus:border-red-500/40 focus:outline-none"
             maxLength={500}
           />
-          <div className="text-right text-[11px] text-slate-500">Tối đa 500 ký tự</div>
+          <div className="text-right text-[11px] text-slate-500">
+            Tối đa 500 ký tự
+          </div>
         </div>
 
         <div className="flex justify-end gap-3 border-t border-white/[0.08] bg-[#1A2233]/40 p-4">

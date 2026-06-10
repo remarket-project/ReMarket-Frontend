@@ -2,8 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { MessageSquare, X } from "lucide-react"
 
 import { ChatsService } from "@/client"
-import useAuth from "@/hooks/useAuth"
 import { useChat } from "@/hooks/ChatContext"
+import useAuth from "@/hooks/useAuth"
 import { ConversationList } from "./ConversationList"
 import { ConversationThread } from "./ConversationThread"
 
@@ -33,7 +33,6 @@ export function ChatWidget() {
     queryFn: () =>
       ChatsService.listMyConversationsApiV1ChatsConversationsGet({ limit: 50 }),
     enabled: isOpen && Boolean(user),
-    refetchInterval: isOpen ? 30000 : false,
   })
 
   const { data: currentConversation } = useQuery({

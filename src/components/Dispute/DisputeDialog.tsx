@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle, CheckCircle2, Loader2, Upload } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-
+import { DisputesService } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { DisputesService } from "@/client"
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
 interface DisputeDialogProps {
   orderId: string
@@ -23,7 +24,12 @@ interface DisputeDialogProps {
   defaultStep?: "confirm" | "form"
 }
 
-export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "confirm" }: DisputeDialogProps) {
+export function DisputeDialog({
+  orderId,
+  open,
+  onOpenChange,
+  defaultStep = "confirm",
+}: DisputeDialogProps) {
   const queryClient = useQueryClient()
   const [step, setStep] = useState<"confirm" | "form">(defaultStep)
 
@@ -31,6 +37,7 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
     if (open) setStep(defaultStep)
   }, [open, defaultStep])
   const [reason, setReason] = useState("")
+  const [reasonError, setReasonError] = useState("")
   const [files, setFiles] = useState<File[]>([])
 
   const acceptMutation = useMutation({
@@ -44,8 +51,11 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
       toast.success("Đã xác nhận hoàn tất đơn hàng.")
       onOpenChange(false)
     },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể hoàn tất đơn hàng."),
+    onError: (error: any) => {
+      const detail = error?.body?.detail
+      const msg = Array.isArray(detail) ? detail[0]?.msg : detail
+      toast.error(msg || error.message || "Không thể hoàn tất đơn hàng.")
+    },
   })
 
   const [uploading, setUploading] = useState(false)
@@ -59,8 +69,10 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
           for (const file of files) {
             const uploadFormData = new FormData()
             uploadFormData.append("file", file)
-            const res = await fetch("/api/v1/upload", {
+            const token = localStorage.getItem("access_token")
+            const res = await fetch(`${API_BASE}/api/v1/upload`, {
               method: "POST",
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
               body: uploadFormData,
             })
             if (!res.ok) throw new Error("Upload ảnh thất bại")
@@ -84,11 +96,15 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
       toast.success("Đã gửi khiếu nại thành công.")
       setStep("confirm")
       setReason("")
+      setReasonError("")
       setFiles([])
       onOpenChange(false)
     },
-    onError: (error: any) =>
-      toast.error(error?.body?.detail || error.message || "Không thể gửi khiếu nại."),
+    onError: (error: any) => {
+      const detail = error?.body?.detail
+      const msg = Array.isArray(detail) ? detail[0]?.msg : detail
+      toast.error(msg || error.message || "Không thể gửi khiếu nại.")
+    },
   })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +120,7 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
         if (!val) {
           setStep(defaultStep)
           setReason("")
+          setReasonError("")
           setFiles([])
         }
         onOpenChange(val)
@@ -136,7 +153,9 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
                 disabled={acceptMutation.isPending}
               >
                 <CheckCircle2 className="mr-2 size-4" />
-                {acceptMutation.isPending ? "Đang xử lý..." : "Không, hoàn tất đơn hàng"}
+                {acceptMutation.isPending
+                  ? "Đang xử lý..."
+                  : "Không, hoàn tất đơn hàng"}
               </Button>
             </DialogFooter>
           </>
@@ -153,11 +172,20 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
                 <Label htmlFor="reason">Lý do khiếu nại *</Label>
                 <Textarea
                   id="reason"
-                  placeholder="Mô tả vấn đề của bạn..."
+                  placeholder="Mô tả vấn đề của bạn (tối thiểu 10 ký tự)..."
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  onChange={(e) => {
+                    setReason(e.target.value)
+                    if (e.target.value.length >= 10) setReasonError("")
+                  }}
                   rows={4}
+                  className={reasonError ? "border-red-500" : ""}
                 />
+                {reason.trim().length > 0 && reason.trim().length < 10 && (
+                  <p className="text-xs text-amber-600">
+                    Cần ít nhất 10 ký tự (hiện tại: {reason.trim().length})
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="evidence">Ảnh minh chứng (tối đa 5 ảnh)</Label>
@@ -178,22 +206,23 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
                     onChange={handleFileChange}
                   />
                   {files.length > 0 ? (
-                    <span className="text-xs text-[#5B7083]">{files.length} ảnh</span>
+                    <span className="text-xs text-[#5B7083]">
+                      {files.length} ảnh
+                    </span>
                   ) : null}
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setStep("confirm")}
-              >
+              <Button variant="outline" onClick={() => setStep("confirm")}>
                 Quay lại
               </Button>
               <Button
                 className="bg-amber-600 hover:bg-amber-700 text-white"
                 onClick={() => disputeMutation.mutate()}
-                disabled={disputeMutation.isPending || uploading || !reason.trim()}
+                disabled={
+                  disputeMutation.isPending || uploading || !reason.trim() || reason.trim().length < 10
+                }
               >
                 {uploading ? (
                   <>

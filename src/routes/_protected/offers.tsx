@@ -16,7 +16,8 @@ import {
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { type OfferRead, ListingsService, OffersService } from "@/client"
+import { ListingsService, type OfferRead, OffersService } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import CounterOfferDialog from "@/components/Offers/CounterOfferDialog"
 import { OfferCard } from "@/components/Offers/OfferCard"
 import { Badge } from "@/components/ui/badge"
@@ -48,7 +49,6 @@ function getOffersQueryOptions() {
       return { sent, received }
     },
     queryKey: ["offers-dashboard"],
-    staleTime: 30 * 1000,
   }
 }
 
@@ -114,7 +114,8 @@ function OffersPage() {
           toast.success("Đề nghị đã được chấp nhận! Đơn hàng đã được tạo.", {
             action: {
               label: "Xem đơn hàng",
-              onClick: () => navigate({ to: "/orders/$orderId", params: { orderId } }),
+              onClick: () =>
+                navigate({ to: "/orders/$orderId", params: { orderId } }),
             },
           })
         } else {
@@ -127,7 +128,7 @@ function OffersPage() {
       }
     },
     onError: (error: any) => {
-      toast.error(error?.body?.detail || "Không thể cập nhật đề nghị.")
+      toast.error(extractErrorMessage(error, "Không thể cập nhật đề nghị."))
     },
   })
 
@@ -183,7 +184,9 @@ function OffersPage() {
         </Card>
         <Card className="border-amber-200/80 bg-amber-50/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-amber-800/80">Đang chờ</CardTitle>
+            <CardTitle className="text-sm text-amber-800/80">
+              Đang chờ
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-2 text-2xl font-bold text-amber-900">
             <Clock3 className="size-4" />
@@ -293,7 +296,9 @@ function OffersPage() {
         onOpenChange={(open) => {
           if (!open) setCounterTarget(null)
         }}
-        listedPrice={Number(listingForCounter?.price || counterTarget?.offer_price || 0)}
+        listedPrice={Number(
+          listingForCounter?.price || counterTarget?.offer_price || 0,
+        )}
         buyerOffer={Number(counterTarget?.offer_price || 0)}
         isPending={mutation.isPending}
         onSubmit={(value) => {

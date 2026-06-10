@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
-
+import { useEffect, useState } from "react"
+import type { ShippingAddressInput } from "@/client"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { ShippingAddressInput } from "@/client"
+import { Textarea } from "@/components/ui/textarea"
 
 interface VnLocation {
   code: number
@@ -23,7 +22,10 @@ interface ShippingAddressFormProps {
   onChange: (value: ShippingAddressInput) => void
 }
 
-export default function ShippingAddressForm({ value, onChange }: ShippingAddressFormProps) {
+export default function ShippingAddressForm({
+  value,
+  onChange,
+}: ShippingAddressFormProps) {
   const [provinces, setProvinces] = useState<VnLocation[]>([])
   const [districts, setDistricts] = useState<VnLocation[]>([])
   const [wards, setWards] = useState<VnLocation[]>([])
@@ -59,7 +61,15 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
         }
       }
     }
-  }, [provinces, value.province, districts.length, loadingDist])
+  }, [
+    provinces,
+    value.province,
+    districts.length,
+    loadingDist,
+    onChange,
+    value.province_id,
+    value,
+  ])
 
   // Auto-fetch wards if district exists and wards list is empty
   useEffect(() => {
@@ -79,7 +89,15 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
         }
       }
     }
-  }, [districts, value.district, wards.length, loadingWard])
+  }, [
+    districts,
+    value.district,
+    wards.length,
+    loadingWard,
+    onChange,
+    value.district_id,
+    value,
+  ])
 
   // Sync ward code if ward exists
   useEffect(() => {
@@ -89,7 +107,7 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
         onChange({ ...value, ward_code: String(w.code) })
       }
     }
-  }, [wards, value.ward])
+  }, [wards, value.ward, value.ward_code, value, onChange])
 
   const handleProvinceChange = (provinceName: string) => {
     const p = provinces.find((x) => x.name === provinceName)
@@ -170,7 +188,11 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
             disabled={loadingProv}
           >
             <SelectTrigger className="h-9">
-              {loadingProv ? <Loader2 className="size-4 animate-spin" /> : <SelectValue placeholder="Chọn tỉnh" />}
+              {loadingProv ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <SelectValue placeholder="Chọn tỉnh" />
+              )}
             </SelectTrigger>
             <SelectContent>
               {provinces.map((p) => (
@@ -191,7 +213,11 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
             disabled={!value.province || loadingDist}
           >
             <SelectTrigger className="h-9">
-              {loadingDist ? <Loader2 className="size-4 animate-spin" /> : <SelectValue placeholder="Chọn quận" />}
+              {loadingDist ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <SelectValue placeholder="Chọn quận" />
+              )}
             </SelectTrigger>
             <SelectContent>
               {districts.map((d) => (
@@ -210,12 +236,20 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
             value={value.ward}
             onValueChange={(v) => {
               const w = wards.find((x) => x.name === v)
-              onChange({ ...value, ward: v, ward_code: w ? String(w.code) : null })
+              onChange({
+                ...value,
+                ward: v,
+                ward_code: w ? String(w.code) : null,
+              })
             }}
             disabled={!value.district || loadingWard}
           >
             <SelectTrigger className="h-9">
-              {loadingWard ? <Loader2 className="size-4 animate-spin" /> : <SelectValue placeholder="Chọn phường" />}
+              {loadingWard ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <SelectValue placeholder="Chọn phường" />
+              )}
             </SelectTrigger>
             <SelectContent>
               {wards.map((w) => (
@@ -235,7 +269,9 @@ export default function ShippingAddressForm({ value, onChange }: ShippingAddress
         <Input
           placeholder="Số nhà, tên đường"
           value={value.address_detail}
-          onChange={(e) => onChange({ ...value, address_detail: e.target.value })}
+          onChange={(e) =>
+            onChange({ ...value, address_detail: e.target.value })
+          }
           className="h-9"
         />
       </div>

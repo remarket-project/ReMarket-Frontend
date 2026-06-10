@@ -17,12 +17,12 @@ import {
   type OfferRead,
   UsersService,
 } from "@/client"
-import { useChat } from "@/hooks/ChatContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useChat } from "@/hooks/ChatContext"
 
 interface OfferCardProps {
   offer: OfferRead
@@ -328,7 +328,8 @@ export function OfferCard({
         {isAccepted && (
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> Đề nghị này đã được chấp nhận.
+              <CheckCircle2 className="w-4 h-4" /> Đề nghị này đã được chấp
+              nhận.
             </span>
             <div className="flex gap-2">
               {orderId && role === "received" && (

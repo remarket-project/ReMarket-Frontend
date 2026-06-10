@@ -106,7 +106,6 @@ function CategoryLandingPage() {
     queryKey: ["category-by-slug", slug],
     queryFn: () =>
       CategoriesService.getCategoryBySlugApiV1CategoriesSlugGet({ slug }),
-    staleTime: 1000 * 60 * 5,
     retry: false,
   })
 

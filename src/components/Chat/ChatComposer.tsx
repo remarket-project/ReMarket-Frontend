@@ -1,5 +1,5 @@
-import { Send, Loader2 } from "lucide-react"
-import { useState, useRef, useEffect, type KeyboardEvent } from "react"
+import { Loader2, Send } from "lucide-react"
+import { type KeyboardEvent, useEffect, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -10,7 +10,11 @@ interface ChatComposerProps {
   isPending?: boolean
 }
 
-export function ChatComposer({ onSend, disabled, isPending }: ChatComposerProps) {
+export function ChatComposer({
+  onSend,
+  disabled,
+  isPending,
+}: ChatComposerProps) {
   const [text, setText] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -19,7 +23,7 @@ export function ChatComposer({ onSend, disabled, isPending }: ChatComposerProps)
       textareaRef.current.style.height = "auto"
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
     }
-  }, [text])
+  }, [])
 
   const handleSend = () => {
     const trimmed = text.trim()

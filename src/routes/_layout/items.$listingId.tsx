@@ -30,17 +30,17 @@ import {
   OffersService,
   UsersService,
 } from "@/client"
+import CheckoutDialog from "@/components/Checkout/CheckoutDialog"
 import { ImageGallery } from "@/components/Listings/ImageGallery"
 import { ListingCard } from "@/components/Listings/ListingCard"
-import CheckoutDialog from "@/components/Checkout/CheckoutDialog"
 import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useChat } from "@/hooks/ChatContext"
 import useAuth from "@/hooks/useAuth"
 import { useAuthRequired } from "@/hooks/useAuthRequired" // trigger-hmr
-import { useChat } from "@/hooks/ChatContext"
 import { cn } from "@/lib/utils"
 import { getInitials } from "@/utils"
 
@@ -182,7 +182,6 @@ function SellerCard({ sellerId }: { sellerId: string }) {
   } = useQuery({
     queryKey: ["user-public", sellerId],
     queryFn: () => UsersService.readUserPublicProfile({ userId: sellerId }),
-    staleTime: 5 * 60 * 1000,
   })
 
   if (isLoading) {
@@ -519,7 +518,6 @@ function SimilarListings({
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 10 }),
     enabled: Boolean(categoryId),
-    staleTime: 2 * 60 * 1000,
   })
 
   const similar = (data?.items ?? [])
@@ -589,7 +587,6 @@ function ListingDetailPage() {
         return { listing: null as ListingWithImages | null }
       }
     },
-    staleTime: 2 * 60 * 1000,
   })
 
   const { data: offersData } = useQuery({
@@ -612,7 +609,6 @@ function ListingDetailPage() {
         categoryId: data!.listing!.category_id,
       }),
     enabled: Boolean(data?.listing?.category_id),
-    staleTime: 5 * 60 * 1000,
   })
 
   const [checkoutOpen, setCheckoutOpen] = useState(false)
@@ -793,7 +789,10 @@ function ListingDetailPage() {
                   variant="outline"
                   className="w-full border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
                   disabled={startChatMutation.isPending}
-                  onClick={requireAuth(() => startChatMutation.mutate(), "để nhắn tin với người bán")}
+                  onClick={requireAuth(
+                    () => startChatMutation.mutate(),
+                    "để nhắn tin với người bán",
+                  )}
                 >
                   {startChatMutation.isPending ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -809,7 +808,10 @@ function ListingDetailPage() {
                 <Button
                   id="btn-make-offer"
                   className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white gap-2 h-11"
-                  onClick={requireAuth(() => setOfferDialogOpen(true), "để đưa ra đề nghị giá")}
+                  onClick={requireAuth(
+                    () => setOfferDialogOpen(true),
+                    "để đưa ra đề nghị giá",
+                  )}
                 >
                   <Handshake className="size-4" />
                   Đưa giá ngay
@@ -823,7 +825,10 @@ function ListingDetailPage() {
                     id="btn-buy-now"
                     variant="outline"
                     className="w-full border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
-                    onClick={requireAuth(() => setCheckoutOpen(true), "để mua hàng")}
+                    onClick={requireAuth(
+                      () => setCheckoutOpen(true),
+                      "để mua hàng",
+                    )}
                   >
                     <ShieldCheck className="size-4" />
                     Mua ngay
@@ -854,7 +859,10 @@ function ListingDetailPage() {
                       : "text-[#5B7083] hover:text-[#2563EB]",
                   )}
                   size="sm"
-                  onClick={requireAuth(() => setSaved((v) => !v), "để lưu tin đăng yêu thích")}
+                  onClick={requireAuth(
+                    () => setSaved((v) => !v),
+                    "để lưu tin đăng yêu thích",
+                  )}
                 >
                   <Heart className={cn("size-4", saved && "fill-rose-500")} />
                   {saved ? "Đã lưu tin" : "Lưu tin"}

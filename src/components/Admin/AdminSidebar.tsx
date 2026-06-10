@@ -1,21 +1,20 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query"
+import { Link, useRouterState } from "@tanstack/react-router"
 import {
   ArrowLeft,
   ClipboardCheck,
+  FolderTree,
   LayoutDashboard,
   LogOut,
-  FolderTree,
-  ScrollText,
   Scale,
+  ScrollText,
   Shield,
   ShoppingCart,
   Users,
-} from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-
-import { cn } from "@/lib/utils";
-import useAuth from "@/hooks/useAuth";
-import { AdminService } from "@/client";
+} from "lucide-react"
+import { AdminService } from "@/client"
+import useAuth from "@/hooks/useAuth"
+import { cn } from "@/lib/utils"
 
 const navItems = [
   {
@@ -67,37 +66,41 @@ const navItems = [
     badgeKey: null,
     badgeVariant: undefined,
   },
-] as const;
+] as const
 
 interface AdminSidebarProps {
-  onNavigate?: () => void;
+  onNavigate?: () => void
 }
 
 export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
-  const { user, logout } = useAuth();
-  const router = useRouterState();
-  const currentPath = router.location.pathname;
+  const { user, logout } = useAuth()
+  const router = useRouterState()
+  const currentPath = router.location.pathname
 
   const { data: stats } = useQuery({
     queryKey: ["adminDashboardStats"],
     queryFn: () => AdminService.getDashboardStatsApiV1AdminDashboardGet(),
     staleTime: 30 * 1000,
-  });
+  })
 
   const { data: allPendingData } = useQuery({
     queryKey: ["adminPendingListings"],
-    queryFn: () => AdminService.getPendingListingsRouteApiV1AdminListingsPendingGet({ skip: 0, limit: 200 }),
+    queryFn: () =>
+      AdminService.getPendingListingsRouteApiV1AdminListingsPendingGet({
+        skip: 0,
+        limit: 200,
+      }),
     refetchInterval: 60000,
     staleTime: 30000,
-  });
+  })
 
   const badgeCounts: Record<string, number> = {
     pending: Array.isArray(allPendingData) ? allPendingData.length : 0,
     disputes: (stats as any)?.disputed_escrows ?? 0,
-  };
+  }
 
-  const displayName = user?.full_name || user?.email || "Admin";
-  const avatarInitial = displayName.charAt(0).toUpperCase();
+  const displayName = user?.full_name || user?.email || "Admin"
+  const avatarInitial = displayName.charAt(0).toUpperCase()
 
   return (
     <div className="flex h-full w-full flex-col border-r border-white/[0.06] bg-[#0B0F1A]">
@@ -126,10 +129,10 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
             const isActive =
               item.path === "/admin"
                 ? currentPath === "/admin" || currentPath === "/admin/"
-                : currentPath.startsWith(item.path);
+                : currentPath.startsWith(item.path)
 
-            const Icon = item.icon;
-            const badgeCount = item.badgeKey ? badgeCounts[item.badgeKey] : 0;
+            const Icon = item.icon
+            const badgeCount = item.badgeKey ? badgeCounts[item.badgeKey] : 0
 
             return (
               <Link
@@ -164,20 +167,24 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                   <span
                     className={cn(
                       "relative flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white",
-                      item.badgeVariant === "danger" ? "bg-red-500" : "bg-amber-500",
+                      item.badgeVariant === "danger"
+                        ? "bg-red-500"
+                        : "bg-amber-500",
                     )}
                   >
                     {badgeCount > 99 ? "99+" : badgeCount}
                     <span
                       className={cn(
                         "absolute inset-0 rounded-full animate-ping opacity-40",
-                        item.badgeVariant === "danger" ? "bg-red-500" : "bg-amber-500",
+                        item.badgeVariant === "danger"
+                          ? "bg-red-500"
+                          : "bg-amber-500",
                       )}
                     />
                   </span>
                 )}
               </Link>
-            );
+            )
           })}
         </nav>
       </div>
@@ -210,8 +217,8 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
           <button
             type="button"
             onClick={() => {
-              logout();
-              onNavigate?.();
+              logout()
+              onNavigate?.()
             }}
             className="flex items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.07] px-2 py-2 text-xs font-medium text-red-400 transition-all hover:bg-red-500/[0.12] hover:text-red-300"
           >
@@ -221,5 +228,5 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

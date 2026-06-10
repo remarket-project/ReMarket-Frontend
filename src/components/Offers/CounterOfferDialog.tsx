@@ -68,8 +68,12 @@ export default function CounterOfferDialog({
   })
 
   const currentPrice = form.watch("offer_price")
-  const diffFromListed = listedPrice > 0 ? Math.round((currentPrice / listedPrice) * 100) : 0
-  const diffFromBuyer = buyerOffer > 0 ? Math.round(((currentPrice - buyerOffer) / buyerOffer) * 100) : 0
+  const diffFromListed =
+    listedPrice > 0 ? Math.round((currentPrice / listedPrice) * 100) : 0
+  const diffFromBuyer =
+    buyerOffer > 0
+      ? Math.round(((currentPrice - buyerOffer) / buyerOffer) * 100)
+      : 0
 
   const handleSubmit = (data: FormData) => {
     onSubmit(data.offer_price)
@@ -107,7 +111,9 @@ export default function CounterOfferDialog({
             </span>
           </div>
           <div className="border-t border-violet-200/50 pt-2 flex items-center justify-between text-xs">
-            <span className="text-violet-900/70 font-medium">Giá bạn đề xuất</span>
+            <span className="text-violet-900/70 font-medium">
+              Giá bạn đề xuất
+            </span>
             <span className="font-bold text-emerald-700">
               {formatCurrency(currentPrice || 0)}
             </span>
@@ -160,7 +166,9 @@ export default function CounterOfferDialog({
                       {diffFromBuyer !== 0 && (
                         <span
                           className={`text-xs font-medium ${
-                            diffFromBuyer > 0 ? "text-amber-600" : "text-rose-600"
+                            diffFromBuyer > 0
+                              ? "text-amber-600"
+                              : "text-rose-600"
                           }`}
                         >
                           ({diffFromBuyer > 0 ? "+" : ""}

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getInitials } from "@/utils"
 import { cn } from "@/lib/utils"
+import { getInitials } from "@/utils"
 
 interface ConversationListItemProps {
   id: string
@@ -73,9 +73,7 @@ export function ConversationListItem({
         <p
           className={cn(
             "mt-0.5 truncate text-xs",
-            unreadCount > 0
-              ? "font-medium text-[#102A43]"
-              : "text-[#5B7083]",
+            unreadCount > 0 ? "font-medium text-[#102A43]" : "text-[#5B7083]",
           )}
         >
           {lastMessage || "Chưa có tin nhắn..."}

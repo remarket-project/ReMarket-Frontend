@@ -6,10 +6,11 @@ import { toast } from "sonner"
 
 import {
   CategoriesService,
-  ListingsService,
   type ConditionGrade,
+  ListingsService,
   type ListingWithImages,
 } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -32,13 +33,11 @@ function EditListingPage() {
       ListingsService.getListingApiV1ListingsListingIdGet({
         listingId,
       }),
-    staleTime: 2 * 60 * 1000,
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
     queryFn: () => CategoriesService.listCategoriesApiV1CategoriesGet({}),
-    staleTime: 5 * 60 * 1000,
   })
 
   const categories = categoriesData?.data ?? []
@@ -81,7 +80,7 @@ function EditListingPage() {
       navigate({ to: "/items/$listingId", params: { listingId } })
     },
     onError: (error: any) => {
-      toast.error(error?.body?.detail || "Không thể cập nhật tin đăng.")
+      toast.error(extractErrorMessage(error, "Không thể cập nhật tin đăng."))
     },
   })
 
@@ -273,7 +272,9 @@ function EditListingPage() {
         </Button>
         <Button
           className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-semibold px-6 cursor-pointer"
-          disabled={updateMutation.isPending || !title.trim() || !categoryId || !price}
+          disabled={
+            updateMutation.isPending || !title.trim() || !categoryId || !price
+          }
           onClick={() => updateMutation.mutate()}
         >
           {updateMutation.isPending ? (
@@ -293,9 +294,7 @@ function EditListingPage() {
   )
 }
 
-export const Route = createFileRoute(
-  "/_protected/items/$listingId/edit",
-)({
+export const Route = createFileRoute("/_protected/items/$listingId/edit")({
   component: EditListingPage,
   head: () => ({
     meta: [{ title: "Sửa tin đăng - ReMarket" }],

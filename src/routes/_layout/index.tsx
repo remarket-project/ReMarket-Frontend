@@ -84,7 +84,6 @@ function MarketplaceHome() {
         skip: 0,
         limit: 24,
       }),
-    staleTime: 2 * 60 * 1000,
   })
 
   const listings = listingsData?.items ?? []
@@ -148,7 +147,9 @@ function MarketplaceHome() {
             <Link
               key={category.name}
               to="/items"
-              search={category.slug ? { categorySlug: category.slug } : undefined}
+              search={
+                category.slug ? { categorySlug: category.slug } : undefined
+              }
               className="rmk-category-item min-w-[92px] rounded-2xl bg-[#F8FAFC]"
             >
               <span className="text-lg">{category.icon}</span>

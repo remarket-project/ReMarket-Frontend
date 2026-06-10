@@ -12,7 +12,11 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 import { AdminService } from "@/client"
-import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
+import {
+  formatVND,
+  ORDER_STATUS_COLORS,
+  ORDER_STATUS_LABELS,
+} from "@/lib/order-utils"
 
 const statusTabs = [
   { key: "", label: "Tất cả" },
@@ -26,9 +30,7 @@ const statusTabs = [
 function getAdminActions(status: string) {
   switch (status) {
     case "pending":
-      return [
-        { label: "Nhận đơn → SHIPPING", action: "ship", icon: Truck },
-      ]
+      return [{ label: "Nhận đơn → SHIPPING", action: "ship", icon: Truck }]
     case "shipping":
       return [
         { label: "Đã giao → DELIVERED", action: "deliver", icon: CheckCircle2 },
@@ -46,10 +48,14 @@ function getAdminActions(status: string) {
 }
 
 const ACTION_METHODS: Record<string, (orderId: string) => Promise<unknown>> = {
-  ship: (orderId) => AdminService.shipOrderApiV1AdminOrdersOrderIdShipPost({ orderId }),
-  deliver: (orderId) => AdminService.deliverOrderApiV1AdminOrdersOrderIdDeliverPost({ orderId }),
-  return: (orderId) => AdminService.returnOrderApiV1AdminOrdersOrderIdReturnPost({ orderId }),
-  returned: (orderId) => AdminService.returnedOrderApiV1AdminOrdersOrderIdReturnedPost({ orderId }),
+  ship: (orderId) =>
+    AdminService.shipOrderApiV1AdminOrdersOrderIdShipPost({ orderId }),
+  deliver: (orderId) =>
+    AdminService.deliverOrderApiV1AdminOrdersOrderIdDeliverPost({ orderId }),
+  return: (orderId) =>
+    AdminService.returnOrderApiV1AdminOrdersOrderIdReturnPost({ orderId }),
+  returned: (orderId) =>
+    AdminService.returnedOrderApiV1AdminOrdersOrderIdReturnedPost({ orderId }),
 }
 
 export const Route = createFileRoute("/admin/orders")({
@@ -71,11 +77,16 @@ function AdminOrdersPage() {
         limit: 50,
         status: statusFilter || null,
       }),
-    staleTime: 15 * 1000,
   })
 
   const actionMutation = useMutation({
-    mutationFn: async ({ orderId, action }: { orderId: string; action: string }) => {
+    mutationFn: async ({
+      orderId,
+      action,
+    }: {
+      orderId: string
+      action: string
+    }) => {
       const method = ACTION_METHODS[action]
       if (!method) throw new Error(`Unknown action: ${action}`)
       return method(orderId)
@@ -134,7 +145,10 @@ function AdminOrdersPage() {
         {isLoading ? (
           <div className="space-y-3 p-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-xl bg-slate-800" />
+              <div
+                key={i}
+                className="h-14 animate-pulse rounded-xl bg-slate-800"
+              />
             ))}
           </div>
         ) : (
@@ -175,9 +189,12 @@ function AdminOrdersPage() {
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold ${
-                          ORDER_STATUS_COLORS[order.status] ?? "border-white/[0.08] bg-white/[0.04] text-slate-400"
-                        }`}>
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold ${
+                            ORDER_STATUS_COLORS[order.status] ??
+                            "border-white/[0.08] bg-white/[0.04] text-slate-400"
+                          }`}
+                        >
                           {ORDER_STATUS_LABELS[order.status] ?? order.status}
                         </span>
                       </td>
@@ -187,7 +204,12 @@ function AdminOrdersPage() {
                             <button
                               key={act.action}
                               type="button"
-                              onClick={() => actionMutation.mutate({ orderId: order.id, action: act.action })}
+                              onClick={() =>
+                                actionMutation.mutate({
+                                  orderId: order.id,
+                                  action: act.action,
+                                })
+                              }
                               disabled={actionMutation.isPending}
                               title={act.label}
                               className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-[#1A2233] px-2 py-1 text-xs font-medium text-slate-400 transition-colors hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 disabled:opacity-50"

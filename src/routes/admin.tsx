@@ -1,8 +1,9 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
-import { ApiError, UsersService } from "@/client";
-import { AdminShell } from "@/components/Admin/AdminShell";
-import { isLoggedIn } from "@/hooks/useAuth";
+import { ApiError, UsersService } from "@/client"
+import { AdminShell } from "@/components/Admin/AdminShell"
+import { isLoggedIn } from "@/hooks/useAuth"
+import { queryClient } from "@/lib/query-client"
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
@@ -13,36 +14,39 @@ export const Route = createFileRoute("/admin")({
         search: {
           redirect: location.href,
         },
-      });
+      })
     }
 
     try {
-      const user = await UsersService.readUserMe();
+      const user = await queryClient.fetchQuery({
+        queryKey: ["currentUser"],
+        queryFn: UsersService.readUserMe,
+      })
       if (user.role !== "admin") {
-        throw redirect({ to: "/" });
+        throw redirect({ to: "/" })
       }
     } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("refresh_token")
         throw redirect({
           to: "/login",
           search: {
             redirect: location.href,
           },
-        });
+        })
       }
     }
   },
-});
+})
 
 function AdminLayout() {
   return (
     <AdminShell>
       <Outlet />
     </AdminShell>
-  );
+  )
 }

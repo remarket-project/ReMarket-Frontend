@@ -47,7 +47,6 @@ function AdminDisputesPage() {
     queryKey: ["adminDisputes"],
     queryFn: () =>
       AdminService.listDisputesApiV1AdminDisputesGet({ status: "open" }),
-    staleTime: 15 * 1000,
   })
 
   const resolveMutation = useMutation({
@@ -73,13 +72,15 @@ function AdminDisputesPage() {
       toast.success(
         data.result === "release"
           ? "Đã giải ngân tiền cho người bán."
-          : "Đã hoàn tiền cho người mua."
+          : "Đã hoàn tiền cho người mua.",
       )
     },
     onError: (error: Error) => toast.error(error.message),
   })
 
-  const disputes = Array.isArray((data as any)?.items) ? (data as any).items : []
+  const disputes = Array.isArray((data as any)?.items)
+    ? (data as any).items
+    : []
 
   return (
     <div className="space-y-5">
@@ -109,8 +110,8 @@ function AdminDisputesPage() {
           <p className="font-bold text-amber-300">Lưu ý quan trọng:</p>
           <p className="mt-0.5 text-amber-400/80">
             Quyết định giải quyết khiếu nại là hành động chuyển tiền và{" "}
-            <strong>không thể đảo ngược</strong>.
-            Vui lòng xem xét kỹ bằng chứng và thông tin trước khi xác nhận.
+            <strong>không thể đảo ngược</strong>. Vui lòng xem xét kỹ bằng chứng
+            và thông tin trước khi xác nhận.
           </p>
         </div>
       </div>
@@ -118,7 +119,10 @@ function AdminDisputesPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-2xl border border-white/[0.06] bg-[#111827]" />
+            <div
+              key={i}
+              className="h-16 animate-pulse rounded-2xl border border-white/[0.06] bg-[#111827]"
+            />
           ))}
         </div>
       ) : (
@@ -146,7 +150,11 @@ function AdminDisputesPage() {
                       </p>
                       <p className="text-xs text-slate-500">
                         Bởi: {dispute.raised_by?.slice(0, 8)}... ·{" "}
-                        {dispute.created_at ? new Date(dispute.created_at).toLocaleDateString("vi-VN") : ""}
+                        {dispute.created_at
+                          ? new Date(dispute.created_at).toLocaleDateString(
+                              "vi-VN",
+                            )
+                          : ""}
                       </p>
                     </div>
                   </div>
@@ -171,7 +179,9 @@ function AdminDisputesPage() {
                         <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                           Lý do khiếu nại
                         </p>
-                        <p className="mt-1 text-sm text-slate-300">{dispute.reason}</p>
+                        <p className="mt-1 text-sm text-slate-300">
+                          {dispute.reason}
+                        </p>
                       </div>
 
                       {/* Evidence images */}
@@ -189,7 +199,9 @@ function AdminDisputesPage() {
                                 rel="noopener noreferrer"
                                 className="group relative flex size-20 items-center justify-center overflow-hidden rounded-xl border border-white/[0.08] bg-[#1A2233]"
                               >
-                                {ev.image_url?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                {ev.image_url?.match(
+                                  /\.(jpg|jpeg|png|gif|webp)$/i,
+                                ) ? (
                                   <img
                                     src={ev.image_url}
                                     alt="Evidence"
@@ -213,7 +225,9 @@ function AdminDisputesPage() {
                             Kết quả giải quyết
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-200">
-                            {dispute.resolution === "release" ? "Giải ngân cho người bán" : "Hoàn tiền cho người mua"}
+                            {dispute.resolution === "release"
+                              ? "Giải ngân cho người bán"
+                              : "Hoàn tiền cho người mua"}
                           </p>
                           {dispute.admin_notes && (
                             <p className="mt-1 text-xs text-slate-400">
@@ -263,7 +277,9 @@ function AdminDisputesPage() {
               <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
                 <ShieldAlert className="size-6" />
               </div>
-              <p className="font-semibold text-slate-200">Không có khiếu nại nào</p>
+              <p className="font-semibold text-slate-200">
+                Không có khiếu nại nào
+              </p>
               <p className="mt-1 text-sm text-slate-500">
                 Hiện không có khiếu nại nào cần xử lý.
               </p>

@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import * as z from "zod"
 
 import { ChatsService, OffersService } from "@/client"
+import { extractErrorMessage } from "@/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -98,9 +99,7 @@ export function MakeOfferDialog({
       onOpenChange(false)
     },
     onError: (err: any) => {
-      const msg =
-        err?.body?.detail || "Không thể gửi đề nghị. Vui lòng thử lại."
-      toast.error(msg)
+      toast.error(extractErrorMessage(err, "Không thể gửi đề nghị. Vui lòng thử lại."))
     },
   })
 
@@ -224,8 +223,9 @@ export function MakeOfferDialog({
             />
 
             <div className="rounded-xl border border-blue-200/50 bg-blue-50/40 p-3 text-xs text-blue-900/70">
-              🛡️ Đề nghị của bạn được bảo vệ. Nếu được chấp nhận, thanh toán sẽ đi qua
-              tài khoản bảo chứng (escrow) và chỉ giải ngân sau khi xác nhận nhận hàng.
+              🛡️ Đề nghị của bạn được bảo vệ. Nếu được chấp nhận, thanh toán sẽ
+              đi qua tài khoản bảo chứng (escrow) và chỉ giải ngân sau khi xác
+              nhận nhận hàng.
             </div>
 
             <DialogFooter className="gap-2">

@@ -1,13 +1,13 @@
+import { useQueryClient } from "@tanstack/react-query"
 import {
   createContext,
-  useContext,
-  useState,
+  type ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useRef,
-  type ReactNode,
+  useState,
 } from "react"
-import { useQueryClient } from "@tanstack/react-query"
 
 import { ChatsService } from "@/client"
 import useAuth from "@/hooks/useAuth"
@@ -128,17 +128,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   const closeConversation = useCallback(() => setCurrentId(null), [])
 
-  const markConversationRead = useCallback(
-    (id: string, count: number) => {
-      setLastSeen((prev) => {
-        const next = { ...prev, [id]: count }
-        saveSeen(next)
-        seenRef.current = next
-        return next
-      })
-    },
-    [],
-  )
+  const markConversationRead = useCallback((id: string, count: number) => {
+    setLastSeen((prev) => {
+      const next = { ...prev, [id]: count }
+      saveSeen(next)
+      seenRef.current = next
+      return next
+    })
+  }, [])
 
   return (
     <ChatContext.Provider

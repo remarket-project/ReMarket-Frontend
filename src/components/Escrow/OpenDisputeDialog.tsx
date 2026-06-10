@@ -61,7 +61,8 @@ export default function OpenDisputeDialog({
         <DialogHeader>
           <DialogTitle>Mở tranh chấp</DialogTitle>
           <DialogDescription>
-            Thao tác này sẽ đóng băng tài khoản bảo chứng (escrow) và thông báo cho ban quản trị xem xét.
+            Thao tác này sẽ đóng băng tài khoản bảo chứng (escrow) và thông báo
+            cho ban quản trị xem xét.
           </DialogDescription>
         </DialogHeader>
 

@@ -57,8 +57,13 @@ function CreateListingStep2({ form }: Step2Props) {
           📝 Mẹo viết mô tả thu hút:
         </p>
         <ul className="text-xs text-amber-800 dark:text-amber-200 space-y-1 list-disc list-inside">
-          <li>Thành thật về tình trạng sản phẩm và mọi lỗi hỏng hóc (nếu có)</li>
-          <li>Bao gồm thương hiệu, kiểu dáng, kích cỡ, màu sắc hoặc các thông số liên quan khác</li>
+          <li>
+            Thành thật về tình trạng sản phẩm và mọi lỗi hỏng hóc (nếu có)
+          </li>
+          <li>
+            Bao gồm thương hiệu, kiểu dáng, kích cỡ, màu sắc hoặc các thông số
+            liên quan khác
+          </li>
           <li>Đề cập đến ngày mua ban đầu nếu bạn còn nhớ</li>
           <li>Giải thích lý do tại sao bạn muốn bán</li>
           <li>Liệt kê các phụ kiện hoặc giấy tờ đi kèm</li>
