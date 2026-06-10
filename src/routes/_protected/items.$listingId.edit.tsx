@@ -32,11 +32,13 @@ function EditListingPage() {
       ListingsService.getListingApiV1ListingsListingIdGet({
         listingId,
       }),
+    staleTime: 2 * 60 * 1000,
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
     queryFn: () => CategoriesService.listCategoriesApiV1CategoriesGet({}),
+    staleTime: 5 * 60 * 1000,
   })
 
   const categories = categoriesData?.data ?? []

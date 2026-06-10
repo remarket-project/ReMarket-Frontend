@@ -11,14 +11,8 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 
+import { AdminService } from "@/client"
 import { formatVND, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/order-utils"
-
-function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem("access_token")
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
-
-const API_BASE = "/api/v1/admin"
 
 const statusTabs = [
   { key: "", label: "Tất cả" },
@@ -51,6 +45,13 @@ function getAdminActions(status: string) {
   }
 }
 
+const ACTION_METHODS: Record<string, (orderId: string) => Promise<unknown>> = {
+  ship: (orderId) => AdminService.shipOrderApiV1AdminOrdersOrderIdShipPost({ orderId }),
+  deliver: (orderId) => AdminService.deliverOrderApiV1AdminOrdersOrderIdDeliverPost({ orderId }),
+  return: (orderId) => AdminService.returnOrderApiV1AdminOrdersOrderIdReturnPost({ orderId }),
+  returned: (orderId) => AdminService.returnedOrderApiV1AdminOrdersOrderIdReturnedPost({ orderId }),
+}
+
 export const Route = createFileRoute("/admin/orders")({
   component: AdminOrdersPage,
   head: () => ({
@@ -64,23 +65,20 @@ function AdminOrdersPage() {
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["adminOrders", statusFilter],
-    queryFn: async () => {
-      const params = new URLSearchParams({ skip: "0", limit: "50" })
-      if (statusFilter) params.set("status", statusFilter)
-      const res = await fetch(`${API_BASE}/orders?${params}`, { headers: getAuthHeaders() })
-      if (!res.ok) throw new Error("Failed to fetch orders")
-      return res.json()
-    },
+    queryFn: () =>
+      AdminService.listOrdersApiV1AdminOrdersGet({
+        skip: 0,
+        limit: 50,
+        status: statusFilter || null,
+      }),
+    staleTime: 15 * 1000,
   })
 
   const actionMutation = useMutation({
     mutationFn: async ({ orderId, action }: { orderId: string; action: string }) => {
-      const res = await fetch(`${API_BASE}/orders/${orderId}/${action}`, { method: "POST", headers: getAuthHeaders() })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Action failed")
-      }
-      return res.json()
+      const method = ACTION_METHODS[action]
+      if (!method) throw new Error(`Unknown action: ${action}`)
+      return method(orderId)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
@@ -89,7 +87,7 @@ function AdminOrdersPage() {
     onError: (error: Error) => toast.error(error.message),
   })
 
-  const orders = Array.isArray(data?.items) ? data.items : data?.items ?? []
+  const orders = Array.isArray((data as any)?.items) ? (data as any).items : []
 
   return (
     <div className="space-y-5">

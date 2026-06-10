@@ -1,5 +1,5 @@
 ﻿import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router"
 import {
   BadgeCheck,
   Clock3,
@@ -29,7 +29,7 @@ function getOrdersQueryOptions() {
       return { orders }
     },
     queryKey: ["orders-dashboard"],
-    refetchInterval: 30000,
+    staleTime: 30 * 1000,
   }
 }
 
@@ -48,20 +48,13 @@ function OrdersPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(getOrdersQueryOptions())
-
-  useWebSocket({
-    order_status_updated: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-    },
-    order_cancelled: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-    },
-  })
+  const matches = useMatches()
+  const isDetailPage = matches.some(m => m.routeId === '/_protected/orders/$orderId')
 
   const [query, setQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"all" | OrderRead["status"]>(
-    "all",
-  )
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | OrderRead["status"] | "return"
+  >("all")
   const [role, setRole] = useState<RoleTab>("buying")
 
   const ordersByRole = useMemo(() => {
@@ -80,7 +73,10 @@ function OrdersPage() {
         role === "buying" ? order.seller_id : order.buyer_id
       ).toLowerCase()
       const matchesStatus =
-        statusFilter === "all" || order.status === statusFilter
+        statusFilter === "all" ||
+        order.status === statusFilter ||
+        (statusFilter === "return" &&
+          ["returning", "returned"].includes(order.status))
       const matchesQuery =
         normalized.length === 0 ||
         id.includes(normalized) ||
@@ -97,12 +93,24 @@ function OrdersPage() {
     const completed = ordersByRole.filter(
       (item) => item.status === "completed",
     ).length
-    const gross = ordersByRole.reduce(
-      (sum, item) => sum + (Number(item.final_price) || 0),
-      0,
-    )
+    const gross = ordersByRole
+      .filter((item) => item.status === "completed")
+      .reduce((sum, item) => sum + (Number(item.final_price) || 0), 0)
     return { total, open, completed, gross }
   }, [ordersByRole])
+
+  useWebSocket({
+    order_status_updated: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+    },
+    order_cancelled: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+    },
+  })
+
+  if (isDetailPage) {
+    return <Outlet />
+  }
 
   return (
     <div className="rounded-3xl border border-[#D8E2EF] bg-white p-4 sm:p-6 md:p-8">
@@ -192,6 +200,7 @@ function OrdersPage() {
                 "delivered",
                 "completed",
                 "cancelled",
+                "return",
                 "disputed",
               ] as const
             ).map((status) => (

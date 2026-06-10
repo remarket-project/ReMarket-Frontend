@@ -43,6 +43,7 @@ function TrangQuanLyDanhMuc() {
   const { data: categoriesData, isLoading } = useQuery({
     queryKey: ["adminCategories"],
     queryFn: () => CategoriesService.listCategoriesApiV1CategoriesGet({ skip: 0, limit: 100 }),
+    staleTime: 2 * 60 * 1000,
   })
 
   const deleteMutation = useMutation({

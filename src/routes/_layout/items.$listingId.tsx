@@ -182,6 +182,7 @@ function SellerCard({ sellerId }: { sellerId: string }) {
   } = useQuery({
     queryKey: ["user-public", sellerId],
     queryFn: () => UsersService.readUserPublicProfile({ userId: sellerId }),
+    staleTime: 5 * 60 * 1000,
   })
 
   if (isLoading) {
@@ -518,6 +519,7 @@ function SimilarListings({
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 10 }),
     enabled: Boolean(categoryId),
+    staleTime: 2 * 60 * 1000,
   })
 
   const similar = (data?.items ?? [])
@@ -587,6 +589,7 @@ function ListingDetailPage() {
         return { listing: null as ListingWithImages | null }
       }
     },
+    staleTime: 2 * 60 * 1000,
   })
 
   const { data: offersData } = useQuery({
@@ -609,6 +612,7 @@ function ListingDetailPage() {
         categoryId: data!.listing!.category_id,
       }),
     enabled: Boolean(data?.listing?.category_id),
+    staleTime: 5 * 60 * 1000,
   })
 
   const [checkoutOpen, setCheckoutOpen] = useState(false)

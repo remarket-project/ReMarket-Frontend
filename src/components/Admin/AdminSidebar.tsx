@@ -81,8 +81,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   const { data: stats } = useQuery({
     queryKey: ["adminDashboardStats"],
     queryFn: () => AdminService.getDashboardStatsApiV1AdminDashboardGet(),
-    refetchInterval: 60000,
-    staleTime: 30000,
+    staleTime: 30 * 1000,
   });
 
   const { data: allPendingData } = useQuery({

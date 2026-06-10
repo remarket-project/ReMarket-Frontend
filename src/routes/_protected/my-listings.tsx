@@ -44,6 +44,7 @@ function getMyListingsQueryOptions() {
       return response.items ?? []
     },
     queryKey: ["my-listings"],
+    staleTime: 30 * 1000,
   }
 }
 

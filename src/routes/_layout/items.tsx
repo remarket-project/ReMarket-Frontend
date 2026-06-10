@@ -93,6 +93,7 @@ function getItemsQueryOptions() {
       }
     },
     queryKey: ["items"],
+    staleTime: 2 * 60 * 1000,
   }
 }
 
@@ -106,6 +107,7 @@ function getCategoriesQueryOptions() {
       }
     },
     queryKey: ["categories"],
+    staleTime: 5 * 60 * 1000,
   }
 }
 

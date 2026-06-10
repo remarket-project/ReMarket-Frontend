@@ -90,6 +90,7 @@ function TrangTongQuan() {
     queryKey: ["adminDashboardStats"],
     queryFn: () => AdminService.getDashboardStatsApiV1AdminDashboardGet(),
     refetchInterval: 30000,
+    staleTime: 15 * 1000,
   });
 
   const stats = rawStats as ThongKeTongQuan | undefined;

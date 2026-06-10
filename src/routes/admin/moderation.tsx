@@ -66,6 +66,7 @@ function layQueryTinChoDuyet() {
       });
     },
     queryKey: ["admin-pending-listings"],
+    staleTime: 30 * 1000,
   };
 }
 

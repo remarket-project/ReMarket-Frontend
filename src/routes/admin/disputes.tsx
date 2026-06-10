@@ -14,6 +14,7 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 
+import { AdminService } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -24,13 +25,6 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-
-const API_BASE = "/api/v1/admin"
-
-function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem("access_token")
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
 
 export const Route = createFileRoute("/admin/disputes")({
   component: AdminDisputesPage,
@@ -51,11 +45,9 @@ function AdminDisputesPage() {
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["adminDisputes"],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/disputes?status=open`, { headers: getAuthHeaders() })
-      if (!res.ok) throw new Error("Failed to fetch disputes")
-      return res.json()
-    },
+    queryFn: () =>
+      AdminService.listDisputesApiV1AdminDisputesGet({ status: "open" }),
+    staleTime: 15 * 1000,
   })
 
   const resolveMutation = useMutation({
@@ -69,16 +61,10 @@ function AdminDisputesPage() {
       result: "release" | "refund"
       note: string
     }) => {
-      const res = await fetch(`${API_BASE}/disputes/${disputeId}/resolve`, {
-        method: "POST",
-        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
-        body: JSON.stringify({ result, note }),
+      return AdminService.resolveDisputeApiV1AdminDisputesDisputeIdResolvePost({
+        disputeId,
+        requestBody: { result, note: note || null },
       })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Failed to resolve")
-      }
-      return res.json()
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["adminDisputes"] })
@@ -93,7 +79,7 @@ function AdminDisputesPage() {
     onError: (error: Error) => toast.error(error.message),
   })
 
-  const disputes = Array.isArray(data?.items) ? data.items : data?.items ?? []
+  const disputes = Array.isArray((data as any)?.items) ? (data as any).items : []
 
   return (
     <div className="space-y-5">

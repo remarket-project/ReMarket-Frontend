@@ -4,6 +4,7 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
   delivered: "Đã giao hàng",
   returning: "Đang hoàn trả",
   returned: "Đã hoàn trả",
+  return: "Hoàn trả",
   completed: "Hoàn tất",
   cancelled: "Đã hủy",
   disputed: "Đang khiếu nại",

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { AlertTriangle, CheckCircle2, Upload } from "lucide-react"
+import { AlertTriangle, CheckCircle2, Loader2, Upload } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { DisputesService } from "@/client"
 
 interface DisputeDialogProps {
   orderId: string
@@ -47,16 +48,36 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
       toast.error(error?.body?.detail || "Không thể hoàn tất đơn hàng."),
   })
 
+  const [uploading, setUploading] = useState(false)
+
   const disputeMutation = useMutation({
     mutationFn: async () => {
-      const formData = new FormData()
-      formData.append("order_id", orderId)
-      formData.append("reason", reason)
-      files.forEach((file) => formData.append("evidence_images", file))
-      return fetch("/api/v1/disputes", {
-        method: "POST",
-        body: formData,
-      })
+      setUploading(true)
+      try {
+        const imageUrls: string[] = []
+        if (files.length > 0) {
+          for (const file of files) {
+            const uploadFormData = new FormData()
+            uploadFormData.append("file", file)
+            const res = await fetch("/api/v1/upload", {
+              method: "POST",
+              body: uploadFormData,
+            })
+            if (!res.ok) throw new Error("Upload ảnh thất bại")
+            const data = await res.json()
+            imageUrls.push(data.url)
+          }
+        }
+        await DisputesService.createDisputeApiV1DisputesPost({
+          requestBody: {
+            order_id: orderId,
+            reason: reason,
+            evidence_images: imageUrls,
+          },
+        })
+      } finally {
+        setUploading(false)
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
@@ -67,7 +88,7 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
       onOpenChange(false)
     },
     onError: (error: any) =>
-      toast.error(error?.body?.detail || "Không thể gửi khiếu nại."),
+      toast.error(error?.body?.detail || error.message || "Không thể gửi khiếu nại."),
   })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,9 +193,18 @@ export function DisputeDialog({ orderId, open, onOpenChange, defaultStep = "conf
               <Button
                 className="bg-amber-600 hover:bg-amber-700 text-white"
                 onClick={() => disputeMutation.mutate()}
-                disabled={disputeMutation.isPending || !reason.trim()}
+                disabled={disputeMutation.isPending || uploading || !reason.trim()}
               >
-                {disputeMutation.isPending ? "Đang gửi..." : "Gửi khiếu nại"}
+                {uploading ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Đang tải ảnh...
+                  </>
+                ) : disputeMutation.isPending ? (
+                  "Đang gửi..."
+                ) : (
+                  "Gửi khiếu nại"
+                )}
               </Button>
             </DialogFooter>
           </>

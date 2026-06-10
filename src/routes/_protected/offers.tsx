@@ -48,7 +48,7 @@ function getOffersQueryOptions() {
       return { sent, received }
     },
     queryKey: ["offers-dashboard"],
-    refetchInterval: 30000,
+    staleTime: 30 * 1000,
   }
 }
 

@@ -67,11 +67,12 @@ function getOrderDetailQueryOptions(orderId: string) {
       const [order, escrow, reviews] = await Promise.all([
         OrdersService.getOrderApiV1OrdersOrderIdGet({ orderId }),
         EscrowService.getEscrowApiV1EscrowsOrderIdGet({ orderId }),
-        ReviewsService.getReviewApiV1ReviewsOrderIdGet({ orderId }),
+        ReviewsService.getReviewApiV1ReviewsOrderIdGet({ orderId }).catch(() => []),
       ])
       return { order, escrow, reviews }
     },
     queryKey: ["order-detail", orderId],
+    staleTime: 30 * 1000,
   }
 }
 
@@ -121,6 +122,7 @@ function OrderDetailPage() {
         listingId: data!.order.listing_id,
       }),
     enabled: Boolean(data?.order?.listing_id),
+    staleTime: 2 * 60 * 1000,
   })
 
   const { data: buyerProfile } = useQuery({
@@ -130,6 +132,7 @@ function OrderDetailPage() {
         userId: data!.order.buyer_id,
       }),
     enabled: Boolean(data?.order?.buyer_id),
+    staleTime: 5 * 60 * 1000,
   })
 
   const { data: sellerProfile } = useQuery({
@@ -139,6 +142,7 @@ function OrderDetailPage() {
         userId: data!.order.seller_id,
       }),
     enabled: Boolean(data?.order?.seller_id),
+    staleTime: 5 * 60 * 1000,
   })
 
   const cancelMutation = useMutation({
@@ -659,15 +663,12 @@ function OrderDetailPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Standalone Dispute Dialog (for 'Khiếu nại' button on DELIVERED) */}
-      {disputeOpen && !acceptDialogOpen ? (
-        <DisputeDialog
-          orderId={orderId}
-          open={disputeOpen}
-          onOpenChange={setDisputeOpen}
-          defaultStep="form"
-        />
-      ) : null}
+      <DisputeDialog
+        orderId={orderId}
+        open={disputeOpen && !acceptDialogOpen}
+        onOpenChange={setDisputeOpen}
+        defaultStep="form"
+      />
 
       <LeaveReviewDialog
         open={reviewOpen}

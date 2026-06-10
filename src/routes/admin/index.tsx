@@ -28,6 +28,7 @@ function layQueryNguoiDung() {
       };
     },
     queryKey: ["adminUsers"],
+    staleTime: 30 * 1000,
   };
 }
 

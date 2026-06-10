@@ -50,6 +50,7 @@ function getWalletQueryOptions() {
       }
     },
     queryKey: ["wallet-dashboard"],
+    staleTime: 15 * 1000,
   }
 }
 

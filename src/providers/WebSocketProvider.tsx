@@ -64,34 +64,6 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
     }, [queryClient]),
 
-    // ─── Escrow (invalidation only) ────────────────────────────
-    escrow_funded: useCallback((data: Record<string, unknown>) => {
-      if (data.order_id)
-        queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
-      queryClient.invalidateQueries({ queryKey: ["wallet"] })
-      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
-    }, [queryClient]),
-
-    escrow_release_requested: useCallback((data: Record<string, unknown>) => {
-      if (data.order_id)
-        queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
-      queryClient.invalidateQueries({ queryKey: ["escrow-detail", data.order_id as string] })
-    }, [queryClient]),
-
-    escrow_released: useCallback((data: Record<string, unknown>) => {
-      if (data.order_id)
-        queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
-      queryClient.invalidateQueries({ queryKey: ["wallet"] })
-      queryClient.invalidateQueries({ queryKey: ["wallet-dashboard"] })
-      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
-    }, [queryClient]),
-
-    escrow_disputed: useCallback((data: Record<string, unknown>) => {
-      if (data.order_id)
-        queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string] })
-      queryClient.invalidateQueries({ queryKey: ["escrow-detail", data.order_id as string] })
-    }, [queryClient]),
-
     // ─── Listing (invalidation only) ───────────────────────────
     listing_sold: useCallback((data: Record<string, unknown>) => {
       if (data.listing_id)
