@@ -10,7 +10,6 @@ import {
   Eye,
   Handshake,
   Heart,
-  Loader2,
   MapPin,
   MessageSquare,
   Package,
@@ -20,11 +19,9 @@ import {
   Wallet,
 } from "lucide-react"
 import { useCallback, useState } from "react"
-import { toast } from "sonner"
 
 import {
   CategoriesService,
-  ChatsService,
   ListingsService,
   type ListingWithImages,
   OffersService,
@@ -40,7 +37,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useChat } from "@/hooks/ChatContext"
 import useAuth from "@/hooks/useAuth"
 import { useAuthRequired } from "@/hooks/useAuthRequired" // trigger-hmr
 import { cn } from "@/lib/utils"
@@ -557,7 +553,6 @@ function SimilarListings({
 function ListingDetailPage() {
   const { listingId } = Route.useParams()
   const { user } = useAuth()
-  const { openConversation } = useChat()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [offerDialogOpen, setOfferDialogOpen] = useState(false)
@@ -584,19 +579,6 @@ function ListingDetailPage() {
   }, [saved, listingId, queryClient])
 
   const saveMutation = useMutation({ mutationFn: toggleSave })
-
-  const startChatMutation = useMutation({
-    mutationFn: () =>
-      ChatsService.createListingConversationApiV1ChatsConversationsListingListingIdPost(
-        { listingId },
-      ),
-    onSuccess: (conv) => {
-      openConversation(conv.id)
-    },
-    onError: () => {
-      toast.error("Không thể tạo hội thoại. Vui lòng thử lại.")
-    },
-  })
 
   const { data, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
@@ -814,18 +796,15 @@ function ListingDetailPage() {
                   id="btn-chat-seller"
                   variant="outline"
                   className="w-full border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] gap-2 h-11"
-                  disabled={startChatMutation.isPending}
-                  onClick={requireAuth(
-                    () => startChatMutation.mutate(),
-                    "để nhắn tin với người bán",
-                  )}
+                  asChild
                 >
-                  {startChatMutation.isPending ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
+                  <Link
+                    to="/messages"
+                    search={{ listingId }}
+                  >
                     <MessageSquare className="size-4" />
-                  )}
-                  Nhắn tin với người bán
+                    Nhắn tin với người bán
+                  </Link>
                 </Button>
               )}
 

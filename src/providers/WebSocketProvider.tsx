@@ -237,20 +237,11 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     chat_message: useCallback(
       (data: Record<string, unknown>) => {
         queryClient.invalidateQueries({ queryKey: ["conversations"] })
-        const message = data.message as { conversation_id?: string } | undefined
-        if (message?.conversation_id) {
-          queryClient.setQueryData(
-            ["conversation-messages", message.conversation_id],
-            (old: unknown) => {
-              if (!old) return old
-              const list =
-                (old as { data?: unknown[] }).data || (old as unknown[]) || []
-              return {
-                ...(old as object),
-                data: [...(list as unknown[]), message],
-              }
-            },
-          )
+        const msg = data.message as { conversation_id?: string } | undefined
+        if (msg?.conversation_id) {
+          queryClient.invalidateQueries({
+            queryKey: ["conversation-messages", msg.conversation_id],
+          })
         }
       },
       [queryClient],

@@ -35,8 +35,9 @@ export function ConversationThread({
   onMessageSent,
 }: ConversationThreadProps) {
   const { user } = useAuth()
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesLoaded = useRef(false)
 
   const displayName = getDisplayName(conversation, user?.id)
 
@@ -67,8 +68,11 @@ export function ConversationThread({
   })
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [])
+    if (messages && messagesLoaded.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+    if (messages) messagesLoaded.current = true
+  }, [messages])
 
   if (isLoading) {
     return (
@@ -79,10 +83,10 @@ export function ConversationThread({
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <ChatHeader fullName={displayName} showBack={showBack} onBack={onBack} />
 
-      <div className="flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
         {!messages || messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center px-8">
             <p className="text-sm text-[#5B7083]">

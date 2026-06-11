@@ -204,7 +204,7 @@ function CategoryMenu({ transparent }: { transparent?: boolean }) {
 
 export function MarketplaceHeader() {
   const { user: currentUser, logout } = useAuth()
-  const { unreadCount: chatUnread, toggleChat } = useChat()
+  const { unreadCount: chatUnread } = useChat()
   const location = useLocation()
   const navigate = useNavigate()
   const isHome = location.pathname === "/"
@@ -501,6 +501,29 @@ export function MarketplaceHeader() {
             )}
           </div>
 
+          {currentUser && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "relative transition-all cursor-pointer items-center justify-center rounded-full border border-transparent",
+                transparent
+                  ? "h-10 w-10 bg-white/90 border-[#D8E2EF] shadow-sm text-[#5B7083] hover:bg-white hover:text-[#2563EB] backdrop-blur-sm"
+                  : "h-9 w-9 text-[#5B7083] hover:bg-[#EFF6FF] hover:text-[#2563EB]",
+              )}
+              asChild
+            >
+              <Link to="/messages" search={{ listingId: "" }} aria-label="Tin nhắn">
+                <MessageSquare className={transparent ? "size-5" : "size-4.5"} />
+                {chatUnread > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    {chatUnread > 99 ? "99+" : chatUnread}
+                  </span>
+                )}
+              </Link>
+            </Button>
+          )}
+
           {currentUser ? (
             <Button
               className={cn(
@@ -584,18 +607,17 @@ export function MarketplaceHeader() {
                   {currentUser.email}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-[#D8E2EF]" />
-                <DropdownMenuItem
-                  className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors"
-                  onClick={() => toggleChat()}
-                >
-                  <MessageSquare className="mr-2 size-4" />
-                  <span className="flex-1">Tin nhắn</span>
-                  {chatUnread > 0 && (
-                    <span className="flex min-w-[20px] items-center justify-center rounded-full bg-[#2563EB] px-1.5 text-[10px] font-bold text-white">
-                      {chatUnread > 99 ? "99+" : chatUnread}
-                    </span>
-                  )}
-                </DropdownMenuItem>
+                <Link to="/messages" search={{ listingId: "" }}>
+                  <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
+                    <MessageSquare className="mr-2 size-4" />
+                    <span className="flex-1">Tin nhắn</span>
+                    {chatUnread > 0 && (
+                      <span className="flex min-w-[20px] items-center justify-center rounded-full bg-[#2563EB] px-1.5 text-[10px] font-bold text-white">
+                        {chatUnread > 99 ? "99+" : chatUnread}
+                      </span>
+                    )}
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator className="bg-[#D8E2EF]" />
                 <Link to="/offers">
                   <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">

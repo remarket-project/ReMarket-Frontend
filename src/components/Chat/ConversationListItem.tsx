@@ -5,6 +5,8 @@ import { getInitials } from "@/utils"
 interface ConversationListItemProps {
   id: string
   otherUserName: string
+  avatarUrl?: string | null
+  fallbackInitials: string
   listingImage?: string | null
   lastMessage?: string
   lastMessageTime?: string
@@ -28,6 +30,8 @@ function timeAgo(dateStr: string) {
 
 export function ConversationListItem({
   otherUserName,
+  avatarUrl,
+  fallbackInitials,
   listingImage,
   lastMessage,
   lastMessageTime,
@@ -48,9 +52,9 @@ export function ConversationListItem({
     >
       <div className="relative shrink-0">
         <Avatar className="size-10 rounded-lg">
-          <AvatarImage src={listingImage ?? undefined} />
+          <AvatarImage src={avatarUrl ?? listingImage ?? undefined} />
           <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] text-xs font-bold">
-            {getInitials(otherUserName)}
+            {getInitials(fallbackInitials)}
           </AvatarFallback>
         </Avatar>
         {unreadCount > 0 && (

@@ -15,11 +15,12 @@ function getConversationName(
   conv: ChatConversationRead,
   currentUserId?: string,
 ): string {
-  if (conv.listing?.title) {
-    return conv.listing.title
+  if (!currentUserId) return "Cuộc hội thoại"
+  const isSeller = conv.listing?.seller_id === currentUserId
+  if (isSeller) {
+    return conv.listing?.title || "Người mua"
   }
-  const otherId = conv.participant_ids?.find((id) => id !== currentUserId)
-  return otherId ? `Người dùng` : "Cuộc hội thoại"
+  return conv.listing?.seller_name || "Người bán"
 }
 
 export function ConversationList({
@@ -62,12 +63,14 @@ export function ConversationList({
   }
 
   return (
-    <div className="flex flex-col overflow-y-auto flex-1">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       {conversations.map((conv) => (
         <ConversationListItem
           key={conv.id}
           id={conv.id}
           otherUserName={getConversationName(conv, user?.id)}
+          avatarUrl={conv.listing?.seller_avatar_url}
+          fallbackInitials={getConversationName(conv, user?.id)}
           listingImage={conv.listing?.images?.[0]?.image_url}
           lastMessage={conv.last_message?.content}
           lastMessageTime={conv.last_message?.created_at}

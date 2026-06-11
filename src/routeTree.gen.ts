@@ -34,6 +34,7 @@ import { Route as ProtectedOrdersRouteImport } from './routes/_protected/orders'
 import { Route as ProtectedOffersRouteImport } from './routes/_protected/offers'
 import { Route as ProtectedNotificationsRouteImport } from './routes/_protected/notifications'
 import { Route as ProtectedMyListingsRouteImport } from './routes/_protected/my-listings'
+import { Route as ProtectedMessagesRouteImport } from './routes/_protected/messages'
 import { Route as LayoutSearchRouteImport } from './routes/_layout/search'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
 import { Route as LayoutHelpRouteImport } from './routes/_layout/help'
@@ -176,6 +177,11 @@ const ProtectedMyListingsRoute = ProtectedMyListingsRouteImport.update({
   path: '/my-listings',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedMessagesRoute = ProtectedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const LayoutSearchRoute = LayoutSearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -280,6 +286,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof LayoutHelpRouteWithChildren
   '/items': typeof LayoutItemsRouteWithChildren
   '/search': typeof LayoutSearchRoute
+  '/messages': typeof ProtectedMessagesRoute
   '/my-listings': typeof ProtectedMyListingsRoute
   '/notifications': typeof ProtectedNotificationsRoute
   '/offers': typeof ProtectedOffersRoute
@@ -322,6 +329,7 @@ export interface FileRoutesByTo {
   '/help': typeof LayoutHelpRouteWithChildren
   '/items': typeof LayoutItemsRouteWithChildren
   '/search': typeof SearchIndexRoute
+  '/messages': typeof ProtectedMessagesRoute
   '/my-listings': typeof ProtectedMyListingsRoute
   '/notifications': typeof ProtectedNotificationsRoute
   '/offers': typeof ProtectedOffersRoute
@@ -366,6 +374,7 @@ export interface FileRoutesById {
   '/_layout/help': typeof LayoutHelpRouteWithChildren
   '/_layout/items': typeof LayoutItemsRouteWithChildren
   '/_layout/search': typeof LayoutSearchRoute
+  '/_protected/messages': typeof ProtectedMessagesRoute
   '/_protected/my-listings': typeof ProtectedMyListingsRoute
   '/_protected/notifications': typeof ProtectedNotificationsRoute
   '/_protected/offers': typeof ProtectedOffersRoute
@@ -412,6 +421,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/items'
     | '/search'
+    | '/messages'
     | '/my-listings'
     | '/notifications'
     | '/offers'
@@ -454,6 +464,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/items'
     | '/search'
+    | '/messages'
     | '/my-listings'
     | '/notifications'
     | '/offers'
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/_layout/help'
     | '/_layout/items'
     | '/_layout/search'
+    | '/_protected/messages'
     | '/_protected/my-listings'
     | '/_protected/notifications'
     | '/_protected/offers'
@@ -719,6 +731,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedMyListingsRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/messages': {
+      id: '/_protected/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof ProtectedMessagesRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_layout/search': {
       id: '/_layout/search'
       path: '/search'
@@ -929,6 +948,7 @@ const ProtectedOrdersRouteWithChildren = ProtectedOrdersRoute._addFileChildren(
 )
 
 interface ProtectedRouteChildren {
+  ProtectedMessagesRoute: typeof ProtectedMessagesRoute
   ProtectedMyListingsRoute: typeof ProtectedMyListingsRoute
   ProtectedNotificationsRoute: typeof ProtectedNotificationsRoute
   ProtectedOffersRoute: typeof ProtectedOffersRoute
@@ -942,6 +962,7 @@ interface ProtectedRouteChildren {
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedMessagesRoute: ProtectedMessagesRoute,
   ProtectedMyListingsRoute: ProtectedMyListingsRoute,
   ProtectedNotificationsRoute: ProtectedNotificationsRoute,
   ProtectedOffersRoute: ProtectedOffersRoute,
