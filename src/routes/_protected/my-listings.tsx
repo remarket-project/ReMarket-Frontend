@@ -45,6 +45,7 @@ function getMyListingsQueryOptions() {
       return response.items ?? []
     },
     queryKey: ["my-listings"],
+    refetchInterval: 30_000,
   }
 }
 
@@ -84,6 +85,11 @@ const statusConfig: Record<
     label: "Chờ duyệt",
     className: "bg-[#FFFBEB] text-[#D97706] border-[#FDE68A]",
     bg: "bg-amber-500",
+  },
+  reserved: {
+    label: "Đã giữ chỗ",
+    className: "bg-[#FFF7ED] text-[#EA580C] border-[#FED7AA]",
+    bg: "bg-orange-500",
   },
   sold: {
     label: "Đã bán",
@@ -125,6 +131,7 @@ const statusLabels: Record<ListingFilterStatus, string> = {
   active: "Đang bán",
   pending: "Chờ duyệt",
   sold: "Đã bán",
+  reserved: "Đã giữ chỗ",
   hidden: "Đang ẩn",
   rejected: "Bị từ chối",
 }
@@ -308,7 +315,7 @@ function MyListingsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 animate-in fade-in duration-300 max-h-[600px] overflow-y-auto pr-1">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((item) => {
             const statusInfo = statusConfig[item.status]
             const condition = conditionConfig[item.condition_grade] ?? {
@@ -322,7 +329,7 @@ function MyListingsPage() {
             return (
               <Card
                 key={item.id}
-                className="group flex flex-col h-full rounded-[22px] border border-[#D8E2EF] overflow-hidden bg-white hover:shadow-lg transition-all duration-300"
+                className="group flex flex-col h-full rounded-xl border border-[#D8E2EF] overflow-hidden bg-white hover:shadow-md transition-all duration-200"
               >
                 {/* Image Section */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#EFF6FF] via-white to-[#DBEAFE] shrink-0 border-b border-[#D8E2EF]/60">
@@ -359,54 +366,51 @@ function MyListingsPage() {
                 </div>
 
                 {/* Content Section */}
-                <CardContent className="flex-1 p-4 space-y-2">
-                  <h3 className="text-sm font-bold text-[#102A43] leading-snug line-clamp-2 min-h-[2.8em] group-hover:text-[#2563EB] transition-colors">
+                <CardContent className="flex-1 p-3 space-y-1">
+                  <h3 className="text-sm font-bold text-[#102A43] leading-snug line-clamp-2 group-hover:text-[#2563EB] transition-colors">
                     {item.title}
                   </h3>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-base font-extrabold text-[#2563EB] tracking-tight">
+                    <span className="text-sm font-extrabold text-[#2563EB] tracking-tight">
                       {formatPrice(item.price)}
                     </span>
                     {item.is_negotiable && (
-                      <span className="text-[10px] font-medium bg-[#EFF6FF] text-[#2563EB] px-1.5 py-0.5 rounded-full border border-blue-100">
+                      <span className="text-[9px] font-medium bg-[#EFF6FF] text-[#2563EB] px-1.5 py-0.5 rounded-full border border-blue-100">
                         Thương lượng
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1 text-[10px] text-[#64748B] pt-1 border-t border-slate-50">
-                    <Clock className="size-3" />
-                    <span>Đăng {formatTimeAgo(item.created_at)}</span>
-                  </div>
-
-                  {/* Rejection Banner */}
                   {item.status === "rejected" && item.rejection_reason && (
-                    <div className="mt-2.5 rounded-xl bg-red-50 border border-red-100 p-2 text-[10px] text-red-700 space-y-1">
-                      <div className="flex items-center gap-1 font-semibold">
-                        <AlertCircle className="size-3 shrink-0" />
-                        Lý do từ chối:
-                      </div>
-                      <p className="line-clamp-2 italic leading-relaxed">
+                    <div className="flex items-start gap-1 rounded-lg bg-red-50 border border-red-100 px-2 py-1.5">
+                      <AlertCircle className="size-3 shrink-0 mt-[2px] text-red-500" />
+                      <p className="text-[10px] text-red-600 leading-relaxed line-clamp-2">
+                        <span className="font-semibold">Lý do: </span>
                         {item.rejection_reason}
                       </p>
                     </div>
                   )}
+
+                  <div className="flex items-center gap-1 text-[10px] text-[#94A3B8] pt-0.5">
+                    <Clock className="size-3" />
+                    <span>{formatTimeAgo(item.created_at)}</span>
+                  </div>
                 </CardContent>
 
                 {/* Actions Tray */}
-                <div className="p-3 border-t border-[#D8E2EF]/60 bg-slate-50/50 grid grid-cols-2 gap-2 shrink-0">
+                <div className="p-2.5 border-t border-[#D8E2EF]/60 bg-slate-50/50 grid grid-cols-2 gap-1.5 shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-[#D8E2EF] text-[#5B7083] hover:text-[#102A43] hover:bg-slate-100 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                    className="border-[#D8E2EF] text-[#5B7083] hover:text-[#102A43] hover:bg-slate-100 h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
                     asChild
                   >
                     <Link
                       to="/items/$listingId"
                       params={{ listingId: item.id }}
                     >
-                      <Eye className="size-3.5" />
-                      Xem tin
+                      <Eye className="size-3" />
+                      Xem
                     </Link>
                   </Button>
 
@@ -414,15 +418,15 @@ function MyListingsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                      className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
                       asChild
                     >
                       <Link
                         to="/items/$listingId/edit"
                         params={{ listingId: item.id }}
                       >
-                        <Pencil className="size-3.5" />
-                        Sửa tin
+                        <Pencil className="size-3" />
+                        Sửa
                       </Link>
                     </Button>
                   )}
@@ -432,11 +436,11 @@ function MyListingsPage() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
                       onClick={() => setDeleteTargetId(item.id)}
                     >
-                      <Trash2 className="size-3.5" />
-                      Xóa tin
+                      <Trash2 className="size-3" />
+                      Xóa
                     </Button>
                   )}
 
@@ -444,11 +448,11 @@ function MyListingsPage() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-8 text-[11px] rounded-lg font-semibold gap-1.5 cursor-pointer"
+                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
                       onClick={() => setDeleteTargetId(item.id)}
                     >
-                      <Trash2 className="size-3.5" />
-                      Xóa tin
+                      <Trash2 className="size-3" />
+                      Xóa
                     </Button>
                   )}
                 </div>

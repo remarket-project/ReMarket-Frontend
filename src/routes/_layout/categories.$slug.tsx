@@ -127,6 +127,7 @@ function CategoryLandingPage() {
         limit: PAGE_SIZE,
       }),
     enabled: Boolean(category),
+    staleTime: 30_000,
   })
 
   const listings = listingsData?.items ?? []

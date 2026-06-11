@@ -30,7 +30,8 @@ import { Textarea } from "@/components/ui/textarea"
 const offerSchema = z.object({
   offer_price: z
     .number({ message: "Vui lòng nhập mức giá hợp lệ" })
-    .positive("Đề nghị giá phải lớn hơn 0"),
+    .positive("Đề nghị giá phải lớn hơn 0")
+    .min(1000, "Giá đề nghị tối thiểu là 1,000đ"),
   message: z.string().optional(),
 })
 

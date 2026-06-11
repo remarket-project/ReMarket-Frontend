@@ -97,6 +97,7 @@ function getItemsQueryOptions() {
       }
     },
     queryKey: ["items"],
+    refetchInterval: 30_000,
   }
 }
 

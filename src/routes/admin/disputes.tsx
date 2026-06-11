@@ -47,6 +47,7 @@ function AdminDisputesPage() {
     queryKey: ["adminDisputes"],
     queryFn: () =>
       AdminService.listDisputesApiV1AdminDisputesGet({ status: "open" }),
+    refetchInterval: 30_000,
   })
 
   const resolveMutation = useMutation({

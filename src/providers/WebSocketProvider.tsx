@@ -31,13 +31,13 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     offer_accepted: useCallback(
       (data: Record<string, unknown>) => {
         queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-        queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
         if (data.listing_id)
           queryClient.invalidateQueries({
             queryKey: ["listing-detail", data.listing_id as string],
           })
-        toast("Đề nghị đã được chấp nhận! Đơn hàng đã được tạo.", {
-          duration: 5000,
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+        toast("Người bán đã đồng ý với đề nghị của bạn! Hãy xác nhận đặt hàng.", {
+          duration: 8000,
         })
       },
       [queryClient],
@@ -83,8 +83,128 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       [queryClient],
     ),
 
+    // ─── New pending listing (broadcast to admins) ────────────
+    new_pending_listing: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
+    }, [queryClient]),
+
+    // ─── Listing approved broadcast (all users) ──────────────
+    listing_approved_broadcast: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["home-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
+    }, [queryClient]),
+
+    // ─── Listing updated (edit listing) ──────────────────────
+    listing_updated: useCallback(
+      (data: Record<string, unknown>) => {
+        if (data.listing_id) {
+          queryClient.invalidateQueries({
+            queryKey: ["listing-detail", data.listing_id as string],
+          })
+          queryClient.invalidateQueries({
+            queryKey: ["listing", data.listing_id as string],
+          })
+        }
+        queryClient.invalidateQueries({ queryKey: ["home-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["items"] })
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+      },
+      [queryClient],
+    ),
+
+    // ─── Listing deleted ─────────────────────────────────────
+    listing_deleted: useCallback(
+      (data: Record<string, unknown>) => {
+        if (data.listing_id) {
+          queryClient.removeQueries({
+            queryKey: ["listing-detail", data.listing_id as string],
+          })
+          queryClient.removeQueries({
+            queryKey: ["listing", data.listing_id as string],
+          })
+        }
+        queryClient.invalidateQueries({ queryKey: ["home-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["items"] })
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
+      },
+      [queryClient],
+    ),
+
+    // ─── Listing sold broadcast (all users) ──────────────────
+    listing_sold_broadcast: useCallback(
+      (data: Record<string, unknown>) => {
+        if (data.listing_id)
+          queryClient.invalidateQueries({
+            queryKey: ["listing-detail", data.listing_id as string],
+          })
+        queryClient.invalidateQueries({ queryKey: ["home-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["items"] })
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+      },
+      [queryClient],
+    ),
+
+    // ─── Profile updated ─────────────────────────────────────
+    profile_updated: useCallback(
+      (data: Record<string, unknown>) => {
+        if (data.user_id)
+          queryClient.invalidateQueries({
+            queryKey: ["seller-profile", data.user_id as string],
+          })
+      },
+      [queryClient],
+    ),
+
+    // ─── Category changed ────────────────────────────────────
+    category_changed: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      queryClient.invalidateQueries({ queryKey: ["categories-all"] })
+      queryClient.invalidateQueries({ queryKey: ["adminCategories"] })
+    }, [queryClient]),
+
+    // ─── New dispute (admin) ─────────────────────────────────
+    new_dispute: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["adminDisputes"] })
+    }, [queryClient]),
+
+    // ─── Listing rejected broadcast (admin pending refresh) ──
+    listing_rejected_broadcast: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
+    }, [queryClient]),
+
     // ─── Listing (invalidation only) ───────────────────────────
     listing_sold: useCallback(
+      (data: Record<string, unknown>) => {
+        if (data.listing_id)
+          queryClient.invalidateQueries({
+            queryKey: ["listing-detail", data.listing_id as string],
+          })
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+      },
+      [queryClient],
+    ),
+
+    listing_approved: useCallback(
+      (data: Record<string, unknown>) => {
+        if (data.listing_id)
+          queryClient.invalidateQueries({
+            queryKey: ["listing-detail", data.listing_id as string],
+          })
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["home-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["items"] })
+        toast("Bài đăng của bạn đã được duyệt!", { duration: 5000 })
+      },
+      [queryClient],
+    ),
+
+    listing_rejected: useCallback(
       (data: Record<string, unknown>) => {
         if (data.listing_id)
           queryClient.invalidateQueries({

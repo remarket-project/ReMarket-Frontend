@@ -77,6 +77,7 @@ function AdminOrdersPage() {
         limit: 50,
         status: statusFilter || null,
       }),
+    refetchInterval: 30_000,
   })
 
   const actionMutation = useMutation({

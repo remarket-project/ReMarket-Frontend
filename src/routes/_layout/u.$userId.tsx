@@ -46,6 +46,7 @@ function getSellerProfileQueryOptions(userId: string) {
       }
     },
     queryKey: ["seller-profile", userId],
+    staleTime: 30_000,
   }
 }
 

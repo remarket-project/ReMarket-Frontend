@@ -261,6 +261,7 @@ function SearchResultsPage() {
         skip,
         limit: PAGE_SIZE,
       }),
+    staleTime: 0,
   })
 
   const rawListings = listingsData?.items ?? []

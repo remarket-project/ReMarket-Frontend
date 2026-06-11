@@ -107,6 +107,7 @@ export function OrderRow({ order, role }: OrderRowProps) {
         listingId: order.listing_id,
       }),
     enabled: Boolean(order.listing_id),
+    staleTime: 0,
   })
 
   // Fetch Counterpart profile

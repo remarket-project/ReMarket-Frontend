@@ -70,6 +70,35 @@ export function ListingPreviewDialog({
 
           <div className="space-y-2 rounded-xl border border-white/[0.06] bg-[#1A2233] p-4">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Thông tin người bán
+            </div>
+            <div className="mt-1 flex items-center gap-3">
+              <div className="size-10 overflow-hidden rounded-full bg-[#1A2233] ring-1 ring-white/[0.08]">
+                {listing.seller_avatar_url ? (
+                  <img
+                    src={listing.seller_avatar_url}
+                    alt={listing.seller_name || "Seller"}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <div className="flex size-full items-center justify-center text-sm font-semibold text-slate-400">
+                    {listing.seller_name?.charAt(0)?.toUpperCase() || "?"}
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-200">
+                  {listing.seller_name || "Không rõ"}
+                </p>
+                <p className="text-xs text-slate-500">
+                  ID: {typeof listing.seller_id === 'string' ? listing.seller_id.slice(0, 12) : listing.seller_id}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 rounded-xl border border-white/[0.06] bg-[#1A2233] p-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Thông tin giao dịch
             </div>
             <div className="mt-1 grid grid-cols-2 gap-4 text-sm">
@@ -85,7 +114,7 @@ export function ListingPreviewDialog({
               <div>
                 <span className="text-slate-400">Khu vực:</span>
                 <span className="ml-1.5 font-semibold text-slate-200">
-                  {listing.location_city || "Chưa cập nhật"}
+                  {listing.location_summary || "Chưa cập nhật"}
                 </span>
               </div>
             </div>

@@ -16,8 +16,9 @@ import {
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { ListingsService, type OfferRead, OffersService } from "@/client"
+import { ListingsService, type OfferRead, OffersService, type ShippingAddressInput, type PaymentMethod } from "@/client"
 import { extractErrorMessage } from "@/utils"
+import ConfirmOrderDialog from "@/components/Offers/ConfirmOrderDialog"
 import CounterOfferDialog from "@/components/Offers/CounterOfferDialog"
 import { OfferCard } from "@/components/Offers/OfferCard"
 import { Badge } from "@/components/ui/badge"
@@ -75,6 +76,7 @@ function OffersPage() {
   const [statusView, setStatusView] = useState<OfferView>("all")
   const [query, setQuery] = useState("")
   const [counterTarget, setCounterTarget] = useState<OfferRead | null>(null)
+  const [confirmTarget, setConfirmTarget] = useState<OfferRead | null>(null)
 
   const { data: listingForCounter } = useQuery({
     queryKey: ["listing-detail", counterTarget?.listing_id],
@@ -129,6 +131,37 @@ function OffersPage() {
     },
     onError: (error: any) => {
       toast.error(extractErrorMessage(error, "Không thể cập nhật đề nghị."))
+    },
+  })
+
+  const confirmMutation = useMutation({
+    mutationFn: ({
+      offerId,
+      shippingAddress,
+      paymentMethod,
+    }: {
+      offerId: string
+      shippingAddress: ShippingAddressInput
+      paymentMethod: PaymentMethod
+    }) =>
+      OffersService.confirmOfferOrderApiV1OffersOfferIdConfirmPost({
+        offerId,
+        requestBody: { shipping_address: shippingAddress, payment_method: paymentMethod },
+      }),
+    onSuccess: (order, _variables) => {
+      queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      setConfirmTarget(null)
+      toast.success("Đặt hàng thành công!", {
+        action: {
+          label: "Xem đơn hàng",
+          onClick: () =>
+            navigate({ to: "/orders/$orderId", params: { orderId: order.id } }),
+        },
+      })
+    },
+    onError: (error: any) => {
+      toast.error(extractErrorMessage(error, "Không thể xác nhận đơn hàng."))
     },
   })
 
@@ -286,6 +319,7 @@ function OffersPage() {
               onReject={(o) => updateStatus(o, "rejected")}
               onCounter={(o) => setCounterTarget(o)}
               isPending={mutation.isPending}
+              onConfirmOrder={(o) => setConfirmTarget(o)}
             />
           ))
         )}
@@ -307,6 +341,23 @@ function OffersPage() {
             offerId: counterTarget.id,
             status: "countered",
             offerPrice: value,
+          })
+        }}
+      />
+
+      <ConfirmOrderDialog
+        open={Boolean(confirmTarget)}
+        onOpenChange={(open) => {
+          if (!open) setConfirmTarget(null)
+        }}
+        offerPrice={Number(confirmTarget?.offer_price || 0)}
+        isPending={confirmMutation.isPending}
+        onSubmit={(shippingAddress, paymentMethod) => {
+          if (!confirmTarget) return
+          confirmMutation.mutate({
+            offerId: confirmTarget.id,
+            shippingAddress,
+            paymentMethod,
           })
         }}
       />

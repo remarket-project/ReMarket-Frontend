@@ -518,6 +518,7 @@ function SimilarListings({
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 10 }),
     enabled: Boolean(categoryId),
+    staleTime: 30_000,
   })
 
   const similar = (data?.items ?? [])

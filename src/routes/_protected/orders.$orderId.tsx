@@ -639,7 +639,7 @@ function OrderDetailPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               {/* Cancel (PENDING only) */}
-              {order.status === "pending" && (isBuyer || isSeller) ? (
+              {order.status === "pending" && isBuyer ? (
                 <Button
                   variant="outline"
                   className="w-full border-rose-200 text-rose-700"

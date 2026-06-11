@@ -188,6 +188,19 @@ export const Body_reject_listing_route_api_v1_admin_listings__listing_id__reject
     title: 'Body_reject_listing_route_api_v1_admin_listings__listing_id__reject_post'
 } as const;
 
+export const Body_upload_file_api_v1_upload_postSchema = {
+    properties: {
+        file: {
+            type: 'string',
+            contentMediaType: 'application/octet-stream',
+            title: 'File'
+        }
+    },
+    type: 'object',
+    required: ['file'],
+    title: 'Body_upload_file_api_v1_upload_post'
+} as const;
+
 export const Body_upload_listing_image_api_v1_listings__listing_id__images_postSchema = {
     properties: {
         file: {
@@ -592,10 +605,15 @@ export const DisputeEvidenceReadSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At'
+        },
+        serve_url: {
+            type: 'string',
+            title: 'Serve Url',
+            readOnly: true
         }
     },
     type: 'object',
-    required: ['id', 'dispute_id', 'uploaded_by', 'image_url', 'created_at'],
+    required: ['id', 'dispute_id', 'uploaded_by', 'image_url', 'created_at', 'serve_url'],
     title: 'DisputeEvidenceRead'
 } as const;
 
@@ -1126,7 +1144,7 @@ export const ListingReadSchema = {
 
 export const ListingStatusSchema = {
     type: 'string',
-    enum: ['pending', 'active', 'sold', 'hidden', 'rejected'],
+    enum: ['pending', 'active', 'reserved', 'sold', 'hidden', 'rejected'],
     title: 'ListingStatus',
     description: 'Status of a listing.'
 } as const;
@@ -1469,6 +1487,29 @@ export const NotificationsPaginatedSchema = {
     description: 'Phản hồi thông báo có phân trang'
 } as const;
 
+export const OfferConfirmRequestSchema = {
+    properties: {
+        shipping_address: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/ShippingAddressInput'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            description: 'Thông tin giao hàng'
+        },
+        payment_method: {
+            '$ref': '#/components/schemas/PaymentMethod',
+            description: 'Phương thức thanh toán',
+            default: 'wallet'
+        }
+    },
+    type: 'object',
+    title: 'OfferConfirmRequest'
+} as const;
+
 export const OfferCreateSchema = {
     properties: {
         offer_price: {
@@ -1544,16 +1585,30 @@ export const OfferReadSchema = {
                 }
             ],
             title: 'Order Id'
+        },
+        expires_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Expires At',
+            description: 'Thời gian hết hạn xác nhận (chỉ có ý nghĩa khi status = ACCEPTED).',
+            readOnly: true
         }
     },
     type: 'object',
-    required: ['offer_price', 'id', 'listing_id', 'buyer_id', 'status', 'created_at', 'updated_at'],
+    required: ['offer_price', 'id', 'listing_id', 'buyer_id', 'status', 'created_at', 'updated_at', 'expires_at'],
     title: 'OfferRead'
 } as const;
 
 export const OfferStatusSchema = {
     type: 'string',
-    enum: ['pending', 'accepted', 'rejected', 'countered', 'expired'],
+    enum: ['pending', 'accepted', 'confirmed', 'rejected', 'countered', 'expired'],
     title: 'OfferStatus',
     description: 'Status of an offer (negotiation).'
 } as const;
@@ -1939,6 +1994,11 @@ export const OrderReadSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Updated At'
+        },
+        has_dispute: {
+            type: 'boolean',
+            title: 'Has Dispute',
+            default: false
         }
     },
     type: 'object',
@@ -2080,21 +2140,15 @@ export const ResolveEscrowRequestSchema = {
             description: 'release: transfer to seller, refund: return funds to buyer'
         },
         note: {
-            anyOf: [
-                {
-                    type: 'string',
-                    maxLength: 500
-                },
-                {
-                    type: 'null'
-                }
-            ],
+            type: 'string',
+            maxLength: 500,
+            minLength: 10,
             title: 'Note',
-            description: 'Optional admin note'
+            description: 'Admin note explaining the resolution reason'
         }
     },
     type: 'object',
-    required: ['result'],
+    required: ['result', 'note'],
     title: 'ResolveEscrowRequest',
     description: 'Admin resolution for disputed escrow.'
 } as const;

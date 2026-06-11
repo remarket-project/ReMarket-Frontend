@@ -33,6 +33,7 @@ function EditListingPage() {
       ListingsService.getListingApiV1ListingsListingIdGet({
         listingId,
       }),
+    staleTime: 0,
   })
 
   const { data: categoriesData } = useQuery({
@@ -75,6 +76,7 @@ function EditListingPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["listing", listingId] })
+      queryClient.invalidateQueries({ queryKey: ["listing-detail", listingId] })
       queryClient.invalidateQueries({ queryKey: ["my-listings"] })
       toast.success("Cập nhật tin đăng thành công.")
       navigate({ to: "/items/$listingId", params: { listingId } })

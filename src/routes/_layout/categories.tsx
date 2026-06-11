@@ -88,6 +88,7 @@ function CategoriesPage() {
     queryKey: ["categories-all"],
     queryFn: () =>
       CategoriesService.listCategoriesApiV1CategoriesGet({ limit: 50 }),
+    staleTime: 300_000,
   })
 
   const categories =

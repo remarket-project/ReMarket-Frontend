@@ -9,6 +9,7 @@ import {
   Package,
   Star,
   ThumbsUp,
+  Timer,
   XCircle,
 } from "lucide-react"
 import {
@@ -23,6 +24,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useChat } from "@/hooks/ChatContext"
+import { CountdownTimer } from "@/components/Offers/CountdownTimer"
 
 interface OfferCardProps {
   offer: OfferRead
@@ -31,6 +33,7 @@ interface OfferCardProps {
   onReject: (offer: OfferRead) => void
   onCounter: (offer: OfferRead) => void
   isPending: boolean
+  onConfirmOrder?: (offer: OfferRead) => void
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
@@ -85,6 +88,7 @@ export function OfferCard({
   onReject,
   onCounter,
   isPending,
+  onConfirmOrder,
 }: OfferCardProps) {
   const { openConversation } = useChat()
 
@@ -139,7 +143,6 @@ export function OfferCard({
   const ratio =
     listedPrice > 0 ? Math.round((offerPrice / listedPrice) * 100) : 0
   const isAccepted = offer.status === "accepted"
-  const orderId = (offer as any).order_id
 
   const primaryImage =
     listing?.images?.find((img) => img.is_primary) ??
@@ -325,36 +328,56 @@ export function OfferCard({
           </div>
         )}
 
-        {isAccepted && (
+        {isAccepted && role === "received" && (
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> Đề nghị này đã được chấp
-              nhận.
+              <CheckCircle2 className="w-4 h-4" /> Đã đồng ý. Đang chờ người mua
+              xác nhận đặt hàng.
             </span>
-            <div className="flex gap-2">
-              {orderId && role === "received" && (
+            {offer.expires_at && <CountdownTimer expiresAt={offer.expires_at} />}
+          </div>
+        )}
+
+        {isAccepted && role === "sent" && (
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4" /> Người bán đã đồng ý
+              </span>
+              {offer.expires_at && <CountdownTimer expiresAt={offer.expires_at} />}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {offer.order_id ? (
                 <Button
                   size="sm"
                   variant="outline"
                   className="border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
                   asChild
                 >
-                  <Link to="/orders/$orderId" params={{ orderId }}>
+                  <Link to="/orders/$orderId" params={{ orderId: offer.order_id }}>
                     Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
                   </Link>
                 </Button>
-              )}
-              {!orderId && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
-                  asChild
-                >
-                  <Link to="/orders">
-                    Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
-                  </Link>
-                </Button>
+              ) : (
+                <>
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 text-white hover:bg-emerald-700"
+                    onClick={() => onConfirmOrder?.(offer)}
+                    disabled={isPending}
+                  >
+                    <Timer className="w-4 h-4 mr-1.5" /> Xác nhận đặt hàng
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                    onClick={() => onReject(offer)}
+                    disabled={isPending}
+                  >
+                    <XCircle className="w-4 h-4 mr-1.5" /> Từ chối, không mua nữa
+                  </Button>
+                </>
               )}
             </div>
           </div>

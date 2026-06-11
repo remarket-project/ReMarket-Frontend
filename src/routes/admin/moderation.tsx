@@ -6,6 +6,8 @@ import {
 import { createFileRoute } from "@tanstack/react-router"
 import {
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Eye,
   ListChecks,
   RefreshCw,
@@ -14,7 +16,7 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
-import { AdminService, type ListingRead } from "@/client"
+import { AdminService, type ListingWithImages } from "@/client"
 import { ListingPreviewDialog } from "@/components/Admin/ListingPreviewDialog"
 import { RejectReasonDialog } from "@/components/Admin/RejectReasonDialog"
 import { Badge } from "@/components/ui/badge"
@@ -69,6 +71,7 @@ function layQueryTinChoDuyet() {
       })
     },
     queryKey: ["admin-pending-listings"],
+    refetchInterval: 15_000,
   }
 }
 
@@ -113,6 +116,7 @@ function TrangKiemDuyetTin() {
   const [rejectingListingId, setRejectingListingId] = useState<string | null>(
     null,
   )
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
 
   const allSelected = data.length > 0 && selectedIds.length === data.length
   const selectedCount = selectedIds.length
@@ -133,6 +137,10 @@ function TrangKiemDuyetTin() {
     setSelectedIds(data.map((item) => item.id))
   }
 
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
   const bulkApproveMutation = useMutation({
     mutationFn: async (ids: string[]) => {
       await Promise.all(
@@ -147,7 +155,10 @@ function TrangKiemDuyetTin() {
       setSelectedIds([])
       showSuccessToast("Đã phê duyệt tin đăng thành công!")
       queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
       queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["home-listings"] })
     },
     onError: handleError.bind(showErrorToast),
   })
@@ -166,9 +177,13 @@ function TrangKiemDuyetTin() {
     onSuccess: () => {
       setSelectedIds([])
       setRejectReason("")
+      setRejectingListingId(null)
       showSuccessToast("Đã từ chối tin đăng thành công!")
       queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
       queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["home-listings"] })
     },
     onError: handleError.bind(showErrorToast),
   })
@@ -320,18 +335,26 @@ function TrangKiemDuyetTin() {
         <div className="flex flex-col gap-3">
           {data.map(
             (
-              listing: ListingRead & { images?: any[]; location_city?: string },
-            ) => (
+              listing: ListingWithImages,
+            ) => {
+              const isExpanded = expandedIds[listing.id] ?? false
+              const imageCount = listing.images?.length ?? 0
+              return (
               <div
                 key={listing.id}
                 className={`rounded-2xl border transition-all duration-200 ${
                   selectedIds.includes(listing.id)
                     ? "border-blue-500/40 bg-[#111827] shadow-[0_0_0_3px_rgba(59,130,246,0.1)]"
-                    : "border-white/[0.06] bg-[#111827] hover:border-blue-500/20 hover:shadow-[0_4px_12px_rgba(59,130,246,0.06)]"
+                    : isExpanded
+                      ? "border-blue-500/30 bg-[#111827]"
+                      : "border-white/[0.06] bg-[#111827] hover:border-blue-500/20 hover:shadow-[0_4px_12px_rgba(59,130,246,0.06)]"
                 }`}
               >
-                <div className="flex items-start gap-4 p-4">
-                  <div className="mt-1">
+                <div
+                  className="flex cursor-pointer items-start gap-4 p-4"
+                  onClick={() => toggleExpand(listing.id)}
+                >
+                  <div className="mt-1" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(listing.id)}
@@ -354,14 +377,31 @@ function TrangKiemDuyetTin() {
                     <p className="text-sm font-bold leading-snug text-slate-100">
                       {listing.title}
                     </p>
-                    <p className="mt-0.5 text-xs text-slate-400">
-                      #{listing.id.slice(0, 8)} • Người bán:{" "}
-                      {listing.seller_id.slice(0, 8)} •{" "}
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <div className="size-5 overflow-hidden rounded-full bg-[#1A2233] ring-1 ring-white/[0.08]">
+                        {listing.seller_avatar_url ? (
+                          <img
+                            src={listing.seller_avatar_url}
+                            alt=""
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex size-full items-center justify-center text-[10px] font-semibold text-slate-400">
+                            {listing.seller_name?.charAt(0)?.toUpperCase() || "?"}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-slate-300">
+                        {listing.seller_name || "Không rõ"}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      #{listing.id.slice(0, 8)} •{" "}
                       {formatNgay(listing.created_at)}
                     </p>
-                    {listing.location_city && (
+                    {listing.location_summary && (
                       <p className="mt-0.5 text-xs text-slate-400">
-                        📍 {listing.location_city}
+                        {listing.location_summary}
                       </p>
                     )}
                     <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -376,40 +416,94 @@ function TrangKiemDuyetTin() {
                           currency: "VND",
                         }).format(Number(listing.price))}
                       </span>
+                      {imageCount > 0 && (
+                        <span className="text-[11px] text-slate-500">
+                          {imageCount} ảnh
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setPreviewListing(listing)}
-                      title="Xem chi tiết"
-                      className="flex size-9 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-blue-500/10 hover:text-blue-400"
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1"
                     >
-                      <Eye className="size-4" />
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewListing(listing)}
+                        title="Xem chi tiết"
+                        className="flex size-9 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-blue-500/10 hover:text-blue-400"
+                      >
+                        <Eye className="size-4" />
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleApprove(listing.id)}
-                      title="Phê duyệt"
-                      className="flex size-9 items-center justify-center rounded-xl text-emerald-500 transition-colors hover:bg-emerald-500/10"
-                    >
-                      <CheckCircle2 className="size-4" />
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApprove(listing.id)}
+                        title="Phê duyệt"
+                        className="flex size-9 items-center justify-center rounded-xl text-emerald-500 transition-colors hover:bg-emerald-500/10"
+                      >
+                        <CheckCircle2 className="size-4" />
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setRejectingListingId(listing.id)}
-                      title="Từ chối"
-                      className="flex size-9 items-center justify-center rounded-xl text-[#E11D48] transition-colors hover:bg-red-500/10"
-                    >
-                      <XCircle className="size-4" />
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setRejectingListingId(listing.id)}
+                        title="Từ chối"
+                        className="flex size-9 items-center justify-center rounded-xl text-[#E11D48] transition-colors hover:bg-red-500/10"
+                      >
+                        <XCircle className="size-4" />
+                      </button>
+                    </div>
+
+                    <div className="ml-1 text-slate-500">
+                      {isExpanded ? (
+                        <ChevronUp className="size-5" />
+                      ) : (
+                        <ChevronDown className="size-5" />
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                {isExpanded && imageCount > 0 && (
+                  <div className="border-t border-white/[0.08] px-4 pb-4 pt-3">
+                    <p className="mb-3 text-xs font-semibold text-slate-400">
+                      Tất cả ảnh của tin đăng ({imageCount})
+                    </p>
+                    <div className="grid grid-cols-4 gap-3 sm:grid-cols-5 lg:grid-cols-6">
+                      {listing.images!.map((img: any, idx: number) => (
+                        <a
+                          key={idx}
+                          href={img.image_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group relative block aspect-square overflow-hidden rounded-xl border border-white/[0.08] bg-[#1A2233]"
+                        >
+                          <img
+                            src={img.image_url}
+                            alt={`Ảnh ${idx + 1}`}
+                            className="size-full object-cover transition-transform duration-200 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
+                            <Eye className="size-5 text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {isExpanded && imageCount === 0 && (
+                  <div className="border-t border-white/[0.08] px-4 pb-4 pt-3">
+                    <p className="text-xs text-slate-500">
+                      Không có ảnh đính kèm cho tin đăng này
+                    </p>
+                  </div>
+                )}
               </div>
-            ),
+            )},
           )}
         </div>
       )}

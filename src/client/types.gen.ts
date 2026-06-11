@@ -36,6 +36,10 @@ export type Body_reject_listing_route_api_v1_admin_listings__listing_id__reject_
     reason?: (string | null);
 };
 
+export type Body_upload_file_api_v1_upload_post = {
+    file: string;
+};
+
 export type Body_upload_listing_image_api_v1_listings__listing_id__images_post = {
     file: string;
 };
@@ -170,6 +174,7 @@ export type DisputeEvidenceRead = {
     uploaded_by: string;
     image_url: string;
     created_at: string;
+    readonly serve_url: string;
 };
 
 export type DisputeRead = {
@@ -297,7 +302,7 @@ export type ListingRead = {
 /**
  * Status of a listing.
  */
-export type ListingStatus = 'pending' | 'active' | 'sold' | 'hidden' | 'rejected';
+export type ListingStatus = 'pending' | 'active' | 'reserved' | 'sold' | 'hidden' | 'rejected';
 
 /**
  * Status of a listing.
@@ -305,6 +310,7 @@ export type ListingStatus = 'pending' | 'active' | 'sold' | 'hidden' | 'rejected
 export const ListingStatus = {
     PENDING: 'pending',
     ACTIVE: 'active',
+    RESERVED: 'reserved',
     SOLD: 'sold',
     HIDDEN: 'hidden',
     REJECTED: 'rejected'
@@ -413,6 +419,17 @@ export const NotificationType = {
     WALLET_RELEASED: 'wallet_released'
 } as const;
 
+export type OfferConfirmRequest = {
+    /**
+     * Thông tin giao hàng
+     */
+    shipping_address?: (ShippingAddressInput | null);
+    /**
+     * Phương thức thanh toán
+     */
+    payment_method?: PaymentMethod;
+};
+
 export type OfferCreate = {
     /**
      * The price offered by the buyer
@@ -436,12 +453,16 @@ export type OfferRead = {
     created_at: string;
     updated_at: string;
     order_id?: (string | null);
+    /**
+     * Thời gian hết hạn xác nhận (chỉ có ý nghĩa khi status = ACCEPTED).
+     */
+    readonly expires_at: (string | null);
 };
 
 /**
  * Status of an offer (negotiation).
  */
-export type OfferStatus = 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired';
+export type OfferStatus = 'pending' | 'accepted' | 'confirmed' | 'rejected' | 'countered' | 'expired';
 
 /**
  * Status of an offer (negotiation).
@@ -449,6 +470,7 @@ export type OfferStatus = 'pending' | 'accepted' | 'rejected' | 'countered' | 'e
 export const OfferStatus = {
     PENDING: 'pending',
     ACCEPTED: 'accepted',
+    CONFIRMED: 'confirmed',
     REJECTED: 'rejected',
     COUNTERED: 'countered',
     EXPIRED: 'expired'
@@ -512,7 +534,7 @@ export type OrderRead = {
     offer_id?: (string | null);
     created_at: string;
     updated_at: string;
-    has_dispute: boolean;
+    has_dispute?: boolean;
 };
 
 /**
@@ -597,9 +619,9 @@ export type ResolveEscrowRequest = {
      */
     result: 'release' | 'refund';
     /**
-     * Optional admin note
+     * Admin note explaining the resolution reason
      */
-    note?: (string | null);
+    note: string;
 };
 
 /**
@@ -1399,6 +1421,13 @@ export type GetOffersForListingApiV1OffersListingListingIdGetData = {
 
 export type GetOffersForListingApiV1OffersListingListingIdGetResponse = (Array<OfferRead>);
 
+export type ConfirmOfferOrderApiV1OffersOfferIdConfirmPostData = {
+    offerId: string;
+    requestBody: OfferConfirmRequest;
+};
+
+export type ConfirmOfferOrderApiV1OffersOfferIdConfirmPostResponse = (OrderRead);
+
 export type UpdateOfferStatusApiV1OffersOfferIdStatusPatchData = {
     offerId: string;
     requestBody: OfferStatusUpdate;
@@ -1626,6 +1655,18 @@ export type UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse = (void);
 export type StartOnboardingApiV1ConnectOnboardingPostResponse = (CreateAccountResponse);
 
 export type GetOnboardingStatusApiV1ConnectOnboardingStatusGetResponse = (OnboardingStatusResponse);
+
+export type UploadFileApiV1UploadPostData = {
+    formData: Body_upload_file_api_v1_upload_post;
+};
+
+export type UploadFileApiV1UploadPostResponse = (unknown);
+
+export type ServeFileApiV1UploadPathGetData = {
+    path: string;
+};
+
+export type ServeFileApiV1UploadPathGetResponse = (unknown);
 
 export type GetCurrentUserInfoApiV1UsersMeGetResponse = (UserPrivate);
 

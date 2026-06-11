@@ -84,6 +84,8 @@ function MarketplaceHome() {
         skip: 0,
         limit: 24,
       }),
+    staleTime: 0,
+    refetchInterval: 30_000,
   })
 
   const listings = listingsData?.items ?? []

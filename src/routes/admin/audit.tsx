@@ -52,6 +52,8 @@ function TrangNhatKyHoatDong() {
         action: boLocHanhDong || undefined,
         targetType: boLocDoiTuong || undefined,
       }),
+    staleTime: 0,
+    refetchInterval: 30_000,
   })
 
   const formatNgayGio = (dateStr: string) => {

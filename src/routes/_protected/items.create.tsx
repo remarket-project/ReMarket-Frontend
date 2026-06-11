@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useQueryClient } from "@tanstack/react-query"
 import confetti from "canvas-confetti"
 import {
   ArrowLeft,
@@ -147,6 +148,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 
 function CreateListingPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createdListingId, setCreatedListingId] = useState<string | null>(null)
@@ -302,6 +304,8 @@ function CreateListingPage() {
 
       localStorage.removeItem(DRAFT_KEY)
       toast.success("Đăng tin thành công.")
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] })
 
       // Fire confetti
       confetti({
