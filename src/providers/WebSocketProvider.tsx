@@ -58,12 +58,15 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     // ─── Orders (invalidation only) ───────────────────────────
     new_order: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
       toast("Bạn có đơn hàng mới!", { duration: 5000 })
     }, [queryClient]),
 
     order_status_updated: useCallback(
       (data: Record<string, unknown>) => {
         queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+        queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
+        queryClient.invalidateQueries({ queryKey: ["adminDisputes"] })
         if (data.order_id)
           queryClient.invalidateQueries({
             queryKey: ["order-detail", data.order_id as string],
@@ -75,6 +78,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     order_cancelled: useCallback(
       (data: Record<string, unknown>) => {
         queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+        queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
         if (data.order_id)
           queryClient.invalidateQueries({
             queryKey: ["order-detail", data.order_id as string],

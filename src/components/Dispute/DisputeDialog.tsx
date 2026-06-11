@@ -1,6 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { AlertTriangle, CheckCircle2, Loader2, Upload } from "lucide-react"
-import { useEffect, useState } from "react"
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  Upload,
+  X,
+} from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { DisputesService } from "@/client"
 import { Button } from "@/components/ui/button"
@@ -39,6 +45,8 @@ export function DisputeDialog({
   const [reason, setReason] = useState("")
   const [reasonError, setReasonError] = useState("")
   const [files, setFiles] = useState<File[]>([])
+  const [dragOver, setDragOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const acceptMutation = useMutation({
     mutationFn: () =>
@@ -109,8 +117,32 @@ export function DisputeDialog({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files).slice(0, 5))
+      const newFiles = Array.from(e.target.files).slice(0, 5 - files.length)
+      setFiles((prev) => [...prev, ...newFiles].slice(0, 5))
     }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+    const dropped = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/")
+    )
+    setFiles((prev) => [...prev, ...dropped].slice(0, 5))
+  }
+
+  const removeFile = (idx: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== idx))
   }
 
   return (
@@ -188,16 +220,27 @@ export function DisputeDialog({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="evidence">Ảnh minh chứng (tối đa 5 ảnh)</Label>
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="evidence"
-                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-[#D8E2EF] px-4 py-2 text-sm text-[#5B7083] hover:border-blue-300 hover:text-blue-600"
-                  >
-                    <Upload className="size-4" />
-                    Chọn ảnh
-                  </label>
+                <Label>Ảnh minh chứng (tối đa 5 ảnh)</Label>
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 transition-colors ${
+                    dragOver
+                      ? "border-blue-400 bg-blue-50/10"
+                      : "border-[#D8E2EF] hover:border-blue-300 hover:bg-slate-50/5"
+                  }`}
+                >
+                  <Upload className="size-6 text-[#5B7083]" />
+                  <p className="text-sm font-medium text-[#5B7083]">
+                    Kéo thả ảnh vào đây
+                  </p>
+                  <p className="text-xs text-[#94A3B8]">
+                    hoặc nhấp để chọn (tối đa 5 ảnh)
+                  </p>
                   <input
+                    ref={fileInputRef}
                     id="evidence"
                     type="file"
                     multiple
@@ -205,12 +248,39 @@ export function DisputeDialog({
                     className="hidden"
                     onChange={handleFileChange}
                   />
-                  {files.length > 0 ? (
-                    <span className="text-xs text-[#5B7083]">
-                      {files.length} ảnh
-                    </span>
-                  ) : null}
                 </div>
+                {files.length > 0 && (
+                  <div className="grid grid-cols-5 gap-2">
+                    {files.map((file, idx) => (
+                      <div key={idx} className="group relative aspect-square">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Ảnh ${idx + 1}`}
+                          className="size-full rounded-lg border border-[#D8E2EF] object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeFile(idx)
+                          }}
+                          className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-red-500 text-white opacity-0 shadow transition-opacity group-hover:opacity-100"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {files.length < 5 && (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-[#D8E2EF] text-[#94A3B8] transition-colors hover:border-blue-300 hover:text-blue-500"
+                      >
+                        <Upload className="size-4" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
