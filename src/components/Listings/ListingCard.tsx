@@ -1,6 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 import { Clock, Heart } from "lucide-react"
-import type { ListingRead, ListingWithImages } from "@/client"
+import { useCallback } from "react"
+
+import { SocialService, type ListingRead, type ListingWithImages, type SavedListingItem } from "@/client"
+import useAuth from "@/hooks/useAuth"
 
 export type ListingCardItem = ListingRead | ListingWithImages
 
@@ -56,6 +60,31 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
   const images = "images" in item && item.images ? item.images : []
   const primaryImage = images.find((img) => img.is_primary) ?? images[0] ?? null
 
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+  const { data: savedData } = useQuery({
+    queryKey: ["saved-listing-ids"],
+    queryFn: async () => {
+      const res = await SocialService.listSavedListingsApiV1SavedListingsGet({ limit: 100 })
+      return new Map(res.items.map((s: SavedListingItem) => [s.listing.id, true]))
+    },
+    enabled: Boolean(user),
+    staleTime: 30_000,
+  })
+  const isSaved = savedData?.has(item.id) ?? false
+
+  const toggleSave = useCallback(async () => {
+    if (isSaved) {
+      await SocialService.unsaveListingApiV1SavedListingsListingIdDelete({ listingId: item.id })
+    } else {
+      await SocialService.saveListingApiV1SavedListingsListingIdPost({ listingId: item.id })
+    }
+    queryClient.invalidateQueries({ queryKey: ["saved-listing-ids"] })
+    queryClient.invalidateQueries({ queryKey: ["saved-listings-page"] })
+  }, [isSaved, item.id, queryClient])
+
+  const saveMutation = useMutation({ mutationFn: toggleSave })
+
   return (
     <Link
       to="/items/$listingId"
@@ -81,14 +110,21 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
 
         <button
           type="button"
-          className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-white/85 text-[#64748B] shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-[#2563EB] sm:opacity-0 sm:group-hover:opacity-100"
-          aria-label="Lưu tin"
+          className={`absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-white/85 shadow-sm backdrop-blur-sm transition-all hover:bg-white ${
+            isSaved
+              ? "text-[#EF4444]"
+              : "text-[#64748B] hover:text-[#EF4444] sm:opacity-0 sm:group-hover:opacity-100"
+          }`}
+          aria-label={isSaved ? "Bỏ lưu" : "Lưu tin"}
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
+            saveMutation.mutate()
           }}
         >
-          <Heart className="size-3.5 transition-colors" />
+          <Heart
+            className={`size-3.5 transition-colors ${isSaved ? "fill-[#EF4444]" : ""}`}
+          />
         </button>
 
         <div className="absolute left-2 top-2 flex flex-wrap gap-1.5">

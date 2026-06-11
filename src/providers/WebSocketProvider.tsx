@@ -6,6 +6,11 @@ import { useWebSocket } from "@/hooks/useWebSocket"
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
 
+  const invalidateNotifs = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
+    queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] })
+  }, [queryClient])
+
   useWebSocket({
     // ─── Wallet (invalidation only) ────────────────────────────
     wallet_balance: useCallback(() => {
@@ -16,17 +21,15 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
     // ─── Notifications (invalidation only) ─────────────────────
     notification: useCallback(() => {
-      queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
-      queryClient.invalidateQueries({
-        queryKey: ["notifications-unread-count"],
-      })
-    }, [queryClient]),
+      invalidateNotifs()
+    }, [invalidateNotifs]),
 
     // ─── Offers (invalidation only) ────────────────────────────
     offer_received: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
+      invalidateNotifs()
       toast("Bạn nhận được đề nghị mới!", { duration: 5000 })
-    }, [queryClient]),
+    }, [queryClient, invalidateNotifs]),
 
     offer_accepted: useCallback(
       (data: Record<string, unknown>) => {
@@ -36,31 +39,37 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
             queryKey: ["listing-detail", data.listing_id as string],
           })
         queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+        queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+        invalidateNotifs()
         toast("Người bán đã đồng ý với đề nghị của bạn! Hãy xác nhận đặt hàng.", {
           duration: 8000,
         })
       },
-      [queryClient],
+      [queryClient, invalidateNotifs],
     ),
 
     offer_rejected: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-    }, [queryClient]),
+      invalidateNotifs()
+    }, [queryClient, invalidateNotifs]),
 
     offer_countered: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-    }, [queryClient]),
+      invalidateNotifs()
+    }, [queryClient, invalidateNotifs]),
 
     offer_expired: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })
-    }, [queryClient]),
+      invalidateNotifs()
+    }, [queryClient, invalidateNotifs]),
 
     // ─── Orders (invalidation only) ───────────────────────────
     new_order: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
+      invalidateNotifs()
       toast("Bạn có đơn hàng mới!", { duration: 5000 })
-    }, [queryClient]),
+    }, [queryClient, invalidateNotifs]),
 
     order_status_updated: useCallback(
       (data: Record<string, unknown>) => {
@@ -71,8 +80,9 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
           queryClient.invalidateQueries({
             queryKey: ["order-detail", data.order_id as string],
           })
+        invalidateNotifs()
       },
-      [queryClient],
+      [queryClient, invalidateNotifs],
     ),
 
     order_cancelled: useCallback(
@@ -83,15 +93,17 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
           queryClient.invalidateQueries({
             queryKey: ["order-detail", data.order_id as string],
           })
+        invalidateNotifs()
       },
-      [queryClient],
+      [queryClient, invalidateNotifs],
     ),
 
     // ─── New pending listing (broadcast to admins) ────────────
     new_pending_listing: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["admin-pending-listings"] })
       queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
-    }, [queryClient]),
+      invalidateNotifs()
+    }, [queryClient, invalidateNotifs]),
 
     // ─── Listing approved broadcast (all users) ──────────────
     listing_approved_broadcast: useCallback(() => {
@@ -203,9 +215,10 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries({ queryKey: ["my-listings"] })
         queryClient.invalidateQueries({ queryKey: ["home-listings"] })
         queryClient.invalidateQueries({ queryKey: ["items"] })
+        invalidateNotifs()
         toast("Bài đăng của bạn đã được duyệt!", { duration: 5000 })
       },
-      [queryClient],
+      [queryClient, invalidateNotifs],
     ),
 
     listing_rejected: useCallback(
@@ -215,8 +228,9 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
             queryKey: ["listing-detail", data.listing_id as string],
           })
         queryClient.invalidateQueries({ queryKey: ["my-listings"] })
+        invalidateNotifs()
       },
-      [queryClient],
+      [queryClient, invalidateNotifs],
     ),
 
     // ─── Chat Messages (push full data for immediate display) ──

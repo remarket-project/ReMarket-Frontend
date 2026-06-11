@@ -70,8 +70,12 @@ function groupLabel(value: string) {
 function typeGroup(
   notification: NotificationRead,
 ): Exclude<FilterTab, "all" | "unread"> {
-  if (notification.type.includes("offer")) return "offers"
-  if (notification.type.includes("order")) return "orders"
+  if (notification.type.startsWith("offer")) return "offers"
+  if (
+    notification.type.startsWith("order") ||
+    notification.type.startsWith("shipping") ||
+    notification.type.startsWith("return")
+  ) return "orders"
   return "system"
 }
 
@@ -137,28 +141,39 @@ function NotificationsPage() {
 
     const notifData = item.data as Record<string, unknown> | null
 
-    if (item.type.includes("offer")) {
+    if (item.type.startsWith("offer_")) {
       navigate({ to: "/offers" })
-    } else if (item.type.includes("order")) {
+    } else if (
+      item.type.startsWith("order_") ||
+      item.type.startsWith("shipping_") ||
+      item.type.startsWith("return_")
+    ) {
       const orderId = notifData?.order_id as string | undefined
       if (orderId) {
         navigate({ to: "/orders/$orderId", params: { orderId } })
       } else {
         navigate({ to: "/orders" })
       }
-    } else if (item.type.includes("escrow")) {
+    } else if (item.type.startsWith("dispute_")) {
       const orderId = notifData?.order_id as string | undefined
       if (orderId) {
-        navigate({ to: "/escrow/$orderId", params: { orderId } })
+        navigate({ to: "/orders/$orderId", params: { orderId } })
+      } else {
+        navigate({ to: "/orders" })
       }
-    } else if (item.type.includes("wallet")) {
+    } else if (item.type.startsWith("wallet_")) {
       navigate({ to: "/wallet" })
-    } else if (item.type.includes("listing")) {
-      navigate({ to: "/my-listings" })
-    } else if (item.type.includes("review")) {
+    } else if (item.type.startsWith("listing_")) {
+      const listingId = notifData?.listing_id as string | undefined
+      if (listingId) {
+        navigate({ to: "/items/$listingId", params: { listingId } })
+      } else {
+        navigate({ to: "/my-listings" })
+      }
+    } else if (item.type.startsWith("review_")) {
       navigate({ to: "/orders" })
     } else {
-      navigate({ to: "/notifications" })
+      navigate({ to: "/" })
     }
   }
 

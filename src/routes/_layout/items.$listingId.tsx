@@ -19,7 +19,7 @@ import {
   Star,
   Wallet,
 } from "lucide-react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { toast } from "sonner"
 
 import {
@@ -28,6 +28,8 @@ import {
   ListingsService,
   type ListingWithImages,
   OffersService,
+  SocialService,
+  type SavedListingItem,
   UsersService,
 } from "@/client"
 import CheckoutDialog from "@/components/Checkout/CheckoutDialog"
@@ -559,8 +561,29 @@ function ListingDetailPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [offerDialogOpen, setOfferDialogOpen] = useState(false)
-  const [saved, setSaved] = useState(false)
   const { requireAuth, AuthModal } = useAuthRequired()
+
+  const { data: savedIds } = useQuery({
+    queryKey: ["saved-listing-ids"],
+    queryFn: async () => {
+      const res = await SocialService.listSavedListingsApiV1SavedListingsGet({ limit: 100 })
+      return new Map(res.items.map((s: SavedListingItem) => [s.listing.id, true]))
+    },
+    enabled: Boolean(user),
+    staleTime: 30_000,
+  })
+  const saved = savedIds?.has(listingId) ?? false
+  const toggleSave = useCallback(async () => {
+    if (saved) {
+      await SocialService.unsaveListingApiV1SavedListingsListingIdDelete({ listingId })
+    } else {
+      await SocialService.saveListingApiV1SavedListingsListingIdPost({ listingId })
+    }
+    queryClient.invalidateQueries({ queryKey: ["saved-listing-ids"] })
+    queryClient.invalidateQueries({ queryKey: ["saved-listings-page"] })
+  }, [saved, listingId, queryClient])
+
+  const saveMutation = useMutation({ mutationFn: toggleSave })
 
   const startChatMutation = useMutation({
     mutationFn: () =>
@@ -852,24 +875,24 @@ function ListingDetailPage() {
 
               {/* Save button — visible to ALL (guests see modal on click) */}
               {!isSeller && (
-                <Button
-                  id="btn-save-listing"
-                  variant="ghost"
-                  className={cn(
-                    "w-full gap-2 h-9",
-                    saved
-                      ? "text-rose-500 hover:text-rose-600"
-                      : "text-[#5B7083] hover:text-[#2563EB]",
-                  )}
-                  size="sm"
-                  onClick={requireAuth(
-                    () => setSaved((v) => !v),
-                    "để lưu tin đăng yêu thích",
-                  )}
-                >
-                  <Heart className={cn("size-4", saved && "fill-rose-500")} />
-                  {saved ? "Đã lưu tin" : "Lưu tin"}
-                </Button>
+                  <Button
+                    id="btn-save-listing"
+                    variant="ghost"
+                    className={cn(
+                      "w-full gap-2 h-9",
+                      saved
+                        ? "text-[#EF4444] hover:text-[#EF4444]"
+                        : "text-[#5B7083] hover:text-[#EF4444]",
+                    )}
+                    size="sm"
+                    onClick={requireAuth(
+                      () => saveMutation.mutate(),
+                      "để lưu tin đăng yêu thích",
+                    )}
+                  >
+                    <Heart className={cn("size-4", saved && "fill-[#EF4444]")} />
+                    {saved ? "Đã lưu tin" : "Lưu tin"}
+                  </Button>
               )}
 
               {/* Edit button for seller (ẩn nếu đã bán) */}

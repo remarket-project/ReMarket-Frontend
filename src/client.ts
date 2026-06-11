@@ -21,6 +21,7 @@ import {
   ReturnsService,
   ReviewsService,
   ShippingService,
+  SocialService,
   UtilsService,
   WalletService,
 } from "./client/sdk.gen"
@@ -41,6 +42,7 @@ export {
   ReturnsService,
   ReviewsService,
   ShippingService,
+  SocialService,
   UtilsService,
   WalletService,
 }

@@ -369,7 +369,7 @@ export function MarketplaceHeader() {
             )}
             asChild
           >
-            <Link to="/items" aria-label="Thích">
+            <Link to="/saved" aria-label="Thích">
               <Heart className={transparent ? "size-5" : "size-4.5"} />
             </Link>
           </Button>
@@ -430,14 +430,40 @@ export function MarketplaceHeader() {
                   ) : (
                     notifications.map((n: NotificationRead) => {
                       const linkData = n.data as Record<string, unknown> | null
-                      const listingId = linkData?.listing_id as
-                        | string
-                        | undefined
+                      const listingId = linkData?.listing_id as string | undefined
+                      const orderId = linkData?.order_id as string | undefined
+                      const type = n.type
+                      let to: string = "/"
+                      let params: Record<string, string> | undefined = undefined
+                      if (type.startsWith("offer_")) {
+                        to = "/offers"
+                      } else if (type.startsWith("dispute_")) {
+                        to = "/disputes"
+                      } else if (type.startsWith("wallet_")) {
+                        to = "/wallet"
+                      } else if (type.startsWith("listing_") && listingId) {
+                        to = "/items/$listingId"
+                        params = { listingId }
+                      } else if (type.startsWith("review_")) {
+                        const userId = linkData?.user_id as string | undefined
+                        to = userId ? "/profile/$userId" : "/"
+                        if (userId) params = { userId }
+                      } else if (
+                        type.startsWith("order_") ||
+                        type.startsWith("shipping_") ||
+                        type.startsWith("return_")
+                      ) {
+                        to = orderId ? "/orders/$orderId" : "/orders"
+                        if (orderId) params = { orderId }
+                      } else if (listingId) {
+                        to = "/items/$listingId"
+                        params = { listingId }
+                      }
                       return (
                         <Link
                           key={n.id}
-                          to={listingId ? "/items/$listingId" : "/"}
-                          params={listingId ? { listingId } : undefined}
+                          to={to}
+                          params={params}
                           className={`flex items-start gap-3 px-4 py-3 transition hover:bg-[#F5F8FC] ${
                             !n.is_read ? "bg-[#EFF6FF]" : ""
                           }`}
@@ -587,6 +613,12 @@ export function MarketplaceHeader() {
                   <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
                     <Package className="mr-2 size-4" />
                     Sản phẩm của tôi
+                  </DropdownMenuItem>
+                </Link>
+                <Link to="/saved">
+                  <DropdownMenuItem className="rounded-xl py-2.5 text-[#102A43] focus:bg-[#EFF6FF] focus:text-[#2563EB] cursor-pointer transition-colors">
+                    <Heart className="mr-2 size-4" />
+                    Tin đã lưu
                   </DropdownMenuItem>
                 </Link>
                 <Link to="/wallet">

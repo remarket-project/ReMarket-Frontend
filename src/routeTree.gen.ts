@@ -29,6 +29,7 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 import { Route as ProtectedWalletRouteImport } from './routes/_protected/wallet'
 import { Route as ProtectedSettingsRouteImport } from './routes/_protected/settings'
+import { Route as ProtectedSavedRouteImport } from './routes/_protected/saved'
 import { Route as ProtectedOrdersRouteImport } from './routes/_protected/orders'
 import { Route as ProtectedOffersRouteImport } from './routes/_protected/offers'
 import { Route as ProtectedNotificationsRouteImport } from './routes/_protected/notifications'
@@ -148,6 +149,11 @@ const ProtectedWalletRoute = ProtectedWalletRouteImport.update({
 const ProtectedSettingsRoute = ProtectedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedSavedRoute = ProtectedSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
   getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedOrdersRoute = ProtectedOrdersRouteImport.update({
@@ -278,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof ProtectedNotificationsRoute
   '/offers': typeof ProtectedOffersRoute
   '/orders': typeof ProtectedOrdersRouteWithChildren
+  '/saved': typeof ProtectedSavedRoute
   '/settings': typeof ProtectedSettingsRoute
   '/wallet': typeof ProtectedWalletRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof ProtectedNotificationsRoute
   '/offers': typeof ProtectedOffersRoute
   '/orders': typeof ProtectedOrdersRouteWithChildren
+  '/saved': typeof ProtectedSavedRoute
   '/settings': typeof ProtectedSettingsRoute
   '/wallet': typeof ProtectedWalletRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/_protected/notifications': typeof ProtectedNotificationsRoute
   '/_protected/offers': typeof ProtectedOffersRoute
   '/_protected/orders': typeof ProtectedOrdersRouteWithChildren
+  '/_protected/saved': typeof ProtectedSavedRoute
   '/_protected/settings': typeof ProtectedSettingsRoute
   '/_protected/wallet': typeof ProtectedWalletRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -407,6 +416,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offers'
     | '/orders'
+    | '/saved'
     | '/settings'
     | '/wallet'
     | '/admin/audit'
@@ -448,6 +458,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offers'
     | '/orders'
+    | '/saved'
     | '/settings'
     | '/wallet'
     | '/admin/audit'
@@ -490,6 +501,7 @@ export interface FileRouteTypes {
     | '/_protected/notifications'
     | '/_protected/offers'
     | '/_protected/orders'
+    | '/_protected/saved'
     | '/_protected/settings'
     | '/_protected/wallet'
     | '/admin/audit'
@@ -670,6 +682,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof ProtectedSettingsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/saved': {
+      id: '/_protected/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof ProtectedSavedRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/orders': {
@@ -914,6 +933,7 @@ interface ProtectedRouteChildren {
   ProtectedNotificationsRoute: typeof ProtectedNotificationsRoute
   ProtectedOffersRoute: typeof ProtectedOffersRoute
   ProtectedOrdersRoute: typeof ProtectedOrdersRouteWithChildren
+  ProtectedSavedRoute: typeof ProtectedSavedRoute
   ProtectedSettingsRoute: typeof ProtectedSettingsRoute
   ProtectedWalletRoute: typeof ProtectedWalletRoute
   ProtectedEscrowOrderIdRoute: typeof ProtectedEscrowOrderIdRoute
@@ -926,6 +946,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedNotificationsRoute: ProtectedNotificationsRoute,
   ProtectedOffersRoute: ProtectedOffersRoute,
   ProtectedOrdersRoute: ProtectedOrdersRouteWithChildren,
+  ProtectedSavedRoute: ProtectedSavedRoute,
   ProtectedSettingsRoute: ProtectedSettingsRoute,
   ProtectedWalletRoute: ProtectedWalletRoute,
   ProtectedEscrowOrderIdRoute: ProtectedEscrowOrderIdRoute,
