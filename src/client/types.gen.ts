@@ -453,6 +453,7 @@ export type OfferRead = {
     created_at: string;
     updated_at: string;
     order_id?: (string | null);
+    last_action_by?: (string | null);
     /**
      * Thời gian hết hạn xác nhận (chỉ có ý nghĩa khi status = ACCEPTED).
      */
@@ -1031,7 +1032,7 @@ export type GetPendingListingsRouteApiV1AdminListingsPendingGetData = {
     skip?: number;
 };
 
-export type GetPendingListingsRouteApiV1AdminListingsPendingGetResponse = (Array<ListingRead>);
+export type GetPendingListingsRouteApiV1AdminListingsPendingGetResponse = (Array<ListingWithImages>);
 
 export type ApproveListingApiV1AdminListingsListingIdApprovePostData = {
     listingId: string;

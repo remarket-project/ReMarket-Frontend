@@ -72,7 +72,7 @@ export class AdminService {
      * @param data The data for the request.
      * @param data.skip
      * @param data.limit
-     * @returns ListingRead Successful Response
+     * @returns ListingWithImages Successful Response
      * @throws ApiError
      */
     public static getPendingListingsRouteApiV1AdminListingsPendingGet(data: GetPendingListingsRouteApiV1AdminListingsPendingGetData = {}): CancelablePromise<GetPendingListingsRouteApiV1AdminListingsPendingGetResponse> {

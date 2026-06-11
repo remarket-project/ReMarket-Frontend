@@ -152,6 +152,13 @@ export function OfferCard({
   const initials = participant?.full_name?.slice(0, 2).toUpperCase() || "U"
   const ratingAvg = Number(participant?.rating_avg || 0)
 
+  const showCounteredActions =
+    offer.status === "countered" && offer.last_action_by
+      ? role === "sent"
+        ? offer.last_action_by !== offer.buyer_id
+        : offer.last_action_by === offer.buyer_id
+      : false
+
   return (
     <Card className="border-blue-200/80 bg-white/92 shadow-sm hover:shadow-md transition">
       <CardContent className="p-4 sm:p-5 space-y-4">
@@ -303,28 +310,90 @@ export function OfferCard({
         {offer.status === "countered" && role === "sent" && (
           <div className="flex flex-wrap gap-2 pt-1">
             <div className="w-full text-xs text-violet-700 font-medium mb-1">
-              ✨ Người bán đã đề xuất giá mới:{" "}
+              <span className="text-violet-700">
+                {offer.last_action_by === offer.buyer_id
+                  ? "✨ Bạn đã phản hồi:"
+                  : "✨ Người bán đã đề xuất giá mới:"}
+              </span>{" "}
               <strong className="text-sm font-bold">
                 {formatCurrency(offer.offer_price)}
               </strong>
             </div>
-            <Button
-              size="sm"
-              className="bg-emerald-600 text-white hover:bg-emerald-700 flex-1 sm:flex-initial"
-              onClick={() => onAccept(offer)}
-              disabled={isPending}
-            >
-              <ThumbsUp className="w-4 h-4 mr-1.5" /> Chấp nhận giá đề xuất
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 flex-1 sm:flex-initial"
-              onClick={() => onReject(offer)}
-              disabled={isPending}
-            >
-              <XCircle className="w-4 h-4 mr-1.5" /> Từ chối
-            </Button>
+            {showCounteredActions && (
+              <div className="flex flex-wrap gap-2 w-full">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                  onClick={() => onCounter(offer)}
+                  disabled={isPending}
+                >
+                  <ArrowLeftRight className="w-4 h-4 mr-1.5" /> Phản đề nghị
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-emerald-600 text-white hover:bg-emerald-700 flex-1 sm:flex-initial"
+                  onClick={() => onAccept(offer)}
+                  disabled={isPending}
+                >
+                  <ThumbsUp className="w-4 h-4 mr-1.5" /> Chấp nhận giá đề xuất
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 flex-1 sm:flex-initial"
+                  onClick={() => onReject(offer)}
+                  disabled={isPending}
+                >
+                  <XCircle className="w-4 h-4 mr-1.5" /> Từ chối
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {offer.status === "countered" && role === "received" && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            <div className="w-full text-xs text-violet-700 font-medium mb-1">
+              <span className="text-violet-700">
+                {offer.last_action_by === offer.buyer_id
+                  ? "✨ Người mua đã phản hồi:"
+                  : "✨ Bạn đã đề xuất giá mới:"}
+              </span>{" "}
+              <strong className="text-sm font-bold">
+                {formatCurrency(offer.offer_price)}
+              </strong>
+            </div>
+            {showCounteredActions && (
+              <div className="flex flex-wrap gap-2 w-full">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                  onClick={() => onCounter(offer)}
+                  disabled={isPending}
+                >
+                  <ArrowLeftRight className="w-4 h-4 mr-1.5" /> Phản đề nghị
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-emerald-600 text-white hover:bg-emerald-700 flex-1 sm:flex-initial"
+                  onClick={() => onAccept(offer)}
+                  disabled={isPending}
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-1.5" /> Chấp nhận
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 flex-1 sm:flex-initial"
+                  onClick={() => onReject(offer)}
+                  disabled={isPending}
+                >
+                  <XCircle className="w-4 h-4 mr-1.5" /> Từ chối
+                </Button>
+              </div>
+            )}
           </div>
         )}
 

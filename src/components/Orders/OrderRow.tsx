@@ -68,6 +68,7 @@ export function OrderRow({ order, role }: OrderRowProps) {
   const { openConversation } = useChat()
   const queryClient = useQueryClient()
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
 
   const chatMutation = useMutation({
     mutationFn: () =>
@@ -222,15 +223,7 @@ export function OrderRow({ order, role }: OrderRowProps) {
               {order.status === "delivered" && role === "buying" ? (
                 <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer py-4"
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        "Xác nhận đã nhận hàng? Tiền sẽ được chuyển cho người bán.",
-                      )
-                    ) {
-                      acceptMutation.mutate()
-                    }
-                  }}
+                  onClick={() => setAcceptDialogOpen(true)}
                   disabled={acceptMutation.isPending}
                 >
                   <CheckCircle2 className="size-3.5 mr-1" />
@@ -345,6 +338,41 @@ export function OrderRow({ order, role }: OrderRowProps) {
         )}
       </CardContent>
     </Card>
+
+    {/* Accept Delivery Confirmation Dialog */}
+    <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-emerald-700">
+            <CheckCircle2 className="size-5" />
+            Xác nhận đã nhận hàng
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Bạn xác nhận đã nhận được hàng? Sau khi xác nhận bạn sẽ không có quyền được khiếu nại. 
+          </p>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setAcceptDialogOpen(false)}
+          >
+            Chưa nhận được hàng
+          </Button>
+          <Button
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => {
+              acceptMutation.mutate()
+              setAcceptDialogOpen(false)
+            }}
+            disabled={acceptMutation.isPending}
+          >
+            {acceptMutation.isPending ? "Đang xử lý..." : "Xác nhận đã nhận hàng"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
     {/* Cancel Confirmation Dialog */}
     <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

@@ -1586,6 +1586,18 @@ export const OfferReadSchema = {
             ],
             title: 'Order Id'
         },
+        last_action_by: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Last Action By'
+        },
         expires_at: {
             anyOf: [
                 {
