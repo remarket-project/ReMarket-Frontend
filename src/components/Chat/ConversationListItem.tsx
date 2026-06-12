@@ -54,7 +54,7 @@ export function ConversationListItem({
     >
       <div className="relative shrink-0">
         <Avatar className="size-10 rounded-lg">
-          <AvatarImage src={avatarUrl ?? listingImage ?? undefined} />
+          <AvatarImage src={listingImage ?? avatarUrl ?? undefined} />
           <AvatarFallback className="rounded-lg bg-[#EFF6FF] text-[#2563EB] text-xs font-bold">
             {getInitials(fallbackInitials)}
           </AvatarFallback>

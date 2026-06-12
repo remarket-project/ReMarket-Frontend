@@ -24,10 +24,15 @@ export const Route = createFileRoute("/_protected")({
     }
 
     try {
-      const currentUser = await queryClient.fetchQuery({
-        queryKey: ["currentUser"],
-        queryFn: UsersService.readUserMe,
-      })
+      const existing = queryClient.getQueryData(["currentUser"]) as
+        | { role: string }
+        | undefined
+      const currentUser: { role: string } =
+        existing ??
+        ((await queryClient.fetchQuery({
+          queryKey: ["currentUser"],
+          queryFn: UsersService.readUserMe,
+        })) as { role: string })
       if (currentUser.role === "admin") {
         throw redirect({ to: "/admin/dashboard" })
       }

@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getInitials } from "@/utils"
 
 interface ChatHeaderProps {
@@ -13,6 +13,7 @@ interface ChatHeaderProps {
 
 export function ChatHeader({
   fullName,
+  avatarUrl,
   isOnline,
   onBack,
   showBack,
@@ -30,6 +31,7 @@ export function ChatHeader({
       )}
       <div className="relative shrink-0">
         <Avatar className="size-9">
+          <AvatarImage src={avatarUrl ?? undefined} />
           <AvatarFallback className="bg-[#EFF6FF] text-[#2563EB] text-xs font-bold">
             {getInitials(fullName)}
           </AvatarFallback>

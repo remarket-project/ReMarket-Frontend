@@ -45,7 +45,7 @@ function getMyListingsQueryOptions() {
       return response.items ?? []
     },
     queryKey: ["my-listings"],
-    refetchInterval: 30_000,
+    refetchInterval: 60_000,
   }
 }
 

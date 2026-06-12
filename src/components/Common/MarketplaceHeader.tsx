@@ -16,7 +16,7 @@ import {
   ShoppingCart,
   Wallet,
 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { type NotificationRead, NotificationsService } from "@/client"
 import NotificationIcon from "@/components/Common/NotificationIcon"
@@ -214,8 +214,16 @@ export function MarketplaceHeader() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    // 250px is the robust scroll threshold that guarantees the banner is scrolled past before sticky header displays, working seamlessly across devices
-    const onScroll = () => setIsScrolled(window.scrollY > 250)
+    let ticking = false
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 250)
+          ticking = false
+        })
+        ticking = true
+      }
+    }
     onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
@@ -226,10 +234,11 @@ export function MarketplaceHeader() {
     queryFn: () =>
       NotificationsService.getMyNotificationsApiV1NotificationsGet({
         skip: 0,
-        limit: 5,
+        limit: 10,
       }),
     enabled: Boolean(currentUser),
-    staleTime: 0,
+    staleTime: 15_000,
+    refetchInterval: 30_000,
   })
 
   const { data: unreadData } = useQuery({
@@ -237,22 +246,32 @@ export function MarketplaceHeader() {
     queryFn: () =>
       NotificationsService.getUnreadNotificationsCountApiV1NotificationsUnreadCountGet(),
     enabled: Boolean(currentUser),
-    staleTime: 0,
+    staleTime: 15_000,
+    refetchInterval: 30_000,
   })
+
+  const invalidateNotifQueries = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
+    queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] })
+  }, [queryClient])
 
   const markAllRead = useMutation({
     mutationFn: () =>
       NotificationsService.markAllNotificationsAsReadApiV1NotificationsReadAllPut(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
-      queryClient.invalidateQueries({
-        queryKey: ["notifications-unread-count"],
-      })
-    },
+    onSuccess: () => invalidateNotifQueries(),
+  })
+
+  const markNotifRead = useMutation({
+    mutationFn: (id: string) =>
+      NotificationsService.markNotificationAsReadApiV1NotificationsNotificationIdReadPut({ notificationId: id }),
+    onSuccess: () => invalidateNotifQueries(),
   })
 
   const notifications = (notifData?.items ?? []) as NotificationRead[]
-  const unreadCount = typeof unreadData === "number" ? unreadData : 0
+  const unreadCount =
+    typeof unreadData === "number"
+      ? unreadData
+      : (unreadData as { unread_count?: number } | undefined)?.unread_count ?? 0
   const showTransparent = isHome && !isScrolled
 
   useEffect(() => {
@@ -434,10 +453,15 @@ export function MarketplaceHeader() {
                         | string
                         | undefined
                       const orderId = linkData?.order_id as string | undefined
+                      const convId = linkData?.conversation_id as string | undefined
                       const type = n.type
                       let to: string = "/"
                       let params: Record<string, string> | undefined
-                      if (type.startsWith("offer_")) {
+                      let search: Record<string, string> | undefined
+                      if (convId) {
+                        to = "/messages"
+                        search = { conversationId: convId }
+                      } else if (type.startsWith("offer_")) {
                         to = "/offers"
                       } else if (type.startsWith("dispute_")) {
                         to = "/disputes"
@@ -466,10 +490,14 @@ export function MarketplaceHeader() {
                           key={n.id}
                           to={to}
                           params={params}
+                          search={search}
                           className={`flex items-start gap-3 px-4 py-3 transition hover:bg-[#F5F8FC] ${
                             !n.is_read ? "bg-[#EFF6FF]" : ""
                           }`}
-                          onClick={() => setNotifOpen(false)}
+                          onClick={() => {
+                            if (!n.is_read) markNotifRead.mutate(n.id)
+                            setNotifOpen(false)
+                          }}
                         >
                           <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#F5F8FC]">
                             <NotificationIcon type={n.type} />

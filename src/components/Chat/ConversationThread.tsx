@@ -39,6 +39,7 @@ export function ConversationThread({
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const displayName = getDisplayName(conversation, user?.id)
+  const productImage = conversation.listing?.images?.[0]?.image_url
 
   const { data: messages, isLoading } = useQuery({
     queryKey: ["conversation-messages", conversation.id],
@@ -82,7 +83,7 @@ export function ConversationThread({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <ChatHeader fullName={displayName} showBack={showBack} onBack={onBack} />
+      <ChatHeader fullName={displayName} avatarUrl={productImage} showBack={showBack} onBack={onBack} />
 
       <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
         {!messages || messages.length === 0 ? (

@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query"
 import {
   createContext,
   type ReactNode,
@@ -8,10 +7,10 @@ import {
   useRef,
   useState,
 } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { ChatsService } from "@/client"
 import useAuth from "@/hooks/useAuth"
-import { useWebSocket } from "@/hooks/useWebSocket"
 
 const UNREAD_KEY = "chat_last_seen"
 
@@ -65,50 +64,35 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [user])
 
-  const computeUnread = useCallback(async () => {
-    if (!user) {
+  // Dùng chung query cache ["conversations"] với MessagesPage
+  // Khi WebSocket invalidates key này, React Query tự refetch → effect dưới tự chạy
+  const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: () =>
+      ChatsService.listMyConversationsApiV1ChatsConversationsGet({ limit: 50 }),
+    enabled: Boolean(user),
+    refetchInterval: 30_000,
+  })
+
+  // Tính unreadCount mỗi khi conversations data hoặc lastSeen thay đổi
+  useEffect(() => {
+    if (!conversations || !user) {
       setUnreadCount(0)
       return
     }
-    try {
-      const conversations =
-        await ChatsService.listMyConversationsApiV1ChatsConversationsGet({
-          limit: 50,
-        })
-      const seen = seenRef.current
-      let total = 0
-      for (const conv of conversations) {
-        const prev = seen[conv.id] || 0
-        total += Math.max(0, conv.messages_count - prev)
-      }
-      setUnreadCount(total)
-    } catch {
-      /* silent */
+    const seen = seenRef.current
+    let total = 0
+    for (const conv of conversations) {
+      const prev = seen[conv.id] || 0
+      total += Math.max(0, conv.messages_count - prev)
     }
-  }, [user])
+    setUnreadCount(total)
+  }, [conversations, user, lastSeen])
 
-  useEffect(() => {
-    if (!user) return
-    computeUnread()
-    const interval = setInterval(computeUnread, 30000)
-    return () => clearInterval(interval)
-  }, [user, computeUnread])
-
-  useWebSocket({
-    chat_message: useCallback(
-      (data: Record<string, unknown>) => {
-        const conversationId = data.conversation_id as string | undefined
-        if (conversationId) {
-          queryClient.invalidateQueries({
-            queryKey: ["conversation-messages", conversationId],
-          })
-        }
-        queryClient.invalidateQueries({ queryKey: ["conversations"] })
-        computeUnread()
-      },
-      [queryClient, computeUnread],
-    ),
-  })
+  // refreshUnread chỉ cần invalidate query → React Query refetch → effect trên tự tính lại
+  const refreshUnread = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["conversations"] })
+  }, [queryClient])
 
   const toggleChat = useCallback(() => {
     setIsOpen((v) => !v)
@@ -148,7 +132,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         openConversation,
         closeConversation,
         unreadCount,
-        refreshUnread: computeUnread,
+        refreshUnread,
         markConversationRead,
       }}
     >

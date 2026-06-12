@@ -60,6 +60,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             src={mainImage.image_url}
             alt={`${title} - image ${selectedIndex + 1}`}
             className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
           />
           {/* Overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
@@ -172,6 +174,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               src={mainImage.image_url}
               alt={`${title} - ${selectedIndex + 1}`}
               className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain shadow-2xl"
+              loading="lazy"
+              decoding="async"
             />
             <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/60">
               {selectedIndex + 1} / {images.length}

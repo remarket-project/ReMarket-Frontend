@@ -607,7 +607,7 @@ function ListingDetailPage() {
         return { listing: null as ListingWithImages | null }
       }
     },
-    staleTime: 0,
+    staleTime: 30_000,
   })
 
   const { data: offersData } = useQuery({
@@ -621,7 +621,7 @@ function ListingDetailPage() {
     enabled:
       Boolean(data?.listing) &&
       Boolean(user && data?.listing?.seller_id === user.id),
-    staleTime: 0,
+    staleTime: 30_000,
   })
 
   const { data: category } = useQuery({

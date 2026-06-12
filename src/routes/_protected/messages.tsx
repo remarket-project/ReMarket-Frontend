@@ -13,6 +13,7 @@ import { useChat } from "@/hooks/ChatContext"
 
 const searchSchema = z.object({
   listingId: z.string().catch(""),
+  conversationId: z.string().optional().catch(undefined),
 })
 
 export const Route = createFileRoute("/_protected/messages")({
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/_protected/messages")({
 
 function MessagesPage() {
   const { user } = useAuth()
-  const { listingId: fromSearch } = Route.useSearch()
+  const { listingId: fromSearch, conversationId: fromUrl } = Route.useSearch()
   const { markConversationRead, refreshUnread } = useChat()
   const queryClient = useQueryClient()
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -60,6 +61,16 @@ function MessagesPage() {
       markConversationRead(existingConvForListing.id, existingConvForListing.messages_count)
     }
   }, [existingConvForListing, markConversationRead])
+
+  useEffect(() => {
+    if (fromUrl && conversations && !selectedId) {
+      const found = conversations.find((c) => c.id === fromUrl)
+      if (found) {
+        setSelectedId(found.id)
+        markConversationRead(found.id, found.messages_count)
+      }
+    }
+  }, [fromUrl, conversations, selectedId, markConversationRead])
 
   const showNewConv = Boolean(fromSearch) && !existingConvForListing && !selectedId
 

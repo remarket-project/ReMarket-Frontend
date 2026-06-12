@@ -67,20 +67,18 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
 
   const { user } = useAuth()
   const queryClient = useQueryClient()
-  const { data: savedData } = useQuery({
+  const { data: savedIds } = useQuery({
     queryKey: ["saved-listing-ids"],
     queryFn: async () => {
       const res = await SocialService.listSavedListingsApiV1SavedListingsGet({
         limit: 100,
       })
-      return new Map(
-        res.items.map((s: SavedListingItem) => [s.listing.id, true]),
-      )
+      return new Set(res.items.map((s: SavedListingItem) => s.listing.id))
     },
     enabled: Boolean(user),
     staleTime: 30_000,
   })
-  const isSaved = savedData?.has(item.id) ?? false
+  const isSaved = savedIds?.has(item.id) ?? false
 
   const toggleSave = useCallback(async () => {
     if (isSaved) {

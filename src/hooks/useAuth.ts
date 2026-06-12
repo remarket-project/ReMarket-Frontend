@@ -25,6 +25,7 @@ const useAuth = () => {
     queryKey: ["currentUser"],
     queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
+    staleTime: 30_000,
   })
 
   const signUpMutation = useMutation({

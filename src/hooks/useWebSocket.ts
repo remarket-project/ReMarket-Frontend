@@ -6,6 +6,8 @@ type WSEventHandler = (data: Record<string, unknown>) => void
 const WS_BASE =
   import.meta.env.VITE_WS_URL || `ws://${window.location.hostname}:8000/api/v1`
 
+const MAX_RETRIES = 10
+
 export function useWebSocket(handlers: Record<string, WSEventHandler>) {
   const { user } = useAuth()
   const wsRef = useRef<WebSocket | null>(null)
@@ -13,12 +15,30 @@ export function useWebSocket(handlers: Record<string, WSEventHandler>) {
     undefined,
   )
   const attemptRef = useRef(0)
+  const mountedRef = useRef(false)
   const handlersRef = useRef(handlers)
   handlersRef.current = handlers
 
+  const disconnect = useCallback(() => {
+    if (reconnectRef.current) {
+      clearTimeout(reconnectRef.current)
+      reconnectRef.current = undefined
+    }
+    if (wsRef.current) {
+      wsRef.current.close()
+      wsRef.current = null
+    }
+  }, [])
+
   const connect = useCallback(() => {
+    if (!mountedRef.current) return
+
     const token = localStorage.getItem("access_token")
     if (!token) return
+
+    if (attemptRef.current >= MAX_RETRIES) {
+      return
+    }
 
     const url = `${WS_BASE}/ws?token=${token}`
     const ws = new WebSocket(url)
@@ -42,8 +62,12 @@ export function useWebSocket(handlers: Record<string, WSEventHandler>) {
     }
 
     ws.onclose = () => {
-      const delay = Math.min(1000 * 2 ** attemptRef.current, 30000)
+      if (!mountedRef.current) return
       attemptRef.current++
+      if (attemptRef.current >= MAX_RETRIES) {
+        return
+      }
+      const delay = Math.min(1000 * 2 ** attemptRef.current, 30000)
       reconnectRef.current = setTimeout(connect, delay)
     }
 
@@ -53,14 +77,15 @@ export function useWebSocket(handlers: Record<string, WSEventHandler>) {
   }, [])
 
   useEffect(() => {
+    mountedRef.current = true
+    attemptRef.current = 0
+
     if (!user) return
     connect()
+
     return () => {
-      if (reconnectRef.current) clearTimeout(reconnectRef.current)
-      if (wsRef.current) {
-        wsRef.current.close()
-        wsRef.current = null
-      }
+      mountedRef.current = false
+      disconnect()
     }
-  }, [user, connect])
+  }, [user?.id, connect, disconnect])
 }

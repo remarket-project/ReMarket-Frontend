@@ -97,7 +97,7 @@ function getItemsQueryOptions() {
       }
     },
     queryKey: ["items"],
-    refetchInterval: 30_000,
+    refetchInterval: 60_000,
   }
 }
 
@@ -546,10 +546,10 @@ function ItemsContent() {
     sortMode,
   ])
 
-  const now = Date.now()
   const weekMs = 7 * 24 * 60 * 60 * 1000
 
   const stats = useMemo(() => {
+    const now = Date.now()
     const total = filteredItems.length
     const recent = filteredItems.filter((item: ListingRead) => {
       const created = item.created_at ? new Date(item.created_at).getTime() : 0
@@ -561,7 +561,7 @@ function ItemsContent() {
         0,
       ) / (total || 1)
     return { total, recent, avgPrice }
-  }, [filteredItems, now])
+  }, [filteredItems])
 
   const activeFilterCount = [
     query,
