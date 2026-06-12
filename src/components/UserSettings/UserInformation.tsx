@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Camera, MapPin, Sparkles } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -20,6 +20,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { LoadingButton } from "@/components/ui/loading-button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import useAuth from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
@@ -78,6 +85,51 @@ const UserInformation = () => {
       ward: currentUser?.ward ?? "",
       address_detail: currentUser?.address_detail ?? "",
     },
+  })
+
+  // ─── VnLocation queries for province/district/ward selects ──────────
+  const { data: provinces = [], isLoading: loadingProvinces } = useQuery({
+    queryKey: ["vn-provinces"],
+    queryFn: async (): Promise<Array<{ code: number; name: string }>> => {
+      const res = await fetch("https://provinces.open-api.vn/api/p/")
+      if (!res.ok) throw new Error("Failed to load provinces")
+      return res.json()
+    },
+    staleTime: 24 * 60 * 60 * 1000,
+  })
+
+  const watchedProvince = form.watch("province")
+  const provinceCode = provinces.find((p) => p.name === watchedProvince)?.code
+
+  const { data: districts = [], isLoading: loadingDistricts } = useQuery({
+    queryKey: ["vn-districts", provinceCode],
+    queryFn: async (): Promise<Array<{ code: number; name: string }>> => {
+      const res = await fetch(
+        `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`,
+      )
+      if (!res.ok) throw new Error("Failed to load districts")
+      const data = await res.json()
+      return data.districts || []
+    },
+    enabled: Boolean(provinceCode),
+    staleTime: 24 * 60 * 60 * 1000,
+  })
+
+  const watchedDistrict = form.watch("district")
+  const districtCode = districts.find((d) => d.name === watchedDistrict)?.code
+
+  const { data: wards = [], isLoading: loadingWards } = useQuery({
+    queryKey: ["vn-wards", districtCode],
+    queryFn: async (): Promise<Array<{ code: number; name: string }>> => {
+      const res = await fetch(
+        `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`,
+      )
+      if (!res.ok) throw new Error("Failed to load wards")
+      const data = await res.json()
+      return data.wards || []
+    },
+    enabled: Boolean(districtCode),
+    staleTime: 24 * 60 * 60 * 1000,
   })
 
   const toggleEditMode = () => {
@@ -366,11 +418,26 @@ const UserInformation = () => {
                     </FormLabel>
                     <FormControl>
                       {editMode ? (
-                        <Input
-                          placeholder="Ví dụ: Hồ Chí Minh"
-                          {...field}
-                          className="border-blue-100 bg-white/50 focus:bg-white"
-                        />
+                        <Select
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value)
+                            form.setValue("district", "")
+                            form.setValue("ward", "")
+                          }}
+                          disabled={loadingProvinces}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn Tỉnh / Thành phố" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {provinces.map((p) => (
+                              <SelectItem key={p.code} value={p.name}>
+                                {p.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-xs text-blue-950 font-medium">
                           {field.value || "N/A"}
@@ -393,11 +460,33 @@ const UserInformation = () => {
                     </FormLabel>
                     <FormControl>
                       {editMode ? (
-                        <Input
-                          placeholder="Ví dụ: Quận 1"
-                          {...field}
-                          className="border-blue-100 bg-white/50 focus:bg-white"
-                        />
+                        <Select
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value)
+                            form.setValue("ward", "")
+                          }}
+                          disabled={!provinceCode || loadingDistricts}
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                loadingDistricts
+                                  ? "Đang tải Quận / Huyện..."
+                                  : provinceCode
+                                    ? "Chọn Quận / Huyện"
+                                    : "Chọn Tỉnh / Thành phố trước"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {districts.map((d) => (
+                              <SelectItem key={d.code} value={d.name}>
+                                {d.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-xs text-blue-950 font-medium">
                           {field.value || "N/A"}
@@ -420,11 +509,30 @@ const UserInformation = () => {
                     </FormLabel>
                     <FormControl>
                       {editMode ? (
-                        <Input
-                          placeholder="Ví dụ: Phường Bến Nghé"
-                          {...field}
-                          className="border-blue-100 bg-white/50 focus:bg-white"
-                        />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          disabled={!districtCode || loadingWards}
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                loadingWards
+                                  ? "Đang tải Phường / Xã..."
+                                  : districtCode
+                                    ? "Chọn Phường / Xã"
+                                    : "Chọn Quận / Huyện trước"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {wards.map((w) => (
+                              <SelectItem key={w.code} value={w.name}>
+                                {w.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <div className="rounded-xl border border-blue-100 bg-blue-50/20 px-3 py-2 text-xs text-blue-950 font-medium">
                           {field.value || "N/A"}

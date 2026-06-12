@@ -16,6 +16,7 @@ import {
   Pencil,
   ShieldCheck,
   Star,
+  Tag,
   Wallet,
 } from "lucide-react"
 import { useCallback, useState } from "react"
@@ -425,6 +426,11 @@ function DetailTabs({
               },
               {
                 icon: <MapPin className="size-4 text-[#2563EB]" />,
+                label: "Địa chỉ",
+                value: (listing as any).seller_location_summary ?? (listing as any).location_summary ?? "",
+              },
+              {
+                icon: <Tag className="size-4 text-[#2563EB]" />,
                 label: "Danh mục",
                 value: categoryName ?? "Đang xác định…",
               },

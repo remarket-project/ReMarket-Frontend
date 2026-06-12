@@ -110,11 +110,11 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
           <img
             src={primaryImage.image_url}
             alt={item.title}
-            className="rmk-listing-image h-full w-full object-cover"
+            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-4xl">
+          <div className="flex h-full items-center justify-center text-4xl bg-gradient-to-br from-[#EFF6FF] via-white to-[#DBEAFE]">
             📦
           </div>
         )}

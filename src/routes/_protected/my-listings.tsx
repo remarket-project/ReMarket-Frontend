@@ -315,7 +315,7 @@ function MyListingsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((item) => {
             const statusInfo = statusConfig[item.status]
             const condition = conditionConfig[item.condition_grade] ?? {
@@ -329,132 +329,119 @@ function MyListingsPage() {
             return (
               <Card
                 key={item.id}
-                className="group flex flex-col h-full rounded-xl border border-[#D8E2EF] overflow-hidden bg-white hover:shadow-md transition-all duration-200"
+                className="group flex flex-col rounded-2xl border border-[#E2E8F0] overflow-hidden bg-white hover:shadow-lg hover:border-[#CBD5E1] transition-all duration-200"
               >
                 {/* Image Section */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#EFF6FF] via-white to-[#DBEAFE] shrink-0 border-b border-[#D8E2EF]/60">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-white shrink-0">
                   {primaryImage ? (
                     <img
                       src={primaryImage.image_url}
                       alt={item.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-4xl">
+                    <div className="flex h-full items-center justify-center text-4xl bg-gradient-to-br from-[#EFF6FF] via-white to-[#DBEAFE]">
                       📦
                     </div>
                   )}
 
-                  {/* Absolute badging inside image */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
+                  {/* Status badge */}
+                  <div className="absolute top-2 left-2">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold shadow-sm backdrop-blur-md ${statusInfo.className}`}
+                      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-sm backdrop-blur-md ${statusInfo.className}`}
                     >
-                      <span
-                        className={`size-1.5 rounded-full ${statusInfo.bg}`}
-                      />
+                      <span className={`size-1.5 rounded-full ${statusInfo.bg}`} />
                       {statusInfo.label}
                     </span>
                   </div>
 
+                  {/* Condition badge */}
                   <span
-                    className={`absolute bottom-2.5 left-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold shadow-sm leading-tight ${condition.className}`}
+                    className={`absolute bottom-2 left-2 inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold shadow-sm leading-tight ${condition.className}`}
                   >
                     {condition.label}
                   </span>
                 </div>
 
                 {/* Content Section */}
-                <CardContent className="flex-1 p-3 space-y-1">
-                  <h3 className="text-sm font-bold text-[#102A43] leading-snug line-clamp-2 group-hover:text-[#2563EB] transition-colors">
+                <CardContent className="flex-1 p-2.5 space-y-1.5">
+                  <h3 className="text-xs font-bold text-[#102A43] leading-snug line-clamp-2 group-hover:text-[#2563EB] transition-colors">
                     {item.title}
                   </h3>
-                  <div className="flex items-baseline gap-1.5">
+
+                  <div className="flex items-center justify-between gap-1">
                     <span className="text-sm font-extrabold text-[#2563EB] tracking-tight">
                       {formatPrice(item.price)}
                     </span>
-                    {item.is_negotiable && (
-                      <span className="text-[9px] font-medium bg-[#EFF6FF] text-[#2563EB] px-1.5 py-0.5 rounded-full border border-blue-100">
-                        Thương lượng
-                      </span>
-                    )}
+                    <span className="flex items-center gap-0.5 text-[10px] text-[#94A3B8] shrink-0">
+                      <Clock className="size-2.5" />
+                      {formatTimeAgo(item.created_at)}
+                    </span>
                   </div>
 
+                  {item.is_negotiable && (
+                    <span className="inline-block text-[9px] font-medium bg-[#EFF6FF] text-[#2563EB] px-1.5 py-0.5 rounded-full border border-blue-100">
+                      Thương lượng
+                    </span>
+                  )}
+
                   {item.status === "rejected" && item.rejection_reason && (
-                    <div className="flex items-start gap-1 rounded-lg bg-red-50 border border-red-100 px-2 py-1.5">
-                      <AlertCircle className="size-3 shrink-0 mt-[2px] text-red-500" />
-                      <p className="text-[10px] text-red-600 leading-relaxed line-clamp-2">
+                    <div className="flex items-start gap-1 rounded-lg bg-red-50 border border-red-100 px-2 py-1">
+                      <AlertCircle className="size-2.5 shrink-0 mt-[1px] text-red-500" />
+                      <p className="text-[9px] text-red-600 leading-relaxed line-clamp-2">
                         <span className="font-semibold">Lý do: </span>
                         {item.rejection_reason}
                       </p>
                     </div>
                   )}
-
-                  <div className="flex items-center gap-1 text-[10px] text-[#94A3B8] pt-0.5">
-                    <Clock className="size-3" />
-                    <span>{formatTimeAgo(item.created_at)}</span>
-                  </div>
                 </CardContent>
 
                 {/* Actions Tray */}
-                <div className="p-2.5 border-t border-[#D8E2EF]/60 bg-slate-50/50 grid grid-cols-2 gap-1.5 shrink-0">
+                <div className="p-2 border-t border-[#E2E8F0] bg-[#F8FAFC] grid grid-cols-3 gap-1 shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-[#D8E2EF] text-[#5B7083] hover:text-[#102A43] hover:bg-slate-100 h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
+                    className="border-[#E2E8F0] text-[#5B7083] hover:text-[#102A43] hover:bg-white h-7 text-[9px] rounded-lg font-semibold gap-0.5 cursor-pointer px-1"
                     asChild
                   >
                     <Link
                       to="/items/$listingId"
                       params={{ listingId: item.id }}
                     >
-                      <Eye className="size-3" />
+                      <Eye className="size-2.5" />
                       Xem
                     </Link>
                   </Button>
 
-                  {item.status !== "sold" && (
+                  {item.status !== "sold" ? (
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-[#D8E2EF] text-[#2563EB] hover:bg-[#EFF6FF] h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
+                      className="border-[#E2E8F0] text-[#2563EB] hover:bg-white h-7 text-[9px] rounded-lg font-semibold gap-0.5 cursor-pointer px-1"
                       asChild
                     >
                       <Link
                         to="/items/$listingId/edit"
                         params={{ listingId: item.id }}
                       >
-                        <Pencil className="size-3" />
+                        <Pencil className="size-2.5" />
                         Sửa
                       </Link>
                     </Button>
+                  ) : (
+                    <div />
                   )}
 
-                  {/* Action buttons depending on state */}
-                  {item.status === "active" && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
-                      onClick={() => setDeleteTargetId(item.id)}
-                    >
-                      <Trash2 className="size-3" />
-                      Xóa
-                    </Button>
-                  )}
-
-                  {item.status !== "active" && item.status !== "sold" && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-7 text-[10px] rounded-lg font-semibold gap-1 cursor-pointer"
-                      onClick={() => setDeleteTargetId(item.id)}
-                    >
-                      <Trash2 className="size-3" />
-                      Xóa
-                    </Button>
-                  )}
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 h-7 text-[9px] rounded-lg font-semibold gap-0.5 cursor-pointer px-1"
+                    onClick={() => setDeleteTargetId(item.id)}
+                  >
+                    <Trash2 className="size-2.5" />
+                    Xóa
+                  </Button>
                 </div>
               </Card>
             )

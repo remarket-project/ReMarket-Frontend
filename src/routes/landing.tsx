@@ -580,7 +580,7 @@ function Landing() {
                       src={item.image}
                       alt={item.title}
                       loading="lazy"
-                      className="rmk-listing-image h-full w-full object-cover"
+                      className="h-full w-full object-contain p-2"
                     />
                   </div>
                   <p className="line-clamp-1 text-sm font-semibold text-zinc-900">

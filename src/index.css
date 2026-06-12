@@ -506,12 +506,7 @@
   }
 
   .rmk-listing-image {
-    transform: scale(1.02);
-    transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .rmk-listing-card:hover .rmk-listing-image {
-    transform: scale(1.08);
+    transition: opacity 300ms ease;
   }
 
   .rmk-live-dot {

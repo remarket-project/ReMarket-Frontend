@@ -59,7 +59,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           <img
             src={mainImage.image_url}
             alt={`${title} - image ${selectedIndex + 1}`}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
           />
           {/* Overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
@@ -123,7 +123,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 <img
                   src={img.image_url}
                   alt={`Thumbnail ${idx + 1}`}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain p-0.5"
                 />
                 {idx === selectedIndex && (
                   <div className="absolute inset-0 bg-blue-600/10" />

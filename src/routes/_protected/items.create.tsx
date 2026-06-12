@@ -24,6 +24,7 @@ import CreateListingStep2 from "@/components/Items/Step2Description"
 import CreateListingStep3 from "@/components/Items/Step3Images"
 import CreateListingStep3Location from "@/components/Items/Step3Location"
 import CreateListingStep4 from "@/components/Items/Step4Review"
+import useAuth from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -269,6 +270,37 @@ function CreateListingPage() {
   const onSubmit = async (data: ListingFormData) => {
     setIsSubmitting(true)
     try {
+      const cachedProvinces =
+        queryClient.getQueryData<Array<{ code: number; name: string }>>([
+          "vn-provinces",
+        ]) ?? []
+      const provinceName =
+        cachedProvinces.find((p) => String(p.code) === data.province)?.name ??
+        data.province
+      const cachedDistricts =
+        queryClient.getQueryData<Array<{ code: number; name: string }>>([
+          "vn-districts",
+          data.province,
+        ]) ?? []
+      const districtName =
+        cachedDistricts.find((d) => String(d.code) === data.district)?.name ??
+        data.district
+      const cachedWards =
+        queryClient.getQueryData<Array<{ code: number; name: string }>>([
+          "vn-wards",
+          data.district,
+        ]) ?? []
+      const wardName =
+        cachedWards.find((w) => String(w.code) === data.ward)?.name ??
+        data.ward
+      const locationParts = [
+        data.addressDetail,
+        wardName,
+        districtName,
+        provinceName,
+      ].filter(Boolean)
+      const locationSummary = locationParts.join(", ")
+
       const created = await ListingsService.createListingApiV1ListingsPost({
         requestBody: {
           title: data.title.trim(),
@@ -277,19 +309,27 @@ function CreateListingPage() {
           is_negotiable: data.isNegotiable,
           condition_grade: data.conditionGrade,
           category_id: data.categoryId,
-        },
+          location_summary: locationSummary,
+        } as any,
       })
 
-      const uploadTargets = data.images.filter((img) => img.file)
+      const uploadTargets = data.images.filter((img) => img.file || img.url)
       if (uploadTargets.length > 0) {
         const uploadResults = await Promise.allSettled(
-          uploadTargets.map((img) =>
-            ListingsService.uploadListingImageApiV1ListingsListingIdImagesPost({
+          uploadTargets.map(async (img) => {
+            let file = img.file
+            if (!file && img.url) {
+              const response = await fetch(img.url)
+              const blob = await response.blob()
+              const ext = blob.type.split("/")[1] || "jpg"
+              file = new File([blob], `image.${ext}`, { type: blob.type })
+            }
+            return ListingsService.uploadListingImageApiV1ListingsListingIdImagesPost({
               listingId: created.id,
               isPrimary: img.isPrimary,
-              formData: { file: img.file as any },
-            }),
-          ),
+              formData: { file: file as any },
+            })
+          }),
         )
 
         const failedUploads = uploadResults.filter(
@@ -331,6 +371,78 @@ function CreateListingPage() {
   const images = form.watch("images")
   const condition = form.watch("conditionGrade")
   const isNegotiable = form.watch("isNegotiable")
+
+  // ─── Auto-fill địa chỉ từ hồ sơ cá nhân ─────────────────────────────
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (currentStep !== 4) return
+    if (!user?.province) return
+    const alreadyFilled = ["province", "district", "ward"].every(
+      (k) => form.getValues(k as keyof ListingFormData)
+    )
+    if (alreadyFilled) return
+
+    console.log("🔄 Auto-fill address starting...", {
+      province: user.province,
+      district: user.district,
+      ward: user.ward,
+    })
+
+    const doAutoFill = async () => {
+      try {
+        const res = await fetch("https://provinces.open-api.vn/api/p/")
+        const provinces: Array<{ code: number; name: string }> = await res.json()
+
+        const pMatch = provinces.find(
+          (p) => p.name.toLowerCase() === user.province!.toLowerCase(),
+        )
+        console.log("🏙️ Province match:", pMatch)
+        if (!pMatch) return
+        form.setValue("province", String(pMatch.code))
+
+        const dRes = await fetch(
+          `https://provinces.open-api.vn/api/p/${pMatch.code}?depth=2`,
+        )
+        const dData = await dRes.json()
+        const dists: Array<{ code: number; name: string }> = dData.districts || []
+        console.log("📍 Districts loaded:", dists.length)
+
+        if (user.district) {
+          const dMatch = dists.find(
+            (d) => d.name.toLowerCase() === user.district!.toLowerCase(),
+          )
+          console.log("📍 District match:", dMatch, "looking for:", user.district)
+          if (dMatch) {
+            form.setValue("district", String(dMatch.code))
+
+            const wRes = await fetch(
+              `https://provinces.open-api.vn/api/d/${dMatch.code}?depth=2`,
+            )
+            const wData = await wRes.json()
+            const wds: Array<{ code: number; name: string }> = wData.wards || []
+            console.log("🏘️ Wards loaded:", wds.length)
+
+            if (user.ward) {
+              const wMatch = wds.find(
+                (w) => w.name.toLowerCase() === user.ward!.toLowerCase(),
+              )
+              console.log("🏘️ Ward match:", wMatch, "looking for:", user.ward)
+              if (wMatch) form.setValue("ward", String(wMatch.code))
+            }
+          }
+        }
+
+        if (user.address_detail) {
+          form.setValue("addressDetail", user.address_detail)
+        }
+      } catch (err) {
+        console.error("Auto-fill address failed:", err)
+      }
+    }
+
+    doAutoFill()
+  }, [currentStep, user, form])
 
   return (
     <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-sm text-card-foreground">
