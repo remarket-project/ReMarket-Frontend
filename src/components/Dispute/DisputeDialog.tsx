@@ -1,11 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Loader2,
-  Upload,
-  X,
-} from "lucide-react"
+import { AlertTriangle, CheckCircle2, Loader2, Upload, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { DisputesService } from "@/client"
@@ -136,7 +130,7 @@ export function DisputeDialog({
     e.preventDefault()
     setDragOver(false)
     const dropped = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("image/")
+      f.type.startsWith("image/"),
     )
     setFiles((prev) => [...prev, ...dropped].slice(0, 5))
   }
@@ -291,7 +285,10 @@ export function DisputeDialog({
                 className="bg-amber-600 hover:bg-amber-700 text-white"
                 onClick={() => disputeMutation.mutate()}
                 disabled={
-                  disputeMutation.isPending || uploading || !reason.trim() || reason.trim().length < 10
+                  disputeMutation.isPending ||
+                  uploading ||
+                  !reason.trim() ||
+                  reason.trim().length < 10
                 }
               >
                 {uploading ? (

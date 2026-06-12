@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useQueryClient } from "@tanstack/react-query"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import confetti from "canvas-confetti"
 import {
   ArrowLeft,
@@ -19,7 +19,6 @@ import { toast } from "sonner"
 import * as z from "zod"
 
 import { ListingsService } from "@/client"
-import { extractErrorMessage } from "@/utils"
 import CreateListingStep1 from "@/components/Items/Step1BasicInfo"
 import CreateListingStep2 from "@/components/Items/Step2Description"
 import CreateListingStep3 from "@/components/Items/Step3Images"
@@ -36,6 +35,7 @@ import {
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
 import { Progress } from "@/components/ui/progress"
+import { extractErrorMessage } from "@/utils"
 
 function formatVND(value: number) {
   if (!value || Number.isNaN(value) || value <= 0) return "0 ₫"
@@ -317,7 +317,9 @@ function CreateListingPage() {
       setCreatedListingId(created.id)
       setShowSuccessModal(true)
     } catch (error: any) {
-      toast.error(extractErrorMessage(error, "Đăng tin thất bại. Vui lòng thử lại."))
+      toast.error(
+        extractErrorMessage(error, "Đăng tin thất bại. Vui lòng thử lại."),
+      )
     } finally {
       setIsSubmitting(false)
     }

@@ -91,7 +91,10 @@ export function ListingPreviewDialog({
                   {listing.seller_name || "Không rõ"}
                 </p>
                 <p className="text-xs text-slate-500">
-                  ID: {typeof listing.seller_id === 'string' ? listing.seller_id.slice(0, 12) : listing.seller_id}
+                  ID:{" "}
+                  {typeof listing.seller_id === "string"
+                    ? listing.seller_id.slice(0, 12)
+                    : listing.seller_id}
                 </p>
               </div>
             </div>

@@ -75,7 +75,8 @@ function typeGroup(
     notification.type.startsWith("order") ||
     notification.type.startsWith("shipping") ||
     notification.type.startsWith("return")
-  ) return "orders"
+  )
+    return "orders"
   return "system"
 }
 

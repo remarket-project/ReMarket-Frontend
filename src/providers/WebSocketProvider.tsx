@@ -41,9 +41,12 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries({ queryKey: ["my-listings"] })
         queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
         invalidateNotifs()
-        toast("Người bán đã đồng ý với đề nghị của bạn! Hãy xác nhận đặt hàng.", {
-          duration: 8000,
-        })
+        toast(
+          "Người bán đã đồng ý với đề nghị của bạn! Hãy xác nhận đặt hàng.",
+          {
+            duration: 8000,
+          },
+        )
       },
       [queryClient, invalidateNotifs],
     ),

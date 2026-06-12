@@ -20,7 +20,6 @@ import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
 import { type ListingStatus, ListingsService } from "@/client"
-import { extractErrorMessage } from "@/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,6 +32,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { extractErrorMessage } from "@/utils"
 
 // ─── Query Options ────────────────────────────────────────────────────────────
 function getMyListingsQueryOptions() {

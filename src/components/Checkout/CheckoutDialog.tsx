@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import type { PaymentMethod, ShippingAddressInput } from "@/client"
 import { OrdersService } from "@/client"
-import { extractErrorMessage } from "@/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -17,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import useAuth from "@/hooks/useAuth"
 import { formatVND } from "@/lib/order-utils"
+import { extractErrorMessage } from "@/utils"
 import PaymentMethodSelector from "./PaymentMethodSelector"
 import ShippingAddressForm from "./ShippingAddressForm"
 
@@ -86,7 +86,9 @@ export default function CheckoutDialog({
       if (onSuccess) onSuccess(order.id)
     },
     onError: (err: unknown) => {
-      toast.error(extractErrorMessage(err as any, "Đặt hàng thất bại. Vui lòng thử lại."))
+      toast.error(
+        extractErrorMessage(err as any, "Đặt hàng thất bại. Vui lòng thử lại."),
+      )
     },
   })
 

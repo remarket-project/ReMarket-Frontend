@@ -333,13 +333,10 @@ function TrangKiemDuyetTin() {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {data.map(
-            (
-              listing: ListingWithImages,
-            ) => {
-              const isExpanded = expandedIds[listing.id] ?? false
-              const imageCount = listing.images?.length ?? 0
-              return (
+          {data.map((listing: ListingWithImages) => {
+            const isExpanded = expandedIds[listing.id] ?? false
+            const imageCount = listing.images?.length ?? 0
+            return (
               <div
                 key={listing.id}
                 className={`rounded-2xl border transition-all duration-200 ${
@@ -387,7 +384,8 @@ function TrangKiemDuyetTin() {
                           />
                         ) : (
                           <div className="flex size-full items-center justify-center text-[10px] font-semibold text-slate-400">
-                            {listing.seller_name?.charAt(0)?.toUpperCase() || "?"}
+                            {listing.seller_name?.charAt(0)?.toUpperCase() ||
+                              "?"}
                           </div>
                         )}
                       </div>
@@ -503,8 +501,8 @@ function TrangKiemDuyetTin() {
                   </div>
                 )}
               </div>
-            )},
-          )}
+            )
+          })}
         </div>
       )}
 

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Heart, Loader2 } from "lucide-react"
 
-import { SocialService, type SavedListingItem } from "@/client"
+import { type SavedListingItem, SocialService } from "@/client"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -17,7 +17,9 @@ function SavedListingsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["saved-listings-page"],
     queryFn: async () => {
-      const res = await SocialService.listSavedListingsApiV1SavedListingsGet({ limit: 100 })
+      const res = await SocialService.listSavedListingsApiV1SavedListingsGet({
+        limit: 100,
+      })
       return res.items
     },
     staleTime: 30_000,
@@ -32,9 +34,7 @@ function SavedListingsPage() {
             Tin đã lưu
           </h1>
           {data && (
-            <span className="text-sm text-[#5B7083]">
-              ({data.length})
-            </span>
+            <span className="text-sm text-[#5B7083]">({data.length})</span>
           )}
         </div>
       </section>

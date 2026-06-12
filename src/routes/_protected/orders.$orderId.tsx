@@ -24,7 +24,6 @@ import {
   ReviewsService,
   UsersService,
 } from "@/client"
-import { extractErrorMessage } from "@/utils"
 import { DisputeDialog } from "@/components/Dispute/DisputeDialog"
 import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
@@ -50,6 +49,7 @@ import {
   ORDER_STATUS_COLORS,
   ORDER_STATUS_LABELS,
 } from "@/lib/order-utils"
+import { extractErrorMessage } from "@/utils"
 
 const ESCROW_STATUS_LABELS: Record<string, string> = {
   pending: "Chờ thanh toán",
@@ -395,10 +395,8 @@ function OrderDetailPage() {
             <CheckCircle2 className="size-4" />
           )}
           <AlertDescription>
-            <span className="font-semibold">
-              Đơn hàng đã bị khiếu nại.
-            </span>{" "}
-            Kết quả:{" "}
+            <span className="font-semibold">Đơn hàng đã bị khiếu nại.</span> Kết
+            quả:{" "}
             {dispute.resolution === "release"
               ? "Không được hoàn tiền"
               : "Đã hoàn tiền"}

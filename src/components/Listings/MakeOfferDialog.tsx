@@ -6,7 +6,6 @@ import { toast } from "sonner"
 import * as z from "zod"
 
 import { ChatsService, OffersService } from "@/client"
-import { extractErrorMessage } from "@/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -26,6 +25,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { extractErrorMessage } from "@/utils"
 
 const offerSchema = z.object({
   offer_price: z
@@ -100,7 +100,9 @@ export function MakeOfferDialog({
       onOpenChange(false)
     },
     onError: (err: any) => {
-      toast.error(extractErrorMessage(err, "Không thể gửi đề nghị. Vui lòng thử lại."))
+      toast.error(
+        extractErrorMessage(err, "Không thể gửi đề nghị. Vui lòng thử lại."),
+      )
     },
   })
 

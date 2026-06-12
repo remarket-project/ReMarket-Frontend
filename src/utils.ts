@@ -1,7 +1,10 @@
 import { AxiosError } from "axios"
 import type { ApiError } from "./client"
 
-export function extractErrorMessage(err: ApiError, fallback = "Something went wrong."): string {
+export function extractErrorMessage(
+  err: ApiError,
+  fallback = "Something went wrong.",
+): string {
   if (err instanceof AxiosError) {
     return err.message
   }

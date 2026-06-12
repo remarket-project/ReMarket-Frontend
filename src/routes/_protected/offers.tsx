@@ -16,8 +16,13 @@ import {
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { ListingsService, type OfferRead, OffersService, type ShippingAddressInput, type PaymentMethod } from "@/client"
-import { extractErrorMessage } from "@/utils"
+import {
+  ListingsService,
+  type OfferRead,
+  OffersService,
+  type PaymentMethod,
+  type ShippingAddressInput,
+} from "@/client"
 import ConfirmOrderDialog from "@/components/Offers/ConfirmOrderDialog"
 import CounterOfferDialog from "@/components/Offers/CounterOfferDialog"
 import { OfferCard } from "@/components/Offers/OfferCard"
@@ -25,6 +30,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { extractErrorMessage } from "@/utils"
 
 type OfferView = "all" | "pending" | "accepted" | "rejected" | "countered"
 
@@ -146,7 +152,10 @@ function OffersPage() {
     }) =>
       OffersService.confirmOfferOrderApiV1OffersOfferIdConfirmPost({
         offerId,
-        requestBody: { shipping_address: shippingAddress, payment_method: paymentMethod },
+        requestBody: {
+          shipping_address: shippingAddress,
+          payment_method: paymentMethod,
+        },
       }),
     onSuccess: (order, _variables) => {
       queryClient.invalidateQueries({ queryKey: ["offers-dashboard"] })

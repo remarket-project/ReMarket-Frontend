@@ -1,26 +1,29 @@
 import { Loader2, MapPin, ShieldCheck } from "lucide-react"
 import { useEffect, useState } from "react"
 import type { PaymentMethod, ShippingAddressInput } from "@/client"
+import PaymentMethodSelector from "@/components/Checkout/PaymentMethodSelector"
+import ShippingAddressForm from "@/components/Checkout/ShippingAddressForm"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import useAuth from "@/hooks/useAuth"
 import { formatVND } from "@/lib/order-utils"
-import ShippingAddressForm from "@/components/Checkout/ShippingAddressForm"
-import PaymentMethodSelector from "@/components/Checkout/PaymentMethodSelector"
 
 interface ConfirmOrderDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   offerPrice: number
-  onSubmit: (address: ShippingAddressInput, paymentMethod: PaymentMethod) => void
+  onSubmit: (
+    address: ShippingAddressInput,
+    paymentMethod: PaymentMethod,
+  ) => void
   isPending?: boolean
 }
 

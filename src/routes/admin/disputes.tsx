@@ -192,7 +192,7 @@ function AdminDisputesPage() {
                             Ảnh minh chứng ({dispute.evidence.length})
                           </p>
                           <div className="flex flex-wrap gap-2">
-                              {dispute.evidence.map((ev: any) => (
+                            {dispute.evidence.map((ev: any) => (
                               <a
                                 key={ev.id}
                                 href={ev.serve_url || ev.image_url}
@@ -357,7 +357,11 @@ function AdminDisputesPage() {
                   note: adminNote,
                 })
               }}
-              disabled={resolveMutation.isPending || !adminNote.trim() || adminNote.trim().length < 10}
+              disabled={
+                resolveMutation.isPending ||
+                !adminNote.trim() ||
+                adminNote.trim().length < 10
+              }
             >
               {resolveMutation.isPending
                 ? "Đang xử lý..."

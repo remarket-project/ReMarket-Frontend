@@ -18,13 +18,13 @@ import {
   type OfferRead,
   UsersService,
 } from "@/client"
+import { CountdownTimer } from "@/components/Offers/CountdownTimer"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useChat } from "@/hooks/ChatContext"
-import { CountdownTimer } from "@/components/Offers/CountdownTimer"
 
 interface OfferCardProps {
   offer: OfferRead
@@ -403,7 +403,9 @@ export function OfferCard({
               <CheckCircle2 className="w-4 h-4" /> Đã đồng ý. Đang chờ người mua
               xác nhận đặt hàng.
             </span>
-            {offer.expires_at && <CountdownTimer expiresAt={offer.expires_at} />}
+            {offer.expires_at && (
+              <CountdownTimer expiresAt={offer.expires_at} />
+            )}
           </div>
         )}
 
@@ -413,7 +415,9 @@ export function OfferCard({
               <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" /> Người bán đã đồng ý
               </span>
-              {offer.expires_at && <CountdownTimer expiresAt={offer.expires_at} />}
+              {offer.expires_at && (
+                <CountdownTimer expiresAt={offer.expires_at} />
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               {offer.order_id ? (
@@ -423,7 +427,10 @@ export function OfferCard({
                   className="border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
                   asChild
                 >
-                  <Link to="/orders/$orderId" params={{ orderId: offer.order_id }}>
+                  <Link
+                    to="/orders/$orderId"
+                    params={{ orderId: offer.order_id }}
+                  >
                     Xem đơn hàng <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
                   </Link>
                 </Button>
@@ -444,7 +451,8 @@ export function OfferCard({
                     onClick={() => onReject(offer)}
                     disabled={isPending}
                   >
-                    <XCircle className="w-4 h-4 mr-1.5" /> Từ chối, không mua nữa
+                    <XCircle className="w-4 h-4 mr-1.5" /> Từ chối, không mua
+                    nữa
                   </Button>
                 </>
               )}

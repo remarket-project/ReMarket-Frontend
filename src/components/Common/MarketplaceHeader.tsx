@@ -430,11 +430,13 @@ export function MarketplaceHeader() {
                   ) : (
                     notifications.map((n: NotificationRead) => {
                       const linkData = n.data as Record<string, unknown> | null
-                      const listingId = linkData?.listing_id as string | undefined
+                      const listingId = linkData?.listing_id as
+                        | string
+                        | undefined
                       const orderId = linkData?.order_id as string | undefined
                       const type = n.type
                       let to: string = "/"
-                      let params: Record<string, string> | undefined = undefined
+                      let params: Record<string, string> | undefined
                       if (type.startsWith("offer_")) {
                         to = "/offers"
                       } else if (type.startsWith("dispute_")) {
@@ -513,8 +515,14 @@ export function MarketplaceHeader() {
               )}
               asChild
             >
-              <Link to="/messages" search={{ listingId: "" }} aria-label="Tin nhắn">
-                <MessageSquare className={transparent ? "size-5" : "size-4.5"} />
+              <Link
+                to="/messages"
+                search={{ listingId: "" }}
+                aria-label="Tin nhắn"
+              >
+                <MessageSquare
+                  className={transparent ? "size-5" : "size-4.5"}
+                />
                 {chatUnread > 0 && (
                   <span className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
                     {chatUnread > 99 ? "99+" : chatUnread}

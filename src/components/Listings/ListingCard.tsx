@@ -3,7 +3,12 @@ import { Link } from "@tanstack/react-router"
 import { Clock, Heart } from "lucide-react"
 import { useCallback } from "react"
 
-import { SocialService, type ListingRead, type ListingWithImages, type SavedListingItem } from "@/client"
+import {
+  type ListingRead,
+  type ListingWithImages,
+  type SavedListingItem,
+  SocialService,
+} from "@/client"
 import useAuth from "@/hooks/useAuth"
 
 export type ListingCardItem = ListingRead | ListingWithImages
@@ -65,8 +70,12 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
   const { data: savedData } = useQuery({
     queryKey: ["saved-listing-ids"],
     queryFn: async () => {
-      const res = await SocialService.listSavedListingsApiV1SavedListingsGet({ limit: 100 })
-      return new Map(res.items.map((s: SavedListingItem) => [s.listing.id, true]))
+      const res = await SocialService.listSavedListingsApiV1SavedListingsGet({
+        limit: 100,
+      })
+      return new Map(
+        res.items.map((s: SavedListingItem) => [s.listing.id, true]),
+      )
     },
     enabled: Boolean(user),
     staleTime: 30_000,
@@ -75,9 +84,13 @@ export function ListingCard({ item, animationDelay = 0 }: ListingCardProps) {
 
   const toggleSave = useCallback(async () => {
     if (isSaved) {
-      await SocialService.unsaveListingApiV1SavedListingsListingIdDelete({ listingId: item.id })
+      await SocialService.unsaveListingApiV1SavedListingsListingIdDelete({
+        listingId: item.id,
+      })
     } else {
-      await SocialService.saveListingApiV1SavedListingsListingIdPost({ listingId: item.id })
+      await SocialService.saveListingApiV1SavedListingsListingIdPost({
+        listingId: item.id,
+      })
     }
     queryClient.invalidateQueries({ queryKey: ["saved-listing-ids"] })
     queryClient.invalidateQueries({ queryKey: ["saved-listings-page"] })
