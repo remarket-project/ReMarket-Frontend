@@ -8,6 +8,7 @@ interface ConversationListItemProps {
   avatarUrl?: string | null
   fallbackInitials: string
   listingImage?: string | null
+  listingTitle?: string | null
   lastMessage?: string
   lastMessageTime?: string
   unreadCount: number
@@ -33,6 +34,7 @@ export function ConversationListItem({
   avatarUrl,
   fallbackInitials,
   listingImage,
+  listingTitle,
   lastMessage,
   lastMessageTime,
   unreadCount,
@@ -74,6 +76,11 @@ export function ConversationListItem({
             </span>
           )}
         </div>
+        {listingTitle && (
+          <p className="truncate text-[11px] text-[#94A3B8]">
+            {listingTitle}
+          </p>
+        )}
         <p
           className={cn(
             "mt-0.5 truncate text-xs",

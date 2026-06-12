@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { MessageSquare } from "lucide-react"
+import { MessageSquare, Search } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { z } from "zod"
 
@@ -29,6 +29,7 @@ function MessagesPage() {
   const { markConversationRead, refreshUnread } = useChat()
   const queryClient = useQueryClient()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
 
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
@@ -114,10 +115,23 @@ function MessagesPage() {
           <MessageSquare className="size-5 text-[#2563EB]" />
           <span className="text-sm font-bold text-[#102A43]">Tin nhắn</span>
         </div>
+        <div className="px-3 py-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#94A3B8]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm kiếm..."
+              className="w-full rounded-xl border border-[#D8E2EF] bg-[#F8FAFC] py-2 pl-9 pr-3 text-sm text-[#102A43] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
+            />
+          </div>
+        </div>
         <ConversationList
           activeConversationId={selectedId}
           onSelectConversation={handleSelectConversation}
           unreadCounts={unreadCounts}
+          searchQuery={searchQuery}
         />
       </div>
       <div
