@@ -36,8 +36,7 @@ export function ConversationThread({
 }: ConversationThreadProps) {
   const { user } = useAuth()
   const queryClient = useQueryClient()
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const messagesLoaded = useRef(false)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const displayName = getDisplayName(conversation, user?.id)
 
@@ -68,10 +67,9 @@ export function ConversationThread({
   })
 
   useEffect(() => {
-    if (messages && messagesLoaded.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (messages && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
     }
-    if (messages) messagesLoaded.current = true
   }, [messages])
 
   if (isLoading) {
@@ -86,7 +84,7 @@ export function ConversationThread({
     <div className="flex min-h-0 flex-1 flex-col">
       <ChatHeader fullName={displayName} showBack={showBack} onBack={onBack} />
 
-      <div className="min-h-0 flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
+      <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
         {!messages || messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center px-8">
             <p className="text-sm text-[#5B7083]">
@@ -102,7 +100,6 @@ export function ConversationThread({
             />
           ))
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {conversation.listing && (

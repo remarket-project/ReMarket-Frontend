@@ -104,7 +104,7 @@ function MessagesPage() {
   const showRight = Boolean(selectedId && currentConversation) || showNewConv
 
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden rounded-3xl border border-[#D8E2EF] bg-white shadow-sm">
+    <div className="flex h-[750px] overflow-hidden rounded-3xl border border-[#D8E2EF] bg-white shadow-sm">
       <div
         className={`flex min-h-0 w-full flex-col border-r border-[#D8E2EF] md:w-80 ${
           showRight ? "hidden md:flex" : "flex"

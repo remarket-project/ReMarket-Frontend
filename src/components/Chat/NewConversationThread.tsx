@@ -54,7 +54,7 @@ export function NewConversationThread({
   const sellerName = listing?.seller_name || "Người bán"
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-3 border-b border-[#D8E2EF] bg-white px-4 py-3">
         <div className="relative shrink-0">
           <Avatar className="size-9">
