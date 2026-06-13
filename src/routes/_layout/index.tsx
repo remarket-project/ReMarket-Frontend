@@ -5,15 +5,45 @@ import {
   ChevronRight,
   Clock3,
   Eye,
+  MapPin,
   RefreshCw,
   Sparkles,
   Wallet,
 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { type ListingRead, ListingsService } from "@/client"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import { Button } from "@/components/ui/button"
+
+const REGION_KEYWORDS: Record<string, string[]> = {
+  hanoi: [
+    "hà nội", "hanoi", "bắc ninh", "hải phòng", "hải dương", "quảng ninh",
+    "thái nguyên", "nam định", "thái bình", "hưng yên", "vĩnh phúc",
+    "bắc giang", "tuyên quang", "hà giang", "lào cai", "lai châu",
+    "điện biên", "sơn la", "hòa bình", "phú thọ", "yên bái", "cao bằng",
+    "lạng sơn", "bắc cạn",
+  ],
+  hcmc: [
+    "hồ chí minh", "hcmc", "saigon", "bình dương", "đồng nai",
+    "bà rịa", "vũng tàu", "tây ninh", "long an", "tiền giang",
+    "bến tre", "trà vinh", "vĩnh long", "cần thơ", "hậu giang",
+    "sóc trăng", "bạc liêu", "cà mau", "kiên giang", "an giang",
+    "đồng tháp",
+  ],
+  danang: [
+    "đà nẵng", "danang", "huế", "thừa thiên", "quảng trị", "quảng bình",
+    "quảng nam", "quảng ngãi", "bình định", "phú yên", "khánh hòa",
+    "ninh thuận", "bình thuận", "gia lai", "kon tum", "đắk lắk",
+    "đắk nông", "lâm đồng", "đà lạt",
+  ],
+}
+
+const REGION_LABELS: Record<string, string> = {
+  hanoi: "Hà Nội",
+  hcmc: "Hồ Chí Minh",
+  danang: "Đà Nẵng",
+}
 
 const categoryRailItems = [
   { name: "Công nghệ", icon: "📱", slug: "cong-nghe" },
@@ -68,9 +98,33 @@ function parsePrice(value: string) {
   return Number.isFinite(digits) ? digits : 0
 }
 
+function getStoredRegion(): string {
+  if (typeof window === "undefined") return ""
+  return localStorage.getItem("rmk_region") || ""
+}
+
+function matchesRegion(item: ListingRead, region: string): boolean {
+  if (!region) return true
+  const loc = (item.location_summary || "").toLowerCase()
+  const keywords = REGION_KEYWORDS[region]
+  return keywords ? keywords.some((kw) => loc.includes(kw)) : true
+}
+
 function MarketplaceHome() {
   const [activeTab, setActiveTab] =
     useState<(typeof feedTabs)[number]>("Dành cho bạn")
+  const [selectedRegion, setSelectedRegion] = useState(getStoredRegion)
+
+  // Listen for region changes in localStorage (set by header dropdown)
+  useEffect(() => {
+    const checkRegion = () => setSelectedRegion(getStoredRegion())
+    window.addEventListener("storage", checkRegion)
+    const interval = setInterval(checkRegion, 2000)
+    return () => {
+      window.removeEventListener("storage", checkRegion)
+      clearInterval(interval)
+    }
+  }, [])
 
   const {
     data: listingsData,
@@ -106,6 +160,14 @@ function MarketplaceHome() {
 
   const visibleListings = useMemo(() => {
     const cloned = [...listings]
+    if (activeTab === "Gần bạn" && selectedRegion) {
+      return cloned
+        .filter((item) => matchesRegion(item, selectedRegion))
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        )
+    }
     if (activeTab === "Mới nhất") {
       return cloned.sort(
         (a, b) =>
@@ -116,7 +178,7 @@ function MarketplaceHome() {
       return cloned.sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
     }
     return cloned
-  }, [activeTab, listings])
+  }, [activeTab, selectedRegion, listings])
 
   const featuredListings = useMemo(
     () => visibleListings.slice(0, 8),
@@ -170,13 +232,21 @@ function MarketplaceHome() {
               Tin nổi bật hôm nay
             </div>
             <h2 className="mt-2 text-lg font-bold text-[#102A43] md:text-xl">
-              Gần bạn, dễ chốt, dễ quét
+              {selectedRegion && REGION_LABELS[selectedRegion]
+                ? `Gần ${REGION_LABELS[selectedRegion]}`
+                : "Gần bạn, dễ chốt, dễ quét"}
             </h2>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium text-[#5B7083]">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF6FF] px-3 py-1 text-[#2563EB]">
                 <Sparkles className="size-3.5" />
                 {totalListings} tin
               </span>
+              {selectedRegion && REGION_LABELS[selectedRegion] && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FEF3C7] px-3 py-1 text-[#D97706]">
+                  <MapPin className="size-3.5" />
+                  {REGION_LABELS[selectedRegion]}
+                </span>
+              )}
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F8FAFC] px-3 py-1">
                 <RefreshCw className="size-3.5 text-[#2563EB]" />
                 {recentCount} tin mới 7 ngày

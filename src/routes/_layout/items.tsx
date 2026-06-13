@@ -13,6 +13,7 @@ import {
   Filter,
   LayoutGrid,
   List,
+  MapPin,
   Package,
   Plus,
   Search,
@@ -67,12 +68,42 @@ const sortOptions: { value: SortMode; label: string }[] = [
   { value: "a-z", label: "A–Z" },
 ]
 
+const REGION_KEYWORDS: Record<string, string[]> = {
+  hanoi: [
+    "hà nội", "hanoi", "bắc ninh", "hải phòng", "hải dương", "quảng ninh",
+    "thái nguyên", "nam định", "thái bình", "hưng yên", "vĩnh phúc",
+    "bắc giang", "tuyên quang", "hà giang", "lào cai", "lai châu",
+    "điện biên", "sơn la", "hòa bình", "phú thọ", "yên bái", "cao bằng",
+    "lạng sơn", "bắc cạn",
+  ],
+  hcmc: [
+    "hồ chí minh", "hcmc", "saigon", "bình dương", "đồng nai",
+    "bà rịa", "vũng tàu", "tây ninh", "long an", "tiền giang",
+    "bến tre", "trà vinh", "vĩnh long", "cần thơ", "hậu giang",
+    "sóc trăng", "bạc liêu", "cà mau", "kiên giang", "an giang",
+    "đồng tháp",
+  ],
+  danang: [
+    "đà nẵng", "danang", "huế", "thừa thiên", "quảng trị", "quảng bình",
+    "quảng nam", "quảng ngãi", "bình định", "phú yên", "khánh hòa",
+    "ninh thuận", "bình thuận", "gia lai", "kon tum", "đắk lắk",
+    "đắk nông", "lâm đồng", "đà lạt",
+  ],
+}
+
+const REGION_LABELS: Record<string, string> = {
+  hanoi: "Hà Nội",
+  hcmc: "Hồ Chí Minh",
+  danang: "Đà Nẵng",
+}
+
 const itemsSearchSchema = z.object({
   q: z.string().catch(""),
   categorySlug: z.string().catch(""),
   categoryId: z.string().catch(""),
   minPrice: z.string().catch(""),
   maxPrice: z.string().catch(""),
+  region: z.string().catch(""),
   condition: z
     .enum(["all", "brand_new", "like_new", "good", "fair", "poor"])
     .catch("all"),
@@ -427,6 +458,7 @@ function useItemsSearch() {
     categoryId: raw.categoryId,
     minPrice: raw.minPrice,
     maxPrice: raw.maxPrice,
+    region: raw.region,
     condition: raw.condition,
     sort: raw.sort,
     view: raw.view,
@@ -498,6 +530,7 @@ function ItemsContent() {
   const categoryId = effectiveCategoryId
   const minPrice = search.minPrice ?? ""
   const maxPrice = search.maxPrice ?? ""
+  const region = search.region ?? ""
   const conditionMode: ConditionMode =
     (search.condition as ConditionMode) ?? "all"
   const sortMode: SortMode = (search.sort as SortMode) ?? "newest"
@@ -523,6 +556,11 @@ function ItemsContent() {
         return false
       const price = Number(item.price) || 0
       if (price < minP || price > maxP) return false
+      if (region) {
+        const loc = (item.location_summary || "").toLowerCase()
+        const keywords = REGION_KEYWORDS[region]
+        if (keywords && !keywords.some((kw) => loc.includes(kw))) return false
+      }
       return true
     })
 
@@ -569,6 +607,7 @@ function ItemsContent() {
     minPrice,
     maxPrice,
     conditionMode !== "all" ? conditionMode : "",
+    region,
   ].filter(Boolean).length
 
   // 4. Pagination
@@ -594,6 +633,7 @@ function ItemsContent() {
         categoryId: search.categoryId,
         minPrice: search.minPrice,
         maxPrice: search.maxPrice,
+        region: search.region,
         condition: search.condition,
         sort: search.sort,
         view: search.view,
@@ -635,6 +675,7 @@ function ItemsContent() {
         categoryId: "",
         minPrice: "",
         maxPrice: "",
+        region: "",
         condition: "all",
         sort: "newest",
         view: "grid",
@@ -892,6 +933,19 @@ function ItemsContent() {
                   <button
                     type="button"
                     onClick={() => setConditionMode("all")}
+                    className="hover:text-slate-900 cursor-pointer"
+                  >
+                    <X className="size-3 shrink-0" />
+                  </button>
+                </span>
+              )}
+              {region && REGION_LABELS[region] && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-xs text-[#5B7083] shadow-sm">
+                  <MapPin className="size-3 text-[#2563EB]" />
+                  Khu vực: {REGION_LABELS[region]}
+                  <button
+                    type="button"
+                    onClick={() => goTo({ region: "", page: "1" })}
                     className="hover:text-slate-900 cursor-pointer"
                   >
                     <X className="size-3 shrink-0" />

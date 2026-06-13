@@ -31,6 +31,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+
+const REGIONS = [
+  { value: "", label: "Chọn khu vực" },
+  { value: "hanoi", label: "Hà Nội" },
+  { value: "hcmc", label: "Hồ Chí Minh" },
+  { value: "danang", label: "Đà Nẵng" },
+] as const
+
+function getStoredRegion(): string {
+  if (typeof window === "undefined") return ""
+  return localStorage.getItem("rmk_region") || ""
+}
 import { useChat } from "@/hooks/ChatContext"
 import useAuth from "@/hooks/useAuth"
 import { cn } from "@/lib/utils"
@@ -57,8 +69,25 @@ function SearchShell({
 }: {
   compact: boolean
   hero?: boolean
-  onSearch?: (q: string) => void
+  onSearch?: (q: string, region?: string) => void
 }) {
+  const [regionOpen, setRegionOpen] = useState(false)
+  const regionRef = useRef<HTMLDivElement>(null)
+  const [selectedRegion, setSelectedRegion] = useState(getStoredRegion)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (regionRef.current && !regionRef.current.contains(e.target as Node)) {
+        setRegionOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const selectedLabel =
+    REGIONS.find((r) => r.value === selectedRegion)?.label || "Chọn khu vực"
+
   const submitTone = hero
     ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
     : "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
@@ -73,10 +102,11 @@ function SearchShell({
             form.elements.namedItem("q") as HTMLInputElement
           )?.value?.trim()
           if (onSearch) {
-            onSearch(query)
+            onSearch(query, selectedRegion)
           } else {
             const params = new URLSearchParams()
             if (query) params.set("q", query)
+            if (selectedRegion) params.set("region", selectedRegion)
             window.location.href = `/items${params.toString() ? `?${params.toString()}` : ""}`
           }
         }}
@@ -85,22 +115,47 @@ function SearchShell({
         <div
           className={`mx-auto flex w-full max-w-4xl items-center gap-2 rounded-full bg-white/95 ${compact ? "p-1 shadow-md" : "p-1.5 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"} ring-1 ring-white/70 backdrop-blur-xl ${compact ? "max-w-3xl" : ""} ${hero ? "shadow-[0_22px_70px_rgba(15,23,42,0.16)]" : ""}`}
         >
-          <div
-            className={`hidden items-center gap-1.5 rounded-full border text-[#102A43] md:flex ${
-              compact
-                ? "min-w-[110px] border-[#D8E2EF] bg-[#F8FAFC] px-3 py-1.5 text-xs font-semibold"
-                : hero
-                  ? "min-w-[128px] border-[#FDE68A] bg-white/95 px-4 py-2 text-sm font-semibold"
-                  : "min-w-[128px] border-[#D8E2EF] bg-[#F8FAFC] px-4 py-2 text-sm font-semibold"
-            }`}
-          >
-            <MapPin
-              className={
-                compact ? "size-3.5 text-[#2563EB]" : "size-4 text-[#2563EB]"
-              }
-            />
-            <span className="truncate">Chọn khu vực</span>
-            <ChevronDown className="size-3 text-[#6B7280]" />
+          <div className="relative" ref={regionRef}>
+            <div
+              className={`flex items-center gap-1.5 rounded-full border text-[#102A43] cursor-pointer md:flex ${
+                compact
+                  ? "min-w-[110px] border-[#D8E2EF] bg-[#F8FAFC] px-3 py-1.5 text-xs font-semibold"
+                  : hero
+                    ? "min-w-[128px] border-[#FDE68A] bg-white/95 px-4 py-2 text-sm font-semibold"
+                    : "min-w-[128px] border-[#D8E2EF] bg-[#F8FAFC] px-4 py-2 text-sm font-semibold"
+              } ${selectedRegion ? "text-[#2563EB]" : ""}`}
+              onClick={() => setRegionOpen(!regionOpen)}
+            >
+              <MapPin
+                className={
+                  compact ? "size-3.5 text-[#2563EB]" : "size-4 text-[#2563EB]"
+                }
+              />
+              <span className="truncate">{selectedLabel}</span>
+              <ChevronDown className="size-3 text-[#6B7280]" />
+            </div>
+            {regionOpen && (
+              <div className="absolute left-0 top-full z-50 mt-1.5 w-48 overflow-hidden rounded-2xl border border-[#D8E2EF] bg-white shadow-xl">
+                {REGIONS.map((r) => (
+                  <button
+                    key={r.value}
+                    type="button"
+                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors cursor-pointer ${
+                      selectedRegion === r.value
+                        ? "bg-[#EFF6FF] text-[#2563EB] font-semibold"
+                        : "text-[#102A43] hover:bg-[#F8FAFC]"
+                    } ${r.value === "" ? "border-b border-[#D8E2EF]" : ""}`}
+                    onClick={() => {
+                      setSelectedRegion(r.value)
+                      localStorage.setItem("rmk_region", r.value)
+                      setRegionOpen(false)
+                    }}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div
             className={`rmk-search-bar flex ${
@@ -365,14 +420,17 @@ export function MarketplaceHeader() {
 
         <div className="hidden flex-1 justify-center md:flex">
           <div className="w-full max-w-3xl">
-            {showSearch && (
-              <SearchShell
-                compact
-                onSearch={(q) =>
-                  navigate({ to: "/items", search: q ? { q } : {} })
-                }
-              />
-            )}
+              {showSearch && (
+                <SearchShell
+                  compact
+                  onSearch={(q, region) =>
+                    navigate({
+                      to: "/items",
+                      search: { ...(q ? { q } : {}), ...(region ? { region } : {}) },
+                    })
+                  }
+                />
+              )}
           </div>
         </div>
 
@@ -748,7 +806,12 @@ export function MarketplaceHeader() {
         <div className="mt-3 md:hidden">
           <SearchShell
             compact
-            onSearch={(q) => navigate({ to: "/items", search: q ? { q } : {} })}
+            onSearch={(q, region) =>
+              navigate({
+                to: "/items",
+                search: { ...(q ? { q } : {}), ...(region ? { region } : {}) },
+              })
+            }
           />
         </div>
       )}
@@ -802,8 +865,11 @@ export function MarketplaceHeader() {
               <SearchShell
                 compact={false}
                 hero
-                onSearch={(q) =>
-                  navigate({ to: "/items", search: q ? { q } : {} })
+                onSearch={(q, region) =>
+                  navigate({
+                    to: "/items",
+                    search: { ...(q ? { q } : {}), ...(region ? { region } : {}) },
+                  })
                 }
               />
             </div>

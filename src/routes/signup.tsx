@@ -171,7 +171,7 @@ function SignUp() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                    <FormLabel className="text-slate-700 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">
                       Số điện thoại (tùy chọn)
                     </FormLabel>
                     <FormControl>
@@ -274,17 +274,17 @@ function SignUp() {
               name="agree_terms"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-center gap-1.5">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(value) =>
                           field.onChange(Boolean(value))
                         }
-                        className="mt-1"
+                        className="shrink-0"
                       />
                     </FormControl>
-                    <FormLabel className="text-xs sm:text-sm leading-5 font-normal text-slate-500">
+                    <FormLabel className="text-[11px] leading-normal font-normal text-slate-500 whitespace-nowrap">
                       Tôi đồng ý với{" "}
                       <RouterLink
                         to="/legal/terms"
