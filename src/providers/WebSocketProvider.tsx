@@ -82,6 +82,8 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries({ queryKey: ["my-listings"]})
         if (data.order_id)
           queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string]})
+        if (data.listing_id)
+          queryClient.invalidateQueries({ queryKey: ["listing-detail", data.listing_id as string]})
         invalidateNotifs()
       },
       [queryClient, invalidateNotifs],
@@ -96,6 +98,8 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries({ queryKey: ["my-listings"]})
         if (data.order_id)
           queryClient.invalidateQueries({ queryKey: ["order-detail", data.order_id as string]})
+        if (data.listing_id)
+          queryClient.invalidateQueries({ queryKey: ["listing-detail", data.listing_id as string]})
         invalidateNotifs()
       },
       [queryClient, invalidateNotifs],

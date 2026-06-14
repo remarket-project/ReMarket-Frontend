@@ -137,7 +137,7 @@ function OrderDetailPage() {
   })
 
   const { data: listing, isLoading: isListingLoading } = useQuery({
-    queryKey: ["listing-detail", data?.order?.listing_id],
+    queryKey: ["order-listing", data?.order?.listing_id],
     queryFn: () =>
       ListingsService.getListingApiV1ListingsListingIdGet({
         listingId: data!.order.listing_id,
@@ -170,6 +170,8 @@ function OrderDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
+      if (data?.order?.listing_id)
+        queryClient.invalidateQueries({ queryKey: ["listing-detail", data.order.listing_id] })
       toast.success("Đã hủy đơn hàng.")
     },
     onError: (error: any) =>

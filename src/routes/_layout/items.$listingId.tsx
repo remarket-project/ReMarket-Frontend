@@ -594,19 +594,12 @@ function ListingDetailPage() {
 
   const saveMutation = useMutation({ mutationFn: toggleSave })
 
-  const { data, isLoading } = useQuery({
+  const { data: listing, isLoading } = useQuery({
     queryKey: ["listing-detail", listingId],
-    queryFn: async () => {
-      try {
-        const listing =
-          await ListingsService.getListingApiV1ListingsListingIdGet({
-            listingId,
-          })
-        return { listing }
-      } catch {
-        return { listing: null as ListingWithImages | null }
-      }
-    },
+    queryFn: () =>
+      ListingsService.getListingApiV1ListingsListingIdGet({
+        listingId,
+      }).catch(() => null),
     staleTime: 30_000,
   })
 
@@ -619,25 +612,25 @@ function ListingDetailPage() {
         limit: 50,
       }),
     enabled:
-      Boolean(data?.listing) &&
-      Boolean(user && data?.listing?.seller_id === user.id),
+      Boolean(listing) &&
+      Boolean(user && listing?.seller_id === user.id),
     staleTime: 30_000,
   })
 
   const { data: category } = useQuery({
-    queryKey: ["listing-category", data?.listing?.category_id],
+    queryKey: ["listing-category", listing?.category_id],
     queryFn: () =>
       CategoriesService.getCategoryByIdApiV1CategoriesIdCategoryIdGet({
-        categoryId: data!.listing!.category_id,
+        categoryId: listing!.category_id,
       }),
-    enabled: Boolean(data?.listing?.category_id),
+    enabled: Boolean(listing?.category_id),
   })
 
   const [checkoutOpen, setCheckoutOpen] = useState(false)
 
   if (isLoading) return <DetailSkeleton />
 
-  if (!data?.listing) {
+  if (!listing) {
     return (
       <div className="rounded-3xl border border-dashed border-[#D8E2EF] bg-white p-16 text-center">
         <Package className="mx-auto mb-4 size-14 text-[#D8E2EF]" />
@@ -659,8 +652,6 @@ function ListingDetailPage() {
       </div>
     )
   }
-
-  const listing = data.listing
   const images = listing.images ?? []
   const isSeller = user?.id === listing.seller_id
   const isSold = listing.status === "sold"
