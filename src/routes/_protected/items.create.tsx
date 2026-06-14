@@ -393,13 +393,15 @@ function CreateListingPage() {
       try {
         const res = await fetch("https://provinces.open-api.vn/api/p/")
         const provinces: Array<{ code: number; name: string }> = await res.json()
+        queryClient.setQueryData(["vn-provinces"], provinces)
 
         const pMatch = provinces.find(
           (p) => p.name.toLowerCase() === user.province!.toLowerCase(),
         )
         console.log("🏙️ Province match:", pMatch)
         if (!pMatch) return
-        form.setValue("province", String(pMatch.code))
+
+        form.setValue("province", String(pMatch.code), { shouldDirty: true })
 
         const dRes = await fetch(
           `https://provinces.open-api.vn/api/p/${pMatch.code}?depth=2`,
@@ -407,6 +409,7 @@ function CreateListingPage() {
         const dData = await dRes.json()
         const dists: Array<{ code: number; name: string }> = dData.districts || []
         console.log("📍 Districts loaded:", dists.length)
+        queryClient.setQueryData(["vn-districts", String(pMatch.code)], dists)
 
         if (user.district) {
           const dMatch = dists.find(
@@ -414,7 +417,9 @@ function CreateListingPage() {
           )
           console.log("📍 District match:", dMatch, "looking for:", user.district)
           if (dMatch) {
-            form.setValue("district", String(dMatch.code))
+            // Yield so React commits the province change + districts useQuery activates
+            await new Promise((r) => setTimeout(r, 0))
+            form.setValue("district", String(dMatch.code), { shouldDirty: true })
 
             const wRes = await fetch(
               `https://provinces.open-api.vn/api/d/${dMatch.code}?depth=2`,
@@ -422,19 +427,24 @@ function CreateListingPage() {
             const wData = await wRes.json()
             const wds: Array<{ code: number; name: string }> = wData.wards || []
             console.log("🏘️ Wards loaded:", wds.length)
+            queryClient.setQueryData(["vn-wards", String(dMatch.code)], wds)
 
             if (user.ward) {
               const wMatch = wds.find(
                 (w) => w.name.toLowerCase() === user.ward!.toLowerCase(),
               )
               console.log("🏘️ Ward match:", wMatch, "looking for:", user.ward)
-              if (wMatch) form.setValue("ward", String(wMatch.code))
+              if (wMatch) {
+                // Yield so React commits the district change + wards useQuery activates
+                await new Promise((r) => setTimeout(r, 0))
+                form.setValue("ward", String(wMatch.code), { shouldDirty: true, shouldValidate: true })
+              }
             }
           }
         }
 
         if (user.address_detail) {
-          form.setValue("addressDetail", user.address_detail)
+          form.setValue("addressDetail", user.address_detail, { shouldDirty: true })
         }
       } catch (err) {
         console.error("Auto-fill address failed:", err)
