@@ -47,7 +47,7 @@ import {
 import useAuth from "@/hooks/useAuth"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type SortMode = "newest" | "oldest" | "price_asc" | "price_desc" | "a-z"
+type SortMode = "newest" | "oldest" | "price_asc" | "price_desc" | "a-z" | "relevant"
 type ViewMode = "grid" | "table"
 type ConditionMode = "all" | "brand_new" | "like_new" | "good" | "fair" | "poor"
 
@@ -66,28 +66,79 @@ const sortOptions: { value: SortMode; label: string }[] = [
   { value: "price_asc", label: "Giá: thấp đến cao" },
   { value: "price_desc", label: "Giá: cao đến thấp" },
   { value: "a-z", label: "A–Z" },
+  { value: "relevant", label: "Phù hợp nhất" },
 ]
 
 const REGION_KEYWORDS: Record<string, string[]> = {
   hanoi: [
-    "hà nội", "hanoi", "bắc ninh", "hải phòng", "hải dương", "quảng ninh",
-    "thái nguyên", "nam định", "thái bình", "hưng yên", "vĩnh phúc",
-    "bắc giang", "tuyên quang", "hà giang", "lào cai", "lai châu",
-    "điện biên", "sơn la", "hòa bình", "phú thọ", "yên bái", "cao bằng",
-    "lạng sơn", "bắc cạn",
+    "hà nội",
+    "hanoi",
+    "bắc ninh",
+    "hải phòng",
+    "hải dương",
+    "quảng ninh",
+    "thái nguyên",
+    "nam định",
+    "thái bình",
+    "hưng yên",
+    "vĩnh phúc",
+    "bắc giang",
+    "tuyên quang",
+    "hà giang",
+    "lào cai",
+    "lai châu",
+    "điện biên",
+    "sơn la",
+    "hòa bình",
+    "phú thọ",
+    "yên bái",
+    "cao bằng",
+    "lạng sơn",
+    "bắc cạn",
   ],
   hcmc: [
-    "hồ chí minh", "hcmc", "saigon", "bình dương", "đồng nai",
-    "bà rịa", "vũng tàu", "tây ninh", "long an", "tiền giang",
-    "bến tre", "trà vinh", "vĩnh long", "cần thơ", "hậu giang",
-    "sóc trăng", "bạc liêu", "cà mau", "kiên giang", "an giang",
+    "hồ chí minh",
+    "hcmc",
+    "saigon",
+    "bình dương",
+    "đồng nai",
+    "bà rịa",
+    "vũng tàu",
+    "tây ninh",
+    "long an",
+    "tiền giang",
+    "bến tre",
+    "trà vinh",
+    "vĩnh long",
+    "cần thơ",
+    "hậu giang",
+    "sóc trăng",
+    "bạc liêu",
+    "cà mau",
+    "kiên giang",
+    "an giang",
     "đồng tháp",
   ],
   danang: [
-    "đà nẵng", "danang", "huế", "thừa thiên", "quảng trị", "quảng bình",
-    "quảng nam", "quảng ngãi", "bình định", "phú yên", "khánh hòa",
-    "ninh thuận", "bình thuận", "gia lai", "kon tum", "đắk lắk",
-    "đắk nông", "lâm đồng", "đà lạt",
+    "đà nẵng",
+    "danang",
+    "huế",
+    "thừa thiên",
+    "quảng trị",
+    "quảng bình",
+    "quảng nam",
+    "quảng ngãi",
+    "bình định",
+    "phú yên",
+    "khánh hòa",
+    "ninh thuận",
+    "bình thuận",
+    "gia lai",
+    "kon tum",
+    "đắk lắk",
+    "đắk nông",
+    "lâm đồng",
+    "đà lạt",
   ],
 }
 
@@ -108,7 +159,7 @@ const itemsSearchSchema = z.object({
     .enum(["all", "brand_new", "like_new", "good", "fair", "poor"])
     .catch("all"),
   sort: z
-    .enum(["newest", "oldest", "price_asc", "price_desc", "a-z"])
+    .enum(["newest", "oldest", "price_asc", "price_desc", "a-z", "relevant"])
     .catch("newest"),
   view: z.enum(["grid", "table"]).catch("grid"),
   page: z.string().catch("1"),
@@ -537,8 +588,42 @@ function ItemsContent() {
   const viewMode: ViewMode = (search.view as ViewMode) ?? "grid"
   const currentPage = Math.max(1, Number(search.page) || 1)
 
-  // 3. Filter + sort
+  const isSemantic = query.length > 0
+  const { data: semanticData } = useQuery({
+    queryKey: ["semantic-search", query, categoryId, minPrice, maxPrice, region],
+    queryFn: () =>
+      ListingsService.listListingsApiV1ListingsGet({
+        keyword: query,
+        sortBy: "relevant",
+        categoryId: categoryId || undefined,
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        skip: 0,
+        limit: 100,
+      }),
+    enabled: isSemantic,
+    staleTime: 30_000,
+  })
+
+  // 3. Filter + sort (use backend semantic search when sort=relevant, otherwise client-side)
   const filteredItems = useMemo(() => {
+    if (isSemantic && semanticData?.items) {
+      let list = semanticData.items as ListingRead[]
+      if (conditionMode !== "all") {
+        list = list.filter((item) => item.condition_grade === conditionMode)
+      }
+      if (sortMode === "price_asc") {
+        return [...list].sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
+      }
+      if (sortMode === "price_desc") {
+        return [...list].sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+      }
+      if (sortMode === "a-z") {
+        return [...list].sort((a, b) => a.title.localeCompare(b.title))
+      }
+      return list
+    }
+
     const q = query.toLowerCase()
     const minP = minPrice ? Number(minPrice) : 0
     const maxP = maxPrice ? Number(maxPrice) : Infinity
@@ -582,6 +667,9 @@ function ItemsContent() {
     minPrice,
     maxPrice,
     sortMode,
+    region,
+    isSemantic,
+    semanticData,
   ])
 
   const weekMs = 7 * 24 * 60 * 60 * 1000
@@ -655,7 +743,7 @@ function ItemsContent() {
     return hardcodedCategories.find((c) => c.slug === slug)
   }, [search.categorySlug, effectiveCategoryId, allCategories])
 
-  const setQuery = (v: string) => goTo({ q: v, page: "1" })
+  const setQuery = (v: string) => goTo({ q: v, sort: v ? "relevant" : "newest", page: "1" })
   const setCategoryId = (v: string) =>
     goTo({ categoryId: v, categorySlug: "", page: "1" })
   const setMinPrice = (v: string) => goTo({ minPrice: v, page: "1" })

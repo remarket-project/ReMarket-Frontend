@@ -43,6 +43,7 @@ function getStoredRegion(): string {
   if (typeof window === "undefined") return ""
   return localStorage.getItem("rmk_region") || ""
 }
+
 import { useChat } from "@/hooks/ChatContext"
 import useAuth from "@/hooks/useAuth"
 import { cn } from "@/lib/utils"
@@ -318,7 +319,9 @@ export function MarketplaceHeader() {
 
   const markNotifRead = useMutation({
     mutationFn: (id: string) =>
-      NotificationsService.markNotificationAsReadApiV1NotificationsNotificationIdReadPut({ notificationId: id }),
+      NotificationsService.markNotificationAsReadApiV1NotificationsNotificationIdReadPut(
+        { notificationId: id },
+      ),
     onSuccess: () => invalidateNotifQueries(),
   })
 
@@ -326,7 +329,8 @@ export function MarketplaceHeader() {
   const unreadCount =
     typeof unreadData === "number"
       ? unreadData
-      : (unreadData as { unread_count?: number } | undefined)?.unread_count ?? 0
+      : ((unreadData as { unread_count?: number } | undefined)?.unread_count ??
+        0)
   const showTransparent = isHome && !isScrolled
 
   useEffect(() => {
@@ -420,17 +424,20 @@ export function MarketplaceHeader() {
 
         <div className="hidden flex-1 justify-center md:flex">
           <div className="w-full max-w-3xl">
-              {showSearch && (
-                <SearchShell
-                  compact
-                  onSearch={(q, region) =>
-                    navigate({
-                      to: "/items",
-                      search: { ...(q ? { q } : {}), ...(region ? { region } : {}) },
-                    })
-                  }
-                />
-              )}
+            {showSearch && (
+              <SearchShell
+                compact
+                onSearch={(q, region) =>
+                  navigate({
+                    to: "/items",
+                    search: {
+                      ...(q ? { q } : {}),
+                      ...(region ? { region } : {}),
+                    },
+                  })
+                }
+              />
+            )}
           </div>
         </div>
 
@@ -511,7 +518,9 @@ export function MarketplaceHeader() {
                         | string
                         | undefined
                       const orderId = linkData?.order_id as string | undefined
-                      const convId = linkData?.conversation_id as string | undefined
+                      const convId = linkData?.conversation_id as
+                        | string
+                        | undefined
                       const type = n.type
                       let to: string = "/"
                       let params: Record<string, string> | undefined
@@ -868,7 +877,10 @@ export function MarketplaceHeader() {
                 onSearch={(q, region) =>
                   navigate({
                     to: "/items",
-                    search: { ...(q ? { q } : {}), ...(region ? { region } : {}) },
+                    search: {
+                      ...(q ? { q } : {}),
+                      ...(region ? { region } : {}),
+                    },
                   })
                 }
               />

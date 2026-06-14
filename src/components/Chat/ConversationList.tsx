@@ -1,12 +1,8 @@
-import { useQuery, useQueries } from "@tanstack/react-query"
+import { useQueries, useQuery } from "@tanstack/react-query"
 import { Loader2, MessageSquare } from "lucide-react"
 import { useMemo } from "react"
 
-import {
-  type ChatConversationRead,
-  ChatsService,
-  UsersService,
-} from "@/client"
+import { type ChatConversationRead, ChatsService, UsersService } from "@/client"
 import useAuth from "@/hooks/useAuth"
 import { ConversationListItem } from "./ConversationListItem"
 
@@ -76,8 +72,7 @@ export function ConversationList({
   const userProfileResults = useQueries({
     queries: otherParticipantIds.map((userId) => ({
       queryKey: ["user-profile", userId],
-      queryFn: () =>
-        UsersService.readUserPublicProfile({ userId }),
+      queryFn: () => UsersService.readUserPublicProfile({ userId }),
       staleTime: 5 * 60 * 1000,
       enabled: Boolean(userId),
     })),

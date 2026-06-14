@@ -171,7 +171,9 @@ function OrderDetailPage() {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
       if (data?.order?.listing_id)
-        queryClient.invalidateQueries({ queryKey: ["listing-detail", data.order.listing_id] })
+        queryClient.invalidateQueries({
+          queryKey: ["listing-detail", data.order.listing_id],
+        })
       toast.success("Đã hủy đơn hàng.")
     },
     onError: (error: any) =>

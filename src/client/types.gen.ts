@@ -1289,7 +1289,7 @@ export type ListListingsApiV1ListingsGetData = {
     minPrice?: (number | null);
     sellerId?: (string | null);
     skip?: number;
-    sortBy?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'popular' | 'featured';
+    sortBy?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'popular' | 'featured' | 'relevant';
 };
 
 export type ListListingsApiV1ListingsGetResponse = (ListingPaginated);

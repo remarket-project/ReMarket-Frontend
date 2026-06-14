@@ -69,7 +69,8 @@ export function ConversationThread({
 
   useEffect(() => {
     if (messages && messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight
     }
   }, [messages])
 
@@ -83,9 +84,17 @@ export function ConversationThread({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <ChatHeader fullName={displayName} avatarUrl={productImage} showBack={showBack} onBack={onBack} />
+      <ChatHeader
+        fullName={displayName}
+        avatarUrl={productImage}
+        showBack={showBack}
+        onBack={onBack}
+      />
 
-      <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4">
+      <div
+        ref={messagesContainerRef}
+        className="min-h-0 flex-1 overflow-y-auto bg-[#F5F8FC] px-3 py-4"
+      >
         {!messages || messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center px-8">
             <p className="text-sm text-[#5B7083]">

@@ -351,7 +351,9 @@ function MyListingsPage() {
                     <span
                       className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-sm backdrop-blur-md ${statusInfo.className}`}
                     >
-                      <span className={`size-1.5 rounded-full ${statusInfo.bg}`} />
+                      <span
+                        className={`size-1.5 rounded-full ${statusInfo.bg}`}
+                      />
                       {statusInfo.label}
                     </span>
                   </div>

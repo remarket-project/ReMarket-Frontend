@@ -77,9 +77,7 @@ export function ConversationListItem({
           )}
         </div>
         {listingTitle && (
-          <p className="truncate text-[11px] text-[#94A3B8]">
-            {listingTitle}
-          </p>
+          <p className="truncate text-[11px] text-[#94A3B8]">{listingTitle}</p>
         )}
         <p
           className={cn(

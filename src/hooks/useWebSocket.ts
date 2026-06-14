@@ -87,5 +87,5 @@ export function useWebSocket(handlers: Record<string, WSEventHandler>) {
       mountedRef.current = false
       disconnect()
     }
-  }, [user?.id, connect, disconnect])
+  }, [user?.id, connect, disconnect, user])
 }

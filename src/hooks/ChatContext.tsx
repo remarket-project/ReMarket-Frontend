@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   createContext,
   type ReactNode,
@@ -7,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { ChatsService } from "@/client"
 import useAuth from "@/hooks/useAuth"
@@ -87,7 +87,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       total += Math.max(0, conv.messages_count - prev)
     }
     setUnreadCount(total)
-  }, [conversations, user, lastSeen])
+  }, [conversations, user])
 
   // refreshUnread chỉ cần invalidate query → React Query refetch → effect trên tự tính lại
   const refreshUnread = useCallback(() => {

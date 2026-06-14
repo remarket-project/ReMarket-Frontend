@@ -8,8 +8,8 @@ import { ChatsService } from "@/client"
 import { ConversationList } from "@/components/Chat/ConversationList"
 import { ConversationThread } from "@/components/Chat/ConversationThread"
 import { NewConversationThread } from "@/components/Chat/NewConversationThread"
-import useAuth from "@/hooks/useAuth"
 import { useChat } from "@/hooks/ChatContext"
+import useAuth from "@/hooks/useAuth"
 
 const searchSchema = z.object({
   listingId: z.string().catch(""),
@@ -58,7 +58,10 @@ function MessagesPage() {
   useEffect(() => {
     if (existingConvForListing) {
       setSelectedId(existingConvForListing.id)
-      markConversationRead(existingConvForListing.id, existingConvForListing.messages_count)
+      markConversationRead(
+        existingConvForListing.id,
+        existingConvForListing.messages_count,
+      )
     }
   }, [existingConvForListing, markConversationRead])
 
@@ -72,7 +75,8 @@ function MessagesPage() {
     }
   }, [fromUrl, conversations, selectedId, markConversationRead])
 
-  const showNewConv = Boolean(fromSearch) && !existingConvForListing && !selectedId
+  const showNewConv =
+    Boolean(fromSearch) && !existingConvForListing && !selectedId
 
   function loadLastSeen(): Record<string, number> {
     try {

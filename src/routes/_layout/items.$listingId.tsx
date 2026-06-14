@@ -427,7 +427,10 @@ function DetailTabs({
               {
                 icon: <MapPin className="size-4 text-[#2563EB]" />,
                 label: "Địa chỉ",
-                value: (listing as any).seller_location_summary ?? (listing as any).location_summary ?? "",
+                value:
+                  (listing as any).seller_location_summary ??
+                  (listing as any).location_summary ??
+                  "",
               },
               {
                 icon: <Tag className="size-4 text-[#2563EB]" />,
@@ -510,24 +513,19 @@ function DetailTabs({
 }
 
 // ─── Similar Listings ─────────────────────────────────────────────────────────
-function SimilarListings({
-  categoryId,
-  excludeId,
-}: {
-  categoryId: string
-  excludeId: string
-}) {
+function SimilarListings({ listingId }: { listingId: string }) {
   const { data } = useQuery({
-    queryKey: ["similar-listings", categoryId],
+    queryKey: ["related-listings", listingId],
     queryFn: () =>
-      ListingsService.listListingsApiV1ListingsGet({ categoryId, limit: 10 }),
-    enabled: Boolean(categoryId),
+      ListingsService.getRelatedListingsApiV1ListingsListingIdRelatedGet({
+        listingId,
+        limit: 8,
+      }),
+    enabled: Boolean(listingId),
     staleTime: 30_000,
   })
 
-  const similar = (data?.items ?? [])
-    .filter((l) => l.id !== excludeId)
-    .slice(0, 8)
+  const similar = data?.items ?? []
 
   if (similar.length === 0) return null
 
@@ -537,14 +535,6 @@ function SimilarListings({
         <h2 className="text-lg font-bold text-[#102A43]">
           Bạn có thể thích 🔥
         </h2>
-        <Link
-          to="/categories/$slug"
-          params={{ slug: categoryId }}
-          className="flex items-center gap-1 text-sm font-medium text-[#2563EB] hover:underline"
-        >
-          Xem tất cả
-          <ChevronRight className="size-4" />
-        </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {similar.map((l, i) => (
@@ -612,8 +602,7 @@ function ListingDetailPage() {
         limit: 50,
       }),
     enabled:
-      Boolean(listing) &&
-      Boolean(user && listing?.seller_id === user.id),
+      Boolean(listing) && Boolean(user && listing?.seller_id === user.id),
     staleTime: 30_000,
   })
 
@@ -942,12 +931,7 @@ function ListingDetailPage() {
       />
 
       {/* ── Similar products ── */}
-      {listing.category_id && (
-        <SimilarListings
-          categoryId={listing.category_id}
-          excludeId={listing.id}
-        />
-      )}
+      {listing.id && <SimilarListings listingId={listing.id} />}
 
       {/* Make Offer Dialog */}
       <MakeOfferDialog

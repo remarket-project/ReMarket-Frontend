@@ -24,7 +24,6 @@ import CreateListingStep2 from "@/components/Items/Step2Description"
 import CreateListingStep3 from "@/components/Items/Step3Images"
 import CreateListingStep3Location from "@/components/Items/Step3Location"
 import CreateListingStep4 from "@/components/Items/Step4Review"
-import useAuth from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -36,6 +35,7 @@ import {
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
 import { Progress } from "@/components/ui/progress"
+import useAuth from "@/hooks/useAuth"
 import { extractErrorMessage } from "@/utils"
 
 function formatVND(value: number) {
@@ -291,8 +291,7 @@ function CreateListingPage() {
           data.district,
         ]) ?? []
       const wardName =
-        cachedWards.find((w) => String(w.code) === data.ward)?.name ??
-        data.ward
+        cachedWards.find((w) => String(w.code) === data.ward)?.name ?? data.ward
       const locationParts = [
         data.addressDetail,
         wardName,
@@ -324,11 +323,13 @@ function CreateListingPage() {
               const ext = blob.type.split("/")[1] || "jpg"
               file = new File([blob], `image.${ext}`, { type: blob.type })
             }
-            return ListingsService.uploadListingImageApiV1ListingsListingIdImagesPost({
-              listingId: created.id,
-              isPrimary: img.isPrimary,
-              formData: { file: file as any },
-            })
+            return ListingsService.uploadListingImageApiV1ListingsListingIdImagesPost(
+              {
+                listingId: created.id,
+                isPrimary: img.isPrimary,
+                formData: { file: file as any },
+              },
+            )
           }),
         )
 
@@ -378,8 +379,8 @@ function CreateListingPage() {
   useEffect(() => {
     if (currentStep !== 4) return
     if (!user?.province) return
-    const alreadyFilled = ["province", "district", "ward"].every(
-      (k) => form.getValues(k as keyof ListingFormData)
+    const alreadyFilled = ["province", "district", "ward"].every((k) =>
+      form.getValues(k as keyof ListingFormData),
     )
     if (alreadyFilled) return
 
@@ -392,7 +393,8 @@ function CreateListingPage() {
     const doAutoFill = async () => {
       try {
         const res = await fetch("https://provinces.open-api.vn/api/p/")
-        const provinces: Array<{ code: number; name: string }> = await res.json()
+        const provinces: Array<{ code: number; name: string }> =
+          await res.json()
         queryClient.setQueryData(["vn-provinces"], provinces)
 
         const pMatch = provinces.find(
@@ -407,7 +409,8 @@ function CreateListingPage() {
           `https://provinces.open-api.vn/api/p/${pMatch.code}?depth=2`,
         )
         const dData = await dRes.json()
-        const dists: Array<{ code: number; name: string }> = dData.districts || []
+        const dists: Array<{ code: number; name: string }> =
+          dData.districts || []
         console.log("📍 Districts loaded:", dists.length)
         queryClient.setQueryData(["vn-districts", String(pMatch.code)], dists)
 
@@ -415,11 +418,18 @@ function CreateListingPage() {
           const dMatch = dists.find(
             (d) => d.name.toLowerCase() === user.district!.toLowerCase(),
           )
-          console.log("📍 District match:", dMatch, "looking for:", user.district)
+          console.log(
+            "📍 District match:",
+            dMatch,
+            "looking for:",
+            user.district,
+          )
           if (dMatch) {
             // Yield so React commits the province change + districts useQuery activates
             await new Promise((r) => setTimeout(r, 0))
-            form.setValue("district", String(dMatch.code), { shouldDirty: true })
+            form.setValue("district", String(dMatch.code), {
+              shouldDirty: true,
+            })
 
             const wRes = await fetch(
               `https://provinces.open-api.vn/api/d/${dMatch.code}?depth=2`,
@@ -437,14 +447,19 @@ function CreateListingPage() {
               if (wMatch) {
                 // Yield so React commits the district change + wards useQuery activates
                 await new Promise((r) => setTimeout(r, 0))
-                form.setValue("ward", String(wMatch.code), { shouldDirty: true, shouldValidate: true })
+                form.setValue("ward", String(wMatch.code), {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
               }
             }
           }
         }
 
         if (user.address_detail) {
-          form.setValue("addressDetail", user.address_detail, { shouldDirty: true })
+          form.setValue("addressDetail", user.address_detail, {
+            shouldDirty: true,
+          })
         }
       } catch (err) {
         console.error("Auto-fill address failed:", err)
@@ -452,7 +467,7 @@ function CreateListingPage() {
     }
 
     doAutoFill()
-  }, [currentStep, user, form])
+  }, [currentStep, user, form, queryClient.setQueryData])
 
   return (
     <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-sm text-card-foreground">

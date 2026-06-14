@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
+import { FaqChatWidget } from "@/components/Chat/FaqChatWidget"
 import { Footer } from "@/components/Common/Footer"
 import { MarketplaceHeader } from "@/components/Common/MarketplaceHeader"
 
@@ -19,6 +20,8 @@ function Layout() {
       </main>
 
       <Footer />
+
+      <FaqChatWidget />
     </div>
   )
 }
