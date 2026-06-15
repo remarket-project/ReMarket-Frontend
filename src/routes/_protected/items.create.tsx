@@ -314,7 +314,7 @@ function CreateListingPage() {
 
       const uploadTargets = data.images.filter((img) => img.file || img.url)
       if (uploadTargets.length > 0) {
-        const uploadResults = await Promise.allSettled(
+        const files = await Promise.all(
           uploadTargets.map(async (img) => {
             let file = img.file
             if (!file && img.url) {
@@ -323,23 +323,42 @@ function CreateListingPage() {
               const ext = blob.type.split("/")[1] || "jpg"
               file = new File([blob], `image.${ext}`, { type: blob.type })
             }
-            return ListingsService.uploadListingImageApiV1ListingsListingIdImagesPost(
-              {
-                listingId: created.id,
-                isPrimary: img.isPrimary,
-                formData: { file: file as any },
-              },
-            )
+            return file as File
           }),
         )
+        const primaryFlags = uploadTargets.map((img) => img.isPrimary)
 
-        const failedUploads = uploadResults.filter(
-          (result) => result.status === "rejected",
-        ).length
-        if (failedUploads > 0) {
-          toast.warning(
-            `Tin đã được đăng, nhưng ${failedUploads} ảnh tải lên thất bại.`,
+        try {
+          const formData = new FormData()
+          files.forEach((f) => formData.append("files", f))
+          primaryFlags.forEach((f) =>
+            formData.append("is_primary", String(f)),
           )
+
+          const apiBase = (
+            import.meta.env.VITE_API_URL || ""
+          )
+            .replace(/\/+$/, "")
+            .replace(/\/api\/v1$/i, "")
+
+          const token = localStorage.getItem("access_token")
+          const res = await fetch(
+            `${apiBase}/api/v1/listings/${created.id}/images/bulk`,
+            {
+              method: "POST",
+              headers: token
+                ? { Authorization: `Bearer ${token}` }
+                : ({} as HeadersInit),
+              body: formData,
+            },
+          )
+
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}))
+            throw new Error(errBody.detail || "Upload failed")
+          }
+        } catch {
+          toast.warning("Tin đã được đăng, nhưng ảnh tải lên thất bại.")
         }
       }
 
