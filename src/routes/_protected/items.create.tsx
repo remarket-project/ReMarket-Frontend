@@ -13,7 +13,7 @@ import {
   Rocket,
   ShoppingBag,
 } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
@@ -37,6 +37,10 @@ import { Form } from "@/components/ui/form"
 import { Progress } from "@/components/ui/progress"
 import useAuth from "@/hooks/useAuth"
 import { extractErrorMessage } from "@/utils"
+
+function normalize(s: string): string {
+  return s.toLowerCase().trim().replace(/\s+/g, " ")
+}
 
 function formatVND(value: number) {
   if (!value || Number.isNaN(value) || value <= 0) return "0 ₫"
@@ -394,20 +398,17 @@ function CreateListingPage() {
 
   // ─── Auto-fill địa chỉ từ hồ sơ cá nhân ─────────────────────────────
   const { user } = useAuth()
+  const autoFillDoneRef = useRef(false)
 
   useEffect(() => {
-    if (currentStep !== 4) return
-    if (!user?.province) return
+    if (!user?.province || autoFillDoneRef.current) return
+
     const alreadyFilled = ["province", "district", "ward"].every((k) =>
       form.getValues(k as keyof ListingFormData),
     )
     if (alreadyFilled) return
 
-    console.log("🔄 Auto-fill address starting...", {
-      province: user.province,
-      district: user.district,
-      ward: user.ward,
-    })
+    autoFillDoneRef.current = true
 
     const doAutoFill = async () => {
       try {
@@ -416,10 +417,8 @@ function CreateListingPage() {
           await res.json()
         queryClient.setQueryData(["vn-provinces"], provinces)
 
-        const pMatch = provinces.find(
-          (p) => p.name.toLowerCase() === user.province!.toLowerCase(),
-        )
-        console.log("🏙️ Province match:", pMatch)
+        const normProvince = normalize(user.province!)
+        const pMatch = provinces.find((p) => normalize(p.name) === normProvince)
         if (!pMatch) return
 
         form.setValue("province", String(pMatch.code), { shouldDirty: true })
@@ -430,22 +429,14 @@ function CreateListingPage() {
         const dData = await dRes.json()
         const dists: Array<{ code: number; name: string }> =
           dData.districts || []
-        console.log("📍 Districts loaded:", dists.length)
         queryClient.setQueryData(["vn-districts", String(pMatch.code)], dists)
 
         if (user.district) {
+          const normDistrict = normalize(user.district)
           const dMatch = dists.find(
-            (d) => d.name.toLowerCase() === user.district!.toLowerCase(),
-          )
-          console.log(
-            "📍 District match:",
-            dMatch,
-            "looking for:",
-            user.district,
+            (d) => normalize(d.name) === normDistrict,
           )
           if (dMatch) {
-            // Yield so React commits the province change + districts useQuery activates
-            await new Promise((r) => setTimeout(r, 0))
             form.setValue("district", String(dMatch.code), {
               shouldDirty: true,
             })
@@ -455,17 +446,12 @@ function CreateListingPage() {
             )
             const wData = await wRes.json()
             const wds: Array<{ code: number; name: string }> = wData.wards || []
-            console.log("🏘️ Wards loaded:", wds.length)
             queryClient.setQueryData(["vn-wards", String(dMatch.code)], wds)
 
             if (user.ward) {
-              const wMatch = wds.find(
-                (w) => w.name.toLowerCase() === user.ward!.toLowerCase(),
-              )
-              console.log("🏘️ Ward match:", wMatch, "looking for:", user.ward)
+              const normWard = normalize(user.ward)
+              const wMatch = wds.find((w) => normalize(w.name) === normWard)
               if (wMatch) {
-                // Yield so React commits the district change + wards useQuery activates
-                await new Promise((r) => setTimeout(r, 0))
                 form.setValue("ward", String(wMatch.code), {
                   shouldDirty: true,
                   shouldValidate: true,
@@ -486,7 +472,7 @@ function CreateListingPage() {
     }
 
     doAutoFill()
-  }, [currentStep, user, form, queryClient.setQueryData])
+  }, [user, form, queryClient])
 
   return (
     <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-sm text-card-foreground">

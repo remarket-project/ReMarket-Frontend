@@ -1,5 +1,6 @@
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
@@ -119,7 +120,22 @@ function TrangKiemDuyetTin() {
     null,
   )
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
-  const [aiModerationOn, setAiModerationOn] = useState(true)
+  const { data: aiSettings } = useQuery({
+    queryKey: ["ai-moderation-settings"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/admin/settings/ai-moderation`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        },
+      )
+      if (!res.ok) throw new Error("Failed to fetch AI moderation settings")
+      return res.json() as Promise<{ ai_moderation_enabled: boolean }>
+    },
+    staleTime: 60_000,
+  })
 
   const toggleAiMutation = useMutation({
     mutationFn: async (newValue: boolean) => {
@@ -138,7 +154,7 @@ function TrangKiemDuyetTin() {
       return res.json()
     },
     onSuccess: (data) => {
-      setAiModerationOn(data.ai_moderation_enabled)
+      queryClient.setQueryData(["ai-moderation-settings"], data)
       showSuccessToast(
         data.ai_moderation_enabled
           ? "AI moderation đã bật"
@@ -298,11 +314,8 @@ function TrangKiemDuyetTin() {
           </div>
           <Switch
             id="ai-moderation"
-            checked={aiModerationOn}
-            onCheckedChange={(val) => {
-              setAiModerationOn(val)
-              toggleAiMutation.mutate(val)
-            }}
+            checked={aiSettings?.ai_moderation_enabled ?? false}
+            onCheckedChange={(val) => toggleAiMutation.mutate(val)}
             disabled={toggleAiMutation.isPending}
           />
         </div>
