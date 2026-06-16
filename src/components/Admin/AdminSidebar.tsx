@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Link, useRouterState } from "@tanstack/react-router"
 import {
   ArrowLeft,
+  Bot,
   ClipboardCheck,
   FolderTree,
   LayoutDashboard,
@@ -56,6 +57,13 @@ const navItems = [
     label: "Danh mục",
     path: "/admin/categories",
     icon: FolderTree,
+    badgeKey: null,
+    badgeVariant: undefined,
+  },
+  {
+    label: "AI duyệt tin",
+    path: "/admin/audit-ai",
+    icon: Bot,
     badgeKey: null,
     badgeVariant: undefined,
   },

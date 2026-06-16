@@ -21,6 +21,8 @@ import { ListingPreviewDialog } from "@/components/Admin/ListingPreviewDialog"
 import { RejectReasonDialog } from "@/components/Admin/RejectReasonDialog"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import useCustomToast from "@/hooks/useCustomToast"
 import { handleError } from "@/utils"
 
@@ -117,6 +119,34 @@ function TrangKiemDuyetTin() {
     null,
   )
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
+  const [aiModerationOn, setAiModerationOn] = useState(true)
+
+  const toggleAiMutation = useMutation({
+    mutationFn: async (newValue: boolean) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/admin/settings/ai-moderation`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ enabled: newValue }),
+        },
+      )
+      if (!res.ok) throw new Error("Failed to toggle AI moderation")
+      return res.json()
+    },
+    onSuccess: (data) => {
+      setAiModerationOn(data.ai_moderation_enabled)
+      showSuccessToast(
+        data.ai_moderation_enabled
+          ? "AI moderation đã bật"
+          : "AI moderation đã tắt",
+      )
+    },
+    onError: () => showErrorToast("Lỗi khi thay đổi cài đặt AI moderation"),
+  })
 
   const allSelected = data.length > 0 && selectedIds.length === data.length
   const selectedCount = selectedIds.length
@@ -249,6 +279,32 @@ function TrangKiemDuyetTin() {
               {allSelected ? "Bỏ chọn tất cả" : "Chọn tất cả"}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* AI Moderation Toggle */}
+      <div className="rounded-2xl border border-white/[0.06] bg-[#111827] p-5">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <Label
+              htmlFor="ai-moderation"
+              className="text-sm font-semibold text-slate-100"
+            >
+              AI tự động duyệt tin
+            </Label>
+            <p className="text-xs text-slate-400">
+              Khi bật, AI sẽ tự động duyệt tin đăng mới (approve/reject) không cần admin
+            </p>
+          </div>
+          <Switch
+            id="ai-moderation"
+            checked={aiModerationOn}
+            onCheckedChange={(val) => {
+              setAiModerationOn(val)
+              toggleAiMutation.mutate(val)
+            }}
+            disabled={toggleAiMutation.isPending}
+          />
         </div>
       </div>
 

@@ -211,6 +211,11 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ["adminPendingListings"] })
     }, [queryClient]),
 
+    // ─── New AI moderation log (admin audit log refresh) ─────
+    new_moderation_log: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["adminModerationLogs"] })
+    }, [queryClient]),
+
     // ─── Listing (invalidation only) ───────────────────────────
     listing_sold: useCallback(
       (data: Record<string, unknown>) => {

@@ -26,6 +26,7 @@ import { Route as AdminEscrowRouteImport } from './routes/admin/escrow'
 import { Route as AdminDisputesRouteImport } from './routes/admin/disputes'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminAuditAiRouteImport } from './routes/admin/audit-ai'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 import { Route as ProtectedWalletRouteImport } from './routes/_protected/wallet'
 import { Route as ProtectedSettingsRouteImport } from './routes/_protected/settings'
@@ -135,6 +136,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditAiRoute = AdminAuditAiRouteImport.update({
+  id: '/audit-ai',
+  path: '/audit-ai',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof ProtectedSettingsRoute
   '/wallet': typeof ProtectedWalletRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/audit-ai': typeof AdminAuditAiRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/disputes': typeof AdminDisputesRoute
@@ -338,6 +345,7 @@ export interface FileRoutesByTo {
   '/settings': typeof ProtectedSettingsRoute
   '/wallet': typeof ProtectedWalletRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/audit-ai': typeof AdminAuditAiRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/disputes': typeof AdminDisputesRoute
@@ -383,6 +391,7 @@ export interface FileRoutesById {
   '/_protected/settings': typeof ProtectedSettingsRoute
   '/_protected/wallet': typeof ProtectedWalletRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/audit-ai': typeof AdminAuditAiRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/disputes': typeof AdminDisputesRoute
@@ -430,6 +439,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/wallet'
     | '/admin/audit'
+    | '/admin/audit-ai'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/disputes'
@@ -473,6 +483,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/wallet'
     | '/admin/audit'
+    | '/admin/audit-ai'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/disputes'
@@ -517,6 +528,7 @@ export interface FileRouteTypes {
     | '/_protected/settings'
     | '/_protected/wallet'
     | '/admin/audit'
+    | '/admin/audit-ai'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/disputes'
@@ -673,6 +685,13 @@ declare module '@tanstack/react-router' {
       path: '/categories'
       fullPath: '/admin/categories'
       preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit-ai': {
+      id: '/admin/audit-ai'
+      path: '/audit-ai'
+      fullPath: '/admin/audit-ai'
+      preLoaderRoute: typeof AdminAuditAiRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/audit': {
@@ -981,6 +1000,7 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminAuditAiRoute: typeof AdminAuditAiRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminDisputesRoute: typeof AdminDisputesRoute
@@ -992,6 +1012,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
+  AdminAuditAiRoute: AdminAuditAiRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminDisputesRoute: AdminDisputesRoute,
