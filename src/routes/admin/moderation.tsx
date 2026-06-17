@@ -74,7 +74,7 @@ function layQueryTinChoDuyet() {
       })
     },
     queryKey: ["admin-pending-listings"],
-    refetchInterval: 15_000,
+    refetchInterval: 5_000,
   }
 }
 

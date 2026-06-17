@@ -531,7 +531,8 @@ export function MarketplaceHeader() {
                       } else if (type.startsWith("offer_")) {
                         to = "/offers"
                       } else if (type.startsWith("dispute_")) {
-                        to = "/disputes"
+                        to = orderId ? "/orders/$orderId" : "/orders"
+                        if (orderId) params = { orderId }
                       } else if (type.startsWith("wallet_")) {
                         to = "/wallet"
                       } else if (type.startsWith("listing_") && listingId) {
