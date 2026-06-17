@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
-import { MessageSquare, Package, Send, Sparkles, X } from "lucide-react"
+import { Package, Send, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -164,9 +164,9 @@ export function FaqChatWidget() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 size-14 rounded-full bg-blue-600 text-white shadow-xl hover:bg-blue-700 flex items-center justify-center z-50 transition-transform hover:scale-110"
+        className="fixed bottom-6 right-6 z-50 cursor-pointer transition-transform hover:scale-110"
       >
-        <MessageSquare className="size-6" />
+        <img src="/assets/images/chat-bot1.png" alt="Trợ lý AI" className="size-15" />
       </button>
     )
   }
@@ -175,7 +175,7 @@ export function FaqChatWidget() {
     <div className="fixed bottom-6 right-6 w-96 h-[600px] rounded-2xl border border-slate-200 bg-white shadow-2xl flex flex-col overflow-hidden z-50">
       <div className="bg-blue-600 text-white p-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-5" />
+          <img src="/assets/images/robot1.png" alt="AI" className="size-10" />
           <span className="font-bold">Trợ lý ReMarket</span>
         </div>
         <button onClick={() => setOpen(false)} className="hover:bg-blue-500 rounded-full p-1 transition-colors">
