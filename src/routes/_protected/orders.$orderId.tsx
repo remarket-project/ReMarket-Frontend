@@ -26,6 +26,7 @@ import {
 } from "@/client"
 import { DisputeDialog } from "@/components/Dispute/DisputeDialog"
 import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
+import DeliveryMap from "@/components/Orders/DeliveryMap"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -476,16 +477,36 @@ function OrderDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-[#D8E2EF] bg-white">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-[#102A43] text-lg">
-                Dòng thời gian đơn hàng
+          <Card className="border-[#D8E2EF] bg-white shadow-sm">
+            <CardHeader className="pb-1 pt-3 px-4">
+              <CardTitle className="text-[#102A43] text-sm font-bold uppercase tracking-wider">
+                Trạng thái đơn hàng
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 pb-3 pt-0">
               <OrderTimeline order={order} />
             </CardContent>
           </Card>
+
+          {/* Delivery Map */}
+          {(order.seller_lat != null || order.shipping_lat != null) && (
+            <DeliveryMap
+              mapId={orderId}
+              sellerLat={order.seller_lat}
+              sellerLng={order.seller_lng}
+              shippingLat={order.shipping_lat}
+              shippingLng={order.shipping_lng}
+              orderStatus={order.status}
+              sellerName={sellerProfile?.full_name || "Người bán"}
+              shippingName={order.shipping_name || "Người mua"}
+            />
+          )}
+          {order.seller_lat == null && order.shipping_lat == null && (
+            <div className="mt-3 rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-400 text-center">
+              <MapPin className="mx-auto mb-1 size-5 opacity-50" />
+              Chưa có thông tin vị trí
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { GetDashboardStatsApiV1AdminDashboardGetResponse, ListUsersApiV1AdminUsersGetData, ListUsersApiV1AdminUsersGetResponse, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchData, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchResponse, GetPendingListingsRouteApiV1AdminListingsPendingGetData, GetPendingListingsRouteApiV1AdminListingsPendingGetResponse, ApproveListingApiV1AdminListingsListingIdApprovePostData, ApproveListingApiV1AdminListingsListingIdApprovePostResponse, RejectListingRouteApiV1AdminListingsListingIdRejectPostData, RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse, ResolveDisputeApiV1AdminDisputesDisputeIdResolvePostData, ResolveDisputeApiV1AdminDisputesDisputeIdResolvePostResponse, AdminListOrdersApiV1AdminOrdersGetData, AdminListOrdersApiV1AdminOrdersGetResponse, AdminShipOrderApiV1AdminOrdersOrderIdShipPostData, AdminShipOrderApiV1AdminOrdersOrderIdShipPostResponse, AdminDeliverOrderApiV1AdminOrdersOrderIdDeliverPostData, AdminDeliverOrderApiV1AdminOrdersOrderIdDeliverPostResponse, AdminReturnOrderApiV1AdminOrdersOrderIdReturnPostData, AdminReturnOrderApiV1AdminOrdersOrderIdReturnPostResponse, AdminReturnedOrderApiV1AdminOrdersOrderIdReturnedPostData, AdminReturnedOrderApiV1AdminOrdersOrderIdReturnedPostResponse, AdminForceCompleteApiV1AdminOrdersOrderIdForceCompletePostData, AdminForceCompleteApiV1AdminOrdersOrderIdForceCompletePostResponse, AdminForceCancelApiV1AdminOrdersOrderIdForceCancelPostData, AdminForceCancelApiV1AdminOrdersOrderIdForceCancelPostResponse, AdminListDisputesApiV1AdminDisputesGetData, AdminListDisputesApiV1AdminDisputesGetResponse, AdminGetDisputeApiV1AdminDisputesDisputeIdGetData, AdminGetDisputeApiV1AdminDisputesDisputeIdGetResponse, ListAuditTrailApiV1AdminAuditTrailGetData, ListAuditTrailApiV1AdminAuditTrailGetResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RefreshAccessTokenApiV1AuthRefreshPostData, RefreshAccessTokenApiV1AuthRefreshPostResponse, LogoutApiV1AuthLogoutPostResponse, VerifyEmailApiV1AuthVerifyEmailPostData, VerifyEmailApiV1AuthVerifyEmailPostResponse, ResendVerificationApiV1AuthResendVerificationPostData, ResendVerificationApiV1AuthResendVerificationPostResponse, ForgotPasswordApiV1AuthForgotPasswordPostData, ForgotPasswordApiV1AuthForgotPasswordPostResponse, ResetPasswordApiV1AuthResetPasswordPostData, ResetPasswordApiV1AuthResetPasswordPostResponse, ListCategoriesApiV1CategoriesGetData, ListCategoriesApiV1CategoriesGetResponse, CreateCategoryApiV1CategoriesPostData, CreateCategoryApiV1CategoriesPostResponse, GetRootCategoriesApiV1CategoriesRootsGetResponse, GetCategoryBySlugApiV1CategoriesSlugGetData, GetCategoryBySlugApiV1CategoriesSlugGetResponse, GetCategoryByIdApiV1CategoriesIdCategoryIdGetData, GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse, UpdateCategoryApiV1CategoriesCategoryIdPutData, UpdateCategoryApiV1CategoriesCategoryIdPutResponse, DeleteCategoryApiV1CategoriesCategoryIdDeleteData, DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse, ListMyConversationsApiV1ChatsConversationsGetData, ListMyConversationsApiV1ChatsConversationsGetResponse, CreateListingConversationApiV1ChatsConversationsListingListingIdPostData, CreateListingConversationApiV1ChatsConversationsListingListingIdPostResponse, GetConversationDetailApiV1ChatsConversationsConversationIdGetData, GetConversationDetailApiV1ChatsConversationsConversationIdGetResponse, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse, SendMessageApiV1ChatsConversationsConversationIdMessagesPostData, SendMessageApiV1ChatsConversationsConversationIdMessagesPostResponse, GetHelpPagesApiV1ContentHelpGetData, GetHelpPagesApiV1ContentHelpGetResponse, GetLegalPagesApiV1ContentLegalGetData, GetLegalPagesApiV1ContentLegalGetResponse, GetContentApiV1ContentKeyGetData, GetContentApiV1ContentKeyGetResponse, RootGetResponse, CreateDisputeApiV1DisputesPostData, CreateDisputeApiV1DisputesPostResponse, GetDisputeByOrderApiV1DisputesOrderOrderIdGetData, GetDisputeByOrderApiV1DisputesOrderOrderIdGetResponse, GetDisputeApiV1DisputesDisputeIdGetData, GetDisputeApiV1DisputesDisputeIdGetResponse, GetEscrowApiV1EscrowsOrderIdGetData, GetEscrowApiV1EscrowsOrderIdGetResponse, ListListingsApiV1ListingsGetData, ListListingsApiV1ListingsGetResponse, CreateListingApiV1ListingsPostData, CreateListingApiV1ListingsPostResponse, GetFeaturedListingsApiV1ListingsFeaturedGetData, GetFeaturedListingsApiV1ListingsFeaturedGetResponse, GetTrendingListingsApiV1ListingsTrendingGetData, GetTrendingListingsApiV1ListingsTrendingGetResponse, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetData, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetResponse, GetPriceBandSummaryApiV1ListingsPriceBandsGetData, GetPriceBandSummaryApiV1ListingsPriceBandsGetResponse, GetMyListingsApiV1ListingsMeGetData, GetMyListingsApiV1ListingsMeGetResponse, GetRelatedListingsApiV1ListingsListingIdRelatedGetData, GetRelatedListingsApiV1ListingsListingIdRelatedGetResponse, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteData, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteResponse, GetListingApiV1ListingsListingIdGetData, GetListingApiV1ListingsListingIdGetResponse, UpdateListingApiV1ListingsListingIdPatchData, UpdateListingApiV1ListingsListingIdPatchResponse, DeleteListingApiV1ListingsListingIdDeleteData, DeleteListingApiV1ListingsListingIdDeleteResponse, UploadListingImageApiV1ListingsListingIdImagesPostData, UploadListingImageApiV1ListingsListingIdImagesPostResponse, GetMyNotificationsApiV1NotificationsGetData, GetMyNotificationsApiV1NotificationsGetResponse, GetUnreadNotificationsCountApiV1NotificationsUnreadCountGetResponse, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutData, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutResponse, MarkAllNotificationsAsReadApiV1NotificationsReadAllPutResponse, CreateOfferApiV1OffersPostData, CreateOfferApiV1OffersPostResponse, GetMySentOffersApiV1OffersMeSentGetData, GetMySentOffersApiV1OffersMeSentGetResponse, GetMyReceivedOffersApiV1OffersMeReceivedGetData, GetMyReceivedOffersApiV1OffersMeReceivedGetResponse, GetOffersForListingApiV1OffersListingListingIdGetData, GetOffersForListingApiV1OffersListingListingIdGetResponse, ConfirmOfferOrderApiV1OffersOfferIdConfirmPostData, ConfirmOfferOrderApiV1OffersOfferIdConfirmPostResponse, UpdateOfferStatusApiV1OffersOfferIdStatusPatchData, UpdateOfferStatusApiV1OffersOfferIdStatusPatchResponse, GetOfferApiV1OffersOfferIdGetData, GetOfferApiV1OffersOfferIdGetResponse, GetMyOrdersApiV1OrdersGetResponse, CreateDirectOrderApiV1OrdersPostData, CreateDirectOrderApiV1OrdersPostResponse, GetMyOrdersApiV1OrdersMeGetResponse, GetOrderApiV1OrdersOrderIdGetData, GetOrderApiV1OrdersOrderIdGetResponse, GetOrderTimelineApiV1OrdersOrderIdTimelineGetData, GetOrderTimelineApiV1OrdersOrderIdTimelineGetResponse, CompleteOrderApiV1OrdersOrderIdCompletePostData, CompleteOrderApiV1OrdersOrderIdCompletePostResponse, AcceptOrderApiV1OrdersOrderIdAcceptPostData, AcceptOrderApiV1OrdersOrderIdAcceptPostResponse, ShipOrderApiV1OrdersOrderIdShipPostData, ShipOrderApiV1OrdersOrderIdShipPostResponse, CancelOrderApiV1OrdersOrderIdCancelPostData, CancelOrderApiV1OrdersOrderIdCancelPostResponse, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse, CreateDepositApiV1PaymentCreateDepositPostData, CreateDepositApiV1PaymentCreateDepositPostResponse, StripeWebhookApiV1PaymentWebhookPostResponse, CreateReturnRequestApiV1ReturnsRequestPostData, CreateReturnRequestApiV1ReturnsRequestPostResponse, RespondReturnApiV1ReturnsReturnIdRespondPostData, RespondReturnApiV1ReturnsReturnIdRespondPostResponse, ShipReturnApiV1ReturnsReturnIdShipPostData, ShipReturnApiV1ReturnsReturnIdShipPostResponse, ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostData, ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostResponse, GetMyReturnRequestsApiV1ReturnsMyRequestsGetData, GetMyReturnRequestsApiV1ReturnsMyRequestsGetResponse, GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetData, GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetResponse, CreateReviewApiV1ReviewsPostData, CreateReviewApiV1ReviewsPostResponse, GetUserReviewsApiV1ReviewsUserUserIdGetData, GetUserReviewsApiV1ReviewsUserUserIdGetResponse, GetReviewApiV1ReviewsOrderIdGetData, GetReviewApiV1ReviewsOrderIdGetResponse, ListProvincesApiV1ShippingProvincesGetResponse, ListDistrictsApiV1ShippingDistrictsGetData, ListDistrictsApiV1ShippingDistrictsGetResponse, ListWardsApiV1ShippingWardsGetData, ListWardsApiV1ShippingWardsGetResponse, ListServicesApiV1ShippingServicesGetData, ListServicesApiV1ShippingServicesGetResponse, CalculateShippingFeeApiV1ShippingFeePostData, CalculateShippingFeeApiV1ShippingFeePostResponse, CheckAvailabilityApiV1ShippingAvailabilityPostData, CheckAvailabilityApiV1ShippingAvailabilityPostResponse, CreateShippingOrderApiV1ShippingCreateOrderPostData, CreateShippingOrderApiV1ShippingCreateOrderPostResponse, ShippingWebhookApiV1ShippingWebhookPostResponse, ReturnShippingOrderApiV1ShippingReturnOrderPostData, ReturnShippingOrderApiV1ShippingReturnOrderPostResponse, DeliveryAgainShippingApiV1ShippingDeliveryAgainPostData, DeliveryAgainShippingApiV1ShippingDeliveryAgainPostResponse, ListSavedListingsApiV1SavedListingsGetData, ListSavedListingsApiV1SavedListingsGetResponse, SaveListingApiV1SavedListingsListingIdPostData, SaveListingApiV1SavedListingsListingIdPostResponse, UnsaveListingApiV1SavedListingsListingIdDeleteData, UnsaveListingApiV1SavedListingsListingIdDeleteResponse, ListFollowedSellersApiV1FollowedSellersGetData, ListFollowedSellersApiV1FollowedSellersGetResponse, FollowSellerApiV1FollowedSellersSellerIdPostData, FollowSellerApiV1FollowedSellersSellerIdPostResponse, UnfollowSellerApiV1FollowedSellersSellerIdDeleteData, UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse, StartOnboardingApiV1ConnectOnboardingPostResponse, GetOnboardingStatusApiV1ConnectOnboardingStatusGetResponse, UploadFileApiV1UploadPostData, UploadFileApiV1UploadPostResponse, ServeFileApiV1UploadPathGetData, ServeFileApiV1UploadPathGetResponse, GetCurrentUserInfoApiV1UsersMeGetResponse, UpdateMyProfileApiV1UsersMePutData, UpdateMyProfileApiV1UsersMePutResponse, ChangePasswordApiV1UsersMePasswordPutData, ChangePasswordApiV1UsersMePasswordPutResponse, GetUserProfileApiV1UsersUserIdGetData, GetUserProfileApiV1UsersUserIdGetResponse, GetUserReviewSummaryApiV1UsersUserIdReviewsSummaryGetData, GetUserReviewSummaryApiV1UsersUserIdReviewsSummaryGetResponse, GetSellerShopProfileApiV1UsersUserIdShopGetData, GetSellerShopProfileApiV1UsersUserIdShopGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, HealthCheckApiV1UtilsHealthCheckGetResponse, GetMyWalletApiV1WalletMeGetResponse, DemoTopupApiV1WalletDemoTopupPostData, DemoTopupApiV1WalletDemoTopupPostResponse, WithdrawApiV1WalletWithdrawPostData, WithdrawApiV1WalletWithdrawPostResponse, GetTransactionsApiV1WalletTransactionsGetData, GetTransactionsApiV1WalletTransactionsGetResponse } from './types.gen';
+import type { GetDashboardStatsApiV1AdminDashboardGetResponse, ListUsersApiV1AdminUsersGetData, ListUsersApiV1AdminUsersGetResponse, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchData, UpdateUserAccountStatusApiV1AdminUsersUserIdStatusPatchResponse, GetPendingListingsRouteApiV1AdminListingsPendingGetData, GetPendingListingsRouteApiV1AdminListingsPendingGetResponse, ApproveListingApiV1AdminListingsListingIdApprovePostData, ApproveListingApiV1AdminListingsListingIdApprovePostResponse, RejectListingRouteApiV1AdminListingsListingIdRejectPostData, RejectListingRouteApiV1AdminListingsListingIdRejectPostResponse, ResolveDisputeApiV1AdminDisputesDisputeIdResolvePostData, ResolveDisputeApiV1AdminDisputesDisputeIdResolvePostResponse, AdminListOrdersApiV1AdminOrdersGetData, AdminListOrdersApiV1AdminOrdersGetResponse, AdminShipOrderApiV1AdminOrdersOrderIdShipPostData, AdminShipOrderApiV1AdminOrdersOrderIdShipPostResponse, AdminDeliverOrderApiV1AdminOrdersOrderIdDeliverPostData, AdminDeliverOrderApiV1AdminOrdersOrderIdDeliverPostResponse, AdminReturnOrderApiV1AdminOrdersOrderIdReturnPostData, AdminReturnOrderApiV1AdminOrdersOrderIdReturnPostResponse, AdminReturnedOrderApiV1AdminOrdersOrderIdReturnedPostData, AdminReturnedOrderApiV1AdminOrdersOrderIdReturnedPostResponse, AdminForceCompleteApiV1AdminOrdersOrderIdForceCompletePostData, AdminForceCompleteApiV1AdminOrdersOrderIdForceCompletePostResponse, AdminForceCancelApiV1AdminOrdersOrderIdForceCancelPostData, AdminForceCancelApiV1AdminOrdersOrderIdForceCancelPostResponse, AdminListDisputesApiV1AdminDisputesGetData, AdminListDisputesApiV1AdminDisputesGetResponse, AdminGetDisputeApiV1AdminDisputesDisputeIdGetData, AdminGetDisputeApiV1AdminDisputesDisputeIdGetResponse, GetAiModerationApiV1AdminSettingsAiModerationGetResponse, ToggleAiModerationApiV1AdminSettingsAiModerationPatchData, ToggleAiModerationApiV1AdminSettingsAiModerationPatchResponse, ListAuditTrailApiV1AdminAuditTrailGetData, ListAuditTrailApiV1AdminAuditTrailGetResponse, ListModerationLogsApiV1AdminModerationLogsGetData, ListModerationLogsApiV1AdminModerationLogsGetResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RefreshAccessTokenApiV1AuthRefreshPostData, RefreshAccessTokenApiV1AuthRefreshPostResponse, LogoutApiV1AuthLogoutPostResponse, VerifyEmailApiV1AuthVerifyEmailPostData, VerifyEmailApiV1AuthVerifyEmailPostResponse, ResendVerificationApiV1AuthResendVerificationPostData, ResendVerificationApiV1AuthResendVerificationPostResponse, ForgotPasswordApiV1AuthForgotPasswordPostData, ForgotPasswordApiV1AuthForgotPasswordPostResponse, ResetPasswordApiV1AuthResetPasswordPostData, ResetPasswordApiV1AuthResetPasswordPostResponse, ListCategoriesApiV1CategoriesGetData, ListCategoriesApiV1CategoriesGetResponse, CreateCategoryApiV1CategoriesPostData, CreateCategoryApiV1CategoriesPostResponse, GetRootCategoriesApiV1CategoriesRootsGetResponse, GetCategoryBySlugApiV1CategoriesSlugGetData, GetCategoryBySlugApiV1CategoriesSlugGetResponse, GetCategoryByIdApiV1CategoriesIdCategoryIdGetData, GetCategoryByIdApiV1CategoriesIdCategoryIdGetResponse, UpdateCategoryApiV1CategoriesCategoryIdPutData, UpdateCategoryApiV1CategoriesCategoryIdPutResponse, DeleteCategoryApiV1CategoriesCategoryIdDeleteData, DeleteCategoryApiV1CategoriesCategoryIdDeleteResponse, ListMyConversationsApiV1ChatsConversationsGetData, ListMyConversationsApiV1ChatsConversationsGetResponse, CreateListingConversationApiV1ChatsConversationsListingListingIdPostData, CreateListingConversationApiV1ChatsConversationsListingListingIdPostResponse, GetConversationDetailApiV1ChatsConversationsConversationIdGetData, GetConversationDetailApiV1ChatsConversationsConversationIdGetResponse, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData, ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse, SendMessageApiV1ChatsConversationsConversationIdMessagesPostData, SendMessageApiV1ChatsConversationsConversationIdMessagesPostResponse, GetHelpPagesApiV1ContentHelpGetData, GetHelpPagesApiV1ContentHelpGetResponse, GetLegalPagesApiV1ContentLegalGetData, GetLegalPagesApiV1ContentLegalGetResponse, GetContentApiV1ContentKeyGetData, GetContentApiV1ContentKeyGetResponse, RootGetResponse, CreateDisputeApiV1DisputesPostData, CreateDisputeApiV1DisputesPostResponse, GetDisputeByOrderApiV1DisputesOrderOrderIdGetData, GetDisputeByOrderApiV1DisputesOrderOrderIdGetResponse, GetDisputeApiV1DisputesDisputeIdGetData, GetDisputeApiV1DisputesDisputeIdGetResponse, GetEscrowApiV1EscrowsOrderIdGetData, GetEscrowApiV1EscrowsOrderIdGetResponse, AskQuestionApiV1FaqAskPostData, AskQuestionApiV1FaqAskPostResponse, ListListingsApiV1ListingsGetData, ListListingsApiV1ListingsGetResponse, CreateListingApiV1ListingsPostData, CreateListingApiV1ListingsPostResponse, GetFeaturedListingsApiV1ListingsFeaturedGetData, GetFeaturedListingsApiV1ListingsFeaturedGetResponse, GetTrendingListingsApiV1ListingsTrendingGetData, GetTrendingListingsApiV1ListingsTrendingGetResponse, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetData, GetSearchSuggestionsApiV1ListingsSearchSuggestionsGetResponse, GetPriceBandSummaryApiV1ListingsPriceBandsGetData, GetPriceBandSummaryApiV1ListingsPriceBandsGetResponse, GetMyListingsApiV1ListingsMeGetData, GetMyListingsApiV1ListingsMeGetResponse, GetRelatedListingsApiV1ListingsListingIdRelatedGetData, GetRelatedListingsApiV1ListingsListingIdRelatedGetResponse, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteData, DeleteListingImageRouteApiV1ListingsImagesImageIdDeleteResponse, GetListingApiV1ListingsListingIdGetData, GetListingApiV1ListingsListingIdGetResponse, UpdateListingApiV1ListingsListingIdPatchData, UpdateListingApiV1ListingsListingIdPatchResponse, DeleteListingApiV1ListingsListingIdDeleteData, DeleteListingApiV1ListingsListingIdDeleteResponse, UploadListingImageApiV1ListingsListingIdImagesPostData, UploadListingImageApiV1ListingsListingIdImagesPostResponse, UploadListingImagesBulkApiV1ListingsListingIdImagesBulkPostData, UploadListingImagesBulkApiV1ListingsListingIdImagesBulkPostResponse, GetMyNotificationsApiV1NotificationsGetData, GetMyNotificationsApiV1NotificationsGetResponse, GetUnreadNotificationsCountApiV1NotificationsUnreadCountGetResponse, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutData, MarkNotificationAsReadApiV1NotificationsNotificationIdReadPutResponse, MarkAllNotificationsAsReadApiV1NotificationsReadAllPutResponse, CreateOfferApiV1OffersPostData, CreateOfferApiV1OffersPostResponse, GetMySentOffersApiV1OffersMeSentGetData, GetMySentOffersApiV1OffersMeSentGetResponse, GetMyReceivedOffersApiV1OffersMeReceivedGetData, GetMyReceivedOffersApiV1OffersMeReceivedGetResponse, GetOffersForListingApiV1OffersListingListingIdGetData, GetOffersForListingApiV1OffersListingListingIdGetResponse, ConfirmOfferOrderApiV1OffersOfferIdConfirmPostData, ConfirmOfferOrderApiV1OffersOfferIdConfirmPostResponse, UpdateOfferStatusApiV1OffersOfferIdStatusPatchData, UpdateOfferStatusApiV1OffersOfferIdStatusPatchResponse, GetOfferApiV1OffersOfferIdGetData, GetOfferApiV1OffersOfferIdGetResponse, GetMyOrdersApiV1OrdersGetResponse, CreateDirectOrderApiV1OrdersPostData, CreateDirectOrderApiV1OrdersPostResponse, GetMyOrdersApiV1OrdersMeGetResponse, GetOrderApiV1OrdersOrderIdGetData, GetOrderApiV1OrdersOrderIdGetResponse, GetOrderTimelineApiV1OrdersOrderIdTimelineGetData, GetOrderTimelineApiV1OrdersOrderIdTimelineGetResponse, CompleteOrderApiV1OrdersOrderIdCompletePostData, CompleteOrderApiV1OrdersOrderIdCompletePostResponse, AcceptOrderApiV1OrdersOrderIdAcceptPostData, AcceptOrderApiV1OrdersOrderIdAcceptPostResponse, ShipOrderApiV1OrdersOrderIdShipPostData, ShipOrderApiV1OrdersOrderIdShipPostResponse, CancelOrderApiV1OrdersOrderIdCancelPostData, CancelOrderApiV1OrdersOrderIdCancelPostResponse, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchData, UpdateOrderStatusApiV1OrdersOrderIdStatusPatchResponse, CreateDepositApiV1PaymentCreateDepositPostData, CreateDepositApiV1PaymentCreateDepositPostResponse, StripeWebhookApiV1PaymentWebhookPostResponse, CreateReturnRequestApiV1ReturnsRequestPostData, CreateReturnRequestApiV1ReturnsRequestPostResponse, RespondReturnApiV1ReturnsReturnIdRespondPostData, RespondReturnApiV1ReturnsReturnIdRespondPostResponse, ShipReturnApiV1ReturnsReturnIdShipPostData, ShipReturnApiV1ReturnsReturnIdShipPostResponse, ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostData, ConfirmReturnReceivedApiV1ReturnsReturnIdConfirmReceivedPostResponse, GetMyReturnRequestsApiV1ReturnsMyRequestsGetData, GetMyReturnRequestsApiV1ReturnsMyRequestsGetResponse, GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetData, GetSellerReturnRequestsApiV1ReturnsMySellerRequestsGetResponse, CreateReviewApiV1ReviewsPostData, CreateReviewApiV1ReviewsPostResponse, GetUserReviewsApiV1ReviewsUserUserIdGetData, GetUserReviewsApiV1ReviewsUserUserIdGetResponse, GetReviewApiV1ReviewsOrderIdGetData, GetReviewApiV1ReviewsOrderIdGetResponse, ListProvincesApiV1ShippingProvincesGetResponse, ListDistrictsApiV1ShippingDistrictsGetData, ListDistrictsApiV1ShippingDistrictsGetResponse, ListWardsApiV1ShippingWardsGetData, ListWardsApiV1ShippingWardsGetResponse, ListServicesApiV1ShippingServicesGetData, ListServicesApiV1ShippingServicesGetResponse, CalculateShippingFeeApiV1ShippingFeePostData, CalculateShippingFeeApiV1ShippingFeePostResponse, CheckAvailabilityApiV1ShippingAvailabilityPostData, CheckAvailabilityApiV1ShippingAvailabilityPostResponse, CreateShippingOrderApiV1ShippingCreateOrderPostData, CreateShippingOrderApiV1ShippingCreateOrderPostResponse, ShippingWebhookApiV1ShippingWebhookPostResponse, ReturnShippingOrderApiV1ShippingReturnOrderPostData, ReturnShippingOrderApiV1ShippingReturnOrderPostResponse, DeliveryAgainShippingApiV1ShippingDeliveryAgainPostData, DeliveryAgainShippingApiV1ShippingDeliveryAgainPostResponse, ListSavedListingsApiV1SavedListingsGetData, ListSavedListingsApiV1SavedListingsGetResponse, SaveListingApiV1SavedListingsListingIdPostData, SaveListingApiV1SavedListingsListingIdPostResponse, UnsaveListingApiV1SavedListingsListingIdDeleteData, UnsaveListingApiV1SavedListingsListingIdDeleteResponse, ListFollowedSellersApiV1FollowedSellersGetData, ListFollowedSellersApiV1FollowedSellersGetResponse, FollowSellerApiV1FollowedSellersSellerIdPostData, FollowSellerApiV1FollowedSellersSellerIdPostResponse, UnfollowSellerApiV1FollowedSellersSellerIdDeleteData, UnfollowSellerApiV1FollowedSellersSellerIdDeleteResponse, StartOnboardingApiV1ConnectOnboardingPostResponse, GetOnboardingStatusApiV1ConnectOnboardingStatusGetResponse, UploadFileApiV1UploadPostData, UploadFileApiV1UploadPostResponse, ServeFileApiV1UploadPathGetData, ServeFileApiV1UploadPathGetResponse, GetCurrentUserInfoApiV1UsersMeGetResponse, UpdateMyProfileApiV1UsersMePutData, UpdateMyProfileApiV1UsersMePutResponse, ChangePasswordApiV1UsersMePasswordPutData, ChangePasswordApiV1UsersMePasswordPutResponse, GetUserProfileApiV1UsersUserIdGetData, GetUserProfileApiV1UsersUserIdGetResponse, GetUserReviewSummaryApiV1UsersUserIdReviewsSummaryGetData, GetUserReviewSummaryApiV1UsersUserIdReviewsSummaryGetResponse, GetSellerShopProfileApiV1UsersUserIdShopGetData, GetSellerShopProfileApiV1UsersUserIdShopGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, HealthCheckApiV1UtilsHealthCheckGetResponse, GetMyWalletApiV1WalletMeGetResponse, DemoTopupApiV1WalletDemoTopupPostData, DemoTopupApiV1WalletDemoTopupPostResponse, WithdrawApiV1WalletWithdrawPostData, WithdrawApiV1WalletWithdrawPostResponse, GetTransactionsApiV1WalletTransactionsGetData, GetTransactionsApiV1WalletTransactionsGetResponse } from './types.gen';
 
 export class AdminService {
     /**
@@ -354,6 +354,39 @@ export class AdminService {
             }
         });
     }
+    
+    /**
+     * Get Ai Moderation
+     * Admin: Xem trạng thái AI tự động duyệt tin.
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static getAiModerationApiV1AdminSettingsAiModerationGet(): CancelablePromise<GetAiModerationApiV1AdminSettingsAiModerationGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/admin/settings/ai-moderation'
+        });
+    }
+    
+    /**
+     * Toggle Ai Moderation
+     * Admin: Bật/tắt AI tự động duyệt tin. Khi bật, tự động xử lý các tin PENDING.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static toggleAiModerationApiV1AdminSettingsAiModerationPatch(data: ToggleAiModerationApiV1AdminSettingsAiModerationPatchData): CancelablePromise<ToggleAiModerationApiV1AdminSettingsAiModerationPatchResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/admin/settings/ai-moderation',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
 }
 
 export class AdminAuditService {
@@ -376,6 +409,32 @@ export class AdminAuditService {
                 limit: data.limit,
                 action: data.action,
                 target_type: data.targetType
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class AdminModerationLogService {
+    /**
+     * List Moderation Logs
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @param data.decision Filter: approve|flag|reject|error
+     * @returns ModerationLogResponse Successful Response
+     * @throws ApiError
+     */
+    public static listModerationLogsApiV1AdminModerationLogsGet(data: ListModerationLogsApiV1AdminModerationLogsGetData = {}): CancelablePromise<ListModerationLogsApiV1AdminModerationLogsGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/admin/moderation-logs',
+            query: {
+                skip: data.skip,
+                limit: data.limit,
+                decision: data.decision
             },
             errors: {
                 422: 'Validation Error'
@@ -751,6 +810,8 @@ export class ChatsService {
      * List Messages
      * @param data The data for the request.
      * @param data.conversationId
+     * @param data.skip
+     * @param data.limit
      * @returns ChatMessageRead Successful Response
      * @throws ApiError
      */
@@ -760,6 +821,10 @@ export class ChatsService {
             url: '/api/v1/chats/conversations/{conversation_id}/messages',
             path: {
                 conversation_id: data.conversationId
+            },
+            query: {
+                skip: data.skip,
+                limit: data.limit
             },
             errors: {
                 422: 'Validation Error'
@@ -949,6 +1014,27 @@ export class EscrowService {
             path: {
                 order_id: data.orderId
             },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class FaqService {
+    /**
+     * Ask Question
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown Successful Response
+     * @throws ApiError
+     */
+    public static askQuestionApiV1FaqAskPost(data: AskQuestionApiV1FaqAskPostData): CancelablePromise<AskQuestionApiV1FaqAskPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/faq/ask',
+            body: data.requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: 'Validation Error'
             }
@@ -1257,6 +1343,35 @@ export class ListingsService {
             },
             query: {
                 is_primary: data.isPrimary
+            },
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Upload Listing Images Bulk
+     * Upload nhiều ảnh cùng lúc cho bài đăng.
+     *
+     * - files: tối đa 10 ảnh
+     * - is_primary: mảng bool tương ứng từng file.
+     * Chỉ 1 phần tử được true — nếu có nhiều hơn 1 → lỗi.
+     * Nếu không truyền hoặc tất cả false → ảnh đầu tiên mặc định là primary.
+     * @param data The data for the request.
+     * @param data.listingId
+     * @param data.formData
+     * @returns ListingImageRead Successful Response
+     * @throws ApiError
+     */
+    public static uploadListingImagesBulkApiV1ListingsListingIdImagesBulkPost(data: UploadListingImagesBulkApiV1ListingsListingIdImagesBulkPostData): CancelablePromise<UploadListingImagesBulkApiV1ListingsListingIdImagesBulkPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/listings/{listing_id}/images/bulk',
+            path: {
+                listing_id: data.listingId
             },
             formData: data.formData,
             mediaType: 'multipart/form-data',

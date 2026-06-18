@@ -214,6 +214,31 @@ export const Body_upload_listing_image_api_v1_listings__listing_id__images_postS
     title: 'Body_upload_listing_image_api_v1_listings__listing_id__images_post'
 } as const;
 
+export const Body_upload_listing_images_bulk_api_v1_listings__listing_id__images_bulk_postSchema = {
+    properties: {
+        files: {
+            items: {
+                type: 'string',
+                contentMediaType: 'application/octet-stream'
+            },
+            type: 'array',
+            title: 'Files',
+            description: 'Danh sách ảnh (tối đa 10)'
+        },
+        is_primary: {
+            items: {
+                type: 'boolean'
+            },
+            type: 'array',
+            title: 'Is Primary',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['files'],
+    title: 'Body_upload_listing_images_bulk_api_v1_listings__listing_id__images_bulk_post'
+} as const;
+
 export const CategoriesPublicSchema = {
     properties: {
         data: {
@@ -795,6 +820,32 @@ export const EscrowReadSchema = {
     description: 'Escrow information response (simplified).'
 } as const;
 
+export const FaqQuestionSchema = {
+    properties: {
+        question: {
+            type: 'string',
+            title: 'Question'
+        },
+        history: {
+            anyOf: [
+                {
+                    items: {
+                        '$ref': '#/components/schemas/Message'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'History'
+        }
+    },
+    type: 'object',
+    required: ['question'],
+    title: 'FaqQuestion'
+} as const;
+
 export const FeeOutSchema = {
     properties: {
         total: {
@@ -959,6 +1010,17 @@ export const ListingCreateSchema = {
             type: 'string',
             format: 'uuid',
             title: 'Category Id'
+        },
+        location_summary: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Location Summary'
         }
     },
     type: 'object',
@@ -1376,12 +1438,39 @@ export const ListingWithImagesSchema = {
                 }
             ],
             title: 'Seller Avatar Url'
+        },
+        seller_location_summary: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Seller Location Summary'
         }
     },
     type: 'object',
     required: ['title', 'price', 'condition_grade', 'category_id', 'id', 'seller_id', 'status', 'created_at', 'updated_at'],
     title: 'ListingWithImages',
     description: 'Response schema for listing with images'
+} as const;
+
+export const MessageSchema = {
+    properties: {
+        role: {
+            type: 'string',
+            title: 'Role'
+        },
+        content: {
+            type: 'string',
+            title: 'Content'
+        }
+    },
+    type: 'object',
+    required: ['role', 'content'],
+    title: 'Message'
 } as const;
 
 export const MessageResponseSchema = {
@@ -1395,6 +1484,103 @@ export const MessageResponseSchema = {
     required: ['message'],
     title: 'MessageResponse',
     description: 'Generic response message.'
+} as const;
+
+export const ModerationLogReadSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        listing_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Listing Id'
+        },
+        listing_title: {
+            type: 'string',
+            title: 'Listing Title'
+        },
+        decision: {
+            type: 'string',
+            title: 'Decision'
+        },
+        reason: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Reason'
+        },
+        model_used: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Model Used'
+        },
+        image_count: {
+            type: 'integer',
+            title: 'Image Count',
+            default: 0
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'listing_id', 'listing_title', 'decision', 'created_at'],
+    title: 'ModerationLogRead'
+} as const;
+
+export const ModerationLogResponseSchema = {
+    properties: {
+        items: {
+            items: {
+                '$ref': '#/components/schemas/ModerationLogRead'
+            },
+            type: 'array',
+            title: 'Items'
+        },
+        total: {
+            type: 'integer',
+            title: 'Total'
+        },
+        skip: {
+            type: 'integer',
+            title: 'Skip'
+        },
+        limit: {
+            type: 'integer',
+            title: 'Limit'
+        }
+    },
+    type: 'object',
+    required: ['items', 'total', 'skip', 'limit'],
+    title: 'ModerationLogResponse'
+} as const;
+
+export const ModerationSettingsBodySchema = {
+    properties: {
+        enabled: {
+            type: 'boolean',
+            title: 'Enabled'
+        }
+    },
+    type: 'object',
+    required: ['enabled'],
+    title: 'ModerationSettingsBody'
 } as const;
 
 export const NotificationReadSchema = {
@@ -1984,6 +2170,74 @@ export const OrderReadSchema = {
                 }
             ],
             title: 'Shipping Ward Code'
+        },
+        seller_lat: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Seller Lat'
+        },
+        seller_lng: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Seller Lng'
+        },
+        shipping_lat: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Lat'
+        },
+        shipping_lng: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Shipping Lng'
+        },
+        auto_ship_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Auto Ship At'
+        },
+        auto_deliver_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Auto Deliver At'
         },
         offer_id: {
             anyOf: [

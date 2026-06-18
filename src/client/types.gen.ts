@@ -44,6 +44,14 @@ export type Body_upload_listing_image_api_v1_listings__listing_id__images_post =
     file: string;
 };
 
+export type Body_upload_listing_images_bulk_api_v1_listings__listing_id__images_bulk_post = {
+    /**
+     * Danh sách ảnh (tối đa 10)
+     */
+    files: Array<(string)>;
+    is_primary?: Array<(boolean)>;
+};
+
 /**
  * Response body for listing categories.
  */
@@ -212,6 +220,11 @@ export type EscrowRead = {
     updated_at: string;
 };
 
+export type FaqQuestion = {
+    question: string;
+    history?: (Array<Message> | null);
+};
+
 export type FeeOut = {
     total: number;
     service_fee: number;
@@ -256,6 +269,7 @@ export type ListingCreate = {
     is_negotiable?: boolean;
     condition_grade: ConditionGrade;
     category_id: string;
+    location_summary?: (string | null);
 };
 
 /**
@@ -350,6 +364,12 @@ export type ListingWithImages = {
     images?: Array<ListingImageRead>;
     seller_name?: (string | null);
     seller_avatar_url?: (string | null);
+    seller_location_summary?: (string | null);
+};
+
+export type Message = {
+    role: string;
+    content: string;
 };
 
 /**
@@ -357,6 +377,28 @@ export type ListingWithImages = {
  */
 export type MessageResponse = {
     message: string;
+};
+
+export type ModerationLogRead = {
+    id: string;
+    listing_id: string;
+    listing_title: string;
+    decision: string;
+    reason?: (string | null);
+    model_used?: (string | null);
+    image_count?: number;
+    created_at: string;
+};
+
+export type ModerationLogResponse = {
+    items: Array<ModerationLogRead>;
+    total: number;
+    skip: number;
+    limit: number;
+};
+
+export type ModerationSettingsBody = {
+    enabled: boolean;
 };
 
 export type NotificationRead = {
@@ -532,6 +574,12 @@ export type OrderRead = {
     shipping_province_id?: (number | null);
     shipping_district_id?: (number | null);
     shipping_ward_code?: (string | null);
+    seller_lat?: (number | null);
+    seller_lng?: (number | null);
+    shipping_lat?: (number | null);
+    shipping_lng?: (number | null);
+    auto_ship_at?: (string | null);
+    auto_deliver_at?: (string | null);
     offer_id?: (string | null);
     created_at: string;
     updated_at: string;
@@ -1112,6 +1160,14 @@ export type AdminGetDisputeApiV1AdminDisputesDisputeIdGetData = {
 
 export type AdminGetDisputeApiV1AdminDisputesDisputeIdGetResponse = (DisputeRead);
 
+export type GetAiModerationApiV1AdminSettingsAiModerationGetResponse = (unknown);
+
+export type ToggleAiModerationApiV1AdminSettingsAiModerationPatchData = {
+    requestBody: ModerationSettingsBody;
+};
+
+export type ToggleAiModerationApiV1AdminSettingsAiModerationPatchResponse = (unknown);
+
 export type ListAuditTrailApiV1AdminAuditTrailGetData = {
     action?: (string | null);
     limit?: number;
@@ -1120,6 +1176,17 @@ export type ListAuditTrailApiV1AdminAuditTrailGetData = {
 };
 
 export type ListAuditTrailApiV1AdminAuditTrailGetResponse = (AdminAuditTrailResponse);
+
+export type ListModerationLogsApiV1AdminModerationLogsGetData = {
+    /**
+     * Filter: approve|flag|reject|error
+     */
+    decision?: (string | null);
+    limit?: number;
+    skip?: number;
+};
+
+export type ListModerationLogsApiV1AdminModerationLogsGetResponse = (ModerationLogResponse);
 
 export type RegisterApiV1AuthRegisterPostData = {
     requestBody: UserRegister;
@@ -1226,6 +1293,8 @@ export type GetConversationDetailApiV1ChatsConversationsConversationIdGetRespons
 
 export type ListMessagesApiV1ChatsConversationsConversationIdMessagesGetData = {
     conversationId: string;
+    limit?: number;
+    skip?: number;
 };
 
 export type ListMessagesApiV1ChatsConversationsConversationIdMessagesGetResponse = (Array<ChatMessageRead>);
@@ -1280,6 +1349,12 @@ export type GetEscrowApiV1EscrowsOrderIdGetData = {
 };
 
 export type GetEscrowApiV1EscrowsOrderIdGetResponse = (EscrowRead);
+
+export type AskQuestionApiV1FaqAskPostData = {
+    requestBody: FaqQuestion;
+};
+
+export type AskQuestionApiV1FaqAskPostResponse = (unknown);
 
 export type ListListingsApiV1ListingsGetData = {
     categoryId?: (string | null);
@@ -1376,6 +1451,13 @@ export type UploadListingImageApiV1ListingsListingIdImagesPostData = {
 };
 
 export type UploadListingImageApiV1ListingsListingIdImagesPostResponse = (ListingImageRead);
+
+export type UploadListingImagesBulkApiV1ListingsListingIdImagesBulkPostData = {
+    formData: Body_upload_listing_images_bulk_api_v1_listings__listing_id__images_bulk_post;
+    listingId: string;
+};
+
+export type UploadListingImagesBulkApiV1ListingsListingIdImagesBulkPostResponse = (Array<ListingImageRead>);
 
 export type GetMyNotificationsApiV1NotificationsGetData = {
     limit?: number;

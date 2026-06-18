@@ -47,60 +47,67 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
   const currentIdx = stages.findIndex((s) => s.key === currentKey)
 
   return (
-    <div className="space-y-0">
-      {stages.map((stage, idx) => {
-        const isLast = idx === stages.length - 1
-        const reached = idx <= currentIdx
-        const isCancelled = stage.key === "cancelled"
-        return (
-          <div key={stage.key} className="flex gap-4">
-            <div className="flex flex-col items-center">
-              <div
-                className={`flex size-8 items-center justify-center rounded-full ${
-                  isCancelled
-                    ? "bg-rose-100 text-rose-500"
-                    : reached
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-400"
-                }`}
-              >
-                <stage.icon className="size-4" />
-              </div>
-              {!isLast ? (
+    <div className="w-full">
+      <div className="flex items-start w-full relative justify-between py-2 overflow-x-auto scrollbar-none">
+        {stages.map((stage, idx) => {
+          const isLast = idx === stages.length - 1
+          const reached = idx <= currentIdx
+          const isCancelled = stage.key === "cancelled"
+          
+          return (
+            <div key={stage.key} className="flex-1 flex flex-col items-center relative z-10 min-w-[70px]">
+              {/* Line Connector */}
+              {!isLast && (
                 <div
-                  className={`my-1 w-px flex-1 ${
-                    idx < currentIdx ? "bg-blue-400" : "bg-gray-200"
+                  className={`absolute top-3.5 sm:top-4 left-1/2 right-[-50%] h-[2px] -translate-y-1/2 -z-10 transition-colors duration-300 ${
+                    idx < currentIdx ? "bg-blue-600" : "bg-gray-200"
                   }`}
                 />
-              ) : null}
-            </div>
-            <div className="pb-6">
-              <p
-                className={`text-sm font-semibold ${
+              )}
+
+              {/* Node Icon */}
+              <div
+                className={`flex size-7 sm:size-8 items-center justify-center rounded-full border-2 transition-all duration-300 ${
                   isCancelled
-                    ? "text-gray-400 line-through"
+                    ? "bg-rose-50 border-rose-500 text-rose-500"
                     : reached
-                      ? "text-blue-950"
-                      : "text-gray-400"
+                      ? "bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-100"
+                      : "bg-white border-gray-200 text-gray-400"
                 }`}
               >
-                {stage.label}
-              </p>
-              {idx === currentIdx && !isCancelled ? (
-                <p className="text-xs font-semibold text-blue-700 mt-0.5">
-                  Trạng thái hiện tại
+                <stage.icon className="size-3.5 sm:size-4" />
+              </div>
+
+              {/* Stage Text */}
+              <div className="mt-1.5 text-center max-w-[100px] sm:max-w-[120px]">
+                <p
+                  className={`text-[10px] sm:text-xs font-semibold leading-tight break-words ${
+                    isCancelled
+                      ? "text-rose-500 line-through"
+                      : reached
+                        ? "text-blue-950 font-bold"
+                        : "text-gray-400 font-medium"
+                  }`}
+                >
+                  {stage.label}
                 </p>
-              ) : null}
+                {idx === currentIdx && !isCancelled && (
+                  <span className="inline-block mt-0.5 px-1 py-0.2 text-[8px] sm:text-[9px] font-bold text-blue-700 bg-blue-50 rounded-full border border-blue-100 uppercase tracking-wider">
+                    Hiện tại
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        )
-      })}
-      {order.status === "cancelled" ? (
-        <div className="mt-3 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 font-bold">
-          <XCircle className="size-4" />
+          )
+        })}
+      </div>
+
+      {order.status === "cancelled" && (
+        <div className="mt-2 flex items-center justify-center gap-1.5 rounded-lg border border-rose-100 bg-rose-50/50 p-2 text-[11px] sm:text-xs text-rose-600 font-semibold">
+          <XCircle className="size-3.5 text-rose-500" />
           Đơn hàng đã bị hủy
         </div>
-      ) : null}
+      )}
     </div>
   )
 }
