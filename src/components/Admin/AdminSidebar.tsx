@@ -99,6 +99,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
     queryKey: ["adminDashboardStats"],
     queryFn: () => AdminService.getDashboardStatsApiV1AdminDashboardGet(),
     staleTime: 30 * 1000,
+    refetchInterval: 60_000,
   })
 
   const { data: allPendingData } = useQuery({

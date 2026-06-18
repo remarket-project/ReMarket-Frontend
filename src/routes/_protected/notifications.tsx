@@ -39,6 +39,7 @@ function getNotificationsQueryOptions() {
     },
     queryKey: ["notifications-center"],
     staleTime: 0,
+    refetchInterval: 30_000,
   }
 }
 
@@ -105,6 +106,8 @@ function NotificationsPage() {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications-center"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] })
     },
   })
 
@@ -113,6 +116,8 @@ function NotificationsPage() {
       NotificationsService.markAllNotificationsAsReadApiV1NotificationsReadAllPut(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications-center"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] })
       toast.success("Đã đánh dấu tất cả là đã đọc.")
     },
     onError: () => toast.error("Không thể đánh dấu tất cả là đã đọc."),

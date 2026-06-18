@@ -70,6 +70,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     new_order: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
+      queryClient.invalidateQueries({ queryKey: ["adminOrdersCount"] })
       invalidateNotifs()
       toast("Bạn có đơn hàng mới!", { duration: 5000 })
     }, [queryClient, invalidateNotifs]),
@@ -78,7 +79,9 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       (data: Record<string, unknown>) => {
         queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
         queryClient.invalidateQueries({ queryKey: ["adminOrders"] })
+        queryClient.invalidateQueries({ queryKey: ["adminOrdersCount"] })
         queryClient.invalidateQueries({ queryKey: ["adminDisputes"] })
+        queryClient.invalidateQueries({ queryKey: ["adminDashboardStats"] })
         queryClient.invalidateQueries({ queryKey: ["home-listings"] })
         queryClient.invalidateQueries({ queryKey: ["items"] })
         queryClient.invalidateQueries({ queryKey: ["my-listings"] })
@@ -203,6 +206,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     // ─── New dispute (admin) ─────────────────────────────────
     new_dispute: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["adminDisputes"] })
+      queryClient.invalidateQueries({ queryKey: ["adminDashboardStats"] })
     }, [queryClient]),
 
     // ─── Listing rejected broadcast (admin pending refresh) ──
@@ -214,6 +218,13 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     // ─── New AI moderation log (admin audit log refresh) ─────
     new_moderation_log: useCallback(() => {
       queryClient.invalidateQueries({ queryKey: ["adminModerationLogs"] })
+      queryClient.invalidateQueries({ queryKey: ["adminModerationLogsCount"] })
+    }, [queryClient]),
+
+    // ─── New admin audit log ───────────────────────────────────
+    new_admin_audit_log: useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["adminAuditTrailCount"] })
+      queryClient.invalidateQueries({ queryKey: ["adminAuditTrail"] })
     }, [queryClient]),
 
     // ─── Listing (invalidation only) ───────────────────────────
