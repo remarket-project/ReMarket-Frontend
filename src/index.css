@@ -463,6 +463,32 @@
     animation: rmk-marquee 34s linear infinite;
   }
 
+  .rmk-featured-marquee {
+    overflow: hidden;
+    position: relative;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+  }
+
+  .rmk-featured-marquee > div {
+    display: flex;
+    gap: 12px;
+    width: max-content;
+    animation: rmk-featured-scroll 40s linear infinite;
+  }
+
   .rmk-scroll-row {
     display: flex;
     gap: 0.9rem;
@@ -828,6 +854,15 @@
 }
 
 @keyframes rmk-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes rmk-featured-scroll {
   from {
     transform: translateX(0);
   }

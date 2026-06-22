@@ -854,7 +854,7 @@ export function MarketplaceHeader() {
       {/* 3. Phần Banner chính trên trang chủ */}
       {isHome ? (
         <>
-          <section className="relative overflow-hidden text-white min-h-[220px] md:min-h-[260px] flex items-center justify-center">
+          <section className="relative overflow-hidden text-white min-h-[240px] md:min-h-[280px] flex items-center justify-center">
             <div className="pointer-events-none absolute inset-0">
               <img
                 src="/assets/images/banner.png"
@@ -870,7 +870,7 @@ export function MarketplaceHeader() {
               </h1>
             </div>
           </section>
-          <div className="relative z-20 -mt-6 flex justify-center px-4 sm:-mt-7 sm:px-6">
+          <div className="relative z-20 -mt-[30px] flex justify-center px-4 sm:-mt-[30px] sm:px-6">
             <div className="w-full max-w-4xl">
               <SearchShell
                 compact={false}

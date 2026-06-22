@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
   Eye,
+  Flag,
   ListChecks,
   RefreshCw,
   ShieldCheck,
@@ -472,6 +473,12 @@ function TrangKiemDuyetTin() {
                       </p>
                     )}
                     <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {listing.rejection_reason && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
+                          <Flag className="size-3" />
+                          Cần xem lại
+                        </span>
+                      )}
                       <span
                         className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${mapConditionColor(listing.condition_grade)}`}
                       >
