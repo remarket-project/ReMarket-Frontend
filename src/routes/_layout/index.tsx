@@ -5,10 +5,7 @@ import {
   ChevronRight,
   Clock3,
   Eye,
-  MapPin,
   RefreshCw,
-  Sparkles,
-  Wallet,
 } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
@@ -195,19 +192,6 @@ function MarketplaceHome() {
   const listings = listingsData?.items ?? []
   const totalListings = listingsData?.total ?? listings.length
 
-  const recentCount = useMemo(() => {
-    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
-    return listings.filter(
-      (item) => new Date(item.created_at).getTime() >= sevenDaysAgo,
-    ).length
-  }, [listings])
-
-  const averagePrice = useMemo(() => {
-    if (listings.length === 0) return 0
-    const sum = listings.reduce((acc, item) => acc + parsePrice(item.price), 0)
-    return Math.round(sum / listings.length)
-  }, [listings])
-
   const visibleListings = useMemo(() => {
     const cloned = [...listings]
     if (activeTab === "Gần bạn" && selectedRegion) {
@@ -286,45 +270,27 @@ function MarketplaceHome() {
                 ? `Gần ${REGION_LABELS[selectedRegion]}`
                 : "Gần bạn, dễ chốt, dễ quét"}
             </h2>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium text-[#5B7083]">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF6FF] px-3 py-1 text-[#2563EB]">
-                <Sparkles className="size-3.5" />
-                {totalListings} tin
-              </span>
-              {selectedRegion && REGION_LABELS[selectedRegion] && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FEF3C7] px-3 py-1 text-[#D97706]">
-                  <MapPin className="size-3.5" />
-                  {REGION_LABELS[selectedRegion]}
-                </span>
-              )}
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F8FAFC] px-3 py-1">
-                <RefreshCw className="size-3.5 text-[#2563EB]" />
-                {recentCount} tin mới 7 ngày
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F8FAFC] px-3 py-1">
-                <Wallet className="size-3.5 text-[#2563EB]" />
-                {averagePrice
-                  ? new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                      maximumFractionDigits: 0,
-                    }).format(averagePrice)
-                  : "0 đ"}
-              </span>
-            </div>
           </div>
+          <Link
+            to="/items"
+            className="text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8]"
+          >
+            Xem tất cả
+          </Link>
         </div>
 
         {featuredListings.length > 0 ? (
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {featuredListings.map((item: ListingRead, idx: number) => (
-              <div
-                key={item.id}
-                className="w-[220px] flex-none sm:w-[230px] md:w-[240px]"
-              >
-                <ListingCard item={item} animationDelay={idx * 50} />
-              </div>
-            ))}
+          <div className="rmk-featured-marquee pb-2">
+            <div className="flex gap-3">
+              {[...featuredListings, ...featuredListings].map((item: ListingRead, idx: number) => (
+                <div
+                  key={`${item.id}-${idx}`}
+                  className="w-[220px] flex-none sm:w-[230px] md:w-[240px]"
+                >
+                  <ListingCard item={item} animationDelay={0} />
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="rounded-[22px] border border-dashed border-[#D8E2EF] bg-[#F8FAFC] px-4 py-10 text-center text-sm text-[#5B7083]">
@@ -340,6 +306,12 @@ function MarketplaceHome() {
               Tin đăng mới nhất
             </h2>
           </div>
+          <Link
+            to="/items"
+            className="text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8]"
+          >
+            Xem tất cả
+          </Link>
         </div>
 
         <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1">
