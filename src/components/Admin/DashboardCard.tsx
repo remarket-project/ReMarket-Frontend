@@ -17,11 +17,10 @@ export function DashboardCard({
   trend,
   onClick,
 }: DashboardCardProps) {
-  return (
-    <div
-      onClick={onClick}
-      className={`rounded-2xl border border-[#D8E2EF] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.08)] ${onClick ? "cursor-pointer" : ""}`}
-    >
+  const sharedClassName = `rounded-2xl border border-[#D8E2EF] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.08)] ${onClick ? "cursor-pointer" : ""}`
+
+  const content = (
+    <>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs font-medium text-[#5B7083]">{title}</p>
@@ -52,6 +51,23 @@ export function DashboardCard({
           <Icon className="size-5" />
         </div>
       </div>
-    </div>
+    </>
   )
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") onClick()
+        }}
+        className={sharedClassName}
+      >
+        {content}
+      </button>
+    )
+  }
+
+  return <div className={sharedClassName}>{content}</div>
 }

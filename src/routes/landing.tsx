@@ -560,6 +560,7 @@ function Landing() {
               <RouterLink to="/login">Xem toàn bộ tin đăng</RouterLink>
             </Button>
           </div>
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: drag scroll rail, not interactive */}
           <div
             ref={featuredRailRef}
             className="rmk-scroll-row"

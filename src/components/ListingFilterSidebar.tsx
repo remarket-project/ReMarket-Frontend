@@ -75,8 +75,11 @@ export default function ListingFilterSidebar({
       <h3 className="mb-3 text-lg font-semibold">Bộ lọc</h3>
 
       <div className="mb-3">
-        <label className="mb-1 block text-sm text-muted">Từ khoá</label>
+        <label htmlFor="filter-q" className="mb-1 block text-sm text-muted">
+          Từ khoá
+        </label>
         <Input
+          id="filter-q"
           value={localQ}
           onChange={(e) => setLocalQ(e.target.value)}
           placeholder="Từ khoá, tiêu đề..."
@@ -84,8 +87,14 @@ export default function ListingFilterSidebar({
       </div>
 
       <div className="mb-3">
-        <label className="mb-1 block text-sm text-muted">Danh mục</label>
+        <label
+          htmlFor="filter-category"
+          className="mb-1 block text-sm text-muted"
+        >
+          Danh mục
+        </label>
         <select
+          id="filter-category"
           value={localCategory ?? ""}
           onChange={(e) => setLocalCategory(e.target.value || undefined)}
           className="w-full rounded-md border px-2 py-2"
@@ -100,9 +109,7 @@ export default function ListingFilterSidebar({
       </div>
 
       <div className="mb-3">
-        <label className="mb-1 block text-sm text-muted">
-          Khoảng giá (VND)
-        </label>
+        <span className="mb-1 block text-sm text-muted">Khoảng giá (VND)</span>
         <div className="flex gap-2">
           <Input
             value={localMin}

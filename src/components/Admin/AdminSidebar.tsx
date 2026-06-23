@@ -206,11 +206,11 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
               item.path === "/admin"
                 ? currentPath === "/admin" || currentPath === "/admin/"
                 : currentPath === item.path ||
-                  currentPath.startsWith(item.path + "/")
+                  currentPath.startsWith(`${item.path}/`)
 
             const Icon = item.icon
             const badgeCount = item.badgeKey
-              ? badgeCounts[item.badgeKey] ?? 0
+              ? (badgeCounts[item.badgeKey] ?? 0)
               : 0
 
             return (
@@ -243,9 +243,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                 <span className="flex-1">{item.label}</span>
 
                 {badgeCount > 0 && item.badgeKey && (
-                  <span
-                    className="relative flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
-                  >
+                  <span className="relative flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
                     {badgeCount > 99 ? "99+" : badgeCount}
                     <span className="absolute inset-0 animate-ping rounded-full bg-red-500 opacity-40" />
                   </span>

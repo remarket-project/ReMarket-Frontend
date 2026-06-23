@@ -133,10 +133,14 @@ function EditListingPage() {
         </CardHeader>
         <CardContent className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-[#102A43] mb-1.5">
+            <label
+              htmlFor="edit-title"
+              className="block text-sm font-semibold text-[#102A43] mb-1.5"
+            >
               Tiêu đề <span className="text-red-500">*</span>
             </label>
             <input
+              id="edit-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-sm text-[#102A43] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
@@ -145,10 +149,14 @@ function EditListingPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[#102A43] mb-1.5">
+            <label
+              htmlFor="edit-category"
+              className="block text-sm font-semibold text-[#102A43] mb-1.5"
+            >
               Danh mục <span className="text-red-500">*</span>
             </label>
             <select
+              id="edit-category"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-sm text-[#102A43] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
@@ -164,10 +172,14 @@ function EditListingPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-[#102A43] mb-1.5">
+              <label
+                htmlFor="edit-price"
+                className="block text-sm font-semibold text-[#102A43] mb-1.5"
+              >
                 Giá (VNĐ) <span className="text-red-500">*</span>
               </label>
               <input
+                id="edit-price"
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -178,10 +190,14 @@ function EditListingPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#102A43] mb-1.5">
+              <label
+                htmlFor="edit-condition"
+                className="block text-sm font-semibold text-[#102A43] mb-1.5"
+              >
                 Tình trạng <span className="text-red-500">*</span>
               </label>
               <select
+                id="edit-condition"
                 value={conditionGrade}
                 onChange={(e) =>
                   setConditionGrade(e.target.value as ConditionGrade)
@@ -211,10 +227,14 @@ function EditListingPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[#102A43] mb-1.5">
+            <label
+              htmlFor="edit-description"
+              className="block text-sm font-semibold text-[#102A43] mb-1.5"
+            >
               Mô tả
             </label>
             <textarea
+              id="edit-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={5}

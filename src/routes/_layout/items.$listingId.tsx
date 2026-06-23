@@ -608,10 +608,12 @@ function ListingDetailPage() {
 
   const { data: category } = useQuery({
     queryKey: ["listing-category", listing?.category_id],
-    queryFn: () =>
-      CategoriesService.getCategoryByIdApiV1CategoriesIdCategoryIdGet({
-        categoryId: listing!.category_id,
-      }),
+    queryFn: async () => {
+      if (!listing?.category_id) throw new Error("Missing category_id")
+      return CategoriesService.getCategoryByIdApiV1CategoriesIdCategoryIdGet({
+        categoryId: listing.category_id,
+      })
+    },
     enabled: Boolean(listing?.category_id),
   })
 

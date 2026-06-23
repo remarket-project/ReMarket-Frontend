@@ -17,6 +17,7 @@ export function OrderTimelineDialog({ escrow, onClose }: OrderTimelineProps) {
             </h3>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="rounded-full p-1.5 text-slate-400 hover:bg-white/[0.06] hover:text-slate-200"
           >
@@ -111,6 +112,7 @@ export function OrderTimelineDialog({ escrow, onClose }: OrderTimelineProps) {
 
         <div className="flex justify-end border-t border-white/[0.08] bg-[#1A2233]/40 p-4">
           <button
+            type="button"
             onClick={onClose}
             className="rounded-[10px] border border-white/[0.08] bg-[#1A2233] px-4 py-2 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5"
           >

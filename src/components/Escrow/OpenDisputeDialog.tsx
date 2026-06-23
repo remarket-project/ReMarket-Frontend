@@ -83,9 +83,13 @@ export default function OpenDisputeDialog({
                       {reasons.map((reason) => (
                         <label
                           key={reason}
+                          htmlFor={`reason-${reason}`}
                           className="flex cursor-pointer items-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm"
                         >
-                          <RadioGroupItem value={reason} />
+                          <RadioGroupItem
+                            value={reason}
+                            id={`reason-${reason}`}
+                          />
                           <span>{reason}</span>
                         </label>
                       ))}

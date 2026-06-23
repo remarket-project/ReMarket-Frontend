@@ -25,8 +25,8 @@ import {
   UsersService,
 } from "@/client"
 import { DisputeDialog } from "@/components/Dispute/DisputeDialog"
-import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import DeliveryMap from "@/components/Orders/DeliveryMap"
+import LeaveReviewDialog from "@/components/Orders/LeaveReviewDialog"
 import OrderTimeline from "@/components/Orders/OrderTimeline"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -139,29 +139,35 @@ function OrderDetailPage() {
 
   const { data: listing, isLoading: isListingLoading } = useQuery({
     queryKey: ["order-listing", data?.order?.listing_id],
-    queryFn: () =>
-      ListingsService.getListingApiV1ListingsListingIdGet({
-        listingId: data!.order.listing_id,
-      }),
+    queryFn: async () => {
+      if (!data?.order?.listing_id) throw new Error("Missing listing_id")
+      return ListingsService.getListingApiV1ListingsListingIdGet({
+        listingId: data.order.listing_id,
+      })
+    },
     enabled: Boolean(data?.order?.listing_id),
     staleTime: 0,
   })
 
   const { data: buyerProfile } = useQuery({
     queryKey: ["user-public", data?.order?.buyer_id],
-    queryFn: () =>
-      UsersService.readUserPublicProfile({
-        userId: data!.order.buyer_id,
-      }),
+    queryFn: async () => {
+      if (!data?.order?.buyer_id) throw new Error("Missing buyer_id")
+      return UsersService.readUserPublicProfile({
+        userId: data.order.buyer_id,
+      })
+    },
     enabled: Boolean(data?.order?.buyer_id),
   })
 
   const { data: sellerProfile } = useQuery({
     queryKey: ["user-public", data?.order?.seller_id],
-    queryFn: () =>
-      UsersService.readUserPublicProfile({
-        userId: data!.order.seller_id,
-      }),
+    queryFn: async () => {
+      if (!data?.order?.seller_id) throw new Error("Missing seller_id")
+      return UsersService.readUserPublicProfile({
+        userId: data.order.seller_id,
+      })
+    },
     enabled: Boolean(data?.order?.seller_id),
   })
 

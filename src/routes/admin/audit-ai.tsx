@@ -21,7 +21,13 @@ export const Route = createFileRoute("/admin/audit-ai")({
 
 const DECISION_CONFIG: Record<
   string,
-  { label: string; color: string; bg: string; border: string; icon: typeof CheckCircle2 }
+  {
+    label: string
+    color: string
+    bg: string
+    border: string
+    icon: typeof CheckCircle2
+  }
 > = {
   approve: {
     label: "Đã duyệt",
@@ -121,10 +127,14 @@ function TrangNhatKyAI() {
 
       <div className="rounded-2xl border border-white/[0.06] bg-[#111827] p-5">
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold text-slate-400">
+          <label
+            htmlFor="audit-filter-decision"
+            className="text-xs font-semibold text-slate-400"
+          >
             Lọc theo kết quả duyệt
           </label>
           <select
+            id="audit-filter-decision"
             value={locQuyetDinh}
             onChange={(e) => {
               setLocQuyetDinh(e.target.value)

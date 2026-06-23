@@ -215,7 +215,16 @@ export function DisputeDialog({
               </div>
               <div className="space-y-2">
                 <Label>Ảnh minh chứng (tối đa 5 ảnh)</Label>
+                {/* biome-ignore lint/a11y/useSemanticElements: drag/drop zone with hidden input, cannot use <button> */}
                 <div
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      fileInputRef.current?.click()
+                    }
+                  }}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}

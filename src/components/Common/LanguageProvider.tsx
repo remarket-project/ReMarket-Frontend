@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 
 export type AppLanguage = "en" | "vi"
 
@@ -24,10 +31,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const updateLanguage = (next: AppLanguage) => {
+  const updateLanguage = useCallback((next: AppLanguage) => {
     setLanguage(next)
     localStorage.setItem(STORAGE_KEY, next)
-  }
+  }, [])
 
   const value = useMemo(
     () => ({

@@ -70,10 +70,14 @@ export function ResolveDisputeDialog({
           </div>
 
           <div className="space-y-2">
-            <label className="block font-bold text-slate-300">
+            <label
+              htmlFor="resolve-note"
+              className="block font-bold text-slate-300"
+            >
               Lý do đưa ra phán quyết (Bắt buộc):
             </label>
             <textarea
+              id="resolve-note"
               required
               rows={3}
               value={note}

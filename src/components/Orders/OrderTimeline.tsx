@@ -53,9 +53,12 @@ export default function OrderTimeline({ order }: { order: OrderRead }) {
           const isLast = idx === stages.length - 1
           const reached = idx <= currentIdx
           const isCancelled = stage.key === "cancelled"
-          
+
           return (
-            <div key={stage.key} className="flex-1 flex flex-col items-center relative z-10 min-w-[70px]">
+            <div
+              key={stage.key}
+              className="flex-1 flex flex-col items-center relative z-10 min-w-[70px]"
+            >
               {/* Line Connector */}
               {!isLast && (
                 <div

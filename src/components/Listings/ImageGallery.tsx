@@ -51,14 +51,20 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       {/* Main image + Thumbnails */}
       <div className="space-y-3">
         {/* Main image */}
+        {/* biome-ignore lint/a11y/useSemanticElements: has child nav buttons, cannot use button */}
         <div
+          role="button"
+          tabIndex={0}
           className="group relative overflow-hidden rounded-2xl border border-blue-200/70 bg-gradient-to-br from-blue-50 to-sky-50 cursor-zoom-in"
           style={{ aspectRatio: "4/3" }}
           onClick={() => setLightboxOpen(true)}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") setLightboxOpen(true)
+          }}
         >
           <img
             src={mainImage.image_url}
-            alt={`${title} - image ${selectedIndex + 1}`}
+            alt={`${title} - ${selectedIndex + 1}`}
             className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
             decoding="async"
@@ -138,64 +144,73 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
 
       {/* Lightbox */}
       {lightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
-          onClick={() => setLightboxOpen(false)}
-        >
-          {/* Close button */}
-          <button
-            type="button"
-            className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-            onClick={() => setLightboxOpen(false)}
-          >
-            <X className="size-5" />
-          </button>
-
-          {/* Prev */}
-          {hasPrev && (
-            <button
-              type="button"
-              className="absolute left-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              onClick={(e) => {
-                e.stopPropagation()
-                goPrev()
-              }}
-            >
-              <ChevronLeft className="size-6" />
-            </button>
-          )}
-
-          {/* Main lightbox image */}
+        <>
+          {/* biome-ignore lint/a11y/useSemanticElements: wraps many interactive children, cannot use button */}
           <div
-            className="relative max-h-[85vh] max-w-[85vw]"
-            onClick={(e) => e.stopPropagation()}
+            role="button"
+            tabIndex={0}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onClick={() => setLightboxOpen(false)}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") setLightboxOpen(false)
+            }}
           >
-            <img
-              src={mainImage.image_url}
-              alt={`${title} - ${selectedIndex + 1}`}
-              className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain shadow-2xl"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/60">
-              {selectedIndex + 1} / {images.length}
-            </div>
-          </div>
-
-          {/* Next */}
-          {hasNext && (
+            {/* Close button */}
             <button
               type="button"
-              className="absolute right-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              onClick={(e) => {
-                e.stopPropagation()
-                goNext()
-              }}
+              className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+              onClick={() => setLightboxOpen(false)}
             >
-              <ChevronRight className="size-6" />
+              <X className="size-5" />
             </button>
-          )}
-        </div>
+
+            {/* Prev */}
+            {hasPrev && (
+              <button
+                type="button"
+                className="absolute left-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  goPrev()
+                }}
+              >
+                <ChevronLeft className="size-6" />
+              </button>
+            )}
+
+            {/* Main lightbox image */}
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: stopPropagation only, not interactive */}
+            <div
+              className="relative max-h-[85vh] max-w-[85vw]"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <img
+                src={mainImage.image_url}
+                alt={`${title} - ${selectedIndex + 1}`}
+                className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain shadow-2xl"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/60">
+                {selectedIndex + 1} / {images.length}
+              </div>
+            </div>
+
+            {/* Next */}
+            {hasNext && (
+              <button
+                type="button"
+                className="absolute right-4 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  goNext()
+                }}
+              >
+                <ChevronRight className="size-6" />
+              </button>
+            )}
+          </div>
+        </>
       )}
     </>
   )

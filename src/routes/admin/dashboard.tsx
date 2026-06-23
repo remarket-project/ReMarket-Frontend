@@ -57,38 +57,43 @@ function CardThongKe({
     an_toan: "text-emerald-400",
   }[loaiTrend ?? "tang"]
 
-  return (
-    <div
-      role={khi_click ? "button" : undefined}
-      tabIndex={khi_click ? 0 : undefined}
-      onClick={khi_click}
-      onKeyDown={
-        khi_click ? (e) => e.key === "Enter" && khi_click() : undefined
-      }
-      className={`rounded-2xl border border-white/[0.06] bg-[#111827] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-500/20 hover:shadow-[0_8px_24px_rgba(59,130,246,0.08)] ${khi_click ? "cursor-pointer" : ""}`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-slate-400">{tieuDe}</p>
-          <p className={`mt-1.5 text-3xl font-bold ${mauSoLieu}`}>
-            {typeof soLieu === "number"
-              ? soLieu.toLocaleString("vi-VN")
-              : soLieu}
-          </p>
-          {trend && (
-            <p className={`mt-1.5 text-xs font-medium ${trendColor}`}>
-              {trend}
-            </p>
-          )}
-        </div>
-        <div
-          className={`flex size-11 shrink-0 items-center justify-center rounded-2xl ${mauIcon}`}
-        >
-          <Icon className="size-5" />
-        </div>
+  const sharedClassName = `rounded-2xl border border-white/[0.06] bg-[#111827] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-500/20 hover:shadow-[0_8px_24px_rgba(59,130,246,0.08)] ${khi_click ? "cursor-pointer" : ""}`
+
+  const content = (
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-medium text-slate-400">{tieuDe}</p>
+        <p className={`mt-1.5 text-3xl font-bold ${mauSoLieu}`}>
+          {typeof soLieu === "number" ? soLieu.toLocaleString("vi-VN") : soLieu}
+        </p>
+        {trend && (
+          <p className={`mt-1.5 text-xs font-medium ${trendColor}`}>{trend}</p>
+        )}
+      </div>
+      <div
+        className={`flex size-11 shrink-0 items-center justify-center rounded-2xl ${mauIcon}`}
+      >
+        <Icon className="size-5" />
       </div>
     </div>
   )
+
+  if (khi_click) {
+    return (
+      <button
+        type="button"
+        onClick={khi_click}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") khi_click()
+        }}
+        className={sharedClassName}
+      >
+        {content}
+      </button>
+    )
+  }
+
+  return <div className={sharedClassName}>{content}</div>
 }
 
 function TrangTongQuan() {

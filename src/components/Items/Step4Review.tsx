@@ -235,7 +235,10 @@ function CreateListingStep4({ form }: Step4Props) {
           name="confirmAccuracy"
           render={({ field }) => (
             <FormItem>
-              <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              <div
+                role="presentation"
+                className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -248,7 +251,7 @@ function CreateListingStep4({ form }: Step4Props) {
                   Tôi xác nhận sản phẩm này được mô tả chính xác và thuộc sở hữu
                   hợp pháp của tôi.
                 </span>
-              </label>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -258,7 +261,10 @@ function CreateListingStep4({ form }: Step4Props) {
           name="agreeTerms"
           render={({ field }) => (
             <FormItem>
-              <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              <div
+                role="presentation"
+                className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -271,7 +277,7 @@ function CreateListingStep4({ form }: Step4Props) {
                   Tôi đồng ý với các điều khoản của người bán và chính sách chợ
                   mua bán của ReMarket.
                 </span>
-              </label>
+              </div>
               <FormMessage />
             </FormItem>
           )}

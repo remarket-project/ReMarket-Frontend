@@ -96,10 +96,14 @@ function TrangNhatKyHoatDong() {
 
       <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/[0.06] bg-[#111827] p-5 md:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold text-slate-400">
+          <label
+            htmlFor="audit-filter-action"
+            className="text-xs font-semibold text-slate-400"
+          >
             Lọc theo hành động hệ thống
           </label>
           <select
+            id="audit-filter-action"
             value={boLocHanhDong}
             onChange={(e) => {
               setBoLocHanhDong(e.target.value)
@@ -122,10 +126,14 @@ function TrangNhatKyHoatDong() {
           </select>
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold text-slate-400">
+          <label
+            htmlFor="audit-filter-object"
+            className="text-xs font-semibold text-slate-400"
+          >
             Lọc theo loại đối tượng
           </label>
           <select
+            id="audit-filter-object"
             value={boLocDoiTuong}
             onChange={(e) => {
               setBoLocDoiTuong(e.target.value)

@@ -22,8 +22,8 @@ import { ListingPreviewDialog } from "@/components/Admin/ListingPreviewDialog"
 import { RejectReasonDialog } from "@/components/Admin/RejectReasonDialog"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import useCustomToast from "@/hooks/useCustomToast"
 import { handleError } from "@/utils"
 
@@ -309,7 +309,8 @@ function TrangKiemDuyetTin() {
               AI tự động duyệt tin
             </Label>
             <p className="text-xs text-slate-400">
-              Khi bật, AI sẽ tự động duyệt tin đăng mới (approve/reject) không cần admin
+              Khi bật, AI sẽ tự động duyệt tin đăng mới (approve/reject) không
+              cần admin
             </p>
           </div>
           <Switch
@@ -416,11 +417,16 @@ function TrangKiemDuyetTin() {
                       : "border-white/[0.06] bg-[#111827] hover:border-blue-500/20 hover:shadow-[0_4px_12px_rgba(59,130,246,0.06)]"
                 }`}
               >
-                <div
-                  className="flex cursor-pointer items-start gap-4 p-4"
+                <button
+                  type="button"
+                  className="flex w-full cursor-pointer items-start gap-4 p-4 text-left"
                   onClick={() => toggleExpand(listing.id)}
                 >
-                  <div className="mt-1" onClick={(e) => e.stopPropagation()}>
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: stop prop wrapper for checkbox inside button */}
+                  <div
+                    className="mt-1"
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(listing.id)}
@@ -492,8 +498,9 @@ function TrangKiemDuyetTin() {
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1">
+                    {/* biome-ignore lint/a11y/noStaticElementInteractions: stop prop wrapper for buttons inside button */}
                     <div
-                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
                       className="flex items-center gap-1"
                     >
                       <button
@@ -532,7 +539,7 @@ function TrangKiemDuyetTin() {
                       )}
                     </div>
                   </div>
-                </div>
+                </button>
 
                 {isExpanded && imageCount > 0 && (
                   <div className="border-t border-white/[0.08] px-4 pb-4 pt-3">

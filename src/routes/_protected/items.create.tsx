@@ -318,7 +318,7 @@ function CreateListingPage() {
 
       const uploadTargets = data.images.filter((img) => img.file || img.url)
       if (uploadTargets.length > 0) {
-        const files = await Promise.all(
+        const fileResults = await Promise.allSettled(
           uploadTargets.map(async (img) => {
             let file = img.file
             if (!file && img.url) {
@@ -327,21 +327,27 @@ function CreateListingPage() {
               const ext = blob.type.split("/")[1] || "jpg"
               file = new File([blob], `image.${ext}`, { type: blob.type })
             }
-            return file as File
+            return file
           }),
         )
-        const primaryFlags = uploadTargets.map((img) => img.isPrimary)
+        const files: File[] = []
+        const primaryFlags: boolean[] = []
+        fileResults.forEach((r, i) => {
+          if (r.status === "fulfilled" && r.value) {
+            files.push(r.value)
+            primaryFlags.push(uploadTargets[i].isPrimary)
+          }
+        })
+        if (files.length === 0) return
 
         try {
           const formData = new FormData()
-          files.forEach((f) => formData.append("files", f))
-          primaryFlags.forEach((f) =>
-            formData.append("is_primary", String(f)),
+          files.forEach((f) => void formData.append("files", f))
+          primaryFlags.forEach(
+            (f) => void formData.append("is_primary", String(f)),
           )
 
-          const apiBase = (
-            import.meta.env.VITE_API_URL || ""
-          )
+          const apiBase = (import.meta.env.VITE_API_URL || "")
             .replace(/\/+$/, "")
             .replace(/\/api\/v1$/i, "")
 
@@ -409,33 +415,34 @@ function CreateListingPage() {
     if (alreadyFilled) return
 
     autoFillDoneRef.current = true
+    let cancelled = false
 
     const doAutoFill = async () => {
       try {
         const res = await fetch("https://provinces.open-api.vn/api/p/")
+        if (cancelled) return
         const provinces: Array<{ code: number; name: string }> =
           await res.json()
         queryClient.setQueryData(["vn-provinces"], provinces)
 
         const normProvince = normalize(user.province!)
         const pMatch = provinces.find((p) => normalize(p.name) === normProvince)
-        if (!pMatch) return
+        if (!pMatch || cancelled) return
 
         form.setValue("province", String(pMatch.code), { shouldDirty: true })
 
         const dRes = await fetch(
           `https://provinces.open-api.vn/api/p/${pMatch.code}?depth=2`,
         )
+        if (cancelled) return
         const dData = await dRes.json()
         const dists: Array<{ code: number; name: string }> =
           dData.districts || []
         queryClient.setQueryData(["vn-districts", String(pMatch.code)], dists)
 
-        if (user.district) {
+        if (user.district && !cancelled) {
           const normDistrict = normalize(user.district)
-          const dMatch = dists.find(
-            (d) => normalize(d.name) === normDistrict,
-          )
+          const dMatch = dists.find((d) => normalize(d.name) === normDistrict)
           if (dMatch) {
             form.setValue("district", String(dMatch.code), {
               shouldDirty: true,
@@ -444,11 +451,12 @@ function CreateListingPage() {
             const wRes = await fetch(
               `https://provinces.open-api.vn/api/d/${dMatch.code}?depth=2`,
             )
+            if (cancelled) return
             const wData = await wRes.json()
             const wds: Array<{ code: number; name: string }> = wData.wards || []
             queryClient.setQueryData(["vn-wards", String(dMatch.code)], wds)
 
-            if (user.ward) {
+            if (user.ward && !cancelled) {
               const normWard = normalize(user.ward)
               const wMatch = wds.find((w) => normalize(w.name) === normWard)
               if (wMatch) {
@@ -461,7 +469,7 @@ function CreateListingPage() {
           }
         }
 
-        if (user.address_detail) {
+        if (user.address_detail && !cancelled) {
           form.setValue("addressDetail", user.address_detail, {
             shouldDirty: true,
           })
@@ -472,6 +480,10 @@ function CreateListingPage() {
     }
 
     doAutoFill()
+
+    return () => {
+      cancelled = true
+    }
   }, [user, form, queryClient])
 
   return (

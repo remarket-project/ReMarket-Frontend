@@ -117,7 +117,8 @@ function SearchShell({
           className={`mx-auto flex w-full max-w-4xl items-center gap-2 rounded-full bg-white/95 ${compact ? "p-1 shadow-md" : "p-1.5 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"} ring-1 ring-white/70 backdrop-blur-xl ${compact ? "max-w-3xl" : ""} ${hero ? "shadow-[0_22px_70px_rgba(15,23,42,0.16)]" : ""}`}
         >
           <div className="relative" ref={regionRef}>
-            <div
+            <button
+              type="button"
               className={`flex items-center gap-1.5 rounded-full border text-[#102A43] cursor-pointer md:flex ${
                 compact
                   ? "min-w-[110px] border-[#D8E2EF] bg-[#F8FAFC] px-3 py-1.5 text-xs font-semibold"
@@ -134,7 +135,7 @@ function SearchShell({
               />
               <span className="truncate">{selectedLabel}</span>
               <ChevronDown className="size-3 text-[#6B7280]" />
-            </div>
+            </button>
             {regionOpen && (
               <div className="absolute left-0 top-full z-50 mt-1.5 w-48 overflow-hidden rounded-2xl border border-[#D8E2EF] bg-white shadow-xl">
                 {REGIONS.map((r) => (

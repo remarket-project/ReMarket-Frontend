@@ -67,6 +67,7 @@ function FAQPage() {
               className="rounded-xl border border-[#D8E2EF] bg-white overflow-hidden"
             >
               <button
+                type="button"
                 className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-[#102A43] hover:bg-[#F5F8FC]"
                 onClick={() => setOpenIndex(isOpen ? null : idx)}
               >

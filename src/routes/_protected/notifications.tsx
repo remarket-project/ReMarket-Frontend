@@ -107,7 +107,9 @@ function NotificationsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications-center"] })
       queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
-      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] })
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count"],
+      })
     },
   })
 
@@ -117,7 +119,9 @@ function NotificationsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications-center"] })
       queryClient.invalidateQueries({ queryKey: ["notifications-header"] })
-      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] })
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count"],
+      })
       toast.success("Đã đánh dấu tất cả là đã đọc.")
     },
     onError: () => toast.error("Không thể đánh dấu tất cả là đã đọc."),

@@ -96,10 +96,11 @@ export function CategoryFormDialog({
 
         <div className="space-y-4 p-6 text-sm">
           <div className="space-y-1.5">
-            <label className="font-semibold text-slate-300">
+            <label htmlFor="cat-name" className="font-semibold text-slate-300">
               Tên danh mục:
             </label>
             <input
+              id="cat-name"
               required
               type="text"
               value={name}
@@ -109,10 +110,11 @@ export function CategoryFormDialog({
             />
           </div>
           <div className="space-y-1.5">
-            <label className="font-semibold text-slate-300">
+            <label htmlFor="cat-slug" className="font-semibold text-slate-300">
               Đường dẫn URL (Slug):
             </label>
             <input
+              id="cat-slug"
               required
               type="text"
               value={slug}
@@ -126,10 +128,11 @@ export function CategoryFormDialog({
             </span>
           </div>
           <div className="space-y-1.5">
-            <label className="font-semibold text-slate-300">
+            <label htmlFor="cat-icon" className="font-semibold text-slate-300">
               Đường dẫn ảnh Icon (Tùy chọn):
             </label>
             <input
+              id="cat-icon"
               type="url"
               value={iconUrl}
               onChange={(e) => setIconUrl(e.target.value)}

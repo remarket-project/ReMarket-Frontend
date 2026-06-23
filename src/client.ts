@@ -104,56 +104,54 @@ const mapListingToItem = (listing: ListingRead): ItemPublic => ({
   created_at: listing.created_at,
 })
 
-export class LoginService {
-  public static loginAccessToken(data: {
-    formData: Body_login_login_access_token
-  }) {
+export const LoginService = {
+  loginAccessToken(data: { formData: Body_login_login_access_token }) {
     return AuthService.loginApiV1AuthLoginPost(data)
-  }
+  },
 
-  public static recoverPassword(data: { email: string }) {
+  recoverPassword(data: { email: string }) {
     return AuthService.forgotPasswordApiV1AuthForgotPasswordPost({
       requestBody: { email: data.email },
     })
-  }
+  },
 
-  public static resetPassword(data: {
+  resetPassword(data: {
     requestBody: { token: string; new_password: string }
   }) {
     return AuthService.resetPasswordApiV1AuthResetPasswordPost(data)
-  }
+  },
 }
 
-export class UsersService {
-  public static readUserMe() {
+export const UsersService = {
+  readUserMe() {
     return GeneratedUsersService.getCurrentUserInfoApiV1UsersMeGet()
-  }
+  },
 
-  public static readUserPublicProfile(data: { userId: string }) {
+  readUserPublicProfile(data: { userId: string }) {
     return GeneratedUsersService.getUserProfileApiV1UsersUserIdGet({
       userId: data.userId,
     })
-  }
+  },
 
-  public static registerUser(data: { requestBody: UserRegister }) {
+  registerUser(data: { requestBody: UserRegister }) {
     return AuthService.registerApiV1AuthRegisterPost(data)
-  }
+  },
 
-  public static readUsers(data: { skip?: number; limit?: number } = {}) {
+  readUsers(data: { skip?: number; limit?: number } = {}) {
     return AdminService.listUsersApiV1AdminUsersGet(data).then((users) => ({
       data: users as Array<any>,
       count: users.length,
     }))
-  }
+  },
 
-  public static updateUserMe(data: { requestBody: UserUpdateMe }) {
+  updateUserMe(data: { requestBody: UserUpdateMe }) {
     const { email: _ignoredEmail, ...rest } = data.requestBody
     return GeneratedUsersService.updateMyProfileApiV1UsersMePut({
       requestBody: rest,
     })
-  }
+  },
 
-  public static updatePasswordMe(data: { requestBody: UpdatePassword }) {
+  updatePasswordMe(data: { requestBody: UpdatePassword }) {
     return GeneratedUsersService.changePasswordApiV1UsersMePasswordPut({
       requestBody: {
         current_password: data.requestBody.current_password,
@@ -161,9 +159,9 @@ export class UsersService {
         confirm_password: data.requestBody.new_password,
       } as ChangePasswordRequest,
     })
-  }
+  },
 
-  public static updateUser(data: { userId: string; requestBody: any }) {
+  updateUser(data: { userId: string; requestBody: any }) {
     if (typeof data.requestBody?.is_active === "boolean") {
       return AdminService.updateUserAccountStatusApiV1AdminUsersUserIdStatusPatch(
         {
@@ -174,9 +172,9 @@ export class UsersService {
     }
 
     return Promise.resolve({ id: data.userId, ...data.requestBody } as any)
-  }
+  },
 
-  public static createUser(data: { requestBody: UserCreate }) {
+  createUser(data: { requestBody: UserCreate }) {
     return AuthService.registerApiV1AuthRegisterPost({
       requestBody: {
         email: data.requestBody.email,
@@ -185,23 +183,23 @@ export class UsersService {
         phone: data.requestBody.phone,
       },
     })
-  }
+  },
 
-  public static deleteUserMe() {
+  deleteUserMe() {
     return Promise.resolve({
       message: "Not supported by current backend contract",
     } as any)
-  }
+  },
 
-  public static deleteUser(_data: { userId: string }) {
+  deleteUser(_data: { userId: string }) {
     return Promise.resolve({
       message: "Not supported by current backend contract",
     } as any)
-  }
+  },
 }
 
-export class ItemsService {
-  public static async readItems(
+export const ItemsService = {
+  async readItems(
     data: { skip?: number; limit?: number } = {},
   ): Promise<ItemsPublic> {
     const response = await ListingsService.listListingsApiV1ListingsGet(data)
@@ -210,18 +208,16 @@ export class ItemsService {
       data: items,
       count: response.total,
     }
-  }
+  },
 
-  public static async readItem(data: { id: string }): Promise<ItemPublic> {
+  async readItem(data: { id: string }): Promise<ItemPublic> {
     const listing = await ListingsService.getListingApiV1ListingsListingIdGet({
       listingId: data.id,
     })
     return mapListingToItem(listing)
-  }
+  },
 
-  public static async createItem(data: {
-    requestBody: ItemCreate
-  }): Promise<ItemPublic> {
+  async createItem(data: { requestBody: ItemCreate }): Promise<ItemPublic> {
     const listingData: ListingCreate = {
       title: data.requestBody.title,
       description: data.requestBody.description ?? null,
@@ -235,9 +231,9 @@ export class ItemsService {
       requestBody: listingData,
     })
     return mapListingToItem(created)
-  }
+  },
 
-  public static async updateItem(data: {
+  async updateItem(data: {
     id: string
     requestBody: ItemUpdate
   }): Promise<ItemPublic> {
@@ -251,11 +247,11 @@ export class ItemsService {
         requestBody: patchData,
       })
     return mapListingToItem(updated)
-  }
+  },
 
-  public static deleteItem(data: { id: string }) {
+  deleteItem(data: { id: string }) {
     return ListingsService.deleteListingApiV1ListingsListingIdDelete({
       listingId: data.id,
     })
-  }
+  },
 }

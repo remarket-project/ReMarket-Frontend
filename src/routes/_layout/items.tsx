@@ -47,7 +47,13 @@ import {
 import useAuth from "@/hooks/useAuth"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type SortMode = "newest" | "oldest" | "price_asc" | "price_desc" | "a-z" | "relevant"
+type SortMode =
+  | "newest"
+  | "oldest"
+  | "price_asc"
+  | "price_desc"
+  | "a-z"
+  | "relevant"
 type ViewMode = "grid" | "table"
 type ConditionMode = "all" | "brand_new" | "like_new" | "good" | "fair" | "poor"
 
@@ -255,12 +261,16 @@ function FilterPanel({
     <div className="space-y-5">
       {/* Search */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
+        <label
+          htmlFor="filter-search"
+          className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]"
+        >
           Tìm kiếm
         </label>
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 z-10" />
           <Input
+            id="filter-search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Từ khóa..."
@@ -271,11 +281,17 @@ function FilterPanel({
 
       {/* Category */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
+        <label
+          htmlFor="filter-category"
+          className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]"
+        >
           Danh mục
         </label>
         <Select value={categoryId || "all"} onValueChange={setCategoryId}>
-          <SelectTrigger className="border-[#D8E2EF] bg-white h-10 rounded-xl focus:ring-blue-500">
+          <SelectTrigger
+            id="filter-category"
+            className="border-[#D8E2EF] bg-white h-10 rounded-xl focus:ring-blue-500"
+          >
             <SelectValue placeholder="Tất cả danh mục" />
           </SelectTrigger>
           <SelectContent>
@@ -291,9 +307,9 @@ function FilterPanel({
 
       {/* Price range */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
           Khoảng giá (VND)
-        </label>
+        </span>
         <div className="flex gap-2">
           <Input
             value={minPrice}
@@ -316,9 +332,9 @@ function FilterPanel({
 
       {/* Condition */}
       <div className="space-y-2">
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
           Tình trạng
-        </label>
+        </span>
         <div className="grid grid-cols-2 gap-1.5">
           {conditionOptions.map((opt) => (
             <button
@@ -339,14 +355,20 @@ function FilterPanel({
 
       {/* Sort */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]">
+        <label
+          htmlFor="filter-sort"
+          className="text-[11px] font-semibold uppercase tracking-wide text-[#5B7083]"
+        >
           Sắp xếp
         </label>
         <Select
           value={sortMode}
           onValueChange={(v) => setSortMode(v as SortMode)}
         >
-          <SelectTrigger className="border-[#D8E2EF] bg-white h-10 rounded-xl focus:ring-blue-500">
+          <SelectTrigger
+            id="filter-sort"
+            className="border-[#D8E2EF] bg-white h-10 rounded-xl focus:ring-blue-500"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -590,7 +612,14 @@ function ItemsContent() {
 
   const isSemantic = query.length > 0
   const { data: semanticData } = useQuery({
-    queryKey: ["semantic-search", query, categoryId, minPrice, maxPrice, region],
+    queryKey: [
+      "semantic-search",
+      query,
+      categoryId,
+      minPrice,
+      maxPrice,
+      region,
+    ],
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({
         keyword: query,
@@ -613,10 +642,14 @@ function ItemsContent() {
         list = list.filter((item) => item.condition_grade === conditionMode)
       }
       if (sortMode === "price_asc") {
-        return [...list].sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
+        return [...list].sort(
+          (a, b) => (Number(a.price) || 0) - (Number(b.price) || 0),
+        )
       }
       if (sortMode === "price_desc") {
-        return [...list].sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+        return [...list].sort(
+          (a, b) => (Number(b.price) || 0) - (Number(a.price) || 0),
+        )
       }
       if (sortMode === "a-z") {
         return [...list].sort((a, b) => a.title.localeCompare(b.title))
@@ -743,7 +776,8 @@ function ItemsContent() {
     return hardcodedCategories.find((c) => c.slug === slug)
   }, [search.categorySlug, effectiveCategoryId, allCategories])
 
-  const setQuery = (v: string) => goTo({ q: v, sort: v ? "relevant" : "newest", page: "1" })
+  const setQuery = (v: string) =>
+    goTo({ q: v, sort: v ? "relevant" : "newest", page: "1" })
   const setCategoryId = (v: string) =>
     goTo({ categoryId: v, categorySlug: "", page: "1" })
   const setMinPrice = (v: string) => goTo({ minPrice: v, page: "1" })

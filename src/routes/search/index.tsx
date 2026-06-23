@@ -185,12 +185,17 @@ function SearchPage() {
         {(qState || categoryId || minPrice || maxPrice) && (
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {qState ? (
-              <button className="rmk-chip" onClick={() => setQState("")}>
+              <button
+                type="button"
+                className="rmk-chip"
+                onClick={() => setQState("")}
+              >
                 Từ khoá: {qState} ×
               </button>
             ) : null}
             {categoryId ? (
               <button
+                type="button"
                 className="rmk-chip"
                 onClick={() => setCategoryId(undefined)}
               >
@@ -198,16 +203,25 @@ function SearchPage() {
               </button>
             ) : null}
             {minPrice ? (
-              <button className="rmk-chip" onClick={() => setMinPrice("")}>
+              <button
+                type="button"
+                className="rmk-chip"
+                onClick={() => setMinPrice("")}
+              >
                 Giá từ: {minPrice} ×
               </button>
             ) : null}
             {maxPrice ? (
-              <button className="rmk-chip" onClick={() => setMaxPrice("")}>
+              <button
+                type="button"
+                className="rmk-chip"
+                onClick={() => setMaxPrice("")}
+              >
                 Giá đến: {maxPrice} ×
               </button>
             ) : null}
             <button
+              type="button"
               className="rmk-chip rmk-chip-clear"
               onClick={() => {
                 setQState("")
@@ -294,9 +308,15 @@ function SearchPage() {
               onApply={() => setShowFilters(false)}
             />
           </div>
+          {/* biome-ignore lint/a11y/useSemanticElements: backdrop overlay, not a real button */}
           <div
             className="flex-1 bg-black/30"
+            role="button"
+            tabIndex={0}
             onClick={() => setShowFilters(false)}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") setShowFilters(false)
+            }}
           />
         </div>
       ) : null}

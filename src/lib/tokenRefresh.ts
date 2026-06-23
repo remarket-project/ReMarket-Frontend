@@ -30,14 +30,14 @@ export async function refreshAccessToken(): Promise<string | null> {
       localStorage.setItem("refresh_token", newRefreshToken)
     }
 
-    pendingRequests.forEach((callback) => callback(newAccessToken))
+    pendingRequests.forEach((callback) => void callback(newAccessToken))
     pendingRequests = []
     return newAccessToken
   } catch (_error) {
     // Refresh failed or token expired
     localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")
-    pendingRequests.forEach((callback) => callback(null))
+    pendingRequests.forEach((callback) => void callback(null))
     pendingRequests = []
     // Redirect to login if in browser environment
     if (typeof window !== "undefined") {

@@ -123,7 +123,15 @@ function CreateListingStep3({ form }: Step3Props) {
       {/* Upload Zone */}
       <div>
         <FormLabel className="block mb-3">Ảnh sản phẩm *</FormLabel>
+        {/* biome-ignore lint/a11y/useSemanticElements: this is a drag zone with hidden input/label inside, cannot use <button> */}
         <div
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              document.getElementById("image-input")?.click()
+            }
+          }}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}

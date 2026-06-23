@@ -21,6 +21,7 @@ export function ListingPreviewDialog({
             Chi tiết tin đăng chờ duyệt
           </h3>
           <button
+            type="button"
             onClick={onClose}
             className="rounded-full p-1.5 text-slate-400 hover:bg-white/[0.06] hover:text-slate-200"
           >
@@ -135,6 +136,7 @@ export function ListingPreviewDialog({
 
         <div className="flex justify-between gap-4 border-t border-white/[0.08] bg-[#1A2233]/40 p-4">
           <button
+            type="button"
             onClick={onReject}
             className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.07] px-5 py-2.5 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/[0.12]"
           >
@@ -142,12 +144,14 @@ export function ListingPreviewDialog({
           </button>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={onClose}
               className="rounded-xl border border-white/[0.08] bg-[#1A2233] px-5 py-2.5 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5"
             >
               Đóng lại
             </button>
             <button
+              type="button"
               onClick={onApprove}
               className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
             >

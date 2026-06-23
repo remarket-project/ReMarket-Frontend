@@ -36,11 +36,15 @@ export function RejectReasonDialog({ onClose, onSubmit }: RejectReasonProps) {
         </div>
 
         <div className="space-y-4 p-6">
-          <label className="text-sm font-medium text-slate-400">
+          <label
+            htmlFor="reject-reason"
+            className="text-sm font-medium text-slate-400"
+          >
             Vui lòng ghi rõ lý do để người bán hiểu và có thể chỉnh sửa lại bài
             đăng cho hợp lệ:
           </label>
           <textarea
+            id="reject-reason"
             required
             rows={4}
             value={reason}

@@ -10,8 +10,9 @@
  * 4. updateTraveledPath takes explicit args — no stale closure risk
  * 5. Partial coordinate handling: map still shows if only seller OR buyer coord available
  */
-import { useEffect, useRef, useState } from "react"
+
 import L from "leaflet"
+import { useCallback, useEffect, useRef, useState } from "react"
 import "leaflet/dist/leaflet.css"
 
 interface DeliveryMapProps {
@@ -31,7 +32,7 @@ interface DeliveryMapProps {
 // Keeps Leaflet map alive across React unmount/remount cycles.
 // Key = mapId (orderId), value = cached map context.
 interface MapCache {
-  container: HTMLDivElement      // The real Leaflet DOM container (kept alive)
+  container: HTMLDivElement // The real Leaflet DOM container (kept alive)
   map: L.Map
   staticLayer: L.LayerGroup
   shipperLayer: L.LayerGroup
@@ -56,8 +57,10 @@ function pruneCacheIfNeeded(currentId: string) {
 
 function positionForStatus(
   status: string,
-  sellerLat: number, sellerLng: number,
-  shippingLat: number, shippingLng: number,
+  sellerLat: number,
+  sellerLng: number,
+  shippingLat: number,
+  shippingLng: number,
   routeCoords: [number, number][],
 ): [number, number] {
   switch (status) {
@@ -74,10 +77,6 @@ function positionForStatus(
         sellerLng + (shippingLng - sellerLng) * 0.4,
       ]
     }
-    case "delivered":
-    case "completed":
-    case "returning":
-    case "returned":
     default:
       return [shippingLat, shippingLng]
   }
@@ -98,14 +97,16 @@ function shipperLabel(status: string): string {
 }
 
 function easeOutCubic(t: number): number {
-  return 1 - Math.pow(1 - t, 3)
+  return 1 - (1 - t) ** 3
 }
 
 function routeProgress(
   progress: number,
   routeCoords: [number, number][],
-  sLat: number, sLng: number,
-  bLat: number, bLng: number,
+  sLat: number,
+  sLng: number,
+  bLat: number,
+  bLng: number,
 ): [number, number] {
   const p = Math.min(progress, 1)
   if (routeCoords.length >= 2) {
@@ -131,8 +132,10 @@ function createShipperIcon() {
 
 /** Resolve effective coords when one side may be null */
 function resolveCoords(
-  sellerLat: number | null | undefined, sellerLng: number | null | undefined,
-  shippingLat: number | null | undefined, shippingLng: number | null | undefined,
+  sellerLat: number | null | undefined,
+  sellerLng: number | null | undefined,
+  shippingLat: number | null | undefined,
+  shippingLng: number | null | undefined,
 ): { sLat: number; sLng: number; bLat: number; bLng: number } | null {
   const sv = sellerLat != null && sellerLng != null
   const bv = shippingLat != null && shippingLng != null
@@ -149,10 +152,13 @@ function resolveCoords(
 
 export default function DeliveryMap({
   mapId,
-  sellerLat, sellerLng,
-  shippingLat, shippingLng,
+  sellerLat,
+  sellerLng,
+  shippingLat,
+  shippingLng,
   orderStatus,
-  sellerName, shippingName,
+  sellerName,
+  shippingName,
   className,
 }: DeliveryMapProps) {
   /** Outer wrapper div — always mounted, acts as viewport for the cached container */
@@ -183,12 +189,14 @@ export default function DeliveryMap({
       wrapper.appendChild(cache.container)
       cache.map.invalidateSize()
       // Restore refs
-      shipperRef.current = cache.shipperLayer.getLayers().find(
-        (l) => l instanceof L.Marker
-      ) as L.Marker ?? null
-      traveledLineRef.current = cache.shipperLayer.getLayers().find(
-        (l) => l instanceof L.Polyline
-      ) as L.Polyline ?? null
+      shipperRef.current =
+        (cache.shipperLayer
+          .getLayers()
+          .find((l) => l instanceof L.Marker) as L.Marker) ?? null
+      traveledLineRef.current =
+        (cache.shipperLayer
+          .getLayers()
+          .find((l) => l instanceof L.Polyline) as L.Polyline) ?? null
       setRouteCoords(cache.routeCoords)
     } else {
       // Create brand new map in a detached container
@@ -210,7 +218,7 @@ export default function DeliveryMap({
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
           subdomains: "abcd",
           maxZoom: 19,
-        }
+        },
       ).addTo(map)
 
       const staticLayer = L.layerGroup().addTo(map)
@@ -235,7 +243,12 @@ export default function DeliveryMap({
   useEffect(() => {
     abortRef.current?.abort()
 
-    if (!sellerLat || !sellerLng || !shippingLat || !shippingLng) {
+    if (
+      sellerLat == null ||
+      sellerLng == null ||
+      shippingLat == null ||
+      shippingLng == null
+    ) {
       setRouteCoords([])
       const c = _mapCache.get(mapId)
       if (c) c.routeCoords = []
@@ -245,8 +258,7 @@ export default function DeliveryMap({
     const controller = new AbortController()
     abortRef.current = controller
 
-    const url =
-      `https://router.project-osrm.org/route/v1/driving/${sellerLng},${sellerLat};${shippingLng},${shippingLat}?geometries=geojson&overview=full`
+    const url = `https://router.project-osrm.org/route/v1/driving/${sellerLng},${sellerLat};${shippingLng},${shippingLat}?geometries=geojson&overview=full`
 
     fetch(url, { signal: controller.signal })
       .then((r) => r.json())
@@ -318,7 +330,10 @@ export default function DeliveryMap({
       }).addTo(staticLayer)
     } else if (sv && bv) {
       L.polyline(
-        [[sellerLat!, sellerLng!], [shippingLat!, shippingLng!]],
+        [
+          [sellerLat!, sellerLng!],
+          [shippingLat!, shippingLng!],
+        ],
         { color: "#94A3B8", weight: 2, opacity: 0.4, dashArray: "4, 8" },
       ).addTo(staticLayer)
     }
@@ -332,7 +347,16 @@ export default function DeliveryMap({
     } else if (pts.length === 1) {
       map.setView(pts[0], 12)
     }
-  }, [routeCoords, sellerLat, sellerLng, shippingLat, shippingLng, sellerName, shippingName, mapId])
+  }, [
+    routeCoords,
+    sellerLat,
+    sellerLng,
+    shippingLat,
+    shippingLng,
+    sellerName,
+    shippingName,
+    mapId,
+  ])
 
   // ─── 4. Create shipper marker once coords are available ─────────
   useEffect(() => {
@@ -344,7 +368,14 @@ export default function DeliveryMap({
     if (!coords) return
     const { sLat, sLng, bLat, bLng } = coords
 
-    const pos = positionForStatus(orderStatus, sLat, sLng, bLat, bLng, routeCoords)
+    const pos = positionForStatus(
+      orderStatus,
+      sLat,
+      sLng,
+      bLat,
+      bLng,
+      routeCoords,
+    )
 
     shipperRef.current = L.marker(pos, {
       icon: createShipperIcon(),
@@ -352,37 +383,53 @@ export default function DeliveryMap({
     })
       .addTo(cache.shipperLayer)
       .bindPopup(shipperLabel(orderStatus))
-  }, [sellerLat, sellerLng, shippingLat, shippingLng, routeCoords, orderStatus, mapId])
+  }, [
+    sellerLat,
+    sellerLng,
+    shippingLat,
+    shippingLng,
+    routeCoords,
+    orderStatus,
+    mapId,
+  ])
 
   // ─── 5. Helper: update traveled (blue) path ─────────────────────
-  function updateTraveledPath(
-    progress: number,
-    rCoords: [number, number][],
-    sLat: number, sLng: number,
-    bLat: number, bLng: number,
-  ) {
-    const cache = _mapCache.get(mapId)
-    if (!cache) return
+  const updateTraveledPath = useCallback(
+    (
+      progress: number,
+      rCoords: [number, number][],
+      sLat: number,
+      sLng: number,
+      bLat: number,
+      bLng: number,
+    ) => {
+      const cache = _mapCache.get(mapId)
+      if (!cache) return
 
-    let traveled: [number, number][]
-    const p = Math.min(progress, 1)
-    if (rCoords.length >= 2) {
-      const idx = Math.floor(rCoords.length * p)
-      traveled = rCoords.slice(0, Math.max(idx + 1, 1))
-    } else {
-      traveled = [[sLat, sLng], [sLat + (bLat - sLat) * p, sLng + (bLng - sLng) * p]]
-    }
+      let traveled: [number, number][]
+      const p = Math.min(progress, 1)
+      if (rCoords.length >= 2) {
+        const idx = Math.floor(rCoords.length * p)
+        traveled = rCoords.slice(0, Math.max(idx + 1, 1))
+      } else {
+        traveled = [
+          [sLat, sLng],
+          [sLat + (bLat - sLat) * p, sLng + (bLng - sLng) * p],
+        ]
+      }
 
-    if (traveledLineRef.current) {
-      traveledLineRef.current.setLatLngs(traveled)
-    } else {
-      traveledLineRef.current = L.polyline(traveled, {
-        color: "#2563EB",
-        weight: 4,
-        opacity: 0.9,
-      }).addTo(cache.shipperLayer)
-    }
-  }
+      if (traveledLineRef.current) {
+        traveledLineRef.current.setLatLngs(traveled)
+      } else {
+        traveledLineRef.current = L.polyline(traveled, {
+          color: "#2563EB",
+          weight: 4,
+          opacity: 0.9,
+        }).addTo(cache.shipperLayer)
+      }
+    },
+    [mapId],
+  )
 
   // ─── 6. Animate shipper on status change ────────────────────────
   useEffect(() => {
@@ -397,12 +444,20 @@ export default function DeliveryMap({
     const prevStatus = prevStatusRef.current
     prevStatusRef.current = orderStatus
 
-    const target = positionForStatus(orderStatus, sLat, sLng, bLat, bLng, rCoords)
+    const target = positionForStatus(
+      orderStatus,
+      sLat,
+      sLng,
+      bLat,
+      bLng,
+      rCoords,
+    )
     marker.setPopupContent(shipperLabel(orderStatus))
 
     if (prevStatus === orderStatus) {
       marker.setLatLng(target)
-      const p = orderStatus === "pending" ? 0 : orderStatus === "shipping" ? 0.4 : 1
+      const p =
+        orderStatus === "pending" ? 0 : orderStatus === "shipping" ? 0.4 : 1
       updateTraveledPath(p, rCoords, sLat, sLng, bLat, bLng)
       return
     }
@@ -415,8 +470,11 @@ export default function DeliveryMap({
     const startLL = marker.getLatLng()
     const startTime = performance.now()
     const duration =
-      orderStatus === "shipping" ? 1500 :
-      prevStatus === "shipping" && orderStatus === "delivered" ? 1000 : 500
+      orderStatus === "shipping"
+        ? 1500
+        : prevStatus === "shipping" && orderStatus === "delivered"
+          ? 1000
+          : 500
 
     if (startLL.lat === target[0] && startLL.lng === target[1]) return
 
@@ -424,16 +482,30 @@ export default function DeliveryMap({
       if (!marker) return
       const t = Math.min((now - startTime) / duration, 1)
       const e = easeOutCubic(t)
-      marker.setLatLng([startLL.lat + (target[0] - startLL.lat) * e, startLL.lng + (target[1] - startLL.lng) * e])
+      marker.setLatLng([
+        startLL.lat + (target[0] - startLL.lat) * e,
+        startLL.lng + (target[1] - startLL.lng) * e,
+      ])
       const p =
-        orderStatus === "shipping" ? 0.4 + 0.55 * e :
-        orderStatus === "delivered" ? 0.4 + 0.6 * e : e
+        orderStatus === "shipping"
+          ? 0.4 + 0.55 * e
+          : orderStatus === "delivered"
+            ? 0.4 + 0.6 * e
+            : e
       updateTraveledPath(p, rCoords, sLat, sLng, bLat, bLng)
       if (t < 1) animFrameRef.current = requestAnimationFrame(step)
     }
 
     animFrameRef.current = requestAnimationFrame(step)
-  }, [orderStatus, routeCoords, sellerLat, sellerLng, shippingLat, shippingLng, mapId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    orderStatus,
+    routeCoords,
+    sellerLat,
+    sellerLng,
+    shippingLat,
+    shippingLng,
+    updateTraveledPath,
+  ])
 
   // ─── 7. Continuous tracking during SHIPPING ─────────────────────
   useEffect(() => {
@@ -457,7 +529,15 @@ export default function DeliveryMap({
     }, 2000)
 
     return () => clearInterval(interval)
-  }, [orderStatus, routeCoords, sellerLat, sellerLng, shippingLat, shippingLng, mapId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    orderStatus,
+    routeCoords,
+    sellerLat,
+    sellerLng,
+    shippingLat,
+    shippingLng,
+    updateTraveledPath,
+  ])
 
   return (
     <div

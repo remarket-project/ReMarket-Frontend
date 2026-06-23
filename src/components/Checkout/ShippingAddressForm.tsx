@@ -39,7 +39,7 @@ export default function ShippingAddressForm({
     fetch("https://provinces.open-api.vn/api/p/")
       .then((r) => r.json())
       .then(setProvinces)
-      .catch(() => {})
+      .catch(() => console.warn("Failed to fetch provinces"))
       .finally(() => setLoadingProv(false))
   }, [])
 
@@ -56,7 +56,7 @@ export default function ShippingAddressForm({
           fetch(`https://provinces.open-api.vn/api/p/${p.code}?depth=2`)
             .then((r) => r.json())
             .then((data) => setDistricts(data.districts || []))
-            .catch(() => {})
+            .catch(() => console.warn("Failed to fetch districts"))
             .finally(() => setLoadingDist(false))
         }
       }
@@ -84,7 +84,7 @@ export default function ShippingAddressForm({
           fetch(`https://provinces.open-api.vn/api/d/${d.code}?depth=2`)
             .then((r) => r.json())
             .then((data) => setWards(data.wards || []))
-            .catch(() => {})
+            .catch(() => console.warn("Failed to fetch wards"))
             .finally(() => setLoadingWard(false))
         }
       }

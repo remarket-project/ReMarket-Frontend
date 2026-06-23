@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { Package, Send, X } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -63,11 +63,14 @@ function formatVND(value: number) {
 function ProductCard({ product }: { product: FaqProduct }) {
   const navigate = useNavigate()
   const [imgError, setImgError] = useState(false)
+  const handleClick = () =>
+    navigate({ to: "/items/$listingId", params: { listingId: product.id } })
 
   return (
-    <div
-      onClick={() => navigate({ to: "/items/$listingId", params: { listingId: product.id } })}
-      className="group flex flex-col cursor-pointer gap-2 rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm transition-all hover:border-blue-300 hover:shadow-md active:scale-[0.97]"
+    <button
+      type="button"
+      onClick={handleClick}
+      className="group flex flex-col cursor-pointer gap-2 rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm transition-all hover:border-blue-300 hover:shadow-md active:scale-[0.97] text-left w-full"
     >
       <div className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
         {product.image_url && !imgError ? (
@@ -95,7 +98,7 @@ function ProductCard({ product }: { product: FaqProduct }) {
           {CONDITION_LABELS[product.condition] || product.condition}
         </span>
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -104,7 +107,8 @@ export function FaqChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "bot",
-      content: "Chào bạn! Tôi là trợ lý ảo của ReMarket. Bạn cần hỗ trợ gì về sản phẩm, giá cả hay chính sách?",
+      content:
+        "Chào bạn! Tôi là trợ lý ảo của ReMarket. Bạn cần hỗ trợ gì về sản phẩm, giá cả hay chính sách?",
     },
   ])
   const [input, setInput] = useState("")
@@ -113,7 +117,7 @@ export function FaqChatWidget() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, loading])
+  }, [])
 
   const toHistory = (msgs: ChatMessage[]) =>
     msgs.slice(1).map((m) => ({
@@ -163,10 +167,15 @@ export function FaqChatWidget() {
   if (!open) {
     return (
       <button
+        type="button"
         onClick={() => setOpen(true)}
         className="fixed bottom-6 right-6 z-50 cursor-pointer transition-transform hover:scale-110"
       >
-        <img src="/assets/images/chat-bot1.png" alt="Trợ lý AI" className="size-15" />
+        <img
+          src="/assets/images/chat-bot1.png"
+          alt="Trợ lý AI"
+          className="size-15"
+        />
       </button>
     )
   }
@@ -178,7 +187,11 @@ export function FaqChatWidget() {
           <img src="/assets/images/robot1.png" alt="AI" className="size-10" />
           <span className="font-bold">Trợ lý ReMarket</span>
         </div>
-        <button onClick={() => setOpen(false)} className="hover:bg-blue-500 rounded-full p-1 transition-colors">
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="hover:bg-blue-500 rounded-full p-1 transition-colors"
+        >
           <X className="size-5" />
         </button>
       </div>
@@ -186,7 +199,9 @@ export function FaqChatWidget() {
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg, i) => (
           <div key={i}>
-            <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            >
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
                   msg.role === "user"
@@ -208,19 +223,22 @@ export function FaqChatWidget() {
               </div>
             )}
 
-            {msg.role === "bot" && msg.suggested_actions && msg.suggested_actions.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {msg.suggested_actions.map((action, ai) => (
-                  <button
-                    key={ai}
-                    onClick={() => sendMessage(action.payload)}
-                    className="text-xs bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-full px-3 py-1.5 text-slate-600 transition-colors shadow-sm"
-                  >
-                    {action.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            {msg.role === "bot" &&
+              msg.suggested_actions &&
+              msg.suggested_actions.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {msg.suggested_actions.map((action, ai) => (
+                    <button
+                      type="button"
+                      key={ai}
+                      onClick={() => sendMessage(action.payload)}
+                      className="text-xs bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-full px-3 py-1.5 text-slate-600 transition-colors shadow-sm"
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              )}
           </div>
         ))}
         {loading && (
@@ -243,6 +261,7 @@ export function FaqChatWidget() {
           <div className="flex flex-wrap gap-1.5">
             {SUGGESTIONS.map((s) => (
               <button
+                type="button"
                 key={s}
                 onClick={() => sendMessage(s)}
                 className="text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 rounded-full px-3 py-1.5 text-slate-600 transition-colors"

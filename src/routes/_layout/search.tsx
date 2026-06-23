@@ -471,12 +471,16 @@ function SearchResultsPage() {
 
           <div className="space-y-5">
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block">
+              <label
+                htmlFor="search-keyword"
+                className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block"
+              >
                 Từ khóa
               </label>
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A99A8]" />
                 <Input
+                  id="search-keyword"
                   value={draft.q}
                   onChange={(event) =>
                     setDraft((prev) => ({ ...prev, q: event.target.value }))
@@ -488,7 +492,10 @@ function SearchResultsPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block">
+              <label
+                htmlFor="search-category"
+                className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block"
+              >
                 Danh mục
               </label>
               <Select
@@ -498,7 +505,10 @@ function SearchResultsPage() {
                 }
                 disabled={isLoadingCategories}
               >
-                <SelectTrigger className="border-[#D8E2EF] rounded-xl">
+                <SelectTrigger
+                  id="search-category"
+                  className="border-[#D8E2EF] rounded-xl"
+                >
                   <SelectValue placeholder="Tất cả danh mục" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -513,9 +523,9 @@ function SearchResultsPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block">
                 Khoảng giá (đ)
-              </label>
+              </span>
               <div className="grid grid-cols-2 gap-2">
                 <Input
                   type="number"
@@ -548,9 +558,9 @@ function SearchResultsPage() {
 
             {/* Condition Filters */}
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-2 block">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-2 block">
                 Tình trạng
-              </label>
+              </span>
               <div className="grid grid-cols-3 gap-1.5">
                 {conditionOptions.map((opt) => (
                   <button
@@ -573,7 +583,10 @@ function SearchResultsPage() {
 
             {/* Sorting */}
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block">
+              <label
+                htmlFor="search-sort"
+                className="text-xs font-bold uppercase tracking-wider text-[#5B7083] mb-1.5 block"
+              >
                 Sắp xếp theo
               </label>
               <Select
@@ -582,7 +595,10 @@ function SearchResultsPage() {
                   setDraft((prev) => ({ ...prev, sort: value as any }))
                 }
               >
-                <SelectTrigger className="border-[#D8E2EF] rounded-xl">
+                <SelectTrigger
+                  id="search-sort"
+                  className="border-[#D8E2EF] rounded-xl"
+                >
                   <SelectValue placeholder="Mới nhất" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
