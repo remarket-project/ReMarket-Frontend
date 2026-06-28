@@ -25,6 +25,7 @@ import { z } from "zod"
 
 import { CategoriesService, type ListingRead, ListingsService } from "@/client"
 import { DataTable } from "@/components/Common/DataTable"
+import { mapFrontendRegionToApi } from "@/components/Common/LocationSelector"
 import { columns } from "@/components/Items/columns"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import { Badge } from "@/components/ui/badge"
@@ -172,19 +173,20 @@ const itemsSearchSchema = z.object({
 })
 
 // ─── Query Options ────────────────────────────────────────────────────────────
-function getItemsQueryOptions() {
+function getItemsQueryOptions(region?: string) {
   return {
     queryFn: async () => {
       const response = await ListingsService.listListingsApiV1ListingsGet({
         skip: 0,
         limit: 100,
+        region: region ? mapFrontendRegionToApi(region) : undefined,
       })
       return {
         items: response.items ?? [],
         total: response.total ?? 0,
       }
     },
-    queryKey: ["items"],
+    queryKey: ["items", region],
     refetchInterval: 60_000,
   }
 }
@@ -575,7 +577,11 @@ function ItemsContent() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
-  const { data } = useSuspenseQuery(getItemsQueryOptions())
+  const query = search.q?.trim() ?? ""
+  const storedRegion = typeof window !== "undefined" ? localStorage.getItem("rmk_region") || "" : ""
+  const region = search.region || storedRegion
+
+  const { data } = useSuspenseQuery(getItemsQueryOptions(region))
   const allListings: ListingRead[] = data.items
 
   // 1. Resolve categorySlug → categoryId from categories list
@@ -599,11 +605,9 @@ function ItemsContent() {
     ""
 
   // 2. Compute derived values
-  const query = search.q?.trim() ?? ""
   const categoryId = effectiveCategoryId
   const minPrice = search.minPrice ?? ""
   const maxPrice = search.maxPrice ?? ""
-  const region = search.region ?? ""
   const conditionMode: ConditionMode =
     (search.condition as ConditionMode) ?? "all"
   const sortMode: SortMode = (search.sort as SortMode) ?? "newest"
@@ -627,6 +631,7 @@ function ItemsContent() {
         categoryId: categoryId || undefined,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        region: region ? mapFrontendRegionToApi(region) : undefined,
         skip: 0,
         limit: 100,
       }),
@@ -674,13 +679,10 @@ function ItemsContent() {
         return false
       const price = Number(item.price) || 0
       if (price < minP || price > maxP) return false
-      if (region) {
-        const loc = (item.location_summary || "").toLowerCase()
-        const keywords = REGION_KEYWORDS[region]
-        if (keywords && !keywords.some((kw) => loc.includes(kw))) return false
-      }
       return true
     })
+
+    const regionKeywords = region ? REGION_KEYWORDS[region] : null
 
     return list.sort((a: ListingRead, b: ListingRead) => {
       if (sortMode === "a-z") return a.title.localeCompare(b.title)
@@ -688,6 +690,17 @@ function ItemsContent() {
         return (Number(a.price) || 0) - (Number(b.price) || 0)
       if (sortMode === "price_desc")
         return (Number(b.price) || 0) - (Number(a.price) || 0)
+      // Region prioritization: matching listings first, then sort by date
+      if (regionKeywords) {
+        const aInRegion = regionKeywords.some((kw) =>
+          (a.location_summary || "").toLowerCase().includes(kw),
+        )
+        const bInRegion = regionKeywords.some((kw) =>
+          (b.location_summary || "").toLowerCase().includes(kw),
+        )
+        if (aInRegion && !bInRegion) return -1
+        if (!aInRegion && bInRegion) return 1
+      }
       const aTime = a.created_at ? new Date(a.created_at).getTime() : 0
       const bTime = b.created_at ? new Date(b.created_at).getTime() : 0
       return sortMode === "newest" ? bTime - aTime : aTime - bTime
@@ -787,6 +800,10 @@ function ItemsContent() {
   const setSortMode = (v: SortMode) => goTo({ sort: v, page: "1" })
   const setViewMode = (v: ViewMode) => goTo({ view: v })
   const setPage = (p: number) => goTo({ page: String(p) })
+  const clearRegion = () => {
+    localStorage.setItem("rmk_region", "")
+    goTo({ region: "", page: "1" })
+  }
 
   const handleReset = () => {
     navigate({
@@ -1067,7 +1084,7 @@ function ItemsContent() {
                   Khu vực: {REGION_LABELS[region]}
                   <button
                     type="button"
-                    onClick={() => goTo({ region: "", page: "1" })}
+                    onClick={clearRegion}
                     className="hover:text-slate-900 cursor-pointer"
                   >
                     <X className="size-3 shrink-0" />

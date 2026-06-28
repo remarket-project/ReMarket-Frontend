@@ -1069,6 +1069,7 @@ export class ListingsService {
                 min_price: data.minPrice,
                 max_price: data.maxPrice,
                 sort_by: data.sortBy,
+                region: data.region,
                 skip: data.skip,
                 limit: data.limit
             },

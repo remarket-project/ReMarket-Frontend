@@ -28,7 +28,7 @@ import WithdrawDialog from "@/components/Wallet/WithdrawDialog"
 
 type TxFilter = "all" | "in" | "out"
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"
+const API_BASE = import.meta.env.VITE_API_URL
 
 function getToken() {
   return localStorage.getItem("access_token")

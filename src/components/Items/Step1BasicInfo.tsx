@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import type { UseFormReturn } from "react-hook-form"
 import { CategoriesService } from "@/client"
+import PriceSuggestion from "@/components/MarketPrice/PriceSuggestion"
 import {
   FormControl,
   FormDescription,
@@ -193,7 +194,7 @@ function CreateListingStep1({ form }: Step1Props) {
                       step="1000"
                       min="0"
                       max="1000000000"
-                      className="pr-8"
+                      className="pr-24"
                       value={field.value || ""}
                       onChange={(e) =>
                         field.onChange(
@@ -201,9 +202,18 @@ function CreateListingStep1({ form }: Step1Props) {
                         )
                       }
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-semibold">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-semibold pointer-events-none">
                       đ
                     </span>
+                    <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                      <PriceSuggestion
+                        categoryId={form.watch("categoryId")}
+                        conditionGrade={form.watch("conditionGrade")}
+                        title={form.watch("title") || ""}
+                        description={form.watch("description")}
+                        onSelectPrice={(price) => form.setValue("price", price)}
+                      />
+                    </div>
                   </div>
                 </FormControl>
                 <FormDescription>

@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { ExternalLink, Loader2 } from "lucide-react"
+import { useEffect } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -11,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"
+const API_BASE = import.meta.env.VITE_API_URL
 
 function getToken() {
   return localStorage.getItem("access_token")
@@ -54,17 +55,29 @@ async function startOnboarding(): Promise<{
 }
 
 export default function StripeConnectSettings() {
-  const { data: status, isLoading } = useQuery<OnboardingStatus>({
+  const { data: status, isLoading, refetch } = useQuery<OnboardingStatus>({
     queryKey: ["stripe-onboarding-status"],
     queryFn: fetchOnboardingStatus,
     staleTime: 0,
   })
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("onboarding") === "complete") {
+      toast.success("Kết nối Stripe thành công!")
+      refetch()
+      const url = new URL(window.location.href)
+      url.searchParams.delete("onboarding")
+      url.searchParams.delete("tab")
+      url.searchParams.set("tab", "payment")
+      window.history.replaceState({}, "", url.toString())
+    }
+  }, [refetch])
+
   const onboardingMutation = useMutation({
     mutationFn: startOnboarding,
     onSuccess: (data) => {
-      window.open(data.onboarding_url, "_blank")
-      toast.success("Chuyển đến Stripe để hoàn tất đăng ký...")
+      window.location.href = data.onboarding_url
     },
     onError: (err: Error) => {
       toast.error(err.message)

@@ -86,6 +86,17 @@ function SearchShell({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Sync region from localStorage (set by LocationSelector or other tabs)
+  useEffect(() => {
+    const checkRegion = () => setSelectedRegion(getStoredRegion())
+    window.addEventListener("storage", checkRegion)
+    const interval = setInterval(checkRegion, 2000)
+    return () => {
+      window.removeEventListener("storage", checkRegion)
+      clearInterval(interval)
+    }
+  }, [])
+
   const selectedLabel =
     REGIONS.find((r) => r.value === selectedRegion)?.label || "Chọn khu vực"
 

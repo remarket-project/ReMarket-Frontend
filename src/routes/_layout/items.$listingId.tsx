@@ -3,10 +3,10 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import {
   ArrowLeft,
   BadgeCheck,
+  BarChart3,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
-  Clock3,
   Eye,
   Handshake,
   Heart,
@@ -17,9 +17,8 @@ import {
   ShieldCheck,
   Star,
   Tag,
-  Wallet,
 } from "lucide-react"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 
 import {
   CategoriesService,
@@ -31,6 +30,7 @@ import {
   UsersService,
 } from "@/client"
 import CheckoutDialog from "@/components/Checkout/CheckoutDialog"
+import MarketAnalysis from "@/components/MarketPrice/MarketAnalysis"
 import { ImageGallery } from "@/components/Listings/ImageGallery"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import { MakeOfferDialog } from "@/components/Listings/MakeOfferDialog"
@@ -145,7 +145,7 @@ function DetailSkeleton() {
         <div className="space-y-4">
           <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
           <div className="flex gap-2">
-            {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton
                 key={i}
                 className="h-16 w-16 rounded-xl flex-shrink-0"
@@ -162,7 +162,7 @@ function DetailSkeleton() {
       {/* Tabs */}
       <div className="space-y-4">
         <div className="flex gap-2">
-          {Array.from({ length: 3 }).map((_, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-10 w-28 rounded-full" />
           ))}
         </div>
@@ -334,26 +334,28 @@ function SellerCard({ sellerId }: { sellerId: string }) {
 }
 
 // ─── Detail Tabs ──────────────────────────────────────────────────────────────
-type TabKey = "description" | "specs" | "market"
+type TabKey = "description" | "specs" | "market" | "market_analysis"
 
 function DetailTabs({
   listing,
   categoryName,
-  offerCount,
-  bestOffer,
+  activeTab: externalTab,
+  onTabChange,
 }: {
   listing: ListingWithImages
   categoryName: string | undefined
-  offerCount: number
-  bestOffer: number
+  activeTab?: TabKey
+  onTabChange?: (tab: TabKey) => void
 }) {
-  const [activeTab, setActiveTab] = useState<TabKey>("description")
+  const [internalTab, setInternalTab] = useState<TabKey>("description")
+  const activeTab = externalTab ?? internalTab
+  const setActiveTab: (tab: TabKey) => void = onTabChange ?? setInternalTab
   const [descExpanded, setDescExpanded] = useState(false)
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: "description", label: "Mô tả" },
     { key: "specs", label: "Thông số" },
-    { key: "market", label: "Nhịp thị trường" },
+    { key: "market_analysis", label: "Tham khảo giá thị trường" },
   ]
 
   const description = listing.description || ""
@@ -478,34 +480,8 @@ function DetailTabs({
           </div>
         )}
 
-        {activeTab === "market" && (
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-white px-4 py-3.5">
-              <span className="flex items-center gap-2 text-sm text-[#5B7083]">
-                <Handshake className="size-4 text-[#2563EB]" />
-                Đề nghị đang có
-              </span>
-              <span className="font-bold text-[#102A43]">{offerCount}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#ECFDF5] px-4 py-3.5">
-              <span className="flex items-center gap-2 text-sm text-[#059669]">
-                <Wallet className="size-4" />
-                Giá đề nghị tốt nhất
-              </span>
-              <span className="font-bold text-[#059669]">
-                {bestOffer > 0 ? currency(String(bestOffer)) : "–"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-xl border border-[#D8E2EF] bg-[#FFFBEB] px-4 py-3.5">
-              <span className="flex items-center gap-2 text-sm text-[#D97706]">
-                <Clock3 className="size-4" />
-                Cập nhật gần nhất
-              </span>
-              <span className="font-bold text-[#D97706]">
-                {prettyDate(listing.updated_at)}
-              </span>
-            </div>
-          </div>
+        {activeTab === "market_analysis" && (
+          <MarketAnalysis listingId={listing.id} />
         )}
       </div>
     </div>
@@ -618,6 +594,15 @@ function ListingDetailPage() {
   })
 
   const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const tabsRef = useRef<HTMLDivElement>(null)
+  const [activeMarketTab, setActiveMarketTab] = useState<TabKey | undefined>(undefined)
+
+  const openMarketAnalysis = useCallback(() => {
+    setActiveMarketTab("market_analysis")
+    setTimeout(() => {
+      tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 100)
+  }, [])
 
   if (isLoading) return <DetailSkeleton />
 
@@ -801,6 +786,19 @@ function ListingDetailPage() {
                 </Button>
               )}
 
+              {/* Market analysis button */}
+              {canBuyNow && (
+                <Button
+                  id="btn-market-analysis"
+                  variant="outline"
+                  className="w-full border-[#D8E2EF] text-[#059669] hover:bg-[#ECFDF5] gap-2 h-11"
+                  onClick={openMarketAnalysis}
+                >
+                  <BarChart3 className="size-4" />
+                  Tham khảo giá thị trường
+                </Button>
+              )}
+
               {/* Make offer button */}
               {canMakeOffer && (
                 <Button
@@ -925,12 +923,14 @@ function ListingDetailPage() {
       </div>
 
       {/* ── Detail tabs (description, specs, market) ── */}
+      <div ref={tabsRef}>
       <DetailTabs
         listing={listing}
         categoryName={category?.name}
-        offerCount={offerCount}
-        bestOffer={bestOffer}
+        activeTab={activeMarketTab}
+        onTabChange={(tab) => setActiveMarketTab(tab)}
       />
+      </div>
 
       {/* ── Similar products ── */}
       {listing.id && <SimilarListings listingId={listing.id} />}

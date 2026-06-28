@@ -1362,6 +1362,7 @@ export type ListListingsApiV1ListingsGetData = {
     limit?: number;
     maxPrice?: (number | null);
     minPrice?: (number | null);
+    region?: (string | null);
     sellerId?: (string | null);
     skip?: number;
     sortBy?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'popular' | 'featured' | 'relevant';

@@ -156,6 +156,7 @@ function CreateListingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createdListingId, setCreatedListingId] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [formResetCount, setFormResetCount] = useState(0)
 
   const form = useForm<ListingFormData>({
     resolver: zodResolver(listingFormSchema),
@@ -421,7 +422,6 @@ function CreateListingPage() {
 
     const doAutoFill = async () => {
       try {
-        console.log("[Page AutoFill] Starting page-level auto-fill")
         const res = await fetch("https://provinces.open-api.vn/api/p/")
         if (!isMountedRef.current) return
         const provinces: Array<{ code: number; name: string }> = await res.json()
@@ -431,7 +431,6 @@ function CreateListingPage() {
         const pMatch = provinces.find((p) => normalizeLocation(p.name) === normProvince)
         if (!pMatch || !isMountedRef.current) return
 
-        console.log("[Page AutoFill] Setting province:", pMatch.code, pMatch.name)
         form.setValue("province", String(pMatch.code), { shouldValidate: true, shouldDirty: true })
 
         const dRes = await fetch(
@@ -446,7 +445,6 @@ function CreateListingPage() {
           const normDistrict = normalizeLocation(user.district)
           const dMatch = dists.find((d) => normalizeLocation(d.name) === normDistrict)
           if (dMatch) {
-            console.log("[Page AutoFill] Setting district:", dMatch.code, dMatch.name)
             form.setValue("district", String(dMatch.code), { shouldValidate: true, shouldDirty: true })
 
             const wRes = await fetch(
@@ -461,7 +459,6 @@ function CreateListingPage() {
               const normWard = normalizeLocation(user.ward)
               const wMatch = wds.find((w) => normalizeLocation(w.name) === normWard)
               if (wMatch) {
-                console.log("[Page AutoFill] Setting ward:", wMatch.code, wMatch.name)
                 form.setValue("ward", String(wMatch.code), {
                   shouldValidate: true,
                   shouldDirty: true,
@@ -472,10 +469,8 @@ function CreateListingPage() {
         }
 
         if (user.address_detail && isMountedRef.current) {
-          console.log("[Page AutoFill] Setting addressDetail:", user.address_detail)
           form.setValue("addressDetail", user.address_detail, { shouldDirty: true })
         }
-        console.log("[Page AutoFill] Done")
       } catch (err) {
         console.error("Auto-fill address failed:", err)
       }
@@ -483,7 +478,7 @@ function CreateListingPage() {
 
     doAutoFill()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  }, [user, formResetCount])
 
   const title = form.watch("title")
   const price = form.watch("price")
@@ -730,6 +725,8 @@ function CreateListingPage() {
                 setShowSuccessModal(false)
                 setCreatedListingId(null)
                 setCurrentStep(1)
+                autoFillDoneRef.current = false
+                setFormResetCount((c) => c + 1)
                 form.reset({
                   title: "",
                   categoryId: "",

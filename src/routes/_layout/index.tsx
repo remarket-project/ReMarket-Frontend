@@ -5,13 +5,17 @@ import {
   ChevronRight,
   Clock3,
   Eye,
+  MapPin,
   RefreshCw,
 } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { type ListingRead, ListingsService } from "@/client"
+import { mapFrontendRegionToApi } from "@/components/Common/LocationSelector"
 import { ListingCard } from "@/components/Listings/ListingCard"
 import { Button } from "@/components/ui/button"
+import useAuth from "@/hooks/useAuth"
+import { normalizeLocation } from "@/lib/location-utils"
 
 const REGION_KEYWORDS: Record<string, string[]> = {
   hanoi: [
@@ -138,29 +142,30 @@ function FeedSkeleton() {
   )
 }
 
-const feedTabs = ["Dành cho bạn", "Mới nhất", "Gần bạn", "Nổi bật"] as const
-
-function parsePrice(value: string) {
-  const digits = Number(String(value).replace(/[^0-9.]/g, ""))
-  return Number.isFinite(digits) ? digits : 0
-}
+const feedTabs = ["Mới nhất", "Giá rẻ nhất", "Gần bạn", "Xem nhiều"] as const
 
 function getStoredRegion(): string {
   if (typeof window === "undefined") return ""
   return localStorage.getItem("rmk_region") || ""
 }
 
-function matchesRegion(item: ListingRead, region: string): boolean {
-  if (!region) return true
-  const loc = (item.location_summary || "").toLowerCase()
-  const keywords = REGION_KEYWORDS[region]
-  return keywords ? keywords.some((kw) => loc.includes(kw)) : true
-}
-
 function MarketplaceHome() {
+  const { user: currentUser } = useAuth()
   const [activeTab, setActiveTab] =
-    useState<(typeof feedTabs)[number]>("Dành cho bạn")
+    useState<(typeof feedTabs)[number]>("Mới nhất")
   const [selectedRegion, setSelectedRegion] = useState(getStoredRegion)
+
+  // Derive nearby region from user's profile province
+  const userRegion = useMemo(() => {
+    if (!currentUser?.province) return null
+    const normalized = normalizeLocation(currentUser.province).toLowerCase()
+    for (const [key, keywords] of Object.entries(REGION_KEYWORDS)) {
+      if (keywords.some((kw) => normalized.includes(kw) || kw.includes(normalized))) {
+        return key
+      }
+    }
+    return null
+  }, [currentUser?.province])
 
   // Listen for region changes in localStorage (set by header dropdown)
   useEffect(() => {
@@ -173,17 +178,27 @@ function MarketplaceHome() {
     }
   }, [])
 
+  const sortByParam =
+    activeTab === "Giá rẻ nhất" ? "price_asc" as const
+    : activeTab === "Xem nhiều" ? "popular" as const
+    : undefined
+  const regionParam = activeTab === "Gần bạn"
+    ? mapFrontendRegionToApi(selectedRegion)
+    : undefined
+
   const {
     data: listingsData,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["home-listings"],
+    queryKey: ["home-listings", activeTab, regionParam, sortByParam],
     queryFn: () =>
       ListingsService.listListingsApiV1ListingsGet({
         skip: 0,
         limit: 24,
+        sortBy: sortByParam,
+        region: regionParam,
       }),
     staleTime: 0,
     refetchInterval: 60_000,
@@ -194,25 +209,30 @@ function MarketplaceHome() {
 
   const visibleListings = useMemo(() => {
     const cloned = [...listings]
-    if (activeTab === "Gần bạn" && selectedRegion) {
-      return cloned
-        .filter((item) => matchesRegion(item, selectedRegion))
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        )
+
+    if (activeTab === "Gần bạn") {
+      const effectiveRegion = userRegion || selectedRegion
+      if (effectiveRegion) {
+        const keywords = REGION_KEYWORDS[effectiveRegion]
+        return cloned.sort((a, b) => {
+          const aInRegion = keywords?.some((kw) =>
+            (a.location_summary || "").toLowerCase().includes(kw),
+          )
+          const bInRegion = keywords?.some((kw) =>
+            (b.location_summary || "").toLowerCase().includes(kw),
+          )
+          if (aInRegion && !bInRegion) return -1
+          if (!aInRegion && bInRegion) return 1
+          return (
+            new Date(b.created_at).getTime() -
+            new Date(a.created_at).getTime()
+          )
+        })
+      }
     }
-    if (activeTab === "Mới nhất") {
-      return cloned.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      )
-    }
-    if (activeTab === "Nổi bật") {
-      return cloned.sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
-    }
+
     return cloned
-  }, [activeTab, selectedRegion, listings])
+  }, [activeTab, userRegion, selectedRegion, listings])
 
   const featuredListings = useMemo(
     () => visibleListings.slice(0, 8),
@@ -266,9 +286,11 @@ function MarketplaceHome() {
               Tin nổi bật hôm nay
             </div>
             <h2 className="mt-2 text-lg font-bold text-[#102A43] md:text-xl">
-              {selectedRegion && REGION_LABELS[selectedRegion]
-                ? `Gần ${REGION_LABELS[selectedRegion]}`
-                : "Gần bạn, dễ chốt, dễ quét"}
+              {activeTab === "Gần bạn" && userRegion && REGION_LABELS[userRegion]
+                ? `Gần ${REGION_LABELS[userRegion]}`
+                : selectedRegion && REGION_LABELS[selectedRegion]
+                  ? `Gần ${REGION_LABELS[selectedRegion]}`
+                  : "Gần bạn, dễ chốt, dễ quét"}
             </h2>
           </div>
           <Link
@@ -327,7 +349,16 @@ function MarketplaceHome() {
           ))}
         </div>
 
-        {isLoading ? (
+        {activeTab === "Gần bạn" && !userRegion && !selectedRegion ? (
+          <div className="rounded-[22px] border border-dashed border-[#D8E2EF] bg-white p-10 text-center shadow-sm">
+            <MapPin className="mx-auto mb-3 size-8 text-[#94A3B8]" />
+            <p className="text-sm text-[#5B7083]">
+              {currentUser
+                ? "Vui lòng cập nhật địa chỉ trong Cài đặt để sử dụng tính năng Gần bạn."
+                : "Đăng nhập và cập nhật địa chỉ để xem tin gần bạn."}
+            </p>
+          </div>
+        ) : isLoading ? (
           <FeedSkeleton />
         ) : isError ? (
           <div className="rounded-[22px] border border-[#D8E2EF] bg-white p-10 text-center shadow-sm">

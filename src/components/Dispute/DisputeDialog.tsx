@@ -15,7 +15,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"
+const API_BASE = import.meta.env.VITE_API_URL
 
 interface DisputeDialogProps {
   orderId: string
@@ -44,7 +44,12 @@ export function DisputeDialog({
 
   const acceptMutation = useMutation({
     mutationFn: () =>
-      fetch(`/api/v1/orders/${orderId}/accept`, { method: "POST" }),
+      fetch(`/api/v1/orders/${orderId}/accept`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })

@@ -2,6 +2,10 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_URL: string
+  readonly VITE_WS_URL?: string
+  readonly VITE_STRIPE_PUBLISHABLE_KEY?: string
+  readonly VITE_ENABLE_DEVTOOLS?: string
+  readonly VITE_APP_NAME?: string
 }
 
 interface ImportMeta {
