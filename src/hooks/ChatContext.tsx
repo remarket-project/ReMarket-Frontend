@@ -87,7 +87,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       total += Math.max(0, conv.messages_count - prev)
     }
     setUnreadCount(total)
-  }, [conversations, user])
+  }, [conversations, user, lastSeen])
 
   // refreshUnread chỉ cần invalidate query → React Query refetch → effect trên tự tính lại
   const refreshUnread = useCallback(() => {

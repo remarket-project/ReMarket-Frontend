@@ -23,6 +23,8 @@ import CreateListingStep1 from "@/components/Items/Step1BasicInfo"
 import CreateListingStep2 from "@/components/Items/Step2Description"
 import CreateListingStep3 from "@/components/Items/Step3Images"
 import CreateListingStep3Location from "@/components/Items/Step3Location"
+import useAuth from "@/hooks/useAuth"
+import { normalizeLocation } from "@/lib/location-utils"
 import CreateListingStep4 from "@/components/Items/Step4Review"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -35,12 +37,8 @@ import {
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
 import { Progress } from "@/components/ui/progress"
-import useAuth from "@/hooks/useAuth"
-import { extractErrorMessage } from "@/utils"
 
-function normalize(s: string): string {
-  return s.toLowerCase().trim().replace(/\s+/g, " ")
-}
+import { extractErrorMessage } from "@/utils"
 
 function formatVND(value: number) {
   if (!value || Number.isNaN(value) || value <= 0) return "0 ₫"
@@ -198,7 +196,8 @@ function CreateListingPage() {
     } catch {
       localStorage.removeItem(DRAFT_KEY)
     }
-  }, [form])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const subscription = form.watch((value) => {
@@ -395,14 +394,15 @@ function CreateListingPage() {
     }
   }
 
-  const title = form.watch("title")
-  const price = form.watch("price")
-  const province = form.watch("province")
-  const images = form.watch("images")
-  const condition = form.watch("conditionGrade")
-  const isNegotiable = form.watch("isNegotiable")
-
   // ─── Auto-fill địa chỉ từ hồ sơ cá nhân ─────────────────────────────
+  const isMountedRef = useRef(true)
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
   const { user } = useAuth()
   const autoFillDoneRef = useRef(false)
 
@@ -410,81 +410,87 @@ function CreateListingPage() {
     if (!user?.province || autoFillDoneRef.current) return
 
     const alreadyFilled = ["province", "district", "ward"].every((k) =>
-      form.getValues(k as keyof ListingFormData),
+      form.getValues(k as any),
     )
-    if (alreadyFilled) return
+    if (alreadyFilled) {
+      autoFillDoneRef.current = true
+      return
+    }
 
     autoFillDoneRef.current = true
-    let cancelled = false
 
     const doAutoFill = async () => {
       try {
+        console.log("[Page AutoFill] Starting page-level auto-fill")
         const res = await fetch("https://provinces.open-api.vn/api/p/")
-        if (cancelled) return
-        const provinces: Array<{ code: number; name: string }> =
-          await res.json()
+        if (!isMountedRef.current) return
+        const provinces: Array<{ code: number; name: string }> = await res.json()
         queryClient.setQueryData(["vn-provinces"], provinces)
 
-        const normProvince = normalize(user.province!)
-        const pMatch = provinces.find((p) => normalize(p.name) === normProvince)
-        if (!pMatch || cancelled) return
+        const normProvince = normalizeLocation(user.province!)
+        const pMatch = provinces.find((p) => normalizeLocation(p.name) === normProvince)
+        if (!pMatch || !isMountedRef.current) return
 
-        form.setValue("province", String(pMatch.code), { shouldDirty: true })
+        console.log("[Page AutoFill] Setting province:", pMatch.code, pMatch.name)
+        form.setValue("province", String(pMatch.code), { shouldValidate: true, shouldDirty: true })
 
         const dRes = await fetch(
           `https://provinces.open-api.vn/api/p/${pMatch.code}?depth=2`,
         )
-        if (cancelled) return
+        if (!isMountedRef.current) return
         const dData = await dRes.json()
-        const dists: Array<{ code: number; name: string }> =
-          dData.districts || []
+        const dists: Array<{ code: number; name: string }> = dData.districts || []
         queryClient.setQueryData(["vn-districts", String(pMatch.code)], dists)
 
-        if (user.district && !cancelled) {
-          const normDistrict = normalize(user.district)
-          const dMatch = dists.find((d) => normalize(d.name) === normDistrict)
+        if (user.district && isMountedRef.current) {
+          const normDistrict = normalizeLocation(user.district)
+          const dMatch = dists.find((d) => normalizeLocation(d.name) === normDistrict)
           if (dMatch) {
-            form.setValue("district", String(dMatch.code), {
-              shouldDirty: true,
-            })
+            console.log("[Page AutoFill] Setting district:", dMatch.code, dMatch.name)
+            form.setValue("district", String(dMatch.code), { shouldValidate: true, shouldDirty: true })
 
             const wRes = await fetch(
               `https://provinces.open-api.vn/api/d/${dMatch.code}?depth=2`,
             )
-            if (cancelled) return
+            if (!isMountedRef.current) return
             const wData = await wRes.json()
             const wds: Array<{ code: number; name: string }> = wData.wards || []
             queryClient.setQueryData(["vn-wards", String(dMatch.code)], wds)
 
-            if (user.ward && !cancelled) {
-              const normWard = normalize(user.ward)
-              const wMatch = wds.find((w) => normalize(w.name) === normWard)
+            if (user.ward && isMountedRef.current) {
+              const normWard = normalizeLocation(user.ward)
+              const wMatch = wds.find((w) => normalizeLocation(w.name) === normWard)
               if (wMatch) {
+                console.log("[Page AutoFill] Setting ward:", wMatch.code, wMatch.name)
                 form.setValue("ward", String(wMatch.code), {
-                  shouldDirty: true,
                   shouldValidate: true,
+                  shouldDirty: true,
                 })
               }
             }
           }
         }
 
-        if (user.address_detail && !cancelled) {
-          form.setValue("addressDetail", user.address_detail, {
-            shouldDirty: true,
-          })
+        if (user.address_detail && isMountedRef.current) {
+          console.log("[Page AutoFill] Setting addressDetail:", user.address_detail)
+          form.setValue("addressDetail", user.address_detail, { shouldDirty: true })
         }
+        console.log("[Page AutoFill] Done")
       } catch (err) {
         console.error("Auto-fill address failed:", err)
       }
     }
 
     doAutoFill()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
-    return () => {
-      cancelled = true
-    }
-  }, [user, form, queryClient])
+  const title = form.watch("title")
+  const price = form.watch("price")
+  const province = form.watch("province")
+  const images = form.watch("images")
+  const condition = form.watch("conditionGrade")
+  const isNegotiable = form.watch("isNegotiable")
 
   return (
     <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-sm text-card-foreground">

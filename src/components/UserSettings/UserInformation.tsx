@@ -1,9 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Camera, MapPin, Sparkles } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+
+import { normalizeLocation } from "@/lib/location-utils"
 
 import { UsersService, type UserUpdateMe } from "@/client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -99,7 +101,7 @@ const UserInformation = () => {
   })
 
   const watchedProvince = form.watch("province")
-  const provinceCode = provinces.find((p) => p.name === watchedProvince)?.code
+  const provinceCode = provinces.find((p) => normalizeLocation(p.name) === normalizeLocation(watchedProvince))?.code
 
   const { data: districts = [], isLoading: loadingDistricts } = useQuery({
     queryKey: ["vn-districts", provinceCode],
@@ -116,7 +118,7 @@ const UserInformation = () => {
   })
 
   const watchedDistrict = form.watch("district")
-  const districtCode = districts.find((d) => d.name === watchedDistrict)?.code
+  const districtCode = districts.find((d) => normalizeLocation(d.name) === normalizeLocation(watchedDistrict))?.code
 
   const { data: wards = [], isLoading: loadingWards } = useQuery({
     queryKey: ["vn-wards", districtCode],
@@ -131,6 +133,18 @@ const UserInformation = () => {
     enabled: Boolean(districtCode),
     staleTime: 24 * 60 * 60 * 1000,
   })
+
+  // Sync short-name stored in profile to full API name for Select display
+  useEffect(() => {
+    if (provinces.length === 0) return
+    const current = form.getValues("province")
+    if (current && !provinces.some((p) => p.name === current)) {
+      const match = provinces.find((p) => normalizeLocation(p.name) === normalizeLocation(current))
+      if (match) {
+        form.setValue("province", match.name)
+      }
+    }
+  }, [provinces])
 
   const toggleEditMode = () => {
     setEditMode(!editMode)

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import type { ShippingAddressInput } from "@/client"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { normalizeLocation } from "@/lib/location-utils"
 import {
   Select,
   SelectContent,
@@ -46,7 +47,7 @@ export default function ShippingAddressForm({
   // Auto-fetch districts if province exists and districts list is empty
   useEffect(() => {
     if (provinces.length > 0 && value.province) {
-      const p = provinces.find((x) => x.name === value.province)
+      const p = provinces.find((x) => normalizeLocation(x.name) === normalizeLocation(value.province))
       if (p) {
         if (value.province_id !== p.code) {
           onChange({ ...value, province_id: p.code })
@@ -74,7 +75,7 @@ export default function ShippingAddressForm({
   // Auto-fetch wards if district exists and wards list is empty
   useEffect(() => {
     if (districts.length > 0 && value.district) {
-      const d = districts.find((x) => x.name === value.district)
+      const d = districts.find((x) => normalizeLocation(x.name) === normalizeLocation(value.district))
       if (d) {
         if (value.district_id !== d.code) {
           onChange({ ...value, district_id: d.code })
@@ -102,7 +103,7 @@ export default function ShippingAddressForm({
   // Sync ward code if ward exists
   useEffect(() => {
     if (wards.length > 0 && value.ward) {
-      const w = wards.find((x) => x.name === value.ward)
+      const w = wards.find((x) => normalizeLocation(x.name) === normalizeLocation(value.ward))
       if (w && value.ward_code !== String(w.code)) {
         onChange({ ...value, ward_code: String(w.code) })
       }
@@ -110,7 +111,7 @@ export default function ShippingAddressForm({
   }, [wards, value.ward, value.ward_code, value, onChange])
 
   const handleProvinceChange = (provinceName: string) => {
-    const p = provinces.find((x) => x.name === provinceName)
+    const p = provinces.find((x) => x.name === provinceName || normalizeLocation(x.name) === normalizeLocation(provinceName))
     if (!p) return
     onChange({
       ...value,
@@ -132,7 +133,7 @@ export default function ShippingAddressForm({
   }
 
   const handleDistrictChange = (districtName: string) => {
-    const d = districts.find((x) => x.name === districtName)
+    const d = districts.find((x) => x.name === districtName || normalizeLocation(x.name) === normalizeLocation(districtName))
     if (!d) return
     onChange({
       ...value,
@@ -235,7 +236,7 @@ export default function ShippingAddressForm({
           <Select
             value={value.ward}
             onValueChange={(v) => {
-              const w = wards.find((x) => x.name === v)
+              const w = wards.find((x) => x.name === v || normalizeLocation(x.name) === normalizeLocation(v))
               onChange({
                 ...value,
                 ward: v,

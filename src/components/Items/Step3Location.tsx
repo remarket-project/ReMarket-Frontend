@@ -40,7 +40,7 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
       }
       return response.json()
     },
-    staleTime: 24 * 60 * 60 * 1000, // Cache for 24 hours
+    staleTime: 24 * 60 * 60 * 1000,
     gcTime: 24 * 60 * 60 * 1000,
   })
 
@@ -77,6 +77,7 @@ function CreateListingStep3Location({ form }: Step3LocationProps) {
     staleTime: 24 * 60 * 60 * 1000,
     gcTime: 24 * 60 * 60 * 1000,
   })
+
 
   return (
     <div className="space-y-6">
