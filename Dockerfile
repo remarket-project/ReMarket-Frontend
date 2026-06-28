@@ -26,13 +26,13 @@
 # COPY ./frontend/nginx-backend-not-found.conf /etc/nginx/extra-conf.d/backend-not-found.conf
 
 # Build stage
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json .
 
-RUN npm install
+RUN npm ci --include=optional
 
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
