@@ -117,7 +117,7 @@ export function FaqChatWidget() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [])
+  }, [messages])
 
   const toHistory = (msgs: ChatMessage[]) =>
     msgs.slice(1).map((m) => ({

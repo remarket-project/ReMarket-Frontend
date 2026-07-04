@@ -13,7 +13,15 @@ import useCustomToast from "./useCustomToast"
 
 const isLoggedIn = () => {
   const token = localStorage.getItem("access_token")
-  return typeof token === "string" && token.trim().length > 0
+  if (typeof token !== "string" || token.trim().length === 0) return false
+  try {
+    const payloadBase64 = token.split(".")[1]
+    const decoded = JSON.parse(atob(payloadBase64))
+    const exp = decoded.exp * 1000
+    return Date.now() < exp
+  } catch {
+    return false
+  }
 }
 
 const useAuth = () => {

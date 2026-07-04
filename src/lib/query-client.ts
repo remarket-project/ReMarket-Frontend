@@ -1,7 +1,7 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
 import { ApiError } from "@/client"
 
-const handleApiError = (error: Error) => {
+const mutationErrorHandler = (error: Error) => {
   if (error instanceof ApiError && [401, 403].includes(error.status)) {
     localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")
@@ -17,10 +17,8 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
-  queryCache: new QueryCache({
-    onError: handleApiError,
-  }),
+  queryCache: new QueryCache(),
   mutationCache: new MutationCache({
-    onError: handleApiError,
+    onError: mutationErrorHandler,
   }),
 })

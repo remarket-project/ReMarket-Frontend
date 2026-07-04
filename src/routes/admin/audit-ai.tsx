@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { AdminModerationLogService } from "@/client/sdk.gen"
 import {
   Bot,
   CheckCircle2,
@@ -76,23 +77,12 @@ function TrangNhatKyAI() {
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["adminModerationLogs", skip, limit, locQuyetDinh],
     queryFn: async () => {
-      const params = new URLSearchParams({
-        skip: String(skip),
-        limit: String(limit),
+      const res = await AdminModerationLogService.listModerationLogsApiV1AdminModerationLogsGet({
+        skip,
+        limit,
+        decision: locQuyetDinh || null,
       })
-      if (locQuyetDinh) params.set("decision", locQuyetDinh)
-      const res = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/v1/admin/moderation-logs?${params}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
-      )
-      if (!res.ok) throw new Error("Failed to fetch moderation logs")
-      return res.json()
+      return res as unknown as { items: any[]; total: number }
     },
     staleTime: 0,
     refetchInterval: 15_000,

@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 
 import { AdminService } from "@/client"
-import { AdminAuditService } from "@/client/sdk.gen"
+import { AdminAuditService, AdminModerationLogService } from "@/client/sdk.gen"
 import useAuth from "@/hooks/useAuth"
 import { cn } from "@/lib/utils"
 
@@ -124,18 +124,11 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   const { data: modLogsData } = useQuery({
     queryKey: ["adminModerationLogsCount"],
     queryFn: async () => {
-      const res = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/v1/admin/moderation-logs?skip=0&limit=1`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
-      )
-      if (!res.ok) throw new Error("Failed to fetch moderation logs count")
-      return res.json()
+      const res = await AdminModerationLogService.listModerationLogsApiV1AdminModerationLogsGet({
+        skip: 0,
+        limit: 1,
+      })
+      return res as { total: number }
     },
     refetchInterval: 60000,
     staleTime: 30000,

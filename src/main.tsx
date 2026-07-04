@@ -32,6 +32,10 @@ OpenAPI.TOKEN = async () => {
         const newToken = await refreshAccessToken()
         if (newToken) {
           token = newToken
+        } else {
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          token = null
         }
       }
     } catch (_e) {

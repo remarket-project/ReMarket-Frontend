@@ -124,35 +124,18 @@ function TrangKiemDuyetTin() {
   const { data: aiSettings } = useQuery({
     queryKey: ["ai-moderation-settings"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/settings/ai-moderation`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
-      )
-      if (!res.ok) throw new Error("Failed to fetch AI moderation settings")
-      return res.json() as Promise<{ ai_moderation_enabled: boolean }>
+      const res = await AdminService.getAiModerationApiV1AdminSettingsAiModerationGet()
+      return res as { ai_moderation_enabled: boolean }
     },
     staleTime: 60_000,
   })
 
   const toggleAiMutation = useMutation({
     mutationFn: async (newValue: boolean) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/settings/ai-moderation`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ enabled: newValue }),
-        },
-      )
-      if (!res.ok) throw new Error("Failed to toggle AI moderation")
-      return res.json()
+      const res = await AdminService.toggleAiModerationApiV1AdminSettingsAiModerationPatch({
+        requestBody: { enabled: newValue },
+      })
+      return res as { ai_moderation_enabled: boolean }
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["ai-moderation-settings"], data)

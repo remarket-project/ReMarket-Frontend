@@ -31,7 +31,7 @@ const searchSchema = z.object({
   categorySlug: z.string().catch(""),
   minPrice: z.string().catch(""),
   maxPrice: z.string().catch(""),
-  sort: z.enum(["newest", "oldest", "price_asc", "price_desc"]).catch("newest"),
+  sort: z.enum(["newest", "oldest", "price_asc", "price_desc", "relevant"]).catch("newest"),
   condition: z.string().catch(""),
   view: z.enum(["grid", "list"]).catch("grid"),
   page: z.string().catch("1"),
@@ -138,6 +138,7 @@ const sortOptions = [
   { value: "oldest", label: "Cũ nhất" },
   { value: "price_asc", label: "Giá tăng dần" },
   { value: "price_desc", label: "Giá giảm dần" },
+  { value: "relevant", label: "Liên quan nhất" },
 ]
 
 function formatCurrency(value: string) {
