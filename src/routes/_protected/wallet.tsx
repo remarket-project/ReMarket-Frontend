@@ -1,4 +1,4 @@
-﻿import {
+import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
@@ -28,7 +28,8 @@ import WithdrawDialog from "@/components/Wallet/WithdrawDialog"
 
 type TxFilter = "all" | "in" | "out"
 
-const API_BASE = import.meta.env.VITE_API_URL
+const rawApiUrl = import.meta.env.VITE_API_URL || ""
+const API_BASE = rawApiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/i, "")
 
 function getToken() {
   return localStorage.getItem("access_token")

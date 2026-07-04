@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { formatVND } from "@/lib/order-utils"
 
-const API_BASE = import.meta.env.VITE_API_URL
+const rawApiUrl = import.meta.env.VITE_API_URL || ""
+const API_BASE = rawApiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/i, "")
 
 interface WithdrawDialogProps {
   open: boolean
