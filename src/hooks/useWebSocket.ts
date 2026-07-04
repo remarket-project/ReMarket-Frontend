@@ -3,8 +3,19 @@ import useAuth from "@/hooks/useAuth"
 
 type WSEventHandler = (data: Record<string, unknown>) => void
 
-const WS_BASE =
-  import.meta.env.VITE_WS_URL || `ws://${window.location.hostname}:8000/api/v1`
+const getWsBase = () => {
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
+  const apiUrl = import.meta.env.VITE_API_URL;
+  if (apiUrl) {
+    return apiUrl.replace(/^https:/i, "wss:").replace(/^http:/i, "ws:");
+  }
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${window.location.hostname}:8000/api/v1`;
+};
+
+const WS_BASE = getWsBase();
 
 const MAX_RETRIES = 10
 
