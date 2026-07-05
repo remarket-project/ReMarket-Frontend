@@ -62,7 +62,15 @@ export default function WalletTopupDialog({
 
     if (frontendStripePublishableKey) {
       setPublishableKey(frontendStripePublishableKey);
-      setStripePromise(loadStripe(frontendStripePublishableKey));
+      setStripePromise(
+        loadStripe(frontendStripePublishableKey, {
+          developerTools: {
+            assistant: {
+              enabled: false,
+            },
+          },
+        })
+      );
       return;
     }
 
@@ -76,7 +84,15 @@ export default function WalletTopupDialog({
         }
 
         setPublishableKey(publishableKeyFromBackend);
-        setStripePromise(loadStripe(publishableKeyFromBackend));
+        setStripePromise(
+          loadStripe(publishableKeyFromBackend, {
+            developerTools: {
+              assistant: {
+                enabled: false,
+              },
+            },
+          })
+        );
       })
       .catch((err) => {
         console.error(err);
