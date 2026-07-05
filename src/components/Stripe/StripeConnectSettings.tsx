@@ -12,53 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-const rawApiUrl = import.meta.env.VITE_API_URL || ""
-const API_BASE = rawApiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/i, "")
-
-function getToken() {
-  return localStorage.getItem("access_token")
-}
-
-interface OnboardingStatus {
-  account_id: string | null
-  onboarding_complete: boolean
-  account_status: string | null
-  charges_enabled: boolean
-  payouts_enabled: boolean
-}
-
-async function fetchOnboardingStatus(): Promise<OnboardingStatus> {
-  const token = getToken()
-  const res = await fetch(`${API_BASE}/api/v1/connect/onboarding/status`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.detail || "Không thể lấy trạng thái Stripe")
-  }
-  return res.json()
-}
-
-async function startOnboarding(): Promise<{
-  account_id: string
-  onboarding_url: string
-}> {
-  const token = getToken()
-  const res = await fetch(`${API_BASE}/api/v1/connect/onboarding`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.detail || "Không thể tạo tài khoản Stripe")
-  }
-  return res.json()
-}
+import { StripeConnectService } from "@/client"
 
 export default function StripeConnectSettings() {
-  const { data: status, isLoading, refetch } = useQuery<OnboardingStatus>({
+  const { data: status, isLoading, refetch } = useQuery({
     queryKey: ["stripe-onboarding-status"],
-    queryFn: fetchOnboardingStatus,
+    queryFn: () => StripeConnectService.getOnboardingStatusApiV1ConnectOnboardingStatusGet(),
     staleTime: 0,
   })
 
@@ -76,8 +35,8 @@ export default function StripeConnectSettings() {
   }, [refetch])
 
   const onboardingMutation = useMutation({
-    mutationFn: startOnboarding,
-    onSuccess: (data) => {
+    mutationFn: () => StripeConnectService.startOnboardingApiV1ConnectOnboardingPost(),
+    onSuccess: (data: any) => {
       window.location.href = data.onboarding_url
     },
     onError: (err: Error) => {

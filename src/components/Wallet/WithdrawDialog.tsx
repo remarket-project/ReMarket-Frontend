@@ -16,8 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { formatVND } from "@/lib/order-utils"
 
-const rawApiUrl = import.meta.env.VITE_API_URL || ""
-const API_BASE = rawApiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/i, "")
+import { WalletService } from "@/client"
 
 interface WithdrawDialogProps {
   open: boolean
@@ -35,22 +34,10 @@ export default function WithdrawDialog({
   const [amount, setAmount] = useState<number>(0)
 
   const withdrawMutation = useMutation({
-    mutationFn: async () => {
-      const token = localStorage.getItem("access_token")
-      const res = await fetch(`${API_BASE}/api/v1/wallet/withdraw`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Rút tiền thất bại")
-      }
-      return res.json()
-    },
+    mutationFn: () =>
+      WalletService.withdrawApiV1WalletWithdrawPost({
+        requestBody: { amount },
+      }),
     onSuccess: (data) => {
       toast.success(data.message || "Yêu cầu rút tiền đã được gửi!")
       onOpenChange(false)

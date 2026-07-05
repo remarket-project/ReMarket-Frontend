@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle, CheckCircle2, Loader2, Upload, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
-import { DisputesService } from "@/client"
+import { DisputesService, OrdersService } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,9 +14,6 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-
-const rawApiUrl = import.meta.env.VITE_API_URL || ""
-const API_BASE = rawApiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/i, "")
 
 interface DisputeDialogProps {
   orderId: string
@@ -45,12 +42,7 @@ export function DisputeDialog({
 
   const acceptMutation = useMutation({
     mutationFn: () =>
-      fetch(`/api/v1/orders/${orderId}/accept`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }),
+      OrdersService.acceptOrderApiV1OrdersOrderIdAcceptPost({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order-detail", orderId] })
       queryClient.invalidateQueries({ queryKey: ["orders-dashboard"] })
@@ -78,7 +70,7 @@ export function DisputeDialog({
             const uploadFormData = new FormData()
             uploadFormData.append("file", file)
             const token = localStorage.getItem("access_token")
-            const res = await fetch(`${API_BASE}/api/v1/upload`, {
+            const res = await fetch("/api/v1/upload", {
               method: "POST",
               headers: token ? { Authorization: `Bearer ${token}` } : {},
               body: uploadFormData,

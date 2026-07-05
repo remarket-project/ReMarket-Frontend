@@ -18,7 +18,7 @@ import {
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { WalletService } from "@/client"
+import { PaymentService, WalletService } from "@/client"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,13 +27,6 @@ import WalletTopupDialog from "@/components/Wallet/WalletTopupDialog"
 import WithdrawDialog from "@/components/Wallet/WithdrawDialog"
 
 type TxFilter = "all" | "in" | "out"
-
-const rawApiUrl = import.meta.env.VITE_API_URL || ""
-const API_BASE = rawApiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/i, "")
-
-function getToken() {
-  return localStorage.getItem("access_token")
-}
 
 function getWalletQueryOptions() {
   return {
@@ -174,27 +167,11 @@ function WalletPage() {
   const total = available + locked
 
   const createPaymentIntent = useMutation({
-    mutationFn: async (amount: number) => {
-      const token = getToken()
-      const res = await fetch(`${API_BASE}/api/v1/payment/create-deposit`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || "Tạo thanh toán thất bại")
-      }
-      return res.json() as Promise<{
-        client_secret: string
-        payment_intent_id: string
-        amount: number
-      }>
-    },
-    onSuccess: (data) => {
+    mutationFn: (amount: number) =>
+      PaymentService.createDepositApiV1PaymentCreateDepositPost({
+        requestBody: { amount },
+      }),
+    onSuccess: (data: any) => {
       setClientSecret(data.client_secret)
     },
     onError: (error: any) => {
