@@ -1,7 +1,7 @@
 import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
 import { Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import StripePaymentForm from "@/components/Stripe/StripePaymentForm"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,14 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { PaymentService } from "@/client"
 
-console.log("VITE_STRIPE_PUBLISHABLE_KEY:", import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "(EMPTY)")
-
-const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "",
-)
-
-const isStripeKeyMissing = !import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 
 interface WalletTopupDialogProps {
   open: boolean
@@ -51,6 +45,33 @@ export default function WalletTopupDialog({
   isCreating,
 }: WalletTopupDialogProps) {
   const [amount, setAmount] = useState<number>(100000)
+  const [publishableKey, setPublishableKey] = useState<string | null>(null)
+  const [stripePromise, setStripePromise] = useState<any>(null)
+  const [loadingKey, setLoadingKey] = useState(false)
+  const [keyError, setKeyError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (open && clientSecret && !publishableKey && !loadingKey) {
+      setLoadingKey(true)
+      setKeyError(null)
+      PaymentService.getStripeConfigApiV1PaymentConfigGet()
+        .then((res) => {
+          if (res.publishable_key) {
+            setPublishableKey(res.publishable_key)
+            setStripePromise(loadStripe(res.publishable_key))
+          } else {
+            setKeyError("Khóa Stripe Publishable Key trống trên Backend")
+          }
+        })
+        .catch((err) => {
+          console.error(err)
+          setKeyError("Không thể tải cấu hình Stripe từ Backend")
+        })
+        .finally(() => {
+          setLoadingKey(false)
+        })
+    }
+  }, [open, clientSecret, publishableKey, loadingKey])
 
   const handleClose = (val: boolean) => {
     if (!val) {
@@ -62,6 +83,7 @@ export default function WalletTopupDialog({
   const handlePaymentSuccess = () => {
     handleClose(false)
   }
+
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -137,22 +159,26 @@ export default function WalletTopupDialog({
               </Button>
             </div>
           </div>
-        ) : isStripeKeyMissing ? (
+        ) : loadingKey ? (
+          <div className="flex flex-col items-center justify-center py-8 gap-2">
+            <Loader2 className="size-8 animate-spin text-blue-600" />
+            <p className="text-sm text-gray-500">Đang tải cấu hình Stripe...</p>
+          </div>
+        ) : keyError ? (
           <div className="space-y-4 py-2">
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
               <p className="font-semibold mb-1 text-red-900 flex items-center gap-1.5">
-                ⚠️ Thiếu cấu hình Stripe Publishable Key
+                ⚠️ Lỗi cấu hình Stripe
               </p>
               <p className="text-xs text-red-700 leading-relaxed">
-                Ứng dụng Frontend được build thiếu biến môi trường <strong>VITE_STRIPE_PUBLISHABLE_KEY</strong> (đang trống hoặc chưa được biên dịch).
+                {keyError}
               </p>
               <p className="text-xs text-red-700 leading-relaxed mt-2">
                 <strong>Cách khắc phục:</strong>
                 <ol className="list-decimal pl-4 mt-1 space-y-1">
-                  <li>Kiểm tra file <code>.env</code> tại thư mục gốc của VPS (<code>/opt/remarket/.env</code>).</li>
+                  <li>Kiểm tra file <code>.env</code> của Backend trên VPS (<code>/opt/remarket/ReMarket-Backend/.env</code>) hoặc file <code>.env</code> gốc.</li>
                   <li>Đảm bảo đã khai báo khóa: <code>STRIPE_PUBLISHABLE_KEY=pk_test_...</code></li>
-                  <li>Build lại frontend bằng lệnh: <code>docker compose -f docker-compose.prod.yml build --no-cache frontend</code></li>
-                  <li>Khởi động lại: <code>docker compose -f docker-compose.prod.yml up -d</code></li>
+                  <li>Khởi động lại Backend bằng lệnh: <code>docker compose -f docker-compose.prod.yml restart backend</code></li>
                 </ol>
               </p>
             </div>
@@ -165,7 +191,7 @@ export default function WalletTopupDialog({
               Đóng
             </Button>
           </div>
-        ) : (
+        ) : stripePromise ? (
           <Elements
             stripe={stripePromise}
             options={{ clientSecret, appearance: { theme: "stripe" } }}
@@ -177,7 +203,7 @@ export default function WalletTopupDialog({
               onCancel={() => handleClose(false)}
             />
           </Elements>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   )

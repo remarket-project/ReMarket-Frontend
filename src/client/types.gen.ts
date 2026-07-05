@@ -167,6 +167,13 @@ export type DepositResponse = {
     amount: number;
 };
 
+export type StripeConfigResponse = {
+    publishable_key: string;
+};
+
+export type GetStripeConfigApiV1PaymentConfigGetResponse = StripeConfigResponse;
+
+
 /**
  * Create dispute request.
  */
