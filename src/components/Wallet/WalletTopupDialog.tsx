@@ -17,6 +17,8 @@ const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "",
 )
 
+const isStripeKeyMissing = !import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+
 interface WalletTopupDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -132,6 +134,34 @@ export default function WalletTopupDialog({
                 )}
               </Button>
             </div>
+          </div>
+        ) : isStripeKeyMissing ? (
+          <div className="space-y-4 py-2">
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+              <p className="font-semibold mb-1 text-red-900 flex items-center gap-1.5">
+                ⚠️ Thiếu cấu hình Stripe Publishable Key
+              </p>
+              <p className="text-xs text-red-700 leading-relaxed">
+                Ứng dụng Frontend được build thiếu biến môi trường <strong>VITE_STRIPE_PUBLISHABLE_KEY</strong> (đang trống hoặc chưa được biên dịch).
+              </p>
+              <p className="text-xs text-red-700 leading-relaxed mt-2">
+                <strong>Cách khắc phục:</strong>
+                <ol className="list-decimal pl-4 mt-1 space-y-1">
+                  <li>Kiểm tra file <code>.env</code> tại thư mục gốc của VPS (<code>/opt/remarket/.env</code>).</li>
+                  <li>Đảm bảo đã khai báo khóa: <code>STRIPE_PUBLISHABLE_KEY=pk_test_...</code></li>
+                  <li>Build lại frontend bằng lệnh: <code>docker compose -f docker-compose.prod.yml build --no-cache frontend</code></li>
+                  <li>Khởi động lại: <code>docker compose -f docker-compose.prod.yml up -d</code></li>
+                </ol>
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleClose(false)}
+              className="w-full"
+            >
+              Đóng
+            </Button>
           </div>
         ) : (
           <Elements
