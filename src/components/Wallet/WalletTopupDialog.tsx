@@ -1,39 +1,42 @@
-import { Elements } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js"
-import { Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import StripePaymentForm from "@/components/Stripe/StripePaymentForm"
-import { Button } from "@/components/ui/button"
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import StripePaymentForm from "@/components/Stripe/StripePaymentForm";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { PaymentService } from "@/client"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { PaymentService } from "@/client";
 
+const frontendStripePublishableKey = (
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ?? ""
+).trim();
 
 interface WalletTopupDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  currentBalance: number
-  clientSecret: string | null
-  onCreatePaymentIntent: (amount: number) => void
-  isCreating: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  currentBalance: number;
+  clientSecret: string | null;
+  onCreatePaymentIntent: (amount: number) => void;
+  isCreating: boolean;
 }
 
-const presetAmounts = [50000, 100000, 200000, 500000]
+const presetAmounts = [50000, 100000, 200000, 500000];
 
 function formatCurrency(price: string | number) {
-  const numeric = Number(price)
-  if (Number.isNaN(numeric)) return `${price} đ`
+  const numeric = Number(price);
+  if (Number.isNaN(numeric)) return `${price} đ`;
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
     maximumFractionDigits: 0,
-  }).format(numeric)
+  }).format(numeric);
 }
 
 export default function WalletTopupDialog({
@@ -44,46 +47,56 @@ export default function WalletTopupDialog({
   onCreatePaymentIntent,
   isCreating,
 }: WalletTopupDialogProps) {
-  const [amount, setAmount] = useState<number>(100000)
-  const [publishableKey, setPublishableKey] = useState<string | null>(null)
-  const [stripePromise, setStripePromise] = useState<any>(null)
-  const [loadingKey, setLoadingKey] = useState(false)
-  const [keyError, setKeyError] = useState<string | null>(null)
+  const [amount, setAmount] = useState<number>(100000);
+  const [publishableKey, setPublishableKey] = useState<string | null>(null);
+  const [stripePromise, setStripePromise] = useState<any>(null);
+  const [loadingKey, setLoadingKey] = useState(false);
+  const [keyError, setKeyError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open && clientSecret && !publishableKey && !loadingKey) {
-      setLoadingKey(true)
-      setKeyError(null)
-      PaymentService.getStripeConfigApiV1PaymentConfigGet()
-        .then((res) => {
-          if (res.publishable_key) {
-            setPublishableKey(res.publishable_key)
-            setStripePromise(loadStripe(res.publishable_key))
-          } else {
-            setKeyError("Khóa Stripe Publishable Key trống trên Backend")
-          }
-        })
-        .catch((err) => {
-          console.error(err)
-          setKeyError("Không thể tải cấu hình Stripe từ Backend")
-        })
-        .finally(() => {
-          setLoadingKey(false)
-        })
+    if (!open || !clientSecret || publishableKey || loadingKey) {
+      return;
     }
-  }, [open, clientSecret, publishableKey, loadingKey])
+
+    setKeyError(null);
+
+    if (frontendStripePublishableKey) {
+      setPublishableKey(frontendStripePublishableKey);
+      setStripePromise(loadStripe(frontendStripePublishableKey));
+      return;
+    }
+
+    setLoadingKey(true);
+    PaymentService.getStripeConfigApiV1PaymentConfigGet()
+      .then((res) => {
+        const publishableKeyFromBackend = (res.publishable_key ?? "").trim();
+        if (!publishableKeyFromBackend) {
+          setKeyError("Thiếu khóa Stripe Publishable Key ở Backend");
+          return;
+        }
+
+        setPublishableKey(publishableKeyFromBackend);
+        setStripePromise(loadStripe(publishableKeyFromBackend));
+      })
+      .catch((err) => {
+        console.error(err);
+        setKeyError("Không thể tải cấu hình Stripe từ Backend");
+      })
+      .finally(() => {
+        setLoadingKey(false);
+      });
+  }, [open, clientSecret, publishableKey, loadingKey]);
 
   const handleClose = (val: boolean) => {
     if (!val) {
-      setAmount(100000)
+      setAmount(100000);
     }
-    onOpenChange(val)
-  }
+    onOpenChange(val);
+  };
 
   const handlePaymentSuccess = () => {
-    handleClose(false)
-  }
-
+    handleClose(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -170,15 +183,25 @@ export default function WalletTopupDialog({
               <p className="font-semibold mb-1 text-red-900 flex items-center gap-1.5">
                 ⚠️ Lỗi cấu hình Stripe
               </p>
-              <p className="text-xs text-red-700 leading-relaxed">
-                {keyError}
-              </p>
+              <p className="text-xs text-red-700 leading-relaxed">{keyError}</p>
               <p className="text-xs text-red-700 leading-relaxed mt-2">
                 <strong>Cách khắc phục:</strong>
                 <ol className="list-decimal pl-4 mt-1 space-y-1">
-                  <li>Kiểm tra file <code>.env</code> của Backend trên VPS (<code>/opt/remarket/ReMarket-Backend/.env</code>) hoặc file <code>.env</code> gốc.</li>
-                  <li>Đảm bảo đã khai báo khóa: <code>STRIPE_PUBLISHABLE_KEY=pk_test_...</code></li>
-                  <li>Khởi động lại Backend bằng lệnh: <code>docker compose -f docker-compose.prod.yml restart backend</code></li>
+                  <li>
+                    Kiểm tra file <code>.env</code> của Backend trên VPS (
+                    <code>/opt/remarket/ReMarket-Backend/.env</code>) hoặc file{" "}
+                    <code>.env</code> gốc.
+                  </li>
+                  <li>
+                    Đảm bảo đã khai báo khóa:{" "}
+                    <code>STRIPE_PUBLISHABLE_KEY=pk_test_...</code>
+                  </li>
+                  <li>
+                    Khởi động lại Backend bằng lệnh:{" "}
+                    <code>
+                      docker compose -f docker-compose.prod.yml restart backend
+                    </code>
+                  </li>
                 </ol>
               </p>
             </div>
@@ -206,5 +229,5 @@ export default function WalletTopupDialog({
         ) : null}
       </DialogContent>
     </Dialog>
-  )
+  );
 }

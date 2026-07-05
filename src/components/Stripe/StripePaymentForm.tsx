@@ -1,14 +1,19 @@
-import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
-import { Loader2 } from "lucide-react"
-import { useState } from "react"
+import {
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from "@/components/ui/button"
+import { OpenAPI } from "@/client";
+import { Button } from "@/components/ui/button";
 
 interface StripePaymentFormProps {
-  clientSecret: string
-  onSuccess: () => void
-  onError: (message: string) => void
-  onCancel: () => void
+  clientSecret: string;
+  onSuccess: () => void;
+  onError: (message: string) => void;
+  onCancel: () => void;
 }
 
 export default function StripePaymentForm({
@@ -17,42 +22,73 @@ export default function StripePaymentForm({
   onError,
   onCancel,
 }: StripePaymentFormProps) {
-  const stripe = useStripe()
-  const elements = useElements()
-  const [isLoading, setIsLoading] = useState(false)
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!stripe || !elements) return
+    if (!stripe || !elements) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
-    const { error: submitError } = await elements.submit()
+    const { error: submitError } = await elements.submit();
     if (submitError) {
-      onError(submitError.message ?? "Thông tin thanh toán không hợp lệ")
-      setIsLoading(false)
-      return
+      onError(submitError.message ?? "Thông tin thanh toán không hợp lệ");
+      setIsLoading(false);
+      return;
     }
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       clientSecret,
       confirmParams: {
         return_url: `${window.location.origin}/wallet`,
       },
       redirect: "if_required",
-    })
+    });
 
     if (error) {
-      onError(error.message ?? "Thanh toán thất bại")
-      setIsLoading(false)
-      return
+      onError(error.message ?? "Thanh toán thất bại");
+      setIsLoading(false);
+      return;
     }
 
-    onSuccess()
-    setIsLoading(false)
-  }
+    const paymentIntentId =
+      paymentIntent?.id || clientSecret.split("_secret_")[0];
+    const tokenResolver = OpenAPI.TOKEN;
+    const token =
+      typeof tokenResolver === "function"
+        ? await tokenResolver({} as never)
+        : tokenResolver || "";
+
+    try {
+      const response = await fetch("/api/v1/payment/confirm-deposit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ payment_intent_id: paymentIntentId }),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        onError(message || "Không thể đồng bộ nạp tiền về ví");
+        setIsLoading(false);
+        return;
+      }
+    } catch (syncError) {
+      console.error(syncError);
+      onError("Không thể đồng bộ nạp tiền về ví");
+      setIsLoading(false);
+      return;
+    }
+
+    onSuccess();
+    setIsLoading(false);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,5 +113,5 @@ export default function StripePaymentForm({
         </Button>
       </div>
     </form>
-  )
+  );
 }
