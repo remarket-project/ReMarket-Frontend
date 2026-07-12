@@ -120,11 +120,12 @@ export default function WalletTopupDialog({
         <DialogHeader>
           <DialogTitle>Nạp tiền vào ví</DialogTitle>
           <DialogDescription>
-            Thanh toán qua Stripe (thẻ test: 4242 4242 4242 4242).
+            Thanh toán qua Stripe.
           </DialogDescription>
         </DialogHeader>
 
-        {!clientSecret ? (
+        <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden pr-2">
+          {!clientSecret ? (
           <div className="space-y-3">
             <div className="rounded-xl border border-blue-200/70 bg-blue-50/60 p-3 text-sm text-blue-900/75">
               Số dư hiện tại:{" "}
@@ -243,6 +244,7 @@ export default function WalletTopupDialog({
             />
           </Elements>
         ) : null}
+        </div>
       </DialogContent>
     </Dialog>
   );
